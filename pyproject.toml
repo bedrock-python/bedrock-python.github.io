@@ -1,0 +1,23 @@
+[project]
+name = "bedrock-python.github.io"
+version = "0.1.0"
+description = "Blog for the Bedrock Python library ecosystem"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Alex Shalaev", email = "shalaevad.alexey@gmail.com" }]
+
+[project.urls]
+Repository = "https://github.com/bedrock-python/bedrock-python.github.io"
+Site = "https://bedrock-python.github.io"
+
+[dependency-groups]
+docs = [
+    "zensical>=0.0.43",
+]
+dev = [
+    "pre-commit>=4.5.1",
+]
+
+[tool.uv]
+link-mode = "copy"

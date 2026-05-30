@@ -1,0 +1,114 @@
+[project]
+site_name = "Bedrock Python"
+site_description = "Blog for the Bedrock Python library ecosystem"
+site_author = "Alex Shalaev"
+site_url = "https://bedrock-python.github.io"
+repo_name = "bedrock-python/bedrock-python.github.io"
+repo_url = "https://github.com/bedrock-python/bedrock-python.github.io"
+edit_uri = "edit/master/docs/"
+copyright = "Copyright &copy; 2026 Alex Shalaev"
+docs_dir = "docs"
+site_dir = "site"
+
+nav = [
+    { "Home" = "index.md" },
+    { "Libraries" = "libraries/index.md" },
+    { "Tools" = "tools/index.md" },
+    { "Blog" = [
+        { "Latest" = "blog/index.md" },
+        { "Archive" = "blog/archive/index.md" },
+        { "Categories" = [
+            { "Overview" = "blog/category/index.md" },
+            { "Libraries" = "blog/category/libraries.md" },
+            { "Tools" = "blog/category/tools.md" },
+            { "Design" = "blog/category/design.md" },
+            { "Tutorials" = "blog/category/tutorials.md" },
+            { "Releases" = "blog/category/releases.md" },
+            { "Meta" = "blog/category/meta.md" },
+        ] },
+    ] },
+]
+
+[project.theme]
+features = [
+    "announce.dismiss",
+    "content.code.annotate",
+    "content.code.copy",
+    "content.code.select",
+    "content.footnote.tooltips",
+    "content.tabs.link",
+    "content.tooltips",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.instant.prefetch",
+    "navigation.path",
+    "navigation.sections",
+    "navigation.tabs",
+    "navigation.tabs.sticky",
+    "navigation.top",
+    "navigation.tracking",
+    "search.highlight",
+    "search.share",
+    "search.suggest",
+]
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/bedrock-python"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/python"
+link = "https://pypi.org/user/bedrock-python/"
+
+[project.plugins.blog]
+enabled = true
+blog_dir = "blog"
+post_date_format = "long"
+post_url_format = "{date}/{slug}"
+authors_file = "{blog}/.authors.yml"
+pagination_per_page = 10
+
+
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.toc]
+permalink = true
+[project.markdown_extensions.pymdownx.betterem]
+[project.markdown_extensions.pymdownx.caret]
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.emoji]
+emoji_generator = "zensical.extensions.emoji.to_svg"
+emoji_index = "zensical.extensions.emoji.twemoji"
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.keys]
+[project.markdown_extensions.pymdownx.mark]
+[project.markdown_extensions.pymdownx.smartsymbols]
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }
+]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+combine_header_slug = true
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+[project.markdown_extensions.pymdownx.tilde]
