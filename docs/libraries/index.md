@@ -1,83 +1,78 @@
+---
+title: Libraries
+description: Reusable Python packages published to PyPI under the bedrock-python organisation.
+hide:
+  - toc
+---
+
 # Libraries
 
-All Bedrock Python libraries are published to PyPI under the `bedrock-python` organisation and follow the same conventions: strict typing, 90%+ coverage, semantic versioning via Release Please.
+<style>
+  .md-content__inner > h1:first-of-type { display: none; }
+</style>
 
----
+<section class="bdr-hero" markdown="0">
+  <div class="bdr-hero__eyebrow">PyPI · bedrock-python</div>
+  <h1 class="bdr-hero__title">Libraries.</h1>
+  <p class="bdr-hero__lede">
+    Every Bedrock Python library follows the same conventions: strict typing,
+    90%+ coverage, semantic versioning via Release Please, and published to PyPI
+    under the <code>bedrock-python</code> organisation.
+  </p>
+</section>
 
-## sqlalchemy-foundation-kit
+<section markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Foundation layer</h2>
+  </div>
+  <div class="bdr-list">
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">
+      <p class="bdr-list__name">sqlalchemy-foundation-kit</p>
+      <p class="bdr-list__desc">Async SQLAlchemy session management, base ORM models with UUIDs and UTC timestamps, AsyncSession lifecycle wired to a Unit of Work.</p>
+    </a>
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/redis-client-kit/">
+      <p class="bdr-list__name">redis-client-kit</p>
+      <p class="bdr-list__desc">redis-py wrapper with optional Pydantic serialization and OpenTelemetry spans on every command.</p>
+    </a>
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/aiokafka-foundation-kit/">
+      <p class="bdr-list__name">aiokafka-foundation-kit</p>
+      <p class="bdr-list__desc">asyncio Kafka producer/consumer abstraction over aiokafka with structured logging and metrics.</p>
+    </a>
+  </div>
+</section>
 
-Async SQLAlchemy session management, base ORM models, and Unit of Work support.
+<section markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Reliability layer</h2>
+  </div>
+  <div class="bdr-list">
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/omni-box/">
+      <p class="bdr-list__name">omni-box</p>
+      <p class="bdr-list__desc">Transactional Outbox and Inbox patterns — write events in the same DB transaction as your business data, publish to Kafka asynchronously, consume idempotently.</p>
+    </a>
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/idempotency-kit/">
+      <p class="bdr-list__name">idempotency-kit</p>
+      <p class="bdr-list__desc">Idempotency key guards for HTTP endpoints and Kafka consumers — at-most-once semantics where you need them.</p>
+    </a>
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/deadline-budget/">
+      <p class="bdr-list__name">deadline-budget</p>
+      <p class="bdr-list__desc">Deadline and budget propagation across async task chains so no task runs longer than it should.</p>
+    </a>
+  </div>
+</section>
 
-[![PyPI](https://img.shields.io/pypi/v/sqlalchemy-foundation-kit)](https://pypi.org/project/sqlalchemy-foundation-kit/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/sqlalchemy-foundation-kit/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/sqlalchemy-foundation-kit)
-
----
-
-## redis-client-kit
-
-Redis client with optional Pydantic serialization and OpenTelemetry instrumentation.
-
-[![PyPI](https://img.shields.io/pypi/v/redis-client-kit)](https://pypi.org/project/redis-client-kit/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/redis-client-kit/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/redis-client-kit)
-
----
-
-## aiokafka-foundation-kit
-
-asyncio Kafka producer and consumer foundations built on `aiokafka`.
-
-[![PyPI](https://img.shields.io/pypi/v/aiokafka-foundation-kit)](https://pypi.org/project/aiokafka-foundation-kit/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/aiokafka-foundation-kit/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/aiokafka-foundation-kit)
-
----
-
-## omni-box
-
-Transactional Outbox and Inbox pattern implementation for SQLAlchemy + Kafka stacks.
-
-[![PyPI](https://img.shields.io/pypi/v/omni-box)](https://pypi.org/project/omni-box/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/omni-box/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/omni-box)
-
----
-
-## idempotency-kit
-
-Idempotency key guards for HTTP endpoints and Kafka consumers.
-
-[![PyPI](https://img.shields.io/pypi/v/idempotency-kit)](https://pypi.org/project/idempotency-kit/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/idempotency-kit/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/idempotency-kit)
-
----
-
-## alembic-gauntlet
-
-Stairway migration testing for Alembic — every upgrade and downgrade, against a real database.
-
-[![PyPI](https://img.shields.io/pypi/v/alembic-gauntlet)](https://pypi.org/project/alembic-gauntlet/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/alembic-gauntlet/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/alembic-gauntlet)
-
----
-
-## pg-partsmith
-
-PostgreSQL declarative table partitioning helpers for SQLAlchemy projects.
-
-[![PyPI](https://img.shields.io/pypi/v/pg-partsmith)](https://pypi.org/project/pg-partsmith/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/pg-partsmith/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/pg-partsmith)
-
----
-
-## deadline-budget
-
-Deadline and budget propagation for async task chains.
-
-[![PyPI](https://img.shields.io/pypi/v/deadline-budget)](https://pypi.org/project/deadline-budget/)
-[![Docs](https://img.shields.io/badge/docs-github.io-blue)](https://bedrock-python.github.io/deadline-budget/)
-[![GitHub](https://img.shields.io/badge/source-github-181717?logo=github)](https://github.com/bedrock-python/deadline-budget)
+<section markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Testing &amp; tooling</h2>
+  </div>
+  <div class="bdr-list">
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/alembic-gauntlet/">
+      <p class="bdr-list__name">alembic-gauntlet</p>
+      <p class="bdr-list__desc">Stairway tests for Alembic migrations — every upgrade and downgrade, in order, against a real database.</p>
+    </a>
+    <a class="bdr-list__item" href="https://bedrock-python.github.io/pg-partsmith/">
+      <p class="bdr-list__name">pg-partsmith</p>
+      <p class="bdr-list__desc">PostgreSQL declarative table partitioning helpers for SQLAlchemy projects.</p>
+    </a>
+  </div>
+</section>

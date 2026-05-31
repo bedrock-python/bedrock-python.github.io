@@ -10,6 +10,14 @@ copyright = "Copyright &copy; 2026 Alex Shalaev"
 docs_dir = "docs"
 site_dir = "site"
 
+extra_css = [
+    "stylesheets/bedrock.css",
+]
+
+extra_javascript = [
+    "javascripts/bedrock.js",
+]
+
 nav = [
     { "Home" = "index.md" },
     { "Libraries" = "libraries/index.md" },
@@ -30,6 +38,7 @@ nav = [
 ]
 
 [project.theme]
+custom_dir = "overrides"
 features = [
     "announce.dismiss",
     "content.code.annotate",
@@ -53,15 +62,23 @@ features = [
     "search.suggest",
 ]
 
-[[project.theme.palette]]
-scheme = "slate"
-toggle.icon = "lucide/moon"
-toggle.name = "Switch to light mode"
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
 
 [[project.theme.palette]]
 scheme = "default"
-toggle.icon = "lucide/sun"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
 toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to light mode"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

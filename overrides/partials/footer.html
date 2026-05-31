@@ -1,0 +1,55 @@
+{#-
+  Bedrock Python — magazine-style footer overriding the default
+  Zensical/Material footer with a multi-column layout inspired by
+  claude.com / openai.com.
+-#}
+<footer class="md-footer">
+  <div class="bdr-footer">
+    <div class="bdr-footer__brand">
+      <h3>Bedrock Python</h3>
+      <p>
+        Production-grade Python libraries and developer tools for the
+        infrastructure layer of modern backend services.
+      </p>
+    </div>
+
+    <div class="bdr-footer__col">
+      <h4>Libraries</h4>
+      <ul>
+        <li><a href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">sqlalchemy-foundation-kit</a></li>
+        <li><a href="https://bedrock-python.github.io/redis-client-kit/">redis-client-kit</a></li>
+        <li><a href="https://bedrock-python.github.io/aiokafka-foundation-kit/">aiokafka-foundation-kit</a></li>
+        <li><a href="https://bedrock-python.github.io/omni-box/">omni-box</a></li>
+        <li><a href="{{ '' | url }}libraries/">All libraries →</a></li>
+      </ul>
+    </div>
+
+    <div class="bdr-footer__col">
+      <h4>Tools</h4>
+      <ul>
+        <li><a href="https://bedrock-python.github.io/mr-review/">mr-review</a></li>
+        <li><a href="https://bedrock-python.github.io/mattermind/">mattermind</a></li>
+        <li><a href="{{ '' | url }}tools/">All tools →</a></li>
+      </ul>
+    </div>
+
+    <div class="bdr-footer__col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="{{ '' | url }}blog/">Blog</a></li>
+        <li><a href="{{ '' | url }}blog/category/">Categories</a></li>
+        <li><a href="{{ '' | url }}blog/archive/">Archive</a></li>
+        <li><a href="https://github.com/bedrock-python">GitHub org</a></li>
+        <li><a href="https://pypi.org/user/bedrock-python/">PyPI org</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bdr-footer__bottom">
+    <span>{{ config.copyright | default("") }}</span>
+    <span>
+      Built with
+      <a href="https://zensical.org/" rel="noopener" style="color:inherit;text-decoration:underline;">Zensical</a>
+    </span>
+  </div>
+</footer>
