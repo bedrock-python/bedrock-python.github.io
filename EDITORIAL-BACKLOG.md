@@ -32,6 +32,7 @@ LinkedIn that points to it. They are not the same text.
 - The listings are hand-written. A new post is added in five places: `docs/blog/index.md` (card inside `[data-bdr-grid]`), `docs/index.md` (three latest cards), `docs/blog/category/<cat>.md`, `docs/blog/category/index.md` (counts), `docs/blog/archive/index.md`.
 - `make docs-build`, then grep the built HTML for the title before pushing.
 - A post that quotes a library feature is checked against the library's current docs before drafting. Where a plan below says "check", the feature may not exist yet; the post then proposes it and the library gets an issue.
+- A bug found while measuring is fixed first. File the issue in the library's repo with the repro and the cause, mark the post `drafting, blocked on <repo> #N`, move on to a post that does not depend on it. When the fix is released, re-measure against the new version and continue the post as if the bug had never existed. A published post never carries a caveat paragraph about a library's bug.
 
 ## Series
 
