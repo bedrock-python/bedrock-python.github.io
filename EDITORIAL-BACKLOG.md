@@ -649,7 +649,7 @@ Closes on python-library-template and the year of posts behind it.
 ## Reserve
 
 Topics with material but no slot. They replace a scheduled post when
-something more timely comes up, or extend the plan past week 48.
+something more timely comes up, or extend the plan past post 48.
 
 - servicewright: designing a microservice runtime without becoming a framework; the readiness probe as part of the deployment algorithm.
 - clientwright: the hidden cost of an internal HTTP wrapper; observability that survives a client migration; PII masking without losing observability; when an abstraction cannot support a feature, fail loudly.
