@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-five-alembic-migration-tests/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">The five migration tests every Python project should run in CI</h3>
+      <p class="bdr-card__lede">
+        Four Alembic revisions, five bugs I have shipped, three test suites. The one most
+        pipelines have, a plain upgrade to head, caught one bug in five. Five short checks
+        written against Alembic's own API caught all of them, each for its own reason, with
+        the messages you would otherwise read during an incident.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-06-timeouts-are-not-deadlines/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -87,16 +100,6 @@ hide:
       <div class="bdr-card__meta">September 6, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-05-30-welcome/">
-      <div class="bdr-card__visual bdr-card__visual--meta"></div>
-      <div class="bdr-card__eyebrow">Meta</div>
-      <h3 class="bdr-card__title">Welcome to the Bedrock Python Blog</h3>
-      <p class="bdr-card__lede">
-        An introduction to the ecosystem — what Bedrock Python is, the libraries that
-        form the foundation, reliability, and testing layers, and what you can expect.
-      </p>
-      <div class="bdr-card__meta">May 30, 2026</div>
-    </a>
 
   </div>
 </section>

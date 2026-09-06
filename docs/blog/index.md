@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-five-alembic-migration-tests/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">The five migration tests every Python project should run in CI</h3>
+    <p class="bdr-card__lede">
+      Four Alembic revisions, five bugs I have shipped, three test suites. The one most
+      pipelines have, a plain upgrade to head, caught one bug in five. Five short checks
+      written against Alembic's own API caught all of them, each for its own reason, with
+      the messages you would otherwise read during an incident.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-06-timeouts-are-not-deadlines/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

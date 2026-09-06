@@ -1,0 +1,1 @@
+0003's downgrade drops a constraint by a name the upgrade never created (a typo nobody ran).

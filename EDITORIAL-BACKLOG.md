@@ -65,7 +65,7 @@ Full briefs below.
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
 | 1 | Timeouts are not deadlines | Design | Reliability | drafting, blocked on clientwright #24 and #25 |
-| 2 | The five migration tests every project should run in CI | Tutorials | Database | drafted, waits for alembic-gauntlet 0.2.2 (#32, #33) |
+| 2 | The five migration tests every project should run in CI | Tutorials | Database | review |
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | drafting, blocked on servicewright #46 |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
@@ -162,7 +162,7 @@ mention. The section plan is a starting point, not a contract.
 ### 2. The five migration tests every project should run in CI
 
 - File: `docs/blog/posts/2026-09-07-five-alembic-migration-tests.md`, lab in `docs/blog/lab/2026-09-07-five-alembic-migration-tests/`
-- Found while measuring: the published 0.2.1 had no `asyncio` extra although every page says to install it (release PR #32 with `Release-As: 0.2.2`), and the testcontainers fixture imports a deprecated module ([#33](https://github.com/bedrock-python/alembic-gauntlet/issues/33)). Also: Alembic applies the metadata naming convention to the name passed to `op.create_check_constraint`; the post has a section on it.
+- Found while measuring, fixed and released as alembic-gauntlet 0.2.2 (2026-09-06): the published 0.2.1 had no `asyncio` extra although every page says to install it (#32), and the testcontainers fixture imported a deprecated module (#33, #35). The post's numbers are from a run against 0.2.2. Also: Alembic applies the metadata naming convention to the name passed to `op.create_check_constraint`; the post has a section on it.
 - Search title: *The 5 Alembic Migration Tests Every Python Project Should Run in CI*
 - LinkedIn hook: "We test our code heavily. Then we deploy untested database migrations."
 - Tags: `alembic-gauntlet`, `alembic`, `sqlalchemy`, `postgresql`, `testing`, `ci`

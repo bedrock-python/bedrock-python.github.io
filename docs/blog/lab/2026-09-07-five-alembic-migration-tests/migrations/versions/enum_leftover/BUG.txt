@@ -1,0 +1,1 @@
+0002's downgrade drops the orders table and forgets the order_status enum type it created.
