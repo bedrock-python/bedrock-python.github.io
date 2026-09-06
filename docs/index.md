@@ -33,19 +33,21 @@ hide:
 <section class="bdr-featured" markdown="0">
   <div class="bdr-featured__visual"></div>
   <div>
-    <div class="bdr-featured__eyebrow">Featured · Tools</div>
+    <div class="bdr-featured__eyebrow">Featured · Libraries</div>
     <h2 class="bdr-featured__title">
-      <a href="blog/posts/2026-05-28-introducing-mr-review/">Introducing mr-review: AI-powered merge request reviews</a>
+      <a href="blog/posts/2026-09-06-pg-partsmith/">Managing PostgreSQL partitions, one failure at a time</a>
     </h2>
     <p class="bdr-featured__lede">
-      A new CLI tool that runs locally and walks through merge-request diffs the way a
-      thorough engineer would — staged review with brief, dispatch, polish and post phases,
-      plus presets for thorough, security, style, and performance.
+      Two ways a partitioned table gets you out of bed, and the library that grew out of
+      them: a plan you can read before it runs, ownership that never drops a table it did
+      not make, the same API async and sync, a command line and a container image for
+      teams with no Python, hooks from a YAML document, and one page for the AI assistant
+      doing the wiring.
     </p>
     <div class="bdr-featured__meta">
-      <span>May 28, 2026</span>
+      <span>September 6, 2026</span>
       <span>·</span>
-      <span>Tools</span>
+      <span>Libraries · Tools</span>
     </div>
   </div>
 </section>
@@ -57,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-06-pg-partsmith/">
+      <div class="bdr-card__visual bdr-card__visual--libraries"></div>
+      <div class="bdr-card__eyebrow">Libraries · Tools</div>
+      <h3 class="bdr-card__title">Managing PostgreSQL partitions, one failure at a time</h3>
+      <p class="bdr-card__lede">
+        The pain of keeping a partitioned table right every night, and how pg-partsmith
+        answers it: a plan you can read before it runs, ownership that never drops a table
+        it did not make, the same API async and sync, a command line and a container image
+        for teams with no Python, hooks from a YAML document, and one page written for the
+        AI assistant doing the wiring.
+      </p>
+      <div class="bdr-card__meta">September 6, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-05-30-welcome/">
       <div class="bdr-card__visual bdr-card__visual--meta"></div>
       <div class="bdr-card__eyebrow">Meta</div>
@@ -77,18 +93,6 @@ hide:
         request diff the way a thorough engineer would.
       </p>
       <div class="bdr-card__meta">May 28, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-05-15-transactional-outbox-with-omni-box/">
-      <div class="bdr-card__visual bdr-card__visual--libraries"></div>
-      <div class="bdr-card__eyebrow">Libraries · Design</div>
-      <h3 class="bdr-card__title">The Transactional Outbox pattern in Python</h3>
-      <p class="bdr-card__lede">
-        How <code>omni-box</code> solves the classic dual-write problem between Postgres
-        and Kafka using the Transactional Outbox pattern, plus the Inbox side for
-        idempotent consumers.
-      </p>
-      <div class="bdr-card__meta">May 15, 2026</div>
     </a>
   </div>
 </section>

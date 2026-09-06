@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="libraries tools" href="posts/2026-09-06-pg-partsmith/">
+    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
+    <div class="bdr-card__eyebrow">Libraries · Tools</div>
+    <h3 class="bdr-card__title">Managing PostgreSQL partitions, one failure at a time</h3>
+    <p class="bdr-card__lede">
+      The pain of keeping a partitioned table right every night, and how pg-partsmith
+      answers it: a plan you can read before it runs, ownership that never drops a table
+      it did not make, the same API async and sync, a command line and a container image
+      for teams with no Python, hooks from a YAML document, and one page written for the
+      AI assistant doing the wiring.
+    </p>
+    <div class="bdr-card__meta">September 6, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-05-30-welcome/">
     <div class="bdr-card__visual bdr-card__visual--meta"></div>
     <div class="bdr-card__eyebrow">Meta</div>
