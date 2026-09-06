@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-twelve-libraries-one-standard/">
+    <div class="bdr-card__visual bdr-card__visual--meta"></div>
+    <div class="bdr-card__eyebrow">Meta</div>
+    <h3 class="bdr-card__title">Twelve libraries, one engineering standard, no monorepo</h3>
+    <p class="bdr-card__lede">
+      Sixteen repositories that agree on tooling, CI, releases, security settings and docs, without
+      a monorepo. A Copier template that renders a green library in five seconds, a script that
+      makes a GitHub repository match, Release Please with Trusted Publishing, and the three
+      lessons the standard now carries so nobody learns them twice.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

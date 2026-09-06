@@ -75,7 +75,7 @@ Full briefs below.
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
 | 11 | What every production Python microservice reimplements | Meta | Bedrock | planned |
-| 12 | Twelve repositories, one engineering standard | Meta | Bedrock | planned |
+| 12 | Twelve repositories, one engineering standard | Meta | Bedrock | review |
 
 ### Block 2: going deeper
 
@@ -325,7 +325,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 12. Twelve repositories, one engineering standard
 
-- File: `docs/blog/posts/YYYY-MM-DD-twelve-repositories-one-standard.md`
+- File: `docs/blog/posts/2026-09-07-twelve-libraries-one-standard.md`, lab in `docs/blog/lab/2026-09-07-twelve-libraries-one-standard/`
 - Search title: *How I Standardized 12 Open-Source Python Libraries Without Building a Monorepo*
 - LinkedIn hook: "12 repos. One engineering standard. No monorepo."
 - Tags: `bedrock-python`, `python-library-template`, `uv`, `release-please`, `github`

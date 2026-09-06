@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-twelve-libraries-one-standard/">
+      <div class="bdr-card__visual bdr-card__visual--meta"></div>
+      <div class="bdr-card__eyebrow">Meta</div>
+      <h3 class="bdr-card__title">Twelve libraries, one engineering standard, no monorepo</h3>
+      <p class="bdr-card__lede">
+        Sixteen repositories that agree on tooling, CI, releases, security settings and docs, without
+        a monorepo. A Copier template that renders a green library in five seconds, a script that
+        makes a GitHub repository match, Release Please with Trusted Publishing, and the three
+        lessons the standard now carries so nobody learns them twice.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -88,19 +101,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-graceful-shutdown-is-a-protocol/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Graceful shutdown in Kubernetes is a protocol, not a signal handler</h3>
-      <p class="bdr-card__lede">
-        SIGTERM, finish in-flight requests, exit: that is what every framework calls graceful,
-        and it refused 44 of 47 requests in the second after the signal, because Kubernetes
-        keeps routing while the endpoint removal propagates. The four steps a pod has to
-        follow, the one everybody skips, measured before and after, and the arithmetic for
-        terminationGracePeriodSeconds.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
