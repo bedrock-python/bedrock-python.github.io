@@ -38,9 +38,8 @@ deemed inappropriate, threatening, offensive, or harmful.
 
 ## Scope
 
-This Code of Conduct applies within all community spaces of the Bedrock Python blog and
-organisation, and also applies when an individual is officially representing the community
-in public spaces.
+This Code of Conduct applies within all community spaces, and also applies when
+an individual is officially representing the community in public spaces.
 
 ## Enforcement
 
