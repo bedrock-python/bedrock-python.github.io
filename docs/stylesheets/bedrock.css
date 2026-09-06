@@ -169,6 +169,17 @@ body, .md-typeset {
 
 /* -------- 3. Header / nav -------- */
 
+/* Logo: one mark per colour scheme (see overrides/partials/logo.html). */
+/* Selectors mirror Material's own (header button, drawer title) so they
+   win on specificity rather than on load order. */
+.md-header__button.md-logo img.bdr-logo--dark,
+.md-nav__title .md-nav__button.md-logo img.bdr-logo--dark { display: none; }
+[data-md-color-scheme="slate"] .md-header__button.md-logo img.bdr-logo--light,
+[data-md-color-scheme="slate"] .md-nav__title .md-nav__button.md-logo img.bdr-logo--light { display: none; }
+[data-md-color-scheme="slate"] .md-header__button.md-logo img.bdr-logo--dark,
+[data-md-color-scheme="slate"] .md-nav__title .md-nav__button.md-logo img.bdr-logo--dark { display: block; }
+.md-header__button.md-logo img { height: 1.45rem; }
+
 .md-header {
   background: rgba(248, 246, 241, 0.78);
   color: var(--bdr-ink);
@@ -645,6 +656,12 @@ body, .md-typeset {
 }
 @media (max-width: 480px) {
   .bdr-footer { grid-template-columns: 1fr; }
+}
+.bdr-footer__mark {
+  display: block;
+  height: 2rem;
+  width: auto;
+  margin-bottom: .9rem;
 }
 .bdr-footer__brand h3 {
   font-size: 1.125rem;
