@@ -128,8 +128,9 @@ body, .md-typeset {
   line-height: 1.65;
 }
 
-/* Reading-width constraint for article-body elements. Custom .bdr-*
-   blocks (hero / featured / grid / list / chips) are inside <section>
+/* Reading-width constraint for article-body elements, code blocks and
+   admonitions included so they line up with the prose. Custom .bdr-*
+   blocks (hero / featured / grid / rows / chips) are inside <section>
    wrappers and are NOT direct children, so they remain full-width. */
 .md-typeset > p,
 .md-typeset > ul,
@@ -143,10 +144,25 @@ body, .md-typeset {
 .md-typeset > h4,
 .md-typeset > h5,
 .md-typeset > h6,
-.md-typeset > hr {
-  max-width: 44rem;          /* ~704px — Medium/Claude reading width */
+.md-typeset > hr,
+.md-typeset > .highlight,
+.md-typeset > .admonition,
+.md-typeset > details,
+.md-typeset > .tabbed-set {
+  /* Material scales the root font with the viewport (20px from 1220px,
+     22px from 1600px), so 42rem is 840-924px: ~80 characters of the 1rem
+     body text, centred in the column between the two sidebars. */
+  max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* A page outside the nav (a blog post) gets a "lifted" sidebar with no
+   active section to show, so the left column renders blank. It stays: it
+   mirrors the TOC column and keeps the article centred on the page. The
+   grid widens instead, so the text grows and the TOC moves outward. */
+@media screen and (min-width: 76.25em) {
+  .md-main__inner:not(:has(.md-nav__item--active)) { max-width: 1440px; }
 }
 
 /* -------- 3. Header / nav -------- */
@@ -728,7 +744,7 @@ body, .md-typeset {
 .md-typeset hr {
   border: none;
   border-top: 1px solid var(--bdr-border);
-  max-width: 44rem;
+  max-width: 42rem;
   margin: 2.5rem auto;
 }
 
