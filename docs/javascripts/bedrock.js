@@ -10,10 +10,11 @@
  *    is replaced with whatever PyPI reports now, so the catalog does not go
  *    stale between site deploys. Any failure leaves the static text in place.
  *
- * 3. External links open in a new tab. Internal navigation is always
- *    relative here (Material emits it that way), so an absolute http(s)
- *    href means leaving the site -- a library's own docs, GitHub, PyPI.
- *    An author-set target is left alone.
+ * 3. Links to other sites open in a new tab; anything on our own host
+ *    (this site and every library's docs under bedrock-python.github.io)
+ *    stays in the current tab. The host comes from the canonical link, so
+ *    a local `zensical serve` behaves like production. An author-set
+ *    target is left alone.
  *
  * 4. Wire `document$` for instant-navigation compatibility.
  */
@@ -79,10 +80,13 @@ const refreshPypiVersions = () => {
 };
 
 const openExternalLinksInNewTab = () => {
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const siteHost = canonical ? new URL(canonical.href).hostname : location.hostname;
   document
     .querySelectorAll('a[href^="http://"], a[href^="https://"]')
     .forEach((link) => {
       if (link.target) return;
+      if (link.hostname === siteHost || link.hostname === location.hostname) return;
       link.target = "_blank";
       link.rel = link.rel ? `${link.rel} noopener` : "noopener";
     });
