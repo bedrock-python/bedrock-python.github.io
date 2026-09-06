@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Why I stopped wrapping HTTP clients</h3>
+      <p class="bdr-card__lede">
+        Every company writes an HTTP client wrapper: a retry helper that grows a config class
+        and ends as a dialect nobody can migrate away from. What the wrapper owns is not HTTP,
+        and what it takes is the client. Measured: the native type kept on three libraries,
+        one policy driving two of them with the same metrics, nine requests from two stacked
+        retry loops, and a build that fails when an adapter cannot honour a setting.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-safe-grpc-retries/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -88,19 +102,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-documentation-for-ai-coding-agents/">
-      <div class="bdr-card__visual bdr-card__visual--meta"></div>
-      <div class="bdr-card__eyebrow">Meta</div>
-      <h3 class="bdr-card__title">We started writing documentation for AI coding agents</h3>
-      <p class="bdr-card__lede">
-        A coding assistant invented a class, awaited a sync function and passed a session
-        where the library wants an engine, all with complete confidence. The docs were not
-        wrong; they were written for a reader who browses. One page per library, written
-        for a model: the invariants as numbered rules, WRONG next to RIGHT, every page also
-        served as Markdown, and what keeping fourteen of them true costs.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

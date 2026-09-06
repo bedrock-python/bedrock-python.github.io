@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Why I stopped wrapping HTTP clients</h3>
+    <p class="bdr-card__lede">
+      Every company writes an HTTP client wrapper: a retry helper that grows a config class
+      and ends as a dialect nobody can migrate away from. What the wrapper owns is not HTTP,
+      and what it takes is the client. Measured: the native type kept on three libraries,
+      one policy driving two of them with the same metrics, nine requests from two stacked
+      retry loops, and a build that fails when an adapter cannot honour a setting.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-safe-grpc-retries/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

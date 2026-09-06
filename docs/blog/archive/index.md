@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Why I stopped wrapping HTTP clients](../posts/2026-09-07-why-i-stopped-wrapping-http-clients.md) *(Design)*
 - **2026-09-07** — [Safe gRPC retries: which status codes you should actually retry](../posts/2026-09-07-safe-grpc-retries.md) *(Design)*
 - **2026-09-07** — [Graceful shutdown in Kubernetes is a protocol, not a signal handler](../posts/2026-09-07-graceful-shutdown-is-a-protocol.md) *(Design)*
 - **2026-09-07** — [We started writing documentation for AI coding agents](../posts/2026-09-07-documentation-for-ai-coding-agents.md) *(Meta)*

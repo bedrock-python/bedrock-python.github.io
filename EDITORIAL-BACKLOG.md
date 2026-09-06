@@ -68,7 +68,7 @@ Full briefs below.
 | 2 | The five migration tests every project should run in CI | Tutorials | Database | review |
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | review |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
-| 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
+| 5 | Why I stopped wrapping HTTP clients | Design | Clients | review |
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
@@ -214,7 +214,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 5. Why I stopped wrapping HTTP clients
 
-- File: `docs/blog/posts/YYYY-MM-DD-why-i-stopped-wrapping-http-clients.md`
+- File: `docs/blog/posts/2026-09-07-why-i-stopped-wrapping-http-clients.md`, lab in `docs/blog/lab/2026-09-07-why-i-stopped-wrapping-http-clients/`
 - Search title: *Why I Stopped Wrapping HTTP Clients in Python*
 - LinkedIn hook: "Every company eventually writes its own httpx wrapper. I think that is the wrong abstraction."
 - Tags: `clientwright`, `httpx`, `aiohttp`, `requests`, `retries`, `circuit-breaker`
