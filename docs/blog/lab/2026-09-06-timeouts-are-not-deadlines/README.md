@@ -5,7 +5,7 @@ Every server runs in-process on loopback; nothing here needs a network.
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "deadline-budget==0.1.2" "clientwright[httpx,deadline]==0.2.0" "grpc-client-kit[deadline]==0.1.0"
+uv pip install --python .venv/bin/python "deadline-budget==0.1.3" "clientwright[httpx,deadline]==0.2.2" "grpc-client-kit[deadline]==0.1.0"
 .venv/bin/python 01_read_timeout.py
 .venv/bin/python 02_retry_multiplies.py
 .venv/bin/python 03_grpc_chain.py

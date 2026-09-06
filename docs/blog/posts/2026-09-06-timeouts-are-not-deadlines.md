@@ -21,7 +21,7 @@ Every service I have run had a timeout on every outgoing call, and every one of 
 
 <!-- more -->
 
-Every number below was measured on one laptop, with the servers on loopback, using the scripts in [the post's lab directory](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-06-timeouts-are-not-deadlines). Package versions: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.2, clientwright 0.2.0, grpc-client-kit 0.1.0, Python 3.13.
+Every number below was measured on one laptop, with the servers on loopback, using the scripts in [the post's lab directory](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-06-timeouts-are-not-deadlines). Package versions: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, grpc-client-kit 0.1.0, Python 3.13.
 
 ## A timeout limits an operation
 
@@ -47,8 +47,8 @@ async with httpx.AsyncClient(timeout=1.0) as client:
 
 | Call | Result | Took |
 |---|---|---|
-| httpx, `timeout=1.0`, body drips | `200`, 8 bytes | 4.02 s |
-| httpx, `timeout=1.0`, headers stall for 4 s | `ReadTimeout` | 1.00 s |
+| httpx, `timeout=1.0`, body drips | `200`, 8 bytes | 4.06 s |
+| httpx, `timeout=1.0`, headers stall for 4 s | `ReadTimeout` | 1.01 s |
 
 The first row is the whole post in miniature. `timeout=1.0` in httpx is four numbers, one each for connect, read, write and acquiring a pooled connection, and the read timeout is the longest the client will wait *between two chunks of data*. Every chunk here arrives inside half a second, so the clock resets eight times and never fires. The second row shows the same number doing its job: a server that says nothing for four seconds is caught at one. Same config, same client, a factor of four between the two, and neither is wrong. The timeout is behaving exactly as documented. It measures patience, not time.
 
@@ -82,7 +82,7 @@ Against a server that accepts the connection and never answers, it behaves like 
 
 | Policy | Result | Took | Requests that reached the server |
 |---|---|---|---|
-| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.04 s | 3 |
+| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.22 s | 3 |
 
 The author of that loop believed the call was bounded at one second. The caller of the function waited three. The server, which was already in trouble, received three requests where it used to receive one. Multiply that by every hop that has the same loop and you have the retry storm that turns a slow dependency into an outage, but that is a separate post.
 
@@ -102,13 +102,19 @@ response = await client.get(url)
 
 | Policy | Result | Took | Requests that reached the server |
 |---|---|---|---|
-| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.04 s | 3 |
+| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.22 s | 3 |
 | `total=1.0`, 3 attempts allowed | `DeadlineExceededError` | 1.00 s | 1 |
 | `total=3.0`, `read=1.0`, 3 attempts allowed | `DeadlineExceededError` | 3.00 s | 3 |
 
 The second row is what the loop's author thought they had written: one second, then an answer, whatever the retry policy says. The third row is the same three attempts as the loop, but now the three seconds is a number you chose, written in the config, and the retry policy fits inside it. The difference between rows one and three is not the behaviour. It is who decided the total: you, or the multiplication.
 
-One honest note on the boundary. On httpx the engine sits in the transport, and the transport hands back a response once the headers are in, so the total covers connecting, every attempt, every backoff sleep and every redirect hop up to the response headers. The adapter's capability record says so, `boundary=headers`, and I checked it against the dripping server from the first section: clientwright's `total=1.0` let it finish in 4.01 s, exactly like bare httpx. A body that drips after the headers is still httpx's read timeout. If the body is the slow part, `asyncio.timeout` around the call is still the tool.
+The total is a wall clock over the whole call, body included. The dripping server from the first section, the one that defeated `timeout=1.0` by sending a byte every half second, gets the same answer from `total=1.0` as from `asyncio.timeout`:
+
+| Call | Result | Took |
+|---|---|---|
+| clientwright `total=1.0`, body drips | `DeadlineExceededError` | 1.00 s |
+
+That is the difference between a timeout that belongs to the client and a deadline that belongs to the call.
 
 ## Across a hop, the timeout becomes a lie
 
@@ -121,12 +127,12 @@ fresh 5 s timeout on every call
 
   0.00 s  gateway    calls orders, timeout 2.0 s
   0.00 s  orders     deadline seen 2.00 s
-  0.00 s  inventory  deadline seen 5.01 s
+  0.00 s  inventory  deadline seen 5.00 s
   1.50 s  inventory  reserve completed
   1.51 s  billing    deadline seen 5.00 s
-  2.01 s  gateway    DEADLINE_EXCEEDED
-  2.01 s  orders     cancelled
-  2.01 s  billing    caller gone, but the charge is already running
+  2.02 s  gateway    DEADLINE_EXCEEDED
+  2.02 s  orders     cancelled
+  2.02 s  billing    caller gone, but the charge is already running
   3.01 s  billing    charge completed
 ```
 
@@ -149,7 +155,7 @@ the gateway's 2 s carried down the chain
 
 The request still fails. It fails half a second sooner, nobody is charged, and the reason is on the wire: Billing was told the truth, that it had 0.49 s, and a service that knows its charge takes 1.5 s can refuse before it starts. A fresh timeout tells the callee how patient the caller's configuration is. A deadline tells it how much time the request actually has. Only one of those is information the callee can act on.
 
-Two things about that log are worth saying plainly. grpc.aio does cancel the server-side handler when the caller's deadline passes, and the log shows it doing so at 2.01 s in the first run. What it cannot cancel is a charge that has already been sent, which is why the fix has to happen before the call, not after. And the safety margin between 1.51 s and 2.00 s in the second run is not luck: Orders answered with time to spare because the refusal cost nothing.
+Two things about that log are worth saying plainly. grpc.aio does cancel the server-side handler when the caller's deadline passes, and the log shows it doing so at 2.02 s in the first run. What it cannot cancel is a charge that has already been sent, which is why the fix has to happen before the call, not after. And the safety margin between 1.51 s and 2.00 s in the second run is not luck: Orders answered with time to spare because the refusal cost nothing.
 
 ## Where the deadline lives
 
@@ -201,7 +207,7 @@ The inventory service logged the header on each of the three requests it receive
 
 ```text
 attempt 1: X-Deadline-Ms: 1999
-attempt 2: X-Deadline-Ms: 1685
+attempt 2: X-Deadline-Ms: 1687
 attempt 3: X-Deadline-Ms: 1179
 ```
 
