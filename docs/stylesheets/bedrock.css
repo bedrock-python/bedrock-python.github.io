@@ -238,6 +238,12 @@ body, .md-typeset {
   margin: 0 0 1.5rem;
 }
 .bdr-hero__actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+/* Catalog pages: the hero is a header, not a landing. */
+.bdr-hero--compact {
+  padding: 2rem 0 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.bdr-hero--compact .bdr-hero__lede { margin-bottom: 0; }
 
 .bdr-btn {
   display: inline-flex;
@@ -360,15 +366,27 @@ body, .md-typeset {
   transition: all .15s ease;
   cursor: pointer;
 }
-.bdr-chip:hover {
+/* Material's `.md-typeset a` would paint chips in the accent colour. */
+.md-typeset .bdr-chip { color: var(--bdr-ink-2); }
+.bdr-chip:hover,
+.md-typeset .bdr-chip:hover {
   border-color: var(--bdr-ink);
   color: var(--bdr-ink);
 }
-.bdr-chip.is-active {
+.bdr-chip.is-active,
+.md-typeset .bdr-chip.is-active {
   background: var(--bdr-ink);
   border-color: var(--bdr-ink);
   color: var(--bdr-bg);
 }
+.bdr-chips--anchors { margin-bottom: 2rem; }
+.bdr-chip__count {
+  margin-left: .45rem;
+  font-family: var(--md-code-font);
+  font-size: .68rem;
+  color: var(--bdr-ink-3);
+}
+.bdr-chip:hover .bdr-chip__count { color: inherit; }
 
 /* -------- 8. Card grid -------- */
 
@@ -492,70 +510,90 @@ body, .md-typeset {
   text-decoration: none;
 }
 .bdr-section-head__link:hover { text-decoration: underline; }
-
-/* -------- 10. Library / Tool list (table replacement) -------- */
-
-.bdr-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin: 0 0 3rem;
+.bdr-section-head__note {
+  font-size: .78rem;
+  color: var(--bdr-ink-3);
+  text-align: right;
 }
-@media (max-width: 720px) { .bdr-list { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .bdr-section-head__note { display: none; } }
 
-.bdr-list__item {
-  display: block;
-  padding: 1.1rem 1.25rem;
+/* -------- 10. Catalog rows (libraries / tools / home teasers) --------
+   One row per package: name + one sentence on the left, version / floor /
+   links on the right. The whole row is the docs link (stretched ::after on
+   the name); the meta links sit above it so they stay clickable. */
+
+.bdr-catalog { max-width: 64rem; margin: 0 auto; }
+.bdr-group[id] { scroll-margin-top: 6.5rem; }
+
+.bdr-rows {
+  margin: 0 0 2.5rem;
   border: 1px solid var(--bdr-border);
   border-radius: 12px;
   background: var(--bdr-surface);
-  text-decoration: none;
-  color: inherit;
-  transition: all .2s ease;
+  overflow: hidden;
 }
-.bdr-list__item:hover {
-  border-color: var(--bdr-border-2);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px -12px rgba(26,24,21,.12);
+.bdr-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .25rem 1.5rem;
+  align-items: baseline;
+  padding: .8rem 1.1rem;
+  transition: background .15s ease;
 }
-[data-md-color-scheme="slate"] .bdr-list__item:hover {
-  border-color: var(--bdr-ink-3);
-  box-shadow: 0 8px 24px -12px rgba(0,0,0,.5);
-}
-.bdr-list__name {
+.bdr-row + .bdr-row { border-top: 1px solid var(--bdr-border); }
+.bdr-row:hover { background: var(--bdr-surface-2); }
+.bdr-row__main { min-width: 0; }
+.md-typeset .bdr-row__name,
+.md-typeset .bdr-row__name:hover,
+.md-typeset .bdr-row__name:focus {
   font-family: var(--md-code-font);
-  font-size: .875rem;          /* 14px — mono reads bigger than sans */
+  font-size: .875rem;
   font-weight: 600;
   letter-spacing: -.005em;
   color: var(--bdr-ink);
-  margin: 0 0 .3rem;
+  text-decoration: none;
 }
-.bdr-list__desc {
-  font-size: .8125rem;          /* 13px */
+.bdr-row:hover .bdr-row__name { color: var(--bdr-accent); }
+.bdr-row__name::after { content: ""; position: absolute; inset: 0; }
+.md-typeset .bdr-row__desc {
+  margin: .2rem 0 0;
+  font-size: .8125rem;
   line-height: 1.5;
   color: var(--bdr-ink-2);
-  margin: 0;
 }
-/* Facts line under a card: version, Python floor, one shape word.
-   Dot separators come from CSS so the markup stays a flat list of spans. */
-.bdr-list__meta {
+.bdr-row__meta {
+  position: relative;       /* above the stretched link */
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: .25rem .55rem;
-  margin: .65rem 0 0;
-  font-size: .72rem;            /* 11.5px */
-  line-height: 1.4;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .3rem .7rem;
+  font-size: .72rem;
   color: var(--bdr-ink-3);
+  white-space: nowrap;
 }
-.bdr-list__meta > span + span::before {
-  content: "·";
-  margin-right: .55rem;
-}
-.bdr-list__version {
+.md-typeset .bdr-row__meta a { color: var(--bdr-ink-3); text-decoration: none; }
+.md-typeset .bdr-row__meta a:hover { color: var(--bdr-accent); text-decoration: none; }
+.md-typeset .bdr-row__version,
+.md-typeset .bdr-row__version:hover {
   font-family: var(--md-code-font);
+  font-size: .7rem;
   font-weight: 600;
+  padding: .12rem .5rem;
+  border-radius: 999px;
+  background: var(--bdr-surface-2);
   color: var(--bdr-ink-2);
 }
+.bdr-row:hover .bdr-row__version { background: var(--bdr-accent-soft); }
+@media (max-width: 720px) {
+  .bdr-row { grid-template-columns: 1fr; }
+  .bdr-row__meta { justify-content: flex-start; }
+}
+
+/* Block-level links never underline on hover; they change colour instead. */
+.md-typeset :is(.bdr-card, .bdr-chip, .bdr-btn):is(:hover, :focus) { text-decoration: none; }
 
 /* -------- 11. Footer --------
    Footer is a consistent dark slab in both themes so the brand colour

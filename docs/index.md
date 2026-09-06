@@ -99,55 +99,146 @@ hide:
     <a class="bdr-section-head__link" href="libraries/">All libraries →</a>
   </div>
 
-  <div class="bdr-list">
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/servicewright/">
-      <p class="bdr-list__name">servicewright</p>
-      <p class="bdr-list__desc">One Host, many Entrypoints — FastAPI, gRPC, Litestar, scheduler, daemon, one-shot — under a single Kubernetes-correct lifecycle.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/grpc-server-kit/">
-      <p class="bdr-list__name">grpc-server-kit</p>
-      <p class="bdr-list__desc">grpc.aio servers: GrpcApp facade, TLS, graceful shutdown, health, streaming-aware interceptors.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/grpc-client-kit/">
-      <p class="bdr-list__name">grpc-client-kit</p>
-      <p class="bdr-list__desc">gRPC clients: channel pool, load balancing, health monitoring, retries and deadlines that span the whole call.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/clientwright/">
-      <p class="bdr-list__name">clientwright</p>
-      <p class="bdr-list__desc">One resilience and observability core under the public API of httpx, aiohttp, requests and urllib3.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">
-      <p class="bdr-list__name">sqlalchemy-foundation-kit</p>
-      <p class="bdr-list__desc">Async SQLAlchemy session management, Unit of Work, base ORM models, pgbouncer-safe.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/redis-client-kit/">
-      <p class="bdr-list__name">redis-client-kit</p>
-      <p class="bdr-list__desc">Async and sync Redis clients with cluster support; Pydantic, Prometheus and Dishka as extras.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/aiokafka-foundation-kit/">
-      <p class="bdr-list__name">aiokafka-foundation-kit</p>
-      <p class="bdr-list__desc">Kafka producer and consumer factories over aiokafka with settings, metrics and tracing.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/omni-box/">
-      <p class="bdr-list__name">omni-box</p>
-      <p class="bdr-list__desc">Transactional Outbox and Inbox for SQLAlchemy + Kafka stacks.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/idempotency-kit/">
-      <p class="bdr-list__name">idempotency-kit</p>
-      <p class="bdr-list__desc">Execute an operation once per idempotency key, with collision handling and graceful degradation.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/deadline-budget/">
-      <p class="bdr-list__name">deadline-budget</p>
-      <p class="bdr-list__desc">One request deadline budget, propagated across every downstream call.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/pg-partsmith/">
-      <p class="bdr-list__name">pg-partsmith</p>
-      <p class="bdr-list__desc">PostgreSQL partition lifecycle management with a plan you can read before it runs. Library, CLI, container image.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/alembic-gauntlet/">
-      <p class="bdr-list__name">alembic-gauntlet</p>
-      <p class="bdr-list__desc">Stairway tests for Alembic migrations — every upgrade and downgrade, against a real database.</p>
-    </a>
+  <div class="bdr-rows">
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/servicewright/">servicewright</a>
+        <p class="bdr-row__desc">One <code>Host</code>, many <code>Entrypoint</code>s: FastAPI, Litestar, gRPC, scheduler, daemon or one-shot batch under a single Kubernetes-correct lifecycle.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="servicewright" href="https://pypi.org/project/servicewright/" title="On PyPI">v0.9.0</a>
+        <span>Python 3.12+</span>
+        <span>zero-dependency kernel</span>
+        <a href="https://github.com/bedrock-python/servicewright">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/grpc-server-kit/">grpc-server-kit</a>
+        <p class="bdr-row__desc"><code>grpc.aio</code> servers without the boilerplate: a <code>GrpcApp</code> facade, TLS/mTLS, graceful shutdown, health checking, streaming-aware interceptors.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="grpc-server-kit" href="https://pypi.org/project/grpc-server-kit/" title="On PyPI">v0.1.0</a>
+        <span>Python 3.12+</span>
+        <span>grpcio only</span>
+        <a href="https://github.com/bedrock-python/grpc-server-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/grpc-client-kit/">grpc-client-kit</a>
+        <p class="bdr-row__desc">The caller side: a channel pool keyed by full channel identity, load balancing, health monitoring, and retries under a deadline that spans the whole call.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="grpc-client-kit" href="https://pypi.org/project/grpc-client-kit/" title="On PyPI">v0.1.0</a>
+        <span>Python 3.12+</span>
+        <span>grpcio only</span>
+        <a href="https://github.com/bedrock-python/grpc-client-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/clientwright/">clientwright</a>
+        <p class="bdr-row__desc">One resilience and observability core wired <em>under</em> the public API of httpx, aiohttp, requests and urllib3 — you get back the genuine native client.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="On PyPI">v0.2.0</a>
+        <span>Python 3.12+</span>
+        <span>zero-dependency core</span>
+        <a href="https://github.com/bedrock-python/clientwright">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">sqlalchemy-foundation-kit</a>
+        <p class="bdr-row__desc">Async session management that stays pgbouncer-safe, a Unit of Work, base ORM models, pool metrics and tracing, dishka and dependency-injector providers.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="sqlalchemy-foundation-kit" href="https://pypi.org/project/sqlalchemy-foundation-kit/" title="On PyPI">v0.2.0</a>
+        <span>Python 3.11+</span>
+        <a href="https://github.com/bedrock-python/sqlalchemy-foundation-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/redis-client-kit/">redis-client-kit</a>
+        <p class="bdr-row__desc">Async and sync redis-py clients with cluster support, pooling, health checks and retries; Pydantic settings, Prometheus and Dishka as extras.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="redis-client-kit" href="https://pypi.org/project/redis-client-kit/" title="On PyPI">v0.1.2</a>
+        <span>Python 3.10+</span>
+        <a href="https://github.com/bedrock-python/redis-client-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/aiokafka-foundation-kit/">aiokafka-foundation-kit</a>
+        <p class="bdr-row__desc">Producer and consumer factories over aiokafka with Pydantic settings, retry policies, health checks, Prometheus metrics and OpenTelemetry.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="aiokafka-foundation-kit" href="https://pypi.org/project/aiokafka-foundation-kit/" title="On PyPI">v0.1.1</a>
+        <span>Python 3.11+</span>
+        <a href="https://github.com/bedrock-python/aiokafka-foundation-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/omni-box/">omni-box</a>
+        <p class="bdr-row__desc">Transactional Outbox and Inbox: the event goes in the same transaction as the business row, out to Kafka from a background publisher, in with deduplication.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="omni-box" href="https://pypi.org/project/omni-box/" title="On PyPI">v0.1.1</a>
+        <span>Python 3.12+</span>
+        <a href="https://github.com/bedrock-python/omni-box">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/idempotency-kit/">idempotency-kit</a>
+        <p class="bdr-row__desc">Execute an operation once per idempotency key: a coordinator and a decorator over Redis, collision handling, graceful degradation, metrics.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="idempotency-kit" href="https://pypi.org/project/idempotency-kit/" title="On PyPI">v0.1.1</a>
+        <span>Python 3.11+</span>
+        <a href="https://github.com/bedrock-python/idempotency-kit">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/deadline-budget/">deadline-budget</a>
+        <p class="bdr-row__desc">One request deadline budget with per-call caps and a safety margin — the budget that clientwright, grpc-client-kit and servicewright propagate across hops.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="deadline-budget" href="https://pypi.org/project/deadline-budget/" title="On PyPI">v0.1.2</a>
+        <span>Python 3.10+</span>
+        <span>zero dependencies</span>
+        <a href="https://github.com/bedrock-python/deadline-budget">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/pg-partsmith/">pg-partsmith</a>
+        <p class="bdr-row__desc">PostgreSQL partition lifecycle management with a plan you can read before it runs: RANGE, LIST and HASH nested to any depth — as a library, a CLI and a container image.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="On PyPI">v1.5.0</a>
+        <span>Python 3.11+</span>
+        <span>stable</span>
+        <a href="https://github.com/bedrock-python/pg-partsmith">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/alembic-gauntlet/">alembic-gauntlet</a>
+        <p class="bdr-row__desc">A pytest plugin that runs Alembic migrations through the gauntlet: stairway up and down, models drift, single head, full downgrade, naming conventions.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="alembic-gauntlet" href="https://pypi.org/project/alembic-gauntlet/" title="On PyPI">v0.2.1</a>
+        <span>Python 3.10+</span>
+        <span>pytest plugin</span>
+        <a href="https://github.com/bedrock-python/alembic-gauntlet">GitHub</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -157,14 +248,29 @@ hide:
     <a class="bdr-section-head__link" href="tools/">All tools →</a>
   </div>
 
-  <div class="bdr-list">
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/mr-review/">
-      <p class="bdr-list__name">mr-review</p>
-      <p class="bdr-list__desc">Self-hosted AI merge request review for GitLab, GitHub, Gitea, Forgejo and Bitbucket — web UI, staged review, nothing leaves your machine.</p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/mattermind/">
-      <p class="bdr-list__name">mattermind</p>
-      <p class="bdr-list__desc">Ask your Mattermost workspace questions in plain language; every answer cites its permalinks.</p>
-    </a>
+  <div class="bdr-rows">
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/mr-review/">mr-review</a>
+        <p class="bdr-row__desc">Self-hosted AI merge request review for GitLab, GitHub, Gitea, Forgejo and Bitbucket with Claude, OpenAI or any compatible model: a web UI, a four-stage review, and every comment approved by you before it is posted.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <span>Python 3.12 backend</span>
+        <span>Docker · images on GHCR</span>
+        <a href="https://github.com/bedrock-python/mr-review">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/mattermind/">mattermind</a>
+        <p class="bdr-row__desc">Ask your Mattermost workspace questions in plain language: an agentic loop over full-text search that cites every claim with a permalink. <code>ask</code>, a <code>chat</code> TUI, <code>--json</code> for scripts.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="mattermind" href="https://pypi.org/project/mattermind/" title="On PyPI">v0.1.1</a>
+        <span>Python 3.12+</span>
+        <span>uv tool install</span>
+        <a href="https://github.com/bedrock-python/mattermind">GitHub</a>
+      </div>
+    </div>
   </div>
 </section>
