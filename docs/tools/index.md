@@ -2,6 +2,7 @@
 title: Tools
 description: Standalone developer tools — install and run, no integration required.
 hide:
+  - navigation
   - toc
 ---
 
@@ -11,33 +12,65 @@ hide:
   .md-content__inner > h1:first-of-type { display: none; }
 </style>
 
-<section class="bdr-hero" markdown="0">
-  <div class="bdr-hero__eyebrow">Standalone CLIs</div>
+<div class="bdr-catalog" markdown="0">
+
+<section class="bdr-hero bdr-hero--compact" markdown="0">
+  <div class="bdr-hero__eyebrow">Standalone tools</div>
   <h1 class="bdr-hero__title">Tools.</h1>
   <p class="bdr-hero__lede">
-    Developer tools built with Python — no integration into your codebase required.
-    Install, point at your repository or workspace, and run.
+    Developer tools with Python underneath — no integration into your codebase required.
   </p>
 </section>
 
-<section markdown="0">
-  <div class="bdr-list">
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/mr-review/">
-      <p class="bdr-list__name">mr-review</p>
-      <p class="bdr-list__desc">
-        AI-powered merge request review that runs locally via Docker. Connects to GitLab,
-        GitHub, Gitea, Forgejo or Bitbucket and works with Claude, OpenAI or any
-        OpenAI-compatible model. Reviews the diff in stages (Brief → Dispatch → Polish → Post)
-        and lets you approve inline comments before posting them back.
-      </p>
-    </a>
-    <a class="bdr-list__item" href="https://bedrock-python.github.io/mattermind/">
-      <p class="bdr-list__name">mattermind</p>
-      <p class="bdr-list__desc">
-        Natural-language Q&amp;A for your Mattermost workspace. LLM tool-calling with
-        full-text search, agentic loops and a rich terminal UI. Supports
-        SSO-compatible auth, token budget protection, and JSON output for scripting.
-      </p>
-    </a>
+<section class="bdr-group" id="standalone" markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Standalone</h2>
+    <span class="bdr-section-head__note">Install or <code>docker compose up</code>, point at your repository or workspace, run.</span>
+  </div>
+  <div class="bdr-rows">
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/mr-review/">mr-review</a>
+        <p class="bdr-row__desc">Self-hosted AI merge request review for GitLab, GitHub, Gitea, Forgejo and Bitbucket with Claude, OpenAI or any compatible model: a web UI, a four-stage review, and every comment approved by you before it is posted.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <span>Python 3.12 backend</span>
+        <span>Docker · images on GHCR</span>
+        <a href="https://github.com/bedrock-python/mr-review">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/mattermind/">mattermind</a>
+        <p class="bdr-row__desc">Ask your Mattermost workspace questions in plain language: an agentic loop over full-text search that cites every claim with a permalink. <code>ask</code>, a <code>chat</code> TUI, <code>--json</code> for scripts.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="mattermind" href="https://pypi.org/project/mattermind/" title="On PyPI">v0.1.1</a>
+        <span>Python 3.12+</span>
+        <span>uv tool install</span>
+        <a href="https://github.com/bedrock-python/mattermind">GitHub</a>
+      </div>
+    </div>
   </div>
 </section>
+<section class="bdr-group" id="from-libraries" markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Shipped with a library</h2>
+    <span class="bdr-section-head__note">A library that is also a command.</span>
+  </div>
+  <div class="bdr-rows">
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/pg-partsmith/guide/cli/">pg-partsmith CLI</a>
+        <p class="bdr-row__desc"><code>plan</code>, <code>apply</code>, <code>validate</code> and <code>backfill</code> over a YAML document, exit codes a CronJob can read, and a container image at <code>ghcr.io/bedrock-python/pg-partsmith</code> for stacks with no Python in them.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="On PyPI">v1.5.0</a>
+        <span>pip install "pg-partsmith[cli]"</span>
+        <a href="https://github.com/bedrock-python/pg-partsmith">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>

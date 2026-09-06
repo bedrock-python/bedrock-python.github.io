@@ -1,0 +1,7 @@
+{#-
+  Bedrock Python mark. Two files, one per colour scheme: the SVG is loaded
+  through <img>, so it cannot follow currentColor, and the graphite faces
+  of the light mark vanish on the dark header. CSS shows the matching one.
+-#}
+<img class="bdr-logo bdr-logo--light" src="{{ config.theme.logo | url }}" alt="{{ config.site_name }}">
+<img class="bdr-logo bdr-logo--dark" src="{{ 'assets/logo-dark.svg' | url }}" alt="" aria-hidden="true">

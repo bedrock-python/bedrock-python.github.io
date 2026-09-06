@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 186 199"
+     width="512" height="512"
+     fill="none">
+  <title>bedrock-python modular logo — dark scheme</title>
+  <desc>Approved modular bedrock-python mark with a lifted palette for dark backgrounds.</desc>
+  <g shape-rendering="geometricPrecision">
+    <polygon points="135,38 89,12 16,54 61,80" fill="#E6EBF0"/>
+<polygon points="12,58 12,131 59,158 59,86" fill="#C7CED6"/>
+<polygon points="173,85 129,59 75,91 117,116" fill="#8A9AAB"/>
+<polygon points="174,90 118,121 115,134 68,165 106,187 173,147" fill="#A9B6C3"/>
+<polygon points="62,100 62,151 103,124" fill="#5B6B7B"/>
+  </g>
+</svg>

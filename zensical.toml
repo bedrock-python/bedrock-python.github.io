@@ -31,7 +31,6 @@ nav = [
             { "Tools" = "blog/category/tools.md" },
             { "Design" = "blog/category/design.md" },
             { "Tutorials" = "blog/category/tutorials.md" },
-            { "Releases" = "blog/category/releases.md" },
             { "Meta" = "blog/category/meta.md" },
         ] },
     ] },
@@ -39,6 +38,8 @@ nav = [
 
 [project.theme]
 custom_dir = "overrides"
+logo = "assets/logo.svg"
+favicon = "assets/favicon-32.png"
 features = [
     "announce.dismiss",
     "content.code.annotate",

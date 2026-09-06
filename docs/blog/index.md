@@ -1,6 +1,6 @@
 ---
 title: Blog
-description: News, release notes, and deep dives from the Bedrock Python ecosystem.
+description: Guides, design notes and plain engineering articles from the Bedrock Python ecosystem.
 hide:
   - toc
 ---
@@ -15,7 +15,7 @@ hide:
   <div class="bdr-hero__eyebrow">Bedrock Python</div>
   <h1 class="bdr-hero__title">Blog</h1>
   <p class="bdr-hero__lede">
-    Release notes, design decisions, and deep dives from the libraries and tools
+    Guides, design notes and plain engineering articles from the libraries and tools
     that power our backend services — the infrastructure layer, in writing.
   </p>
 </section>
@@ -26,12 +26,25 @@ hide:
   <a class="bdr-chip" data-bdr-filter="tools" href="category/tools/">Tools</a>
   <a class="bdr-chip" data-bdr-filter="design" href="category/design/">Design</a>
   <a class="bdr-chip" data-bdr-filter="tutorials" href="category/tutorials/">Tutorials</a>
-  <a class="bdr-chip" data-bdr-filter="releases" href="category/releases/">Releases</a>
   <a class="bdr-chip" data-bdr-filter="meta" href="category/meta/">Meta</a>
   <a class="bdr-chip" data-bdr-filter="archive" href="archive/">Archive</a>
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="libraries tools" href="posts/2026-09-06-pg-partsmith/">
+    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
+    <div class="bdr-card__eyebrow">Libraries · Tools</div>
+    <h3 class="bdr-card__title">Managing PostgreSQL partitions, one failure at a time</h3>
+    <p class="bdr-card__lede">
+      The pain of keeping a partitioned table right every night, and how pg-partsmith
+      answers it: a plan you can read before it runs, ownership that never drops a table
+      it did not make, the same API async and sync, a command line and a container image
+      for teams with no Python, hooks from a YAML document, and one page written for the
+      AI assistant doing the wiring.
+    </p>
+    <div class="bdr-card__meta">September 6, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-05-30-welcome/">
     <div class="bdr-card__visual bdr-card__visual--meta"></div>
     <div class="bdr-card__eyebrow">Meta</div>
@@ -69,3 +82,25 @@ hide:
     <div class="bdr-card__meta">May 15, 2026</div>
   </a>
 </div>
+
+<section markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Recommended reading</h2>
+    <span class="bdr-section-head__note">Written elsewhere, by other people. Worth your time.</span>
+  </div>
+
+  <div class="bdr-grid">
+    <a class="bdr-card" href="https://medium.com/@shimovolos.stas/your-llm-is-streaming-to-nobody-how-to-handle-client-disconnects-in-fastapi-8cdf8c5d519e">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Medium · Stanislav Shimovolos</div>
+      <h3 class="bdr-card__title">Your LLM Is Streaming to Nobody: How to Handle Client Disconnects in FastAPI</h3>
+      <p class="bdr-card__lede">
+        The client closes the tab and your endpoint keeps going: the GPU generates tokens
+        nobody reads, the transaction never commits, the pool gets a broken connection back.
+        The full path of a disconnect from TCP through ASGI to asyncio, and working code for
+        both streaming and plain endpoints on FastAPI and uvicorn.
+      </p>
+      <div class="bdr-card__meta">January 19, 2026 · ~30 min read</div>
+    </a>
+  </div>
+</section>
