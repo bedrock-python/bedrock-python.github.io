@@ -10,7 +10,12 @@
  *    is replaced with whatever PyPI reports now, so the catalog does not go
  *    stale between site deploys. Any failure leaves the static text in place.
  *
- * 3. Wire `document$` for instant-navigation compatibility.
+ * 3. External links open in a new tab. Internal navigation is always
+ *    relative here (Material emits it that way), so an absolute http(s)
+ *    href means leaving the site -- a library's own docs, GitHub, PyPI.
+ *    An author-set target is left alone.
+ *
+ * 4. Wire `document$` for instant-navigation compatibility.
  */
 
 const initBlogFilter = () => {
@@ -73,9 +78,20 @@ const refreshPypiVersions = () => {
   });
 };
 
+const openExternalLinksInNewTab = () => {
+  document
+    .querySelectorAll('a[href^="http://"], a[href^="https://"]')
+    .forEach((link) => {
+      if (link.target) return;
+      link.target = "_blank";
+      link.rel = link.rel ? `${link.rel} noopener` : "noopener";
+    });
+};
+
 const initBedrock = () => {
   initBlogFilter();
   refreshPypiVersions();
+  openExternalLinksInNewTab();
 };
 
 if (typeof document$ !== "undefined") {

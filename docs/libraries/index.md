@@ -51,6 +51,18 @@ hide:
     </div>
     <div class="bdr-row">
       <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://bedrock-python.github.io/clientwright/">clientwright</a>
+        <p class="bdr-row__desc">One resilience and observability core wired <em>under</em> the public API of httpx, aiohttp, requests and urllib3 — you get back the genuine native client.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="On PyPI">v0.2.0</a>
+        <span>Python 3.12+</span>
+        <span>zero-dependency core</span>
+        <a href="https://github.com/bedrock-python/clientwright">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
         <a class="bdr-row__name" href="https://bedrock-python.github.io/grpc-server-kit/">grpc-server-kit</a>
         <p class="bdr-row__desc"><code>grpc.aio</code> servers without the boilerplate: a <code>GrpcApp</code> facade, TLS/mTLS, graceful shutdown, health checking, streaming-aware interceptors.</p>
       </div>
@@ -71,18 +83,6 @@ hide:
         <span>Python 3.12+</span>
         <span>grpcio only</span>
         <a href="https://github.com/bedrock-python/grpc-client-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/clientwright/">clientwright</a>
-        <p class="bdr-row__desc">One resilience and observability core wired <em>under</em> the public API of httpx, aiohttp, requests and urllib3 — you get back the genuine native client.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="On PyPI">v0.2.0</a>
-        <span>Python 3.12+</span>
-        <span>zero-dependency core</span>
-        <a href="https://github.com/bedrock-python/clientwright">GitHub</a>
       </div>
     </div>
   </div>
