@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
+    <div class="bdr-card__visual bdr-card__visual--meta"></div>
+    <div class="bdr-card__eyebrow">Meta</div>
+    <h3 class="bdr-card__title">We started writing documentation for AI coding agents</h3>
+    <p class="bdr-card__lede">
+      A coding assistant invented a class, awaited a sync function and passed a session
+      where the library wants an engine, all with complete confidence. The docs were not
+      wrong; they were written for a reader who browses. One page per library, written
+      for a model: the invariants as numbered rules, WRONG next to RIGHT, every page also
+      served as Markdown, and what keeping fourteen of them true costs.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-five-alembic-migration-tests/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

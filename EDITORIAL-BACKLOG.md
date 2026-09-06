@@ -70,7 +70,7 @@ Full briefs below.
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
-| 7 | We started writing documentation for AI coding agents | Meta | AI tooling | planned |
+| 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | planned |
@@ -246,7 +246,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 7. We started writing documentation for AI coding agents
 
-- File: `docs/blog/posts/YYYY-MM-DD-documentation-for-ai-coding-agents.md`
+- File: `docs/blog/posts/2026-09-07-documentation-for-ai-coding-agents.md`
 - Search title: *Building Python Libraries for AI Coding Agents, Not Just Humans*
 - LinkedIn hook: "In 2024 I wrote docs for developers. In 2026 I realised half of my documentation users are not human."
 - Tags: `bedrock-python`, `documentation`, `ai-agents`, `python-library-template`
