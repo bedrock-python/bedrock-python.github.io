@@ -73,7 +73,7 @@ Full briefs below.
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
-| 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | planned |
+| 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
 | 11 | What every production Python microservice reimplements | Meta | Bedrock | planned |
 | 12 | Twelve repositories, one engineering standard | Meta | Bedrock | planned |
 
@@ -294,7 +294,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 10. Safe gRPC retries: which status codes you should actually retry
 
-- File: `docs/blog/posts/YYYY-MM-DD-safe-grpc-retries.md`
+- File: `docs/blog/posts/2026-09-07-safe-grpc-retries.md`, lab in `docs/blog/lab/2026-09-07-safe-grpc-retries/`
 - Search title: *gRPC Retries: When Retrying Is More Dangerous Than Failing*
 - LinkedIn hook: "Retrying INTERNAL is not resilience."
 - Tags: `grpc-client-kit`, `grpc`, `retries`, `deadlines`, `circuit-breaker`

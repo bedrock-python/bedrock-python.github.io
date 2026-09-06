@@ -31,6 +31,21 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-safe-grpc-retries/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Safe gRPC retries: which status codes you should actually retry</h3>
+    <p class="bdr-card__lede">
+      A retry is a bet that the server did not do the work. Measured against a payments
+      server that counts its charges: retrying INTERNAL charged the card three times, so did
+      UNAVAILABLE in one of the two ways a server produces it, the deadline did not triple
+      across attempts, the breaker counted attempts, and a retried stream replayed what the
+      consumer had already seen. The table of codes, and the three settings that make a
+      policy honest.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-graceful-shutdown-is-a-protocol/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

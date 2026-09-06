@@ -59,6 +59,21 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-safe-grpc-retries/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Safe gRPC retries: which status codes you should actually retry</h3>
+      <p class="bdr-card__lede">
+        A retry is a bet that the server did not do the work. Measured against a payments
+        server that counts its charges: retrying INTERNAL charged the card three times, so did
+        UNAVAILABLE in one of the two ways a server produces it, the deadline did not triple
+        across attempts, the breaker counted attempts, and a retried stream replayed what the
+        consumer had already seen. The table of codes, and the three settings that make a
+        policy honest.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-graceful-shutdown-is-a-protocol/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -87,18 +102,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-five-alembic-migration-tests/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">The five migration tests every Python project should run in CI</h3>
-      <p class="bdr-card__lede">
-        Four Alembic revisions, five bugs I have shipped, three test suites. The one most
-        pipelines have, a plain upgrade to head, caught one bug in five. Five short checks
-        written against Alembic's own API caught all of them, each for its own reason, with
-        the messages you would otherwise read during an incident.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
