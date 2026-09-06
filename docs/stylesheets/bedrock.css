@@ -536,6 +536,26 @@ body, .md-typeset {
   color: var(--bdr-ink-2);
   margin: 0;
 }
+/* Facts line under a card: version, Python floor, one shape word.
+   Dot separators come from CSS so the markup stays a flat list of spans. */
+.bdr-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .55rem;
+  margin: .65rem 0 0;
+  font-size: .72rem;            /* 11.5px */
+  line-height: 1.4;
+  color: var(--bdr-ink-3);
+}
+.bdr-list__meta > span + span::before {
+  content: "·";
+  margin-right: .55rem;
+}
+.bdr-list__version {
+  font-family: var(--md-code-font);
+  font-weight: 600;
+  color: var(--bdr-ink-2);
+}
 
 /* -------- 11. Footer --------
    Footer is a consistent dark slab in both themes so the brand colour

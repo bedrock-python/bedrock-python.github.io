@@ -5,10 +5,15 @@
  *    cards in the grid by their data-bdr-cat (space-separated).
  *    Real category-page links (e.g. category/libraries/) still navigate.
  *
- * 2. Wire `document$` for instant-navigation compatibility.
+ * 2. Live package versions. Every element with data-pypi="<package>" ships
+ *    with the version that was current when the page was written; on load it
+ *    is replaced with whatever PyPI reports now, so the catalog does not go
+ *    stale between site deploys. Any failure leaves the static text in place.
+ *
+ * 3. Wire `document$` for instant-navigation compatibility.
  */
 
-const initBedrock = () => {
+const initBlogFilter = () => {
   // Filter chips on the blog index. Only intercept clicks for the "All" chip;
   // category chips link to real category pages so they work without JS too,
   // but if we're on the blog index, prefer client-side filtering.
@@ -36,6 +41,41 @@ const initBedrock = () => {
       });
     });
   });
+};
+
+const refreshPypiVersions = () => {
+  const nodes = document.querySelectorAll("[data-pypi]");
+  if (nodes.length === 0) return;
+
+  // One request per package even when it appears on the page more than once.
+  const byPackage = new Map();
+  nodes.forEach((node) => {
+    const pkg = node.dataset.pypi;
+    if (!byPackage.has(pkg)) byPackage.set(pkg, []);
+    byPackage.get(pkg).push(node);
+  });
+
+  byPackage.forEach((targets, pkg) => {
+    fetch(`https://pypi.org/pypi/${encodeURIComponent(pkg)}/json`, {
+      headers: { Accept: "application/json" },
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const version = data && data.info && data.info.version;
+        if (!version) return;
+        targets.forEach((node) => {
+          node.textContent = `v${version}`;
+        });
+      })
+      .catch(() => {
+        /* Offline or blocked: the static version stays. */
+      });
+  });
+};
+
+const initBedrock = () => {
+  initBlogFilter();
+  refreshPypiVersions();
 };
 
 if (typeof document$ !== "undefined") {
