@@ -85,7 +85,9 @@ async def main(script: str) -> None:
             await asyncio.sleep(0.05)
         stamp(f"process exited with {proc.returncode}")
 
-    print(f"--- {script}: SIGTERM, then {LAG:.0f} s of traffic at one request per {int(TICK * 1000)} ms ---")
+    delay = os.getenv("DRAIN_DELAY")
+    label = f"{script}" + (f", DRAIN_DELAY={delay}" if delay else "")
+    print(f"--- {label}: SIGTERM, then {LAG:.0f} s of traffic at one request per {int(TICK * 1000)} ms ---")
     for t, text in events:
         print(f"  {t:6.2f} s  {text}")
     print(f"  requests after SIGTERM: {outcomes}")

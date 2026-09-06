@@ -66,7 +66,7 @@ Full briefs below.
 |---|---|---|---|---|
 | 1 | Timeouts are not deadlines | Design | Reliability | drafting, blocked on clientwright #24 and #25 |
 | 2 | The five migration tests every project should run in CI | Tutorials | Database | review |
-| 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | drafting, blocked on servicewright #46 |
+| 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | review |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
@@ -180,8 +180,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 3. Graceful shutdown in Kubernetes is a protocol, not a signal handler
 
-- File: `docs/blog/posts/YYYY-MM-DD-graceful-shutdown-is-a-protocol.md`, lab in `docs/blog/lab/2026-09-07-graceful-shutdown/`
-- Blocked: measured on 0.9.1, readiness flips to 503 and the listener closes in the same tick, 44 of 48 requests refused in the second after SIGTERM, same as bare uvicorn; the Kubernetes page's "no preStop sleep needed" claim does not hold. Filed as [servicewright #46](https://github.com/bedrock-python/servicewright/issues/46), proposed `AppSpec(drain_delay_seconds=...)`. The post's centre is the before/after of that measurement.
+- File: `docs/blog/posts/2026-09-07-graceful-shutdown-is-a-protocol.md`, lab in `docs/blog/lab/2026-09-07-graceful-shutdown/`
+- Found while measuring, fixed and released as servicewright 0.10.0 (2026-09-07, #46, #47): on 0.9.1, readiness flips to 503 and the listener closes in the same tick, 44 of 48 requests refused in the second after SIGTERM, same as bare uvicorn; the Kubernetes page's "no preStop sleep needed" claim does not hold. `AppSpec(drain_delay_seconds=...)` shipped in 0.10.0; the post's centre is uvicorn against the protocol with and without the delay, all measured on 0.10.0.
 - Search title: *Graceful Shutdown in Kubernetes Is Harder Than Catching SIGTERM*
 - LinkedIn hook: "SIGTERM, cleanup, exit is not graceful shutdown."
 - Tags: `servicewright`, `kubernetes`, `graceful-shutdown`, `asyncio`, `fastapi`, `grpc`

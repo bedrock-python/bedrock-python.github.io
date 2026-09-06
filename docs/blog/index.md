@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-graceful-shutdown-is-a-protocol/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Graceful shutdown in Kubernetes is a protocol, not a signal handler</h3>
+    <p class="bdr-card__lede">
+      SIGTERM, finish in-flight requests, exit: that is what every framework calls graceful,
+      and it refused 44 of 47 requests in the second after the signal, because Kubernetes
+      keeps routing while the endpoint removal propagates. The four steps a pod has to
+      follow, the one everybody skips, measured before and after, and the arithmetic for
+      terminationGracePeriodSeconds.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
     <div class="bdr-card__visual bdr-card__visual--meta"></div>
     <div class="bdr-card__eyebrow">Meta</div>

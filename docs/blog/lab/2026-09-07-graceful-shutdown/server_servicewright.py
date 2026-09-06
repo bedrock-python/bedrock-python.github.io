@@ -1,6 +1,7 @@
 """The same routes under servicewright's lifecycle."""
 
 import contextlib
+import os
 import sys
 from dataclasses import dataclass
 from typing import Any
@@ -40,6 +41,7 @@ class Container:
 spec = AppSpec(
     service_name="shutdown-lab",
     create_container=lambda settings: Container(),
+    drain_delay_seconds=float(os.getenv("DRAIN_DELAY", "0")),  # how long the endpoint removal takes to propagate
     drain_grace_seconds=10.0,
     cleanup_timeout_seconds=5.0,
 )
