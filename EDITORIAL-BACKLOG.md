@@ -63,7 +63,7 @@ Full briefs below.
 
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
-| 1 | Timeouts are not deadlines | Design | Reliability | planned |
+| 1 | Timeouts are not deadlines | Design | Reliability | review |
 | 2 | The five migration tests every project should run in CI | Tutorials | Database | planned |
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | planned |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
@@ -143,7 +143,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 1. Timeouts are not deadlines
 
-- File: `docs/blog/posts/YYYY-MM-DD-timeouts-are-not-deadlines.md`
+- File: `docs/blog/posts/2026-09-06-timeouts-are-not-deadlines.md`, lab scripts in `docs/blog/lab/2026-09-06-timeouts-are-not-deadlines/`
 - Search title: *Timeouts Are Not Deadlines: How Latency Budgets Break Across Microservices*
 - LinkedIn hook: "Your service has a 10-second timeout. It can still take 30 seconds."
 - Tags: `deadline-budget`, `clientwright`, `grpc-client-kit`, `timeouts`, `microservices`

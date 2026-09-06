@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-06** — [Timeouts are not deadlines: how latency budgets break across microservices](../posts/2026-09-06-timeouts-are-not-deadlines.md) *(Design)*
 - **2026-09-06** — [Managing PostgreSQL partitions, one failure at a time](../posts/2026-09-06-pg-partsmith.md) *(Libraries, Tools)*
 - **2026-05-30** — [Welcome to the Bedrock Python Blog](../posts/2026-05-30-welcome.md) *(Meta)*
 - **2026-05-28** — [Introducing mr-review: AI-powered merge request reviews](../posts/2026-05-28-introducing-mr-review.md) *(Tools)*

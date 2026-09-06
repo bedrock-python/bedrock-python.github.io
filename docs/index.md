@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-06-timeouts-are-not-deadlines/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Timeouts are not deadlines: how latency budgets break across microservices</h3>
+      <p class="bdr-card__lede">
+        A timeout measures patience; a deadline is a point on the clock. Measured three times: an
+        httpx call that took four seconds under a one-second timeout, a retry loop that tripled
+        it, and a chain of three gRPC services where the card was charged a second after the
+        customer saw the error. Then the arithmetic that fixes it, and the three places it has
+        to live.
+      </p>
+      <div class="bdr-card__meta">September 6, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-06-pg-partsmith/">
       <div class="bdr-card__visual bdr-card__visual--libraries"></div>
       <div class="bdr-card__eyebrow">Libraries · Tools</div>
@@ -84,16 +98,6 @@ hide:
       <div class="bdr-card__meta">May 30, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-05-28-introducing-mr-review/">
-      <div class="bdr-card__visual bdr-card__visual--tools"></div>
-      <div class="bdr-card__eyebrow">Tools</div>
-      <h3 class="bdr-card__title">Introducing mr-review</h3>
-      <p class="bdr-card__lede">
-        A new CLI tool that runs locally and uses an LLM to walk through a merge
-        request diff the way a thorough engineer would.
-      </p>
-      <div class="bdr-card__meta">May 28, 2026</div>
-    </a>
   </div>
 </section>
 
