@@ -65,8 +65,8 @@ Full briefs below.
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
 | 1 | Timeouts are not deadlines | Design | Reliability | drafting, blocked on clientwright #24 and #25 |
-| 2 | The five migration tests every project should run in CI | Tutorials | Database | planned |
-| 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | planned |
+| 2 | The five migration tests every project should run in CI | Tutorials | Database | drafted, waits for alembic-gauntlet 0.2.2 (#32, #33) |
+| 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | drafting, blocked on servicewright #46 |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
@@ -161,7 +161,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 2. The five migration tests every project should run in CI
 
-- File: `docs/blog/posts/YYYY-MM-DD-five-alembic-migration-tests.md`
+- File: `docs/blog/posts/2026-09-07-five-alembic-migration-tests.md`, lab in `docs/blog/lab/2026-09-07-five-alembic-migration-tests/`
+- Found while measuring: the published 0.2.1 had no `asyncio` extra although every page says to install it (release PR #32 with `Release-As: 0.2.2`), and the testcontainers fixture imports a deprecated module ([#33](https://github.com/bedrock-python/alembic-gauntlet/issues/33)). Also: Alembic applies the metadata naming convention to the name passed to `op.create_check_constraint`; the post has a section on it.
 - Search title: *The 5 Alembic Migration Tests Every Python Project Should Run in CI*
 - LinkedIn hook: "We test our code heavily. Then we deploy untested database migrations."
 - Tags: `alembic-gauntlet`, `alembic`, `sqlalchemy`, `postgresql`, `testing`, `ci`
@@ -179,7 +180,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 3. Graceful shutdown in Kubernetes is a protocol, not a signal handler
 
-- File: `docs/blog/posts/YYYY-MM-DD-graceful-shutdown-is-a-protocol.md`
+- File: `docs/blog/posts/YYYY-MM-DD-graceful-shutdown-is-a-protocol.md`, lab in `docs/blog/lab/2026-09-07-graceful-shutdown/`
+- Blocked: measured on 0.9.1, readiness flips to 503 and the listener closes in the same tick, 44 of 48 requests refused in the second after SIGTERM, same as bare uvicorn; the Kubernetes page's "no preStop sleep needed" claim does not hold. Filed as [servicewright #46](https://github.com/bedrock-python/servicewright/issues/46), proposed `AppSpec(drain_delay_seconds=...)`. The post's centre is the before/after of that measurement.
 - Search title: *Graceful Shutdown in Kubernetes Is Harder Than Catching SIGTERM*
 - LinkedIn hook: "SIGTERM, cleanup, exit is not graceful shutdown."
 - Tags: `servicewright`, `kubernetes`, `graceful-shutdown`, `asyncio`, `fastapi`, `grpc`
