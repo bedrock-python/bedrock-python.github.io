@@ -124,7 +124,9 @@ body, .md-typeset {
 .md-typeset p,
 .md-typeset li {
   color: var(--bdr-ink-2);
-  font-size: 1rem;          /* 16px — Medium/Claude article body */
+  /* Material's root font is 20px from 1220px viewports and 22px from
+     1600px, so this is 16-18px of body text, not the 13px it looks like. */
+  font-size: .8125rem;
   line-height: 1.65;
 }
 
@@ -150,8 +152,8 @@ body, .md-typeset {
 .md-typeset > details,
 .md-typeset > .tabbed-set {
   /* Material scales the root font with the viewport (20px from 1220px,
-     22px from 1600px), so 42rem is 840-924px: ~80 characters of the 1rem
-     body text, centred in the column between the two sidebars. */
+     22px from 1600px), so 42rem is 840-924px, centred in the column
+     between the two sidebars. */
   max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
@@ -723,7 +725,7 @@ body, .md-typeset {
 .md-typeset pre > code {
   border-radius: 10px;
   border: 1px solid var(--bdr-border);
-  font-size: .8125rem;       /* 13px — code reads bigger than sans */
+  font-size: .75rem;         /* 15-16.5px: mono reads bigger than sans */
   line-height: 1.6;
 }
 
