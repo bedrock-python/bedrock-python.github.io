@@ -31,7 +31,6 @@ nav = [
             { "Tools" = "blog/category/tools.md" },
             { "Design" = "blog/category/design.md" },
             { "Tutorials" = "blog/category/tutorials.md" },
-            { "Releases" = "blog/category/releases.md" },
             { "Meta" = "blog/category/meta.md" },
         ] },
     ] },

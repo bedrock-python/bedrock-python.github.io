@@ -1,6 +1,6 @@
 ---
 title: Blog
-description: News, release notes, and deep dives from the Bedrock Python ecosystem.
+description: Guides, design notes and plain engineering articles from the Bedrock Python ecosystem.
 hide:
   - toc
 ---
@@ -15,7 +15,7 @@ hide:
   <div class="bdr-hero__eyebrow">Bedrock Python</div>
   <h1 class="bdr-hero__title">Blog</h1>
   <p class="bdr-hero__lede">
-    Release notes, design decisions, and deep dives from the libraries and tools
+    Guides, design notes and plain engineering articles from the libraries and tools
     that power our backend services — the infrastructure layer, in writing.
   </p>
 </section>
@@ -26,7 +26,6 @@ hide:
   <a class="bdr-chip" data-bdr-filter="tools" href="category/tools/">Tools</a>
   <a class="bdr-chip" data-bdr-filter="design" href="category/design/">Design</a>
   <a class="bdr-chip" data-bdr-filter="tutorials" href="category/tutorials/">Tutorials</a>
-  <a class="bdr-chip" data-bdr-filter="releases" href="category/releases/">Releases</a>
   <a class="bdr-chip" data-bdr-filter="meta" href="category/meta/">Meta</a>
   <a class="bdr-chip" data-bdr-filter="archive" href="archive/">Archive</a>
 </nav>
