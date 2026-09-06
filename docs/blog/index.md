@@ -69,3 +69,25 @@ hide:
     <div class="bdr-card__meta">May 15, 2026</div>
   </a>
 </div>
+
+<section markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Recommended reading</h2>
+    <span class="bdr-section-head__note">Written elsewhere, by other people. Worth your time.</span>
+  </div>
+
+  <div class="bdr-grid">
+    <a class="bdr-card" href="https://medium.com/@shimovolos.stas/your-llm-is-streaming-to-nobody-how-to-handle-client-disconnects-in-fastapi-8cdf8c5d519e">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Medium · Stanislav Shimovolos</div>
+      <h3 class="bdr-card__title">Your LLM Is Streaming to Nobody: How to Handle Client Disconnects in FastAPI</h3>
+      <p class="bdr-card__lede">
+        The client closes the tab and your endpoint keeps going: the GPU generates tokens
+        nobody reads, the transaction never commits, the pool gets a broken connection back.
+        The full path of a disconnect from TCP through ASGI to asyncio, and working code for
+        both streaming and plain endpoints on FastAPI and uvicorn.
+      </p>
+      <div class="bdr-card__meta">January 19, 2026 · ~30 min read</div>
+    </a>
+  </div>
+</section>

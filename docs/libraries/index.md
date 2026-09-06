@@ -29,6 +29,7 @@ hide:
   <a class="bdr-chip" href="#reliability">Reliability patterns <span class="bdr-chip__count">3</span></a>
   <a class="bdr-chip" href="#database">Database operations &amp; testing <span class="bdr-chip__count">2</span></a>
   <a class="bdr-chip" href="#template">Start your own <span class="bdr-chip__count">1</span></a>
+  <a class="bdr-chip" href="#recommended">Recommended <span class="bdr-chip__count">2</span></a>
 </nav>
 
 <section class="bdr-group" id="runtime" markdown="0">
@@ -215,6 +216,39 @@ hide:
       </div>
       <div class="bdr-row__meta">
         <span>Copier template</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bdr-group" id="recommended" markdown="0">
+  <div class="bdr-section-head">
+    <h2 class="bdr-section-head__title">Recommended</h2>
+    <span class="bdr-section-head__note">Not ours. Libraries built with the same care.</span>
+  </div>
+  <div class="bdr-rows">
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://github.com/stanislaushimovolos/aiofence">aiofence</a>
+        <p class="bdr-row__desc">Multi-reason cancellation for asyncio in the spirit of Go's <code>context.Context</code>: declare timeout, client disconnect and shutdown once at the boundary, carry them in a <code>ContextVar</code>, wrap only the work you want cancelled in a <code>Fence</code>, and ask afterwards which reason fired.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="aiofence" href="https://pypi.org/project/aiofence/" title="On PyPI">v0.4.0</a>
+        <span>Python 3.12+</span>
+        <span>by Stanislav Shimovolos</span>
+        <a href="https://github.com/stanislaushimovolos/aiofence">GitHub</a>
+      </div>
+    </div>
+    <div class="bdr-row">
+      <div class="bdr-row__main">
+        <a class="bdr-row__name" href="https://d9d-project.github.io/d9d/">d9d</a>
+        <p class="bdr-row__desc">A distributed training framework on PyTorch 2 that stays hackable: composable parallelism strategies instead of one god class, plain <code>nn.Module</code>s, <code>DTensor</code> for every distributed parameter, checkpoints as a graph — from single-GPU debugging to 6D-parallel clusters.</p>
+      </div>
+      <div class="bdr-row__meta">
+        <a class="bdr-row__version" data-pypi="d9d" href="https://pypi.org/project/d9d/" title="On PyPI">v0.19.0</a>
+        <span>Python 3.11+</span>
+        <span>Apache-2.0</span>
+        <a href="https://github.com/d9d-project/d9d">GitHub</a>
       </div>
     </div>
   </div>
