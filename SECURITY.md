@@ -1,12 +1,19 @@
 # Security Policy
 
-This repository contains only static site content (Markdown, config files, GitHub Actions workflows).
-There is no application code, no user data, and no dependencies with a runtime attack surface.
+## Reporting a vulnerability
 
-## Reporting an issue
+**Please do not report security vulnerabilities via public GitHub Issues.**
 
-If you find a problem with the site itself — broken links, incorrect information, a workflow
-misconfiguration — please open a [GitHub Issue](https://github.com/bedrock-python/bedrock-python.github.io/issues).
+Report it privately through GitHub, by
+[opening a draft security advisory](https://github.com/bedrock-python/bedrock-python.github.io/security/advisories/new),
+or send an email to **shalaevad.alexey@gmail.com**. Either way, include:
 
-For security concerns related to the **libraries** documented on this site, refer to the
-security policy of the individual library repository.
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact and affected versions
+
+We aim to acknowledge reports within **48 hours** and provide a fix within **7 days**
+for critical issues.
+
+Once the fix is released, we will credit you in the release notes unless you prefer
+to remain anonymous.
