@@ -20,6 +20,7 @@ LinkedIn that points to it. They are not the same text.
 | Length | 1500-4000 words | 150-500 words |
 | Carries | diagrams, code, failure scenarios, numbers, links to docs and GitHub | one idea, one surprising fact, one diagram or snippet, one conclusion |
 | Ends with | the Bedrock library that came out of the problem, stated once, without a pitch | link to the blog post |
+| Cadence | whenever a post is done | one a week, in the plan's order, from a queue of finished posts |
 
 ## House rules for a post
 
@@ -27,17 +28,19 @@ LinkedIn that points to it. They are not the same text.
 - The problem first. The library appears once the reader would have asked "so what do you do about it".
 - Every code sample runs against the published package version named in the post.
 - Every number is measured, not reasoned. If it was not measured, it is not in the post.
-- Front matter per `CONTRIBUTING.md`: `date`, `authors: [alex]`, `categories`, `tags`, and `<!-- more -->` after the lede.
+- Front matter per `CONTRIBUTING.md`: `date`, `authors: [alex]`, `categories`, `tags`, and `<!-- more -->` after the lede. The date in the file name and the front matter is the day the post merges, set when it does.
 - The listings are hand-written. A new post is added in five places: `docs/blog/index.md` (card inside `[data-bdr-grid]`), `docs/index.md` (three latest cards), `docs/blog/category/<cat>.md`, `docs/blog/category/index.md` (counts), `docs/blog/archive/index.md`.
 - `make docs-build`, then grep the built HTML for the title before pushing.
 - A post that quotes a library feature is checked against the library's current docs before drafting. Where a plan below says "check", the feature may not exist yet; the post then proposes it and the library gets an issue.
 
 ## Series
 
-Forty-eight posts, one a week, Tuesdays, from 2026-09-15 to 2027-08-24, with
-the two holiday weeks at the end of December skipped. Every post belongs to
-one of seven series. The series are the site's long-term structure; the
-weekly order below interleaves them so no month is about one library.
+Forty-eight posts in priority order, not on a calendar. They are written
+here as fast as they get written and go live on the blog when they merge.
+The only cadence is LinkedIn: one short version a week, in the same order,
+however far ahead the blog has run. Every post belongs to one of seven
+series. The series are the site's long-term structure; the order below
+interleaves them so no stretch of posts is about one library.
 
 | Series | What it argues | Libraries | Posts |
 |---|---|---|---|
@@ -49,88 +52,88 @@ weekly order below interleaves them so no month is about one library.
 | AI tooling | Where an LLM belongs in the engineering loop, with a human in front of every side effect | mr-review, mattermind, the agents pages | 7, 9, 23, 36, 42 |
 | Bedrock and open source | Why the organisation exists and how twelve repositories stay one standard | python-library-template, the catalog | 11, 12, 45, 46, 48 |
 
-## The year
+## The list
 
-Status moves through `planned`, `drafting`, `review`, `published`.
+Status moves through `planned`, `drafting`, `review`, `published`; `published` means merged to master, whether or not the LinkedIn version has gone out yet.
 
-### Block 1: the opening dozen (September to December 2026)
+### Block 1: the opening dozen
 
 The twelve posts with the widest reach and the clearest problem statements.
 Full briefs below.
 
-| # | Date | Post | Category | Series | Status |
-|---|---|---|---|---|---|
-| 1 | 2026-09-15 | Timeouts are not deadlines | Design | Reliability | planned |
-| 2 | 2026-09-22 | The five migration tests every project should run in CI | Tutorials | Database | planned |
-| 3 | 2026-09-29 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | planned |
-| 4 | 2026-10-06 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
-| 5 | 2026-10-13 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
-| 6 | 2026-10-20 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
-| 7 | 2026-10-27 | We started writing documentation for AI coding agents | Meta | AI tooling | planned |
-| 8 | 2026-11-03 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
-| 9 | 2026-11-10 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
-| 10 | 2026-11-17 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | planned |
-| 11 | 2026-11-24 | What every production Python microservice reimplements | Meta | Bedrock | planned |
-| 12 | 2026-12-01 | Twelve repositories, one engineering standard | Meta | Bedrock | planned |
+| # | Post | Category | Series | Status |
+|---|---|---|---|---|
+| 1 | Timeouts are not deadlines | Design | Reliability | planned |
+| 2 | The five migration tests every project should run in CI | Tutorials | Database | planned |
+| 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | planned |
+| 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
+| 5 | Why I stopped wrapping HTTP clients | Design | Clients | planned |
+| 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
+| 7 | We started writing documentation for AI coding agents | Meta | AI tooling | planned |
+| 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
+| 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
+| 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | planned |
+| 11 | What every production Python microservice reimplements | Meta | Bedrock | planned |
+| 12 | Twelve repositories, one engineering standard | Meta | Bedrock | planned |
 
-### Block 2: going deeper (December 2026 to March 2027)
+### Block 2: going deeper
 
 Second posts in each series: the follow-up questions readers of block 1 ask.
 
-| # | Date | Post | Category | Series | Status |
-|---|---|---|---|---|---|
-| 13 | 2026-12-08 | Retries can make an outage worse: designing a retry budget | Design | Reliability | planned |
-| 14 | 2026-12-15 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
-| 15 | 2027-01-05 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | planned |
-| 16 | 2027-01-12 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
-| 17 | 2027-01-19 | Circuit breakers should be per origin, not per client | Design | Reliability | planned |
-| 18 | 2027-01-26 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
-| 19 | 2027-02-02 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
-| 20 | 2027-02-09 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
-| 21 | 2027-02-16 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | planned |
-| 22 | 2027-02-23 | When should Redis fail open? | Design | Reliability | planned |
-| 23 | 2027-03-02 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
-| 24 | 2027-03-09 | What happens when Kafka is down for an hour? | Design | Effectively-once | planned |
+| # | Post | Category | Series | Status |
+|---|---|---|---|---|
+| 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | planned |
+| 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
+| 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | planned |
+| 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
+| 17 | Circuit breakers should be per origin, not per client | Design | Reliability | planned |
+| 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
+| 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
+| 20 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
+| 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | planned |
+| 22 | When should Redis fail open? | Design | Reliability | planned |
+| 23 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
+| 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | planned |
 
-### Block 3: operations (March to June 2027)
+### Block 3: operations
 
 Checklists, monitoring and the hands-on posts: what to run, what to watch,
 what to do at 03:00.
 
-| # | Date | Post | Category | Series | Status |
-|---|---|---|---|---|---|
-| 25 | 2027-03-16 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | planned |
-| 26 | 2027-03-23 | The production checklist for aiokafka | Tutorials | Effectively-once | planned |
-| 27 | 2027-03-30 | Your models and your schema have drifted. Would CI notice? | Design | Database | planned |
-| 28 | 2027-04-06 | The anatomy of a production Python gRPC server | Tutorials | Clients | planned |
-| 29 | 2027-04-13 | Stop passing AsyncSession everywhere | Design | Database | planned |
-| 30 | 2027-04-20 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | planned |
-| 31 | 2027-04-27 | Partition retention is not DROP TABLE | Design | Database | planned |
-| 32 | 2027-05-04 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | planned |
-| 33 | 2027-05-11 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
-| 34 | 2027-05-18 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | planned |
-| 35 | 2027-05-25 | Redis health checks: PING is not the whole story | Design | Lifecycle | planned |
-| 36 | 2027-06-01 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
+| # | Post | Category | Series | Status |
+|---|---|---|---|---|
+| 25 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | planned |
+| 26 | The production checklist for aiokafka | Tutorials | Effectively-once | planned |
+| 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | planned |
+| 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | planned |
+| 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
+| 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | planned |
+| 31 | Partition retention is not DROP TABLE | Design | Database | planned |
+| 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | planned |
+| 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
+| 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | planned |
+| 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | planned |
+| 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
 
-### Block 4: design and the organisation (June to August 2027)
+### Block 4: design and the organisation
 
 The opinion pieces that need the earlier posts as groundwork, and the closing
 posts about how the libraries are built.
 
-| # | Date | Post | Category | Series | Status |
-|---|---|---|---|---|---|
-| 37 | 2027-06-08 | Warmup, readiness and liveness are three different things | Design | Lifecycle | planned |
-| 38 | 2027-06-15 | Transport-independent errors: one domain error, HTTP and gRPC responses | Design | Lifecycle | planned |
-| 39 | 2027-06-22 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | planned |
-| 40 | 2027-06-29 | Idempotency across a chain of microservices | Design | Reliability | planned |
-| 41 | 2027-07-06 | Should your application create Kafka topics on startup? | Design | Effectively-once | planned |
-| 42 | 2027-07-13 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
-| 43 | 2027-07-20 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | planned |
-| 44 | 2027-07-27 | UUIDv7 as a PostgreSQL partition key | Design | Database | planned |
-| 45 | 2027-08-03 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | planned |
-| 46 | 2027-08-10 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | planned |
-| 47 | 2027-08-17 | Reliability is not `retry=3` | Design | Reliability | planned |
-| 48 | 2027-08-24 | How I start a production-grade Python library in 2026 | Meta | Bedrock | planned |
+| # | Post | Category | Series | Status |
+|---|---|---|---|---|
+| 37 | Warmup, readiness and liveness are three different things | Design | Lifecycle | planned |
+| 38 | Transport-independent errors: one domain error, HTTP and gRPC responses | Design | Lifecycle | planned |
+| 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | planned |
+| 40 | Idempotency across a chain of microservices | Design | Reliability | planned |
+| 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | planned |
+| 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
+| 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | planned |
+| 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | planned |
+| 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | planned |
+| 46 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | planned |
+| 47 | Reliability is not `retry=3` | Design | Reliability | planned |
+| 48 | How I start a production-grade Python library in 2026 | Meta | Bedrock | planned |
 
 ## Briefs: block 1
 
@@ -140,7 +143,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 1. Timeouts are not deadlines
 
-- File: `docs/blog/posts/2026-09-15-timeouts-are-not-deadlines.md`
+- File: `docs/blog/posts/YYYY-MM-DD-timeouts-are-not-deadlines.md`
 - Search title: *Timeouts Are Not Deadlines: How Latency Budgets Break Across Microservices*
 - LinkedIn hook: "Your service has a 10-second timeout. It can still take 30 seconds."
 - Tags: `deadline-budget`, `clientwright`, `grpc-client-kit`, `timeouts`, `microservices`
@@ -156,7 +159,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 2. The five migration tests every project should run in CI
 
-- File: `docs/blog/posts/2026-09-22-five-alembic-migration-tests.md`
+- File: `docs/blog/posts/YYYY-MM-DD-five-alembic-migration-tests.md`
 - Search title: *The 5 Alembic Migration Tests Every Python Project Should Run in CI*
 - LinkedIn hook: "We test our code heavily. Then we deploy untested database migrations."
 - Tags: `alembic-gauntlet`, `alembic`, `sqlalchemy`, `postgresql`, `testing`, `ci`
@@ -174,7 +177,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 3. Graceful shutdown in Kubernetes is a protocol, not a signal handler
 
-- File: `docs/blog/posts/2026-09-29-graceful-shutdown-is-a-protocol.md`
+- File: `docs/blog/posts/YYYY-MM-DD-graceful-shutdown-is-a-protocol.md`
 - Search title: *Graceful Shutdown in Kubernetes Is Harder Than Catching SIGTERM*
 - LinkedIn hook: "SIGTERM, cleanup, exit is not graceful shutdown."
 - Tags: `servicewright`, `kubernetes`, `graceful-shutdown`, `asyncio`, `fastapi`, `grpc`
@@ -190,7 +193,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 4. Idempotency keys: the part everyone gets wrong
 
-- File: `docs/blog/posts/2026-10-06-idempotency-keys-the-part-everyone-gets-wrong.md`
+- File: `docs/blog/posts/YYYY-MM-DD-idempotency-keys-the-part-everyone-gets-wrong.md`
 - Search title: *Idempotency Keys: The Part Everyone Gets Wrong*
 - LinkedIn hook: "An Idempotency-Key is not a distributed lock."
 - Tags: `idempotency-kit`, `idempotency`, `http`, `redis`, `distributed-systems`
@@ -207,7 +210,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 5. Why I stopped wrapping HTTP clients
 
-- File: `docs/blog/posts/2026-10-13-why-i-stopped-wrapping-http-clients.md`
+- File: `docs/blog/posts/YYYY-MM-DD-why-i-stopped-wrapping-http-clients.md`
 - Search title: *Why I Stopped Wrapping HTTP Clients in Python*
 - LinkedIn hook: "Every company eventually writes its own httpx wrapper. I think that is the wrong abstraction."
 - Tags: `clientwright`, `httpx`, `aiohttp`, `requests`, `retries`, `circuit-breaker`
@@ -223,7 +226,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 6. Exactly-once is a lie; exactly-once effects are not
 
-- File: `docs/blog/posts/2026-10-20-exactly-once-effects.md`
+- File: `docs/blog/posts/YYYY-MM-DD-exactly-once-effects.md`
 - Search title: *Exactly-Once Is a Lie. Exactly-Once Effects Are Not.*
 - LinkedIn hook: "Kafka cannot make your database update exactly once."
 - Tags: `omni-box`, `idempotency-kit`, `kafka`, `outbox`, `inbox`, `exactly-once`
@@ -239,7 +242,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 7. We started writing documentation for AI coding agents
 
-- File: `docs/blog/posts/2026-10-27-documentation-for-ai-coding-agents.md`
+- File: `docs/blog/posts/YYYY-MM-DD-documentation-for-ai-coding-agents.md`
 - Search title: *Building Python Libraries for AI Coding Agents, Not Just Humans*
 - LinkedIn hook: "In 2024 I wrote docs for developers. In 2026 I realised half of my documentation users are not human."
 - Tags: `bedrock-python`, `documentation`, `ai-agents`, `python-library-template`
@@ -255,7 +258,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 8. PgBouncer transaction mode and async SQLAlchemy
 
-- File: `docs/blog/posts/2026-11-03-pgbouncer-transaction-mode-async-sqlalchemy.md`
+- File: `docs/blog/posts/YYYY-MM-DD-pgbouncer-transaction-mode-async-sqlalchemy.md`
 - Search title: *PostgreSQL + PgBouncer + Async SQLAlchemy: The Production Setup Nobody Documents Enough*
 - LinkedIn hook: "Your SQLAlchemy config works perfectly until PgBouncer enters transaction mode."
 - Tags: `sqlalchemy-foundation-kit`, `sqlalchemy`, `pgbouncer`, `postgresql`, `asyncpg`
@@ -271,7 +274,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 9. RAG was the wrong abstraction for searching our team chat
 
-- File: `docs/blog/posts/2026-11-10-rag-was-the-wrong-abstraction-for-team-chat.md`
+- File: `docs/blog/posts/YYYY-MM-DD-rag-was-the-wrong-abstraction-for-team-chat.md`
 - Search title: *RAG Was the Wrong Abstraction for Searching Our Team Chat*
 - LinkedIn hook: "We did not embed a single message. The assistant still answers with citations."
 - Tags: `mattermind`, `mattermost`, `llm`, `rag`, `search`
@@ -287,7 +290,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 10. Safe gRPC retries: which status codes you should actually retry
 
-- File: `docs/blog/posts/2026-11-17-safe-grpc-retries.md`
+- File: `docs/blog/posts/YYYY-MM-DD-safe-grpc-retries.md`
 - Search title: *gRPC Retries: When Retrying Is More Dangerous Than Failing*
 - LinkedIn hook: "Retrying INTERNAL is not resilience."
 - Tags: `grpc-client-kit`, `grpc`, `retries`, `deadlines`, `circuit-breaker`
@@ -303,7 +306,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 11. What every production Python microservice reimplements
 
-- File: `docs/blog/posts/2026-11-24-what-every-python-microservice-reimplements.md`
+- File: `docs/blog/posts/YYYY-MM-DD-what-every-python-microservice-reimplements.md`
 - Search title: *What Every Production Python Microservice Reimplements*
 - LinkedIn hook: "I kept seeing the same 3,000 lines in every service. None of it was the product."
 - Tags: `bedrock-python`, `architecture`, `microservices`
@@ -318,7 +321,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 12. Twelve repositories, one engineering standard
 
-- File: `docs/blog/posts/2026-12-01-twelve-repositories-one-standard.md`
+- File: `docs/blog/posts/YYYY-MM-DD-twelve-repositories-one-standard.md`
 - Search title: *How I Standardized 12 Open-Source Python Libraries Without Building a Monorepo*
 - LinkedIn hook: "12 repos. One engineering standard. No monorepo."
 - Tags: `bedrock-python`, `python-library-template`, `uv`, `release-please`, `github`
@@ -336,7 +339,7 @@ mention. The section plan is a starting point, not a contract.
 
 One paragraph per post: the claim, what the reader takes away, what the post
 shows, and the library it closes on. A plan becomes a brief in the format
-above when the post is two weeks out.
+above when the post is next up.
 
 ### 13. Retries can make an outage worse: designing a retry budget
 
@@ -544,7 +547,7 @@ Bedrock repositories, each reintroduced into a branch; four models (two
 hosted, two local) review each; recall, false positives, cost and wall time
 per model. Methodology first, results table second, what the local models
 missed third. Closes on mr-review as the harness. Budget: this post is the
-most expensive to produce and needs a week of its own.
+most expensive to produce and needs its own budget.
 
 ### 37. Warmup, readiness and liveness are three different things
 
