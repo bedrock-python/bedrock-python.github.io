@@ -63,7 +63,7 @@ Full briefs below.
 
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
-| 1 | Timeouts are not deadlines | Design | Reliability | review |
+| 1 | Timeouts are not deadlines | Design | Reliability | drafting, blocked on clientwright #24 and #25 |
 | 2 | The five migration tests every project should run in CI | Tutorials | Database | planned |
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | planned |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
@@ -144,6 +144,7 @@ mention. The section plan is a starting point, not a contract.
 ### 1. Timeouts are not deadlines
 
 - File: `docs/blog/posts/2026-09-06-timeouts-are-not-deadlines.md`, lab scripts in `docs/blog/lab/2026-09-06-timeouts-are-not-deadlines/`
+- Blocked: measuring against clientwright 0.2.0 found two things, filed as [clientwright #24](https://github.com/bedrock-python/clientwright/issues/24) (an `attempt` ceiling escapes as a bare `TimeoutError` and is never retried) and [#25](https://github.com/bedrock-python/clientwright/issues/25) (`total` stops at the response headers on httpx). The draft is honest about both. When the fixes are released: re-run the lab against the new version, drop the boundary caveat in the retries section, bump the version line, move to `review`.
 - Search title: *Timeouts Are Not Deadlines: How Latency Budgets Break Across Microservices*
 - LinkedIn hook: "Your service has a 10-second timeout. It can still take 30 seconds."
 - Tags: `deadline-budget`, `clientwright`, `grpc-client-kit`, `timeouts`, `microservices`
