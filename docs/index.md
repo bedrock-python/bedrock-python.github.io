@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-retries-can-make-an-outage-worse/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Retries can make an outage worse: designing a retry budget</h3>
+      <p class="bdr-card__lede">
+        Three attempts at every hop of a four-layer chain is 81 requests at the bottom for one
+        at the top, measured: 810 for ten callers against a dead origin. A per-origin retry
+        budget bounds the storm from the first request, a circuit breaker stops it once the
+        dependency has proven it is down, and the one case where the budget makes every caller
+        fail is the case where it should.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -86,19 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-what-every-microservice-reimplements/">
-      <div class="bdr-card__visual bdr-card__visual--meta"></div>
-      <div class="bdr-card__eyebrow">Meta</div>
-      <h3 class="bdr-card__title">What every production Python microservice reimplements</h3>
-      <p class="bdr-card__lede">
-        Lifecycle, health, shutdown, retries, timeouts, deadlines, sessions, transactions,
-        idempotency, outbox, metrics, tracing, migration tests: the same code in every service,
-        none of it the product. Why a framework is the wrong shape for it, and a hundred-line
-        service with four independent libraries, run against a real PostgreSQL from readiness
-        to exit 0.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

@@ -83,7 +83,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
-| 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | planned |
+| 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | review |
 | 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
 | 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | planned |
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
@@ -354,8 +354,9 @@ for one at the top, and that is the moment the bottom service is already
 failing. The post walks through a retry storm from the first slow response to
 the full outage, then introduces the retry budget: a ratio of retries to
 requests per client, not a count per request. Shows a small load simulation
-with and without the budget, measured. Closes on clientwright. Check whether
-the retry policy already exposes a budget; if not, the post proposes it.
+with and without the budget, measured. Closes on clientwright, whose `RetryConfig.budget_ratio`
+(default 0.1) is the budget. Drafted 2026-09-07: `docs/blog/posts/2026-09-07-retries-can-make-an-outage-worse.md`,
+lab in `docs/blog/lab/2026-09-07-retry-budget/`.
 
 ### 14. Testing database migrations with Testcontainers: up, down and up again
 
