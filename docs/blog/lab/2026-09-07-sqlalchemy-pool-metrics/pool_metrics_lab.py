@@ -25,21 +25,27 @@ def sample() -> dict[str, float]:
     return out
 
 
-previous = {"count": 0.0, "sum": 0.0}
+previous = {"wait_count": 0.0, "wait_sum": 0.0, "held_count": 0.0, "held_sum": 0.0}
+
+
+def rate(s: dict[str, float], series: str, key: str) -> tuple[float, float]:
+    """The mean of one histogram over the last half second, and how many observations it had."""
+    count = s.get(f"{series}_count", 0.0)
+    total = s.get(f"{series}_sum", 0.0)
+    dc, ds = count - previous[f"{key}_count"], total - previous[f"{key}_sum"]
+    previous[f"{key}_count"], previous[f"{key}_sum"] = count, total
+    return (ds / dc if dc else 0.0), dc
 
 
 def describe(s: dict[str, float]) -> str:
     size = s.get("postgres_db_pool_size", 0)
     out = s.get("postgres_db_pool_checked_out", 0)
     over = s.get("postgres_db_pool_overflow", 0)
-    count = s.get("postgres_db_connection_checkout_duration_seconds_count", 0)
-    total = s.get("postgres_db_connection_checkout_duration_seconds_sum", 0)
+    wait, checkouts = rate(s, "postgres_db_connection_checkout_wait_seconds", "wait")
+    held, _ = rate(s, "postgres_db_connection_held_duration_seconds", "held")
     timeouts = sum(v for k, v in s.items() if k.startswith("postgres_db_connection_timeouts_total"))
-    errors = sum(v for k, v in s.items() if k.startswith("postgres_db_connection_errors_total"))
-    dc, ds = count - previous["count"], total - previous["sum"]
-    previous.update(count=count, sum=total)
-    wait = ds / dc if dc else 0.0
-    return f"in_use={out:.0f}/{size + over:.0f}  checkouts/s={dc * 2:4.0f}  checkout wait={wait * 1000:5.0f} ms  timeouts_total={timeouts:.0f} errors_total={errors:.0f}"
+    return (f"in_use={out:.0f}/{size + over:.0f}  checkouts/s={checkouts * 2:4.0f}  "
+            f"wait={wait * 1000:6.0f} ms  held={held * 1000:6.0f} ms  timeouts_total={timeouts:.0f}")
 
 
 async def main(url: str) -> None:

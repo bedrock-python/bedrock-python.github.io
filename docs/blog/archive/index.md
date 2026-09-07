@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [What to monitor in a SQLAlchemy connection pool](../posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool.md) *(Tutorials)*
 - **2026-09-07** — [What happens when Kafka is down for an hour?](../posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour.md) *(Design)*
 - **2026-09-07** — [Redis health checks: PING is not the whole story](../posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story.md) *(Design)*
 - **2026-09-07** — [Your models and your schema have drifted. Would CI notice?](../posts/2026-09-07-your-models-and-your-schema-have-drifted.md) *(Design)*

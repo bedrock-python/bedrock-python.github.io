@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">What to monitor in a SQLAlchemy connection pool</h3>
+      <p class="bdr-card__lede">
+        Eight workers, a pool of four, and a database that got twenty times slower halfway
+        through. Connections in use read 4/4 before the incident and 4/4 after it; everything
+        that mattered was in the other three series.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Three Redis servers answered PONG: a healthy one, one full at its memory limit
         with eviction off, and a read-only replica. Two of them fail every SET, and readiness
         stayed green for all three.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-your-models-and-your-schema-have-drifted/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Your models and your schema have drifted. Would CI notice?</h3>
-      <p class="bdr-card__lede">
-        Six kinds of schema drift against three suites. The pipeline everybody runs,
-        alembic upgrade head, caught none of them; autogenerate caught three; a check
-        constraint, an enum member and a server default need checks Alembic never performs.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
