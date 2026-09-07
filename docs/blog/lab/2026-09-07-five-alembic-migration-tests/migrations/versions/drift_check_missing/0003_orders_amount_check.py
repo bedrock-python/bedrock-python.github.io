@@ -16,4 +16,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_constraint("amount_positive", "orders", type_="check")
+    # Nothing to drop: the upgrade never created it. This is the drift and nothing else.
+    pass

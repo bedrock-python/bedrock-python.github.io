@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Your models and your schema have drifted. Would CI notice?](../posts/2026-09-07-your-models-and-your-schema-have-drifted.md) *(Design)*
 - **2026-09-07** — [Stop passing AsyncSession everywhere](../posts/2026-09-07-stop-passing-asyncsession-everywhere.md) *(Design)*
 - **2026-09-07** — [The anatomy of a production Python gRPC server](../posts/2026-09-07-the-anatomy-of-a-production-grpc-server.md) *(Tutorials)*
 - **2026-09-07** — [Graceful Kafka consumer shutdown in Kubernetes](../posts/2026-09-07-graceful-kafka-consumer-shutdown.md) *(Tutorials)*

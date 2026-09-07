@@ -6,7 +6,7 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-VARIANTS = ["clean", "enum_leftover", "wrong_name_in_downgrade", "drift", "two_heads", "bad_name"]
+VARIANTS = os.environ.get("VARIANTS", "clean,enum_leftover,wrong_name_in_downgrade,drift,two_heads,bad_name").split(",")
 FILES = sys.argv[1:] or ["tests/test_plain_ci.py", "tests/test_by_hand.py", "tests/test_gauntlet.py"]
 MARK = {"passed": "pass", "failed": "FAIL", "error": "ERROR", "skipped": "skip"}
 

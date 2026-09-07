@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-your-models-and-your-schema-have-drifted/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Your models and your schema have drifted. Would CI notice?</h3>
+      <p class="bdr-card__lede">
+        Six kinds of schema drift against three suites. The pipeline everybody runs,
+        alembic upgrade head, caught none of them; autogenerate caught three; a check
+        constraint, an enum member and a server default need checks Alembic never performs.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-stop-passing-asyncsession-everywhere/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -80,19 +92,6 @@ hide:
         message, answered UNIMPLEMENTED when Kubernetes asked whether it was serving, and
         cancelled a request mid-flight on every deploy. Each part of the production server,
         and the status code a client gets with it and without it.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-graceful-kafka-consumer-shutdown/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">Graceful Kafka consumer shutdown in Kubernetes</h3>
-      <p class="bdr-card__lede">
-        Every rollout sends the consumer SIGTERM mid-batch. Measured: a loop that exits on the
-        signal left three messages to be processed twice and made its replacement wait 29.6 s
-        for a rebalance; the same loop under a lifecycle finished the batch, committed, left the
-        group, exited in 0.45 s, and the replacement was working in 0.31 s with no duplicates.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

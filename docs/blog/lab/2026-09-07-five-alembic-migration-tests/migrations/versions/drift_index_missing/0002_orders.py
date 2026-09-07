@@ -27,6 +27,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("idx_orders_user_id", table_name="orders")
     op.drop_table("orders")
     order_status.drop(op.get_bind())  # the table is gone; the type it used is not, unless we say so

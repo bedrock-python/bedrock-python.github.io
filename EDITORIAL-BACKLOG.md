@@ -105,7 +105,7 @@ what to do at 03:00.
 |---|---|---|---|---|
 | 25 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | drafting, blocked on pg-partsmith #64 |
 | 26 | The production checklist for aiokafka | Tutorials | Effectively-once | drafting, blocked on aiokafka-foundation-kit #22 |
-| 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | drafting, blocked on alembic-gauntlet #37 |
+| 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | review |
 | 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | review |
 | 29 | Stop passing AsyncSession everywhere | Design | Database | review |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |

@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-your-models-and-your-schema-have-drifted/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Your models and your schema have drifted. Would CI notice?</h3>
+    <p class="bdr-card__lede">
+      Six kinds of schema drift, each one revision away from a clean history, against three
+      suites. The pipeline everybody runs, alembic upgrade head, caught none of them.
+      Autogenerate caught three. A check constraint, an enum member and a server default need
+      checks Alembic does not perform at all.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-stop-passing-asyncsession-everywhere/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>
