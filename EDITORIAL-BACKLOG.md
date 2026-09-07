@@ -34,6 +34,13 @@ LinkedIn that points to it. They are not the same text.
 - A post that quotes a library feature is checked against the library's current docs before drafting. Where a plan below says "check", the feature may not exist yet; the post then proposes it and the library gets an issue.
 - A bug found while measuring is fixed first. File the issue in the library's repo with the repro and the cause, mark the post `drafting, blocked on <repo> #N`, move on to a post that does not depend on it. When the fix is released, re-measure against the new version and continue the post as if the bug had never existed. A published post never carries a caveat paragraph about a library's bug.
 
+## Deferred
+
+Posts 9, 42 and 36 are deferred by decision, not by dependency. They are the three AI-tooling
+posts: the two mattermind ones would need a Mattermost instance and an LLM key, and the local-model
+comparison would need models pulled locally. The series ships as the 45 measured posts; these three
+stay in the plan for whenever they are wanted.
+
 ## Series
 
 Forty-eight posts in priority order, not on a calendar. They are written
@@ -72,7 +79,7 @@ Full briefs below.
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | review |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | review |
-| 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned, needs a Mattermost instance and an LLM key |
+| 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | deferred |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
 | 11 | What every production Python microservice reimplements | Meta | Bedrock | review |
 | 12 | Twelve repositories, one engineering standard | Meta | Bedrock | review |
@@ -114,7 +121,7 @@ what to do at 03:00.
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | review |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | review |
 | 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | review |
-| 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned, needs local models pulled |
+| 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | deferred |
 
 ### Block 4: design and the organisation
 
@@ -128,7 +135,7 @@ posts about how the libraries are built.
 | 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | review |
 | 40 | Idempotency across a chain of microservices | Design | Reliability | review |
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | review |
-| 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned, needs a Mattermost instance and an LLM key |
+| 42 | Why enterprise AI answers need citations | Tools | AI tooling | deferred |
 | 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | review |
 | 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | review |
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | review |
