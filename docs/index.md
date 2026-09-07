@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Idempotency keys: the part everyone gets wrong</h3>
+      <p class="bdr-card__lede">
+        A result cache looks like an idempotency key until a client retries while the first
+        request is still running. Measured against a provider that counts its charges: the
+        cache charged twice with identical responses, a reservation charged once, a reused key
+        with a different amount was refused, a failed action was not cached, and a missing store
+        failed open. What the key promises, and why it is still not a lock.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -86,18 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-twelve-libraries-one-standard/">
-      <div class="bdr-card__visual bdr-card__visual--meta"></div>
-      <div class="bdr-card__eyebrow">Meta</div>
-      <h3 class="bdr-card__title">Twelve libraries, one engineering standard, no monorepo</h3>
-      <p class="bdr-card__lede">
-        Sixteen repositories that agree on tooling, CI, releases, security settings and docs, without
-        a monorepo. A Copier template that renders a green library in five seconds, a script that
-        makes a GitHub repository match, Release Please with Trusted Publishing, and the three
-        lessons the standard now carries so nobody learns them twice.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

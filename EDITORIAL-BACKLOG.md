@@ -67,9 +67,9 @@ Full briefs below.
 | 1 | Timeouts are not deadlines | Design | Reliability | review |
 | 2 | The five migration tests every project should run in CI | Tutorials | Database | review |
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | review |
-| 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | planned |
+| 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | review |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | review |
-| 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
+| 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | drafting, blocked on omni-box #29 |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | review |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
@@ -197,7 +197,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 4. Idempotency keys: the part everyone gets wrong
 
-- File: `docs/blog/posts/YYYY-MM-DD-idempotency-keys-the-part-everyone-gets-wrong.md`
+- File: `docs/blog/posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md`, lab in `docs/blog/lab/2026-09-07-idempotency-keys/`
+- Found while measuring, fixed and released as idempotency-kit 0.3.0 (2026-09-07): two concurrent callers both ran the action ([#26](https://github.com/bedrock-python/idempotency-kit/issues/26) → #28, in-flight reservation with `wait`/`raise`/`run`), and a reused key with a different payload replayed the first result ([#27](https://github.com/bedrock-python/idempotency-kit/issues/27) → #30, fingerprints). The post's first table shows the old behaviour as `in_flight='run'`, which is still available explicitly.
 - Search title: *Idempotency Keys: The Part Everyone Gets Wrong*
 - LinkedIn hook: "An Idempotency-Key is not a distributed lock."
 - Tags: `idempotency-kit`, `idempotency`, `http`, `redis`, `distributed-systems`
