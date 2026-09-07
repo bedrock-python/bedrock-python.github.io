@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [The anatomy of a production Python gRPC server](../posts/2026-09-07-the-anatomy-of-a-production-grpc-server.md) *(Tutorials)*
 - **2026-09-07** — [Graceful Kafka consumer shutdown in Kubernetes](../posts/2026-09-07-graceful-kafka-consumer-shutdown.md) *(Tutorials)*
 - **2026-09-07** — [Idempotency for background jobs and Kafka consumers](../posts/2026-09-07-idempotency-for-jobs-and-consumers.md) *(Tutorials)*
 - **2026-09-07** — [When should Redis fail open?](../posts/2026-09-07-when-should-redis-fail-open.md) *(Design)*

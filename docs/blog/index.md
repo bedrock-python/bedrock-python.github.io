@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">The anatomy of a production Python gRPC server</h3>
+    <p class="bdr-card__lede">
+      A six-line grpc.aio server handed the caller the database password in a status message,
+      answered UNIMPLEMENTED when Kubernetes asked whether it was serving, and cancelled a
+      request mid-flight on every deploy. Each part of the production server, the incident it
+      prevents, and the status code a client actually gets with it and without it.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-graceful-kafka-consumer-shutdown/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">The anatomy of a production Python gRPC server</h3>
+      <p class="bdr-card__lede">
+        A six-line grpc.aio server handed the caller the database password in a status
+        message, answered UNIMPLEMENTED when Kubernetes asked whether it was serving, and
+        cancelled a request mid-flight on every deploy. Each part of the production server,
+        and the status code a client gets with it and without it.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-graceful-kafka-consumer-shutdown/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -82,20 +95,6 @@ hide:
         replays a batch. Measured against Redis: two mails and one, both workers waiting on one
         reservation, the key that named the delivery instead of the effect, and where the inbox
         stops and the key begins.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-when-should-redis-fail-open/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">When should Redis fail open?</h3>
-      <p class="bdr-card__lede">
-        Redis is gone and it is your cache, your rate limiter and your idempotency store. The
-        decision is per use, not per client, and what the client owes every use is finding out
-        fast. Measured against a paused Redis: twenty seconds for a default redis-py client,
-        half a second with timeouts and zero retries, and what each use should do with that
-        half second.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
