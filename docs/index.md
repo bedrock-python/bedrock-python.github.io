@@ -59,6 +59,17 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Mapping Python exceptions to gRPC status codes</h3>
+      <p class="bdr-card__lede">
+        Eleven exceptions through four configurations of one gRPC server. With no map
+        every failure is UNKNOWN and two of them put a database password in the status details.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-transport-independent-errors/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +90,6 @@ hide:
         A gateway calling orders calling payments, each with one retry. Without a key
         that travels, one user action produced four charges; with a key minted per attempt,
         two; with one key per intent, one.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-reliability-is-not-retry-3/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Reliability is not retry=3</h3>
-      <p class="bdr-card__lede">
-        Forty callers against one dependency. On a healthy one, retries cost nothing;
-        on a failing one they tripled its load for zero extra successes. What a deadline, a
-        budget and a breaker each add.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

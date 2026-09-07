@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Mapping Python exceptions to gRPC status codes</h3>
+    <p class="bdr-card__lede">
+      Eleven exceptions through four configurations of one gRPC server. With no map every
+      failure is UNKNOWN and two of the eleven put a database password in the status details.
+      With a map, each code tells the caller what to do — and the rule for which messages may
+      be published is mechanical enough to check in review.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-transport-independent-errors/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

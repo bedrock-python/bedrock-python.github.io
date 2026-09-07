@@ -129,7 +129,7 @@ posts about how the libraries are built.
 | 40 | Idempotency across a chain of microservices | Design | Reliability | review |
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | review |
 | 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
-| 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | planned |
+| 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | review |
 | 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | review |
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | review |
 | 46 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | drafting, blocked on servicewright #51 |
