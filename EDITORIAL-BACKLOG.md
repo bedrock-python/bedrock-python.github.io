@@ -88,7 +88,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | review |
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
-| 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
+| 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | review |
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
@@ -405,7 +405,8 @@ and a cap, retry only idempotent methods, treat 429 and 503 differently, and
 treat a connection error differently from a read timeout because the request
 may have been received. Measures a naive retry loop against the checklist
 version on a deliberately flaky server: total time, duplicate requests,
-thundering herd. Closes on clientwright.
+thundering herd. Closes on clientwright. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-retry-after-backoff-and-jitter.md`, lab in `docs/blog/lab/2026-09-07-retry-after-backoff-jitter/`.
 
 ### 19. Why application lifecycle should not belong to FastAPI
 

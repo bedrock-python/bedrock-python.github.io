@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-retry-after-backoff-and-jitter/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Retry-After, backoff and jitter: what a production HTTP client actually does</h3>
+      <p class="bdr-card__lede">
+        The four-line retry loop makes eight decisions wrong. Measured: a Retry-After honoured
+        and ignored, fifty callers whose fixed backoff put 49 retries in one ten-millisecond
+        window, a timed-out POST received once by default and three times when declared
+        idempotent, and which of six answers a client should retry at all.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -86,19 +99,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-exactly-once-effects/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Exactly-once is a lie; exactly-once effects are not</h3>
-      <p class="bdr-card__lede">
-        Kafka cannot make your database update exactly once. Measured against PostgreSQL and
-        Kafka: the two dual-write windows, an outbox relay that crashes after the send and
-        publishes twice, and an inbox that receives both copies and writes the invoice once.
-        At-least-once delivery plus one unique key per boundary is the only exactly-once there
-        is, and it is the one you wanted.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

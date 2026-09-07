@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-retry-after-backoff-and-jitter/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Retry-After, backoff and jitter: what a production HTTP client actually does</h3>
+    <p class="bdr-card__lede">
+      The four-line retry loop makes eight decisions wrong. Measured: a Retry-After honoured
+      and ignored, fifty callers whose fixed backoff put 49 retries in one ten-millisecond
+      window, a timed-out POST received once by default and three times when declared
+      idempotent, and which of six answers a client should retry at all.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>
