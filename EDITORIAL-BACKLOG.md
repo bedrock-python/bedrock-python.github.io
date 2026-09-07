@@ -89,7 +89,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | review |
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | review |
-| 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
+| 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | review |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | review |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
 | 22 | When should Redis fail open? | Design | Reliability | drafting, blocked on redis-client-kit #25 |
@@ -417,7 +417,8 @@ FastAPI to hang them on, so they grow their own. The framework is an
 entrypoint; the runtime is the host; startup order, warmup, readiness and
 drain belong to the host. Shows the same service twice, lifecycle in
 FastAPI and lifecycle in a host, and the diff when a worker is added.
-Closes on servicewright. Expect disagreement; that is the point.
+Closes on servicewright. Expect disagreement; that is the point. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md`, lab in `docs/blog/lab/2026-09-07-lifecycle-not-fastapi/`.
 
 ### 20. gRPC channels should not be pooled by address alone
 

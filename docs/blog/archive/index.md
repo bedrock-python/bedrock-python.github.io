@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Why application lifecycle should not belong to FastAPI](../posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md) *(Design)*
 - **2026-09-07** — [Transactional inbox: the other half of the outbox pattern](../posts/2026-09-07-transactional-inbox.md) *(Design)*
 - **2026-09-07** — [gRPC channels should not be pooled by address alone](../posts/2026-09-07-grpc-channels-pooled-by-identity.md) *(Design)*
 - **2026-09-07** — [Retry-After, backoff and jitter: what a production HTTP client actually does](../posts/2026-09-07-retry-after-backoff-and-jitter.md) *(Tutorials)*

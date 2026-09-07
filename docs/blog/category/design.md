@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Why application lifecycle should not belong to FastAPI](../posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md)
 - **2026-09-07** — [Transactional inbox: the other half of the outbox pattern](../posts/2026-09-07-transactional-inbox.md)
 - **2026-09-07** — [gRPC channels should not be pooled by address alone](../posts/2026-09-07-grpc-channels-pooled-by-identity.md)
 - **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md)
