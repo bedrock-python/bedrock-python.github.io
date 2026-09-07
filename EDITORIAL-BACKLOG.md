@@ -126,7 +126,7 @@ posts about how the libraries are built.
 | 37 | Warmup, readiness and liveness are three different things | Design | Lifecycle | review |
 | 38 | Transport-independent errors: one domain error, HTTP and gRPC responses | Design | Lifecycle | drafting, blocked on servicewright #50 |
 | 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | planned |
-| 40 | Idempotency across a chain of microservices | Design | Reliability | planned |
+| 40 | Idempotency across a chain of microservices | Design | Reliability | drafting |
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | review |
 | 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
 | 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | planned |
@@ -134,7 +134,7 @@ posts about how the libraries are built.
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | review |
 | 46 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | drafting, blocked on servicewright #51 |
 | 47 | Reliability is not `retry=3` | Design | Reliability | review |
-| 48 | How I start a production-grade Python library in 2026 | Meta | Bedrock | planned |
+| 48 | How I start a production-grade Python library in 2026 | Meta | Bedrock | drafting, blocked on python-library-template #7 |
 
 ## Briefs: block 1
 
