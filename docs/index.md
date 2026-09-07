@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">What happens when Kafka is down for an hour?</h3>
+      <p class="bdr-card__lede">
+        A paused broker, twenty events and two designs. The request path was told three
+        times that a send had failed, and one of those three was delivered anyway; the outbox
+        spent no retries and drained the backlog in one cycle.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Six kinds of schema drift against three suites. The pipeline everybody runs,
         alembic upgrade head, caught none of them; autogenerate caught three; a check
         constraint, an enum member and a server default need checks Alembic never performs.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-stop-passing-asyncsession-everywhere/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Stop passing AsyncSession everywhere</h3>
-      <p class="bdr-card__lede">
-        The most-repeated parameter in an async SQLAlchemy codebase is not a parameter: it
-        is a pooled connection, a transaction and an identity map with no owner. Measured: an
-        order committed with no outbox row, and five of six requests failing on a pool of two.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

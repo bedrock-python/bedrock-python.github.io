@@ -94,7 +94,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
 | 22 | When should Redis fail open? | Design | Reliability | review |
 | 23 | AI code review should not be fully autonomous | Tools | AI tooling | review |
-| 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | drafting, blocked on omni-box #32 |
+| 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | review |
 
 ### Block 3: operations
 

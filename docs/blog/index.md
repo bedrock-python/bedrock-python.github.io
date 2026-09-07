@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">What happens when Kafka is down for an hour?</h3>
+    <p class="bdr-card__lede">
+      A paused broker, twenty events and two designs. The request path was told three times
+      that a send had failed, and one of those three was delivered anyway. The outbox kept its
+      rows pending, spent no retries, and drained the whole backlog in one cycle when the
+      broker came back.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

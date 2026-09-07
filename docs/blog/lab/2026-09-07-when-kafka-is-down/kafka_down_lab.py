@@ -34,11 +34,14 @@ async def statuses(session_factory) -> dict:
     return {f"{status}/attempts={attempts}": n for status, attempts, n in rows}
 
 
-async def on_topic(bootstrap: str) -> int:
+async def on_topic(bootstrap: str) -> str:
     consumer = AIOKafkaConsumer(TOPIC, bootstrap_servers=bootstrap, group_id=f"audit-{uuid.uuid4().hex[:6]}", auto_offset_reset="earliest", enable_auto_commit=False)
     await consumer.start()
     try:
-        return sum(len(r) for r in (await consumer.getmany(timeout_ms=3000)).values())
+        batches = await consumer.getmany(timeout_ms=3000)
+        records = [r for batch in batches.values() for r in batch]
+        direct = [r for r in records if b'"direct"' in r.value]
+        return f"{len(records)} ({len(direct)} of them from the request path)"
     finally:
         await consumer.stop()
 
@@ -64,7 +67,23 @@ async def main(db_url: str, bootstrap: str, kafka_wrapped) -> None:
         async with session_factory() as session, session.begin():
             await OutboxPublisher(PostgresOutboxRepository(session, model_class=OutboxEventDB), broker, publish_timeout=5.0).publish_batch(worker_id="relay-1", batch_size=batch_size)
 
+    # A service publishing from the request path has a producer already connected.
+    direct = AIOKafkaProducer(bootstrap_servers=bootstrap, request_timeout_ms=2000)
+    await direct.start()
+    await direct.send_and_wait(TOPIC, value=b'{"warmup": true}')
     kafka_wrapped.pause()
+
+    print("\n--- three events published straight from the request path, while Kafka is gone ---")
+    for i in range(3):
+        started = time.perf_counter()
+        try:
+            await asyncio.wait_for(direct.send_and_wait(TOPIC, value=b'{"direct": %d}' % i), timeout=10)
+            outcome = "sent"
+        except Exception as error:
+            outcome = f"{type(error).__name__}: {str(error)[:60]}"
+        print(f"  request {i + 1}: {outcome} after {time.perf_counter() - started:.1f} s")
+    await direct.stop()
+
     print("\n--- Kafka paused; the relay keeps ticking every cycle ---")
     t0 = time.perf_counter()
     for cycle in range(1, 8):
