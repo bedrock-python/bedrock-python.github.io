@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Publishing to PyPI without API tokens</h3>
+      <p class="bdr-card__lede">
+        A PyPI token in a repository secret is a password with no expiry and no audit
+        trail. The whole Trusted Publishing pipeline from a merged pull request to a wheel, as
+        it ran for six libraries today.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Range-partitioning by time normally costs you the primary key. A time-ordered
         id removes the problem: single-column key, one partition scanned for an id range, and
         three kinds of id that do not fit.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Why gRPC interceptors break on streaming RPCs</h3>
-      <p class="bdr-card__lede">
-        An interceptor that works for unary calls reports 0 ms for a 609 ms stream,
-        counts no errors while it fails, and loses its request id before the first item
-        arrives. What the four RPC kinds actually require.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

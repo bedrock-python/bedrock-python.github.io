@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Publishing to PyPI without API tokens</h3>
+    <p class="bdr-card__lede">
+      A PyPI token in a repository secret is a password with no expiry and no audit trail.
+      Trusted Publishing replaces it with an identity: repository, workflow and environment,
+      checked by PyPI on every upload. The whole pipeline from a merged pull request to a
+      wheel, as it ran for six libraries today, including the escape hatch.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>
