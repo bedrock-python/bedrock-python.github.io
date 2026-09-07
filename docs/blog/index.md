@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="libraries" href="posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
+    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
+    <div class="bdr-card__eyebrow">Libraries</div>
+    <h3 class="bdr-card__title">One lifecycle for HTTP, gRPC, workers and cron jobs</h3>
+    <p class="bdr-card__lede">
+      An API, a scheduler and a worker are one application with three ways for work to
+      enter, and most codebases give each its own startup, readiness and shutdown. One
+      AppSpec run as one process and as two, every lifecycle call printed: bind in order,
+      readiness after the last bind, drain in reverse, the pool closed last, exit 0, and
+      the split into two deployments costing one dictionary.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-retries-can-make-an-outage-worse/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

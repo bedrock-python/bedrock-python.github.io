@@ -85,7 +85,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 |---|---|---|---|---|
 | 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | review |
 | 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
-| 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | planned |
+| 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | review |
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | planned |
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
@@ -375,7 +375,8 @@ presents the host-and-entrypoints model: one lifecycle, shared DI scopes,
 warmup and readiness, entrypoints that can run in one process or be split
 across deployments without a code change. Shows a FastAPI app and a
 scheduler under one host, then the same code as two deployments. Closes on
-servicewright.
+servicewright. Drafted 2026-09-07: `docs/blog/posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron.md`,
+lab in `docs/blog/lab/2026-09-07-one-lifecycle/`.
 
 ### 16. Transactional inbox: the other half of the outbox pattern
 

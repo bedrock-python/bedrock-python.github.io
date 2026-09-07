@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
+      <div class="bdr-card__visual bdr-card__visual--libraries"></div>
+      <div class="bdr-card__eyebrow">Libraries</div>
+      <h3 class="bdr-card__title">One lifecycle for HTTP, gRPC, workers and cron jobs</h3>
+      <p class="bdr-card__lede">
+        An API, a scheduler and a worker are one application with three ways for work to
+        enter, and most codebases give each its own startup, readiness and shutdown. One
+        AppSpec run as one process and as two, every lifecycle call printed: bind in order,
+        readiness after the last bind, drain in reverse, the pool closed last, exit 0, and
+        the split into two deployments costing one dictionary.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-retries-can-make-an-outage-worse/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -87,18 +101,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough</h3>
-      <p class="bdr-card__lede">
-        Transaction pooling takes the session away, and everything that lived on it goes with
-        it. Measured on PgBouncer 1.25: a bare SET leaking to the next client, the prepared
-        statement error that stopped happening in 1.22, the one startup parameter that refuses
-        every connection, and the configuration that survived the table.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

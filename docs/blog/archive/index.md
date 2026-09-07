@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [One lifecycle for HTTP, gRPC, workers and cron jobs](../posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron.md) *(Libraries)*
 - **2026-09-07** — [Retries can make an outage worse: designing a retry budget](../posts/2026-09-07-retries-can-make-an-outage-worse.md) *(Design)*
 - **2026-09-07** — [Idempotency keys: the part everyone gets wrong](../posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md) *(Design)*
 - **2026-09-07** — [PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough](../posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy.md) *(Tutorials)*
