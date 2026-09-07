@@ -1,0 +1,3 @@
+# The renders themselves: 450 MB of PNG, rebuilt by generate_images.py from the
+# prompts beside it. What the site serves lives in docs/assets/blog as webp.
+images/
