@@ -130,7 +130,7 @@ posts about how the libraries are built.
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | planned |
 | 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
 | 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | planned |
-| 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | planned |
+| 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | review |
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | planned |
 | 46 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | planned |
 | 47 | Reliability is not `retry=3` | Design | Reliability | planned |

@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">UUIDv7 as a PostgreSQL partition key</h3>
+      <p class="bdr-card__lede">
+        Range-partitioning by time normally costs you the primary key. A time-ordered
+        id removes the problem: single-column key, one partition scanned for an id range, and
+        three kinds of id that do not fit.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Two probes and a route polled every 100 ms through a warmup, a dependency
         outage and a SIGTERM. Readiness went false while liveness stayed true, and requests
         kept succeeding for two seconds afterwards.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-partition-retention-is-not-drop-table/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Partition retention is not DROP TABLE</h3>
-      <p class="bdr-card__lede">
-        A retention job dropped a partition it did not create and, using CASCADE to get
-        past a refusal, removed all seventeen foreign keys from another table. What retention
-        looks like with ownership, a plan and a grace period in front of it.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

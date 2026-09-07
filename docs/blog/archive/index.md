@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [UUIDv7 as a PostgreSQL partition key](../posts/2026-09-07-uuidv7-as-a-postgresql-partition-key.md) *(Design)*
 - **2026-09-07** — [Why gRPC interceptors break on streaming RPCs](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md) *(Design)*
 - **2026-09-07** — [Warmup, readiness and liveness are three different things](../posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things.md) *(Design)*
 - **2026-09-07** — [Partition retention is not DROP TABLE](../posts/2026-09-07-partition-retention-is-not-drop-table.md) *(Design)*

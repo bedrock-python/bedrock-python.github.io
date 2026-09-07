@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">UUIDv7 as a PostgreSQL partition key</h3>
+    <p class="bdr-card__lede">
+      Range-partitioning by time normally costs you the primary key: every unique constraint
+      has to contain the partition column. A time-ordered id removes the problem instead.
+      Measured: single-column primary key accepted, one partition scanned for an id range,
+      four for the same range on a timestamp column, and three kinds of id that do not fit.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>
