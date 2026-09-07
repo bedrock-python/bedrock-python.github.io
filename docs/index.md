@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-testing-migrations-with-testcontainers/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Testing database migrations with Testcontainers: up, down and up again</h3>
+      <p class="bdr-card__lede">
+        From an empty tests directory to a green CI job that walks every Alembic revision forward,
+        back and forward again against a real PostgreSQL: the session-scoped container, the two
+        pytest settings that are not optional, the fifteen-line env.py contract with SET LOCAL,
+        the test file, the workflow, and what it costs.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
       <div class="bdr-card__visual bdr-card__visual--tools"></div>
       <div class="bdr-card__eyebrow">Tools</div>
@@ -85,19 +98,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-transactional-inbox/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Transactional inbox: the other half of the outbox pattern</h3>
-      <p class="bdr-card__lede">
-        A broker delivers at least once, and a handler can fail halfway. An inbox row per message,
-        in the same transaction as the effect, answers both. Measured: a duplicate delivery
-        that ran no handler, and a handler that fails after its write under four ack
-        strategies, two of which lose the message and two of which end with exactly one
-        invoice.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

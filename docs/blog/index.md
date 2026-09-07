@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-testing-migrations-with-testcontainers/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Testing database migrations with Testcontainers: up, down and up again</h3>
+    <p class="bdr-card__lede">
+      From an empty tests directory to a green CI job that walks every Alembic revision forward,
+      back and forward again against a real PostgreSQL: the session-scoped container, the two
+      pytest settings that are not optional, the fifteen-line env.py contract with SET LOCAL,
+      the test file, the workflow, and what it costs.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tools" href="posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
     <div class="bdr-card__visual bdr-card__visual--tools"></div>
     <div class="bdr-card__eyebrow">Tools</div>

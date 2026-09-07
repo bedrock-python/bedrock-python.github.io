@@ -84,7 +84,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
 | 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | review |
-| 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
+| 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | review |
 | 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | review |
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | review |
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
@@ -365,7 +365,8 @@ The hands-on companion to post 2. A pytest fixture starts PostgreSQL in a
 container, walks every revision upgrade, downgrade, upgrade, and asserts the
 schema at each step. Covers what running `alembic upgrade head` once in CI
 does not catch, how long the loop takes on a real history, and how to keep it
-under a minute. Closes on alembic-gauntlet as the fixture the post builds.
+under a minute. Closes on alembic-gauntlet as the fixture the post builds. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-testing-migrations-with-testcontainers.md`, reusing post 2's lab.
 
 ### 15. One lifecycle for HTTP, gRPC, workers and cron jobs
 

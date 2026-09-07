@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Testing database migrations with Testcontainers: up, down and up again](../posts/2026-09-07-testing-migrations-with-testcontainers.md) *(Tutorials)*
 - **2026-09-07** — [AI code review should not be fully autonomous](../posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md) *(Tools)*
 - **2026-09-07** — [Why application lifecycle should not belong to FastAPI](../posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md) *(Design)*
 - **2026-09-07** — [Transactional inbox: the other half of the outbox pattern](../posts/2026-09-07-transactional-inbox.md) *(Design)*
