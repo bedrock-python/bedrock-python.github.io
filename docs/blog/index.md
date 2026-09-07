@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">The Unit of Work pattern in SQLAlchemy 2</h3>
+    <p class="bdr-card__lede">
+      Every first repository has a commit in it, and a use case that touches two of them can
+      leave half of itself in the database. Measured: users=1 orders=0 with self-committing
+      repositories, users=0 orders=0 with a unit of work, a read-only block that discards a
+      write, a savepoint that keeps one failed step from poisoning the transaction, and the
+      use case under test with a list instead of PostgreSQL.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-circuit-breakers-should-be-per-origin/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

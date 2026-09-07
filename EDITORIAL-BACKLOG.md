@@ -91,7 +91,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
-| 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | planned |
+| 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
 | 22 | When should Redis fail open? | Design | Reliability | planned |
 | 23 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
 | 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | planned |
@@ -431,7 +431,8 @@ Before and after code. The use case owns the transaction boundary; the
 repositories work inside it; commit happens once; rollback happens on any
 exception; the async version is the same shape. Covers what goes wrong when
 repositories commit for themselves and how to test a use case with a fake
-unit of work. Closes on sqlalchemy-foundation-kit.
+unit of work. Closes on sqlalchemy-foundation-kit. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-unit-of-work-in-sqlalchemy-2.md`, lab in `docs/blog/lab/2026-09-07-unit-of-work-sqlalchemy-2/`.
 
 ### 22. When should Redis fail open?
 

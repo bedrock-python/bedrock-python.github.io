@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">The Unit of Work pattern in SQLAlchemy 2</h3>
+      <p class="bdr-card__lede">
+        Every first repository has a commit in it, and a use case that touches two of them can
+        leave half of itself in the database. Measured: users=1 orders=0 with self-committing
+        repositories, users=0 orders=0 with a unit of work, a read-only block that discards a
+        write, a savepoint that keeps one failed step from poisoning the transaction, and the
+        use case under test with a list instead of PostgreSQL.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -86,19 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
-      <div class="bdr-card__visual bdr-card__visual--libraries"></div>
-      <div class="bdr-card__eyebrow">Libraries</div>
-      <h3 class="bdr-card__title">One lifecycle for HTTP, gRPC, workers and cron jobs</h3>
-      <p class="bdr-card__lede">
-        An API, a scheduler and a worker are one application with three ways for work to
-        enter, and most codebases give each its own startup, readiness and shutdown. One
-        AppSpec run as one process and as two, every lifecycle call printed: bind in order,
-        readiness after the last bind, drain in reverse, the pool closed last, exit 0, and
-        the split into two deployments costing one dictionary.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
