@@ -6,6 +6,6 @@ One script starting three Redis 7 containers on one network: a healthy primary, 
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "redis-client-kit[settings]" "testcontainers[redis]"
+uv pip install --python .venv/bin/python "redis-client-kit[settings]==0.2.0" "testcontainers[redis]"
 .venv/bin/python health_lab.py
 ```

@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Redis health checks: PING is not the whole story</h3>
+      <p class="bdr-card__lede">
+        Three Redis servers answered PONG: a healthy one, one full at its memory limit
+        with eviction off, and a read-only replica. Two of them fail every SET, and readiness
+        stayed green for all three.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-your-models-and-your-schema-have-drifted/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,19 +91,6 @@ hide:
         The most-repeated parameter in an async SQLAlchemy codebase is not a parameter: it
         is a pooled connection, a transaction and an identity map with no owner. Measured: an
         order committed with no outbox row, and five of six requests failing on a pool of two.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">The anatomy of a production Python gRPC server</h3>
-      <p class="bdr-card__lede">
-        A six-line grpc.aio server handed the caller the database password in a status
-        message, answered UNIMPLEMENTED when Kubernetes asked whether it was serving, and
-        cancelled a request mid-flight on every deploy. Each part of the production server,
-        and the status code a client gets with it and without it.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

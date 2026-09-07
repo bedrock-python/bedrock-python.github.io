@@ -1,4 +1,4 @@
-"""PING is not the whole story: three Redis servers that answer PONG and cannot do their job."""
+"""PING is not the whole story: three Redis servers that answer PONG, and what a write probe says."""
 
 import asyncio
 import time
@@ -26,15 +26,20 @@ def client_for(c: DockerContainer) -> Redis:
 
 
 async def probe(label: str, redis: Redis) -> None:
-    ping = await check_async_redis_health(redis)          # the kit's check: PING
+    started = time.perf_counter()
+    ping = await check_async_redis_health(redis)                            # the default: PING
+    ping_ms = (time.perf_counter() - started) * 1000
+    started = time.perf_counter()
+    write = await check_async_redis_health(redis, write_key="shop:health")  # opt-in: PING, then SET
+    write_ms = (time.perf_counter() - started) * 1000
     try:
-        started = time.perf_counter()
         await redis.set("shop:health-probe", "1", ex=5)
         value = await redis.get("shop:health-probe")
-        rw = f"ok ({(time.perf_counter() - started) * 1000:.1f} ms)" if value == b"1" else f"read back {value!r}"
+        raw = "ok" if value == b"1" else f"read back {value!r}"
     except (ResponseError, ReadOnlyError) as error:
-        rw = f"{type(error).__name__}: {str(error)[:60]}"
-    print(f"  {label:<42} PING health={ping!s:<6} write+read probe: {rw}")
+        raw = f"{type(error).__name__}: {str(error)[:52]}"
+    print(f"  {label:<42} PING health={ping!s:<6} ({ping_ms:6.1f} ms)   "
+          f"write_key health={write!s:<6} ({write_ms:6.1f} ms)   a plain SET: {raw}")
 
 
 async def main(primary, full, replica) -> None:
@@ -60,7 +65,11 @@ async def main(primary, full, replica) -> None:
     primary.get_wrapped_container().pause()
     started = time.perf_counter()
     ping = await check_async_redis_health(healthy)
-    print(f"  {'paused primary':<42} PING health={ping!s:<6} decided in {time.perf_counter() - started:.2f} s")
+    ping_ms = (time.perf_counter() - started) * 1000
+    started = time.perf_counter()
+    write = await check_async_redis_health(healthy, write_key="shop:health")
+    print(f"  {'paused primary':<42} PING health={ping!s:<6} ({ping_ms:6.1f} ms)   "
+          f"write_key health={write!s:<6} ({(time.perf_counter() - started) * 1000:6.1f} ms)")
     primary.get_wrapped_container().unpause()
     for c in (healthy, stuffed, rep):
         await c.aclose()

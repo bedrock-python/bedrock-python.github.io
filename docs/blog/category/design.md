@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Redis health checks: PING is not the whole story](../posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story.md)
 - **2026-09-07** — [Your models and your schema have drifted. Would CI notice?](../posts/2026-09-07-your-models-and-your-schema-have-drifted.md)
 - **2026-09-07** — [Stop passing AsyncSession everywhere](../posts/2026-09-07-stop-passing-asyncsession-everywhere.md)
 - **2026-09-07** — [When should Redis fail open?](../posts/2026-09-07-when-should-redis-fail-open.md)

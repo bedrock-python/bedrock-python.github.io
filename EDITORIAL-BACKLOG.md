@@ -113,7 +113,7 @@ what to do at 03:00.
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | review |
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | drafting, blocked on grpc-client-kit #19 |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | drafting, blocked on sqlalchemy-foundation-kit #26 |
-| 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | drafting, blocked on redis-client-kit #31 |
+| 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | review |
 | 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
 
 ### Block 4: design and the organisation

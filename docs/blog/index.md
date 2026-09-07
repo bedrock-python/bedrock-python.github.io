@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Redis health checks: PING is not the whole story</h3>
+    <p class="bdr-card__lede">
+      Three Redis servers answered PONG: a healthy one, one full at its memory limit with
+      eviction off, and a read-only replica. Two of them fail every SET the application makes,
+      and readiness stayed green for all three. What a readiness check owes the caller, and
+      what a write probe costs.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-your-models-and-your-schema-have-drifted/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>
