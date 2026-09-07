@@ -86,15 +86,15 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 13 | Retries can make an outage worse: designing a retry budget | Design | Reliability | review |
 | 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
 | 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | review |
-| 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
+| 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | review |
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | review |
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | review |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
-| 22 | When should Redis fail open? | Design | Reliability | planned |
+| 22 | When should Redis fail open? | Design | Reliability | drafting, blocked on redis-client-kit #25 |
 | 23 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
-| 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | planned |
+| 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | drafting, blocked on omni-box #32 |
 
 ### Block 3: operations
 
@@ -386,7 +386,8 @@ The post covers the consumer side: at-least-once delivery, the inbox table
 keyed by message id, processing inside the consumer's own transaction, and
 why the library must accept a caller-owned transaction rather than open its
 own. Also what the inbox does not solve: side effects outside the database.
-Shows the consumer code and the duplicate-delivery test. Closes on omni-box.
+Shows the consumer code and the duplicate-delivery test. Closes on omni-box. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-transactional-inbox.md`, lab in `docs/blog/lab/2026-09-07-transactional-inbox/`.
 
 ### 17. Circuit breakers should be per origin, not per client
 

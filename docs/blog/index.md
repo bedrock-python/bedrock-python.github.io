@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-transactional-inbox/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Transactional inbox: the other half of the outbox pattern</h3>
+    <p class="bdr-card__lede">
+      A broker delivers at least once, and a handler can fail halfway. An inbox row per message,
+      in the same transaction as the effect, answers both. Measured: a duplicate delivery
+      that ran no handler, and a handler that fails after its write under four ack
+      strategies, two of which lose the message and two of which end with exactly one
+      invoice.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-grpc-channels-pooled-by-identity/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

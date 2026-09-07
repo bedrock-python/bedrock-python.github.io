@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-transactional-inbox/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Transactional inbox: the other half of the outbox pattern</h3>
+      <p class="bdr-card__lede">
+        A broker delivers at least once, and a handler can fail halfway. An inbox row per message,
+        in the same transaction as the effect, answers both. Measured: a duplicate delivery
+        that ran no handler, and a handler that fails after its write under four ack
+        strategies, two of which lose the message and two of which end with exactly one
+        invoice.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-grpc-channels-pooled-by-identity/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -86,19 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">The Unit of Work pattern in SQLAlchemy 2</h3>
-      <p class="bdr-card__lede">
-        Every first repository has a commit in it, and a use case that touches two of them can
-        leave half of itself in the database. Measured: users=1 orders=0 with self-committing
-        repositories, users=0 orders=0 with a unit of work, a read-only block that discards a
-        write, a savepoint that keeps one failed step from poisoning the transaction, and the
-        use case under test with a list instead of PostgreSQL.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

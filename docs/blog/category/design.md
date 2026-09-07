@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Transactional inbox: the other half of the outbox pattern](../posts/2026-09-07-transactional-inbox.md)
 - **2026-09-07** — [gRPC channels should not be pooled by address alone](../posts/2026-09-07-grpc-channels-pooled-by-identity.md)
 - **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md)
 - **2026-09-07** — [Exactly-once is a lie; exactly-once effects are not](../posts/2026-09-07-exactly-once-effects.md)
