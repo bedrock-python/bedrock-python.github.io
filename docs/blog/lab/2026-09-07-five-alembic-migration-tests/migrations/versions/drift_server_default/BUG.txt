@@ -1,0 +1,1 @@
+0004 gives is_active server_default false; the model says true. Autogenerate does not compare server defaults unless asked.

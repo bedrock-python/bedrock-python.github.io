@@ -1,0 +1,1 @@
+0002 never creates idx_orders_user_id; the model has index=True. Autogenerate sees this.

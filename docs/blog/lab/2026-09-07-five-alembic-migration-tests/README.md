@@ -22,6 +22,8 @@ VARIANT=drift .venv/bin/python -m pytest -q         # one buggy history
 | `tests/test_by_hand.py` | the five checks written against Alembic's own API; plumbing in `tests/helpers.py` |
 | `tests/test_gauntlet.py` | the same five inherited from `alembic_gauntlet.MigrationTestBase` |
 | `run_matrix.py` | runs the suite once per variant and prints the pass/fail matrix |
+| `migrations/versions/drift_*/` | six kinds of schema drift for the drift post: a column type, a server default, a missing index, an extra column, a missing check constraint, a changed enum |
+| `tests/test_drift_extras.py` | the three checks for what autogenerate does not compare: server defaults, check constraints, enum members |
 
 The `VARIANT` environment variable selects `migrations/versions/<variant>` through Alembic's
 `version_locations`; `clean` is the default.

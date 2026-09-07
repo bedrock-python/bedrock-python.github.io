@@ -3,7 +3,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, MetaData, Numeric, String, func, text
+from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, ForeignKey, MetaData, Numeric, String, func, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 # Every constraint gets a deterministic name, so a downgrade can drop what an upgrade created.
@@ -31,6 +31,7 @@ class User(Base):
 
 class Order(Base):
     __tablename__ = "orders"
+    __table_args__ = (CheckConstraint("amount > 0", name="amount_positive"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
