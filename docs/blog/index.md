@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Should your application create Kafka topics on startup?</h3>
+    <p class="bdr-card__lede">
+      A producer wrote to a topic name with a typo in it and got no error: the broker created
+      it, with one partition, and every message went there while the real consumer sat idle.
+      What the broker, the application and a person each get wrong, and why a declared partition
+      count is documentation after the first deploy.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

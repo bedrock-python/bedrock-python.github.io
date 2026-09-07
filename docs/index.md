@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Should your application create Kafka topics on startup?</h3>
+      <p class="bdr-card__lede">
+        A producer wrote to a topic name with a typo and got no error: the broker
+        created it with one partition, and the real consumer sat idle. What the broker, the
+        application and a person each get wrong.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         An interceptor that works for unary calls reports 0 ms for a 609 ms stream,
         counts no errors while it fails, and loses its request id before the first item
         arrives. What the four RPC kinds actually require.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Warmup, readiness and liveness are three different things</h3>
-      <p class="bdr-card__lede">
-        Two probes and a route polled every 100 ms through a warmup, a dependency
-        outage and a SIGTERM. Readiness went false while liveness stayed true, and requests
-        kept succeeding for two seconds afterwards.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
