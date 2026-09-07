@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-stop-passing-asyncsession-everywhere/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Stop passing AsyncSession everywhere</h3>
+    <p class="bdr-card__lede">
+      The most-repeated parameter in an async SQLAlchemy codebase is not a parameter: it is a
+      pooled connection, a transaction and an identity map with no owner. Measured: an order
+      committed with no outbox row, five of six requests failing on a pool of two because each
+      held two connections, and an INSERT that vanished inside a read block.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

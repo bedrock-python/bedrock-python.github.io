@@ -107,7 +107,7 @@ what to do at 03:00.
 | 26 | The production checklist for aiokafka | Tutorials | Effectively-once | drafting, blocked on aiokafka-foundation-kit #22 |
 | 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | drafting, blocked on alembic-gauntlet #37 |
 | 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | review |
-| 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
+| 29 | Stop passing AsyncSession everywhere | Design | Database | review |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |
 | 31 | Partition retention is not DROP TABLE | Design | Database | planned |
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | review |
@@ -511,7 +511,9 @@ owner. The post argues sessions are resources scoped to a request or a job,
 handed out by the container, with the transaction owned by the use case, and
 shows what the code looks like when repositories receive a session from the
 unit of work rather than from the caller. Closes on
-sqlalchemy-foundation-kit's DI integration.
+sqlalchemy-foundation-kit's DI integration. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-stop-passing-asyncsession-everywhere.md`, lab in
+`docs/blog/lab/2026-09-07-stop-passing-asyncsession-everywhere/`.
 
 ### 30. Idempotency for background jobs and Kafka consumers
 

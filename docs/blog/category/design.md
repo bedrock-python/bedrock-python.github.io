@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Stop passing AsyncSession everywhere](../posts/2026-09-07-stop-passing-asyncsession-everywhere.md)
 - **2026-09-07** — [When should Redis fail open?](../posts/2026-09-07-when-should-redis-fail-open.md)
 - **2026-09-07** — [Why application lifecycle should not belong to FastAPI](../posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md)
 - **2026-09-07** — [Transactional inbox: the other half of the outbox pattern](../posts/2026-09-07-transactional-inbox.md)

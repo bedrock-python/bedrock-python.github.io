@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-stop-passing-asyncsession-everywhere/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Stop passing AsyncSession everywhere</h3>
+      <p class="bdr-card__lede">
+        The most-repeated parameter in an async SQLAlchemy codebase is not a parameter: it
+        is a pooled connection, a transaction and an identity map with no owner. Measured: an
+        order committed with no outbox row, and five of six requests failing on a pool of two.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -81,20 +93,6 @@ hide:
         signal left three messages to be processed twice and made its replacement wait 29.6 s
         for a rebalance; the same loop under a lifecycle finished the batch, committed, left the
         group, exited in 0.45 s, and the replacement was working in 0.31 s with no duplicates.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-for-jobs-and-consumers/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">Idempotency for background jobs and Kafka consumers</h3>
-      <p class="bdr-card__lede">
-        Queues deliver at least once by design, and every worker meets the crash before the ack,
-        the visibility timeout that hands one job to two workers, and the rebalance that
-        replays a batch. Measured against Redis: two mails and one, both workers waiting on one
-        reservation, the key that named the delivery instead of the effect, and where the inbox
-        stops and the key begins.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
