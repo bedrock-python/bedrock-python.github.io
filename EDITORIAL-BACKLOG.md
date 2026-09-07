@@ -103,17 +103,17 @@ what to do at 03:00.
 
 | # | Post | Category | Series | Status |
 |---|---|---|---|---|
-| 25 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | planned |
-| 26 | The production checklist for aiokafka | Tutorials | Effectively-once | planned |
+| 25 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | drafting, blocked on pg-partsmith #64 |
+| 26 | The production checklist for aiokafka | Tutorials | Effectively-once | drafting, blocked on aiokafka-foundation-kit #22 |
 | 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | drafting, blocked on alembic-gauntlet #37 |
-| 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | planned |
+| 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | drafting |
 | 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |
 | 31 | Partition retention is not DROP TABLE | Design | Database | planned |
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | review |
-| 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
+| 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | drafting, blocked on grpc-client-kit #19 |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | drafting, blocked on sqlalchemy-foundation-kit #26 |
-| 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | planned |
+| 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | drafting, blocked on redis-client-kit #31 |
 | 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
 
 ### Block 4: design and the organisation
