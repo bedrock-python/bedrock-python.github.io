@@ -72,7 +72,7 @@ Full briefs below.
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | review |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | review |
-| 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
+| 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned, needs a Mattermost instance and an LLM key |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
 | 11 | What every production Python microservice reimplements | Meta | Bedrock | review |
 | 12 | Twelve repositories, one engineering standard | Meta | Bedrock | review |
@@ -114,7 +114,7 @@ what to do at 03:00.
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | review |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | review |
 | 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | review |
-| 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
+| 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned, needs local models pulled |
 
 ### Block 4: design and the organisation
 
@@ -128,7 +128,7 @@ posts about how the libraries are built.
 | 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | review |
 | 40 | Idempotency across a chain of microservices | Design | Reliability | review |
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | review |
-| 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |
+| 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned, needs a Mattermost instance and an LLM key |
 | 43 | Mapping Python exceptions to gRPC status codes without leaking internals | Tutorials | Clients | review |
 | 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | review |
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | review |
