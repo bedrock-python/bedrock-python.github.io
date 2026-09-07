@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-idempotency-for-jobs-and-consumers/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Idempotency for background jobs and Kafka consumers</h3>
+    <p class="bdr-card__lede">
+      Queues deliver at least once by design, and every worker meets the crash before the ack,
+      the visibility timeout that hands one job to two workers, and the rebalance that
+      replays a batch. Measured against Redis: two mails and one, both workers waiting on one
+      reservation, the key that named the delivery instead of the effect, and where the inbox
+      stops and the key begins.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-when-should-redis-fail-open/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

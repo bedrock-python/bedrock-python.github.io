@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-for-jobs-and-consumers/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Idempotency for background jobs and Kafka consumers</h3>
+      <p class="bdr-card__lede">
+        Queues deliver at least once by design, and every worker meets the crash before the ack,
+        the visibility timeout that hands one job to two workers, and the rebalance that
+        replays a batch. Measured against Redis: two mails and one, both workers waiting on one
+        reservation, the key that named the delivery instead of the effect, and where the inbox
+        stops and the key begins.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-when-should-redis-fail-open/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -86,18 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
-      <div class="bdr-card__visual bdr-card__visual--tools"></div>
-      <div class="bdr-card__eyebrow">Tools</div>
-      <h3 class="bdr-card__title">AI code review should not be fully autonomous</h3>
-      <p class="bdr-card__lede">
-        A bot that posts twelve comments on every merge request trains the team to skip all
-        twelve within a week. The alternative is a pipeline where the model drafts and a person
-        decides: brief, dispatch, polish, post, with nothing reaching the merge request that a
-        human did not read first. Why the polish stage is the design, not a safety valve.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

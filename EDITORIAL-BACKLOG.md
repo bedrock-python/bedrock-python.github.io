@@ -108,7 +108,7 @@ what to do at 03:00.
 | 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | drafting, blocked on alembic-gauntlet #37 |
 | 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | planned |
 | 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
-| 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | planned |
+| 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |
 | 31 | Partition retention is not DROP TABLE | Design | Database | planned |
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | planned |
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
@@ -519,7 +519,8 @@ Idempotency beyond HTTP: the message key or the job id as the idempotency
 key, redelivery after a crash, result caching for jobs, TTL against
 retention. Also when a consumer needs both an inbox and an idempotency
 store, and when one is enough. Shows a consumer that survives a redelivery
-and a job runner that survives a restart. Closes on idempotency-kit.
+and a job runner that survives a restart. Closes on idempotency-kit. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-idempotency-for-jobs-and-consumers.md`, lab in `docs/blog/lab/2026-09-07-idempotency-for-jobs-and-consumers/`.
 
 ### 31. Partition retention is not DROP TABLE
 
