@@ -87,7 +87,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 14 | Testing database migrations with Testcontainers: up, down and up again | Tutorials | Database | planned |
 | 15 | One lifecycle for HTTP, gRPC, workers and cron jobs | Libraries | Lifecycle | review |
 | 16 | Transactional inbox: the other half of the outbox pattern | Design | Effectively-once | planned |
-| 17 | Circuit breakers should be per origin, not per client | Design | Reliability | planned |
+| 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | planned |
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
@@ -395,7 +395,8 @@ client opens for all three and the healthy two go dark. The post keys the
 breaker on the origin, then works through half-open probes, what counts as a
 failure (5xx, timeouts, 429 and connection errors are not the same), and how
 breaker state should survive a client migration. Shows the failure scenario
-reproduced against three local servers. Closes on clientwright.
+reproduced against three local servers. Closes on clientwright. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-circuit-breakers-should-be-per-origin.md`, lab in `docs/blog/lab/2026-09-07-circuit-breakers-per-origin/`.
 
 ### 18. Retry-After, backoff and jitter: what a production HTTP client actually does
 

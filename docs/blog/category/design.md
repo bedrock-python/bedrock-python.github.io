@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md)
 - **2026-09-07** — [Exactly-once is a lie; exactly-once effects are not](../posts/2026-09-07-exactly-once-effects.md)
 - **2026-09-07** — [Retries can make an outage worse: designing a retry budget](../posts/2026-09-07-retries-can-make-an-outage-worse.md)
 - **2026-09-07** — [Idempotency keys: the part everyone gets wrong](../posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md)

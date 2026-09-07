@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md) *(Design)*
 - **2026-09-07** — [Exactly-once is a lie; exactly-once effects are not](../posts/2026-09-07-exactly-once-effects.md) *(Design)*
 - **2026-09-07** — [One lifecycle for HTTP, gRPC, workers and cron jobs](../posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron.md) *(Libraries)*
 - **2026-09-07** — [Retries can make an outage worse: designing a retry budget](../posts/2026-09-07-retries-can-make-an-outage-worse.md) *(Design)*

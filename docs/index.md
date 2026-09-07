@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Circuit breakers should be per origin, not per client</h3>
+      <p class="bdr-card__lede">
+        One client, three upstreams, one of them down: a breaker keyed on the client refused
+        half the requests to the two that were fine. Measured: the origin as the key, which
+        responses should trip a breaker and which should not, attempts against logical calls
+        under retries, and the single probe after the recovery timeout.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-exactly-once-effects/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -87,19 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-retries-can-make-an-outage-worse/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Retries can make an outage worse: designing a retry budget</h3>
-      <p class="bdr-card__lede">
-        Three attempts at every hop of a four-layer chain is 81 requests at the bottom for one
-        at the top, measured: 810 for ten callers against a dead origin. A per-origin retry
-        budget bounds the storm from the first request, a circuit breaker stops it once the
-        dependency has proven it is down, and the one case where the budget makes every caller
-        fail is the case where it should.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
