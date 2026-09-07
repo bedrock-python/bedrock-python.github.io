@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
+      <div class="bdr-card__visual bdr-card__visual--tools"></div>
+      <div class="bdr-card__eyebrow">Tools</div>
+      <h3 class="bdr-card__title">AI code review should not be fully autonomous</h3>
+      <p class="bdr-card__lede">
+        A bot that posts twelve comments on every merge request trains the team to skip all
+        twelve within a week. The alternative is a pipeline where the model drafts and a person
+        decides: brief, dispatch, polish, post, with nothing reaching the merge request that a
+        human did not read first. Why the polish stage is the design, not a safety valve.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -86,19 +99,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-grpc-channels-pooled-by-identity/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">gRPC channels should not be pooled by address alone</h3>
-      <p class="bdr-card__lede">
-        grpc.aio bakes credentials, options, compression and the interceptor chain into a
-        channel at creation, so a pool keyed by host:port hands one caller another caller's
-        configuration. Measured: an audit client with no retry policy that retried three times,
-        a chain rebuilt per request minting a channel per call, and keepalive as part of the
-        identity.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

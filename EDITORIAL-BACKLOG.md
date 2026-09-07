@@ -93,7 +93,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | review |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
 | 22 | When should Redis fail open? | Design | Reliability | drafting, blocked on redis-client-kit #25 |
-| 23 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
+| 23 | AI code review should not be fully autonomous | Tools | AI tooling | review |
 | 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | drafting, blocked on omni-box #32 |
 
 ### Block 3: operations
@@ -454,7 +454,9 @@ Why every comment the reviewer writes passes a human before it is posted.
 The failure modes of autonomous bots: noise, confident nonsense, reviewer
 fatigue, and the maintainer who stops reading. The pipeline brief, review,
 human polish, post, and what the polish step actually changes, with real
-examples of comments that were dropped. Closes on mr-review.
+examples of comments that were dropped. Closes on mr-review. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
+pipeline from the tool's documentation; real dropped-comment examples need a review session and are the maintainer's to add).
 
 ### 24. What happens when Kafka is down for an hour?
 
