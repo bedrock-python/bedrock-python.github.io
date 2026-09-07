@@ -193,31 +193,6 @@ def generate(client, job: Job, args, attempt_log: list[str]) -> Outcome:
     return Outcome(job.slug, "ok", "; ".join(attempt_log), tokens, time.monotonic() - started)
 
 
-def gateway_client_kwargs(env_file: Path) -> dict:
-    """Point the OpenAI SDK at the gateway proxy, reading the app's own .env for the three values.
-
-    OPENAI__API_TOKENS is a JSON map of name -> token; any of them authenticates upstream, so take
-    the first. The token is returned for the client to use and is never printed.
-    """
-    conf = {}
-    for line in env_file.read_text(encoding="utf-8").splitlines():
-        name, sep, value = line.strip().partition("=")
-        if sep and not name.startswith("#"):
-            conf[name] = value
-
-    tokens = json.loads(conf["OPENAI__API_TOKENS"])
-    if not tokens:
-        raise ValueError("OPENAI__API_TOKENS is empty")
-    name, token = next(iter(tokens.items()))
-    print(f"upstream token: {name}")
-
-    return {
-        "api_key": token,
-        "base_url": conf["OPENAI__URL"].rstrip("/") + "/v1",
-        "default_headers": {"X-PROXY-TARGET-DOMAIN": conf["OPENAI__TARGET_DOMAIN"]},
-    }
-
-
 def main() -> int:
     p = argparse.ArgumentParser(
         description="Render the blog article illustrations with the OpenAI images API.",
@@ -252,10 +227,6 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true", help="print what would be sent, call nothing")
     p.add_argument("--append", default=None, metavar="TEXT",
                    help="extra clause appended to every prompt in this run, for corrective re-renders")
-    p.add_argument("--via-gateway", action="store_true",
-                   help="route through the ai-gateway egress proxy instead of calling OpenAI directly")
-    p.add_argument("--env-file", type=Path, default=HERE.parents[1] / ".env",
-                   help="where --via-gateway reads OPENAI__URL, __TARGET_DOMAIN and __API_TOKENS")
     args = p.parse_args()
 
     prompts = read_prompts(args.prompts, args.only)
@@ -271,7 +242,7 @@ def main() -> int:
         jobs = [dataclasses.replace(job, prompt=f"{job.prompt}\n\n{args.append}") for job in jobs]
         print(f"appended to every prompt: {args.append}")
 
-    where = args.base_url or ("the gateway" if args.via_gateway else "api.openai.com")
+    where = args.base_url or "api.openai.com"
     print(f"{len(jobs)} post(s) -> {args.out}   via {where}")
     print(f"model={args.model} size={args.size} quality={args.quality} "
           f"background={args.background} format={args.format} variants={args.variants} "
@@ -286,19 +257,7 @@ def main() -> int:
 
     import openai
 
-    client_kwargs = {}
-    if args.base_url:
-        client_kwargs["base_url"] = args.base_url
-    if args.via_gateway:
-        # api.openai.com is not routable from the corporate network; the gateway's egress proxy
-        # is, and it forwards on an upstream token plus the domain to forward to.
-        try:
-            client_kwargs = gateway_client_kwargs(args.env_file)
-        except (OSError, KeyError, ValueError) as exc:
-            print(f"cannot read gateway settings from {args.env_file}: {exc}", file=sys.stderr)
-            return 1
-        print(f"via gateway: {client_kwargs['base_url']} -> "
-              f"{client_kwargs['default_headers']['X-PROXY-TARGET-DOMAIN']}")
+    client_kwargs = {"base_url": args.base_url} if args.base_url else {}
 
     try:
         client = openai.OpenAI(**client_kwargs)
