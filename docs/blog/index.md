@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-migrating-from-pg-partman/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Migrating from pg_partman to application-managed partitions</h3>
+    <p class="bdr-card__lede">
+      The question that stops the migration is what happens to the partitions that already
+      exist. Measured against pg_partman 5.5: the plan says nothing to do, both maintainers run
+      side by side without conflict, and after the switch a policy of its own creates one month
+      and retires one of pg_partman's — because ownership is decided by bounds, not names.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

@@ -125,7 +125,7 @@ posts about how the libraries are built.
 |---|---|---|---|---|
 | 37 | Warmup, readiness and liveness are three different things | Design | Lifecycle | review |
 | 38 | Transport-independent errors: one domain error, HTTP and gRPC responses | Design | Lifecycle | review |
-| 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | planned |
+| 39 | Migrating from pg_partman to application-managed partitions | Tutorials | Database | review |
 | 40 | Idempotency across a chain of microservices | Design | Reliability | review |
 | 41 | Should your application create Kafka topics on startup? | Design | Effectively-once | review |
 | 42 | Why enterprise AI answers need citations | Tools | AI tooling | planned |

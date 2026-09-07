@@ -3,6 +3,7 @@
 Step-by-step guides for using the Bedrock Python libraries in real production
 scenarios.
 
+- **2026-09-07** — [Migrating from pg_partman to application-managed partitions](../posts/2026-09-07-migrating-from-pg-partman.md)
 - **2026-09-07** — [Mapping Python exceptions to gRPC status codes](../posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes.md)
 - **2026-09-07** — [How to partition an existing PostgreSQL table](../posts/2026-09-07-how-to-partition-an-existing-postgresql-table.md)
 - **2026-09-07** — [Publishing to PyPI without API tokens](../posts/2026-09-07-publishing-to-pypi-without-api-tokens.md)

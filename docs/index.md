@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-migrating-from-pg-partman/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">Migrating from pg_partman to application-managed partitions</h3>
+      <p class="bdr-card__lede">
+        What happens to the partitions that already exist? Measured against pg_partman
+        5.5: nothing. Both maintainers run side by side, and ownership is decided by bounds
+        rather than names.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -78,18 +90,6 @@ hide:
         A service that speaks HTTP outward and gRPC inward has two answers for every
         failure. Seven calls through both transports: the same domain error, the same code, and
         the undeclared exception masked identically.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-across-a-chain-of-microservices/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Idempotency across a chain of microservices</h3>
-      <p class="bdr-card__lede">
-        A gateway calling orders calling payments, each with one retry. Without a key
-        that travels, one user action produced four charges; with a key minted per attempt,
-        two; with one key per intent, one.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
