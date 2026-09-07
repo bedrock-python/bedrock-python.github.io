@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Why gRPC interceptors break on streaming RPCs](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md)
 - **2026-09-07** — [Warmup, readiness and liveness are three different things](../posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things.md)
 - **2026-09-07** — [Partition retention is not DROP TABLE](../posts/2026-09-07-partition-retention-is-not-drop-table.md)
 - **2026-09-07** — [What happens when Kafka is down for an hour?](../posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour.md)

@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Why gRPC interceptors break on streaming RPCs</h3>
+    <p class="bdr-card__lede">
+      An interceptor that works for unary calls reports 0 ms for a 609 ms stream, counts no
+      errors while the stream fails, and loses its request id before the first item arrives.
+      One object inheriting all four gRPC interceptor base classes is registered for one kind
+      of call, silently. What the four kinds actually require.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

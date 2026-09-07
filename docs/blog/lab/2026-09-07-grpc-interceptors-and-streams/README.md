@@ -11,7 +11,7 @@ the caller is left holding afterwards.
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "grpc-client-kit==0.1.1"
+uv pip install --python .venv/bin/python "grpc-client-kit==0.1.2"
 .venv/bin/python interceptors_lab.py
 .venv/bin/python probe.py
 ```

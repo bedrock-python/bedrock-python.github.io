@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Why gRPC interceptors break on streaming RPCs</h3>
+      <p class="bdr-card__lede">
+        An interceptor that works for unary calls reports 0 ms for a 609 ms stream,
+        counts no errors while it fails, and loses its request id before the first item
+        arrives. What the four RPC kinds actually require.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         A retention job dropped a partition it did not create and, using CASCADE to get
         past a refusal, removed all seventeen foreign keys from another table. What retention
         looks like with ownership, a plan and a grace period in front of it.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-the-production-checklist-for-aiokafka/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">The production checklist for aiokafka</h3>
-      <p class="bdr-card__lede">
-        Ten items, each measured against a Kafka container: what auto-commit really
-        commits, what one bad message does to a JSON deserializer, and what happens to a
-        member whose batch outlives the poll interval.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
