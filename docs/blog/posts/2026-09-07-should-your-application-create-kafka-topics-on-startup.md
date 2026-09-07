@@ -14,6 +14,8 @@ tags:
 
 # Should your application create Kafka topics on startup?
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-should-your-application-create-kafka-topics-on-startup" role="img" aria-label="Three candidates can create the topic, and one of them makes a wrong one quietly" markdown="0"></div>
+
 Somebody has to create the topic. The three candidates are the broker, doing it automatically the first time anyone mentions a name; the application, doing it at startup; and a person, doing it through whatever process owns the cluster. Each of the three has a failure that shows up weeks later, and the one everybody meets first is a topic with one partition and a typo in its name, quietly created by a producer, receiving all the traffic nobody is reading.
 
 <!-- more -->

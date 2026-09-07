@@ -15,6 +15,8 @@ tags:
 
 # What happens when Kafka is down for an hour?
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-what-happens-when-kafka-is-down-for-an-hour" role="img" aria-label="An hour of outage: the direct path loses events, the durable one does not" markdown="0"></div>
+
 Not "is down for a second, and the retry catches it". An hour: a broker rolling badly, a disk full on every node, a network partition between availability zones. Every service that publishes events has an answer to this, and most of them are "we lose them and nobody notices until a customer asks where their order went". I paused a Kafka container and put twenty events through two designs. The request path was told three times that a send had failed, and one of those three was delivered anyway. The outbox lost nothing and spent no retries.
 
 <!-- more -->

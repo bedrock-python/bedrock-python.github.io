@@ -15,6 +15,8 @@ tags:
 
 # Idempotency keys: the part everyone gets wrong
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong" role="img" aria-label="The case that matters is the retry that arrives while the first request is still running" markdown="0"></div>
+
 An `Idempotency-Key` header is the most widely copied idea in payment APIs, and the most widely misimplemented. The version that gets written first is a result cache: look the key up, return the stored response if there is one, otherwise run the operation and store the result. It passes every test, because every test sends the second request after the first one finished. The one case an idempotency key exists for is the one where it does not: a client that timed out and retried while the first request is still running. I built a payment provider that counts its charges and sent it that case, under three implementations of the same key. The result cache charged the card twice.
 
 <!-- more -->

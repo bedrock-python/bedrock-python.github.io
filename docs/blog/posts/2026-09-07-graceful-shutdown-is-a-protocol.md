@@ -15,6 +15,8 @@ tags:
 
 # Graceful shutdown in Kubernetes is a protocol, not a signal handler
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-graceful-shutdown-is-a-protocol" role="img" aria-label="Stop being routed first, then drain, then finish, then exit" markdown="0"></div>
+
 Every web framework handles `SIGTERM`. It stops accepting connections, lets the requests already in flight finish, and exits cleanly. That is what "graceful" means in the changelog, and it is what I believed for years. Then I measured what happens to the requests that arrive in the second after the signal, which in Kubernetes is exactly the second in which they keep arriving, and the framework's graceful shutdown refused 44 of them. This post is that measurement, the four-step protocol a pod actually has to follow, the one step almost everyone skips, and the arithmetic that keeps the kubelet from killing you halfway through.
 
 <!-- more -->

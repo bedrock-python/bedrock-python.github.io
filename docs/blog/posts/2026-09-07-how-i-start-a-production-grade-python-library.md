@@ -14,6 +14,8 @@ tags:
 
 # How I start a production-grade Python library in 2026
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-how-i-start-a-production-grade-python-library" role="img" aria-label="One template stamps a complete library, and the gate is green in seconds" markdown="0"></div>
+
 Every library in this series started the same way: one command, forty-one files, and a green quality gate about three seconds later. That is not a boast about tooling, it is a claim about where the effort goes. The decisions that make a library maintainable — what the gate checks, who owns the version number, how it publishes, what the documentation is for — are made once and then applied by a template, so that the work on library number nine is the library and not the scaffolding.
 
 <!-- more -->

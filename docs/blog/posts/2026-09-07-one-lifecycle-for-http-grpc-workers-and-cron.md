@@ -15,6 +15,8 @@ tags:
 
 # One lifecycle for HTTP, gRPC, workers and cron jobs
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron" role="img" aria-label="One lifecycle spine, four different ways for work to enter" markdown="0"></div>
+
 An HTTP API, a gRPC server, a Kafka consumer and a nightly job are one application with four ways for work to enter it. Most codebases treat them as four applications: the API has FastAPI's lifespan, the consumer has a `while True` with its own signal handler, the cron job has a `main()` that opens a database connection and forgets to close it, and each has its own idea of what "ready" and "shutting down" mean. The plumbing is the same four times and it agrees with itself zero times. This post is the alternative, one lifecycle that hosts any number of entrypoints, and a measurement of what it does when the same service runs as one process and as two.
 
 <!-- more -->

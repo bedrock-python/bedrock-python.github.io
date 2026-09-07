@@ -14,6 +14,8 @@ tags:
 
 # Mapping Python exceptions to gRPC status codes without leaking internals
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-mapping-python-exceptions-to-grpc-status-codes" role="img" aria-label="Many exception types collapse into few status codes, with the internals filtered out" markdown="0"></div>
+
 gRPC has sixteen status codes and your service has a hundred exception types, so somebody has to write the map. Done badly, it produces two failures at once: callers cannot tell a retryable failure from a permanent one, and the exception message goes over the wire to whoever called. I sent eleven exceptions through four configurations of one server and read what the client got back. Two of the eleven contained a database password.
 
 <!-- more -->

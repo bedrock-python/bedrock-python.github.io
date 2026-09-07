@@ -15,6 +15,8 @@ tags:
 
 # The Unit of Work pattern in SQLAlchemy 2
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-unit-of-work-in-sqlalchemy-2" role="img" aria-label="One transaction boundary owned by the use case, one commit at its edge" markdown="0"></div>
+
 Every repository I have ever seen written for the first time has a `commit()` in it. It is there so that the id comes back, so that the next repository can use it, so that the test can read the row, and it is the single decision that makes a service's data model impossible to reason about, because a use case that touches two repositories now has two commits and a failure between them leaves half of itself in the database. The fix is old, it has a name, and SQLAlchemy 2 makes it short: the use case owns the transaction, the repositories write into it, and the commit happens once, at the end, or not at all. This post is that pattern with the before and after measured, plus the two things it makes possible that the self-committing repository cannot do: a read-only block that discards writes, and a use case that can be tested without a database.
 
 <!-- more -->

@@ -14,6 +14,8 @@ tags:
 
 # Why application lifecycle should not belong to FastAPI
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi" role="img" aria-label="The lifecycle does not belong to the HTTP framework" markdown="0"></div>
+
 FastAPI's `lifespan` is a good API. It is an async context manager: whatever you set up before the `yield` is the startup, whatever you do after it is the shutdown, and it runs exactly once per process. Every FastAPI service I have seen keeps its database pool, its warmup, its health checks and its clients there, and that is where the trouble starts, not because the lifespan does it badly but because the lifespan belongs to the HTTP framework and the application does not. The moment the same service needs a worker, a consumer or a nightly job, there is no lifespan for it, and the plumbing gets written a second time by hand. This post is the argument, with the two files it produces and the one file it should have been.
 
 <!-- more -->

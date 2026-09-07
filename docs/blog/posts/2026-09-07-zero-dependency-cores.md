@@ -14,6 +14,8 @@ tags:
 
 # Zero-dependency cores: why optional dependencies matter in infrastructure libraries
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-zero-dependency-cores" role="img" aria-label="A small core, and integrations docked only by the services that ask" markdown="0"></div>
+
 An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too. That is the whole argument, and it is usually made in the abstract. So I measured it: for eight libraries, what a bare install actually pulls in, how many megabytes it puts on disk, and how long importing it costs. The smallest core installs one distribution and imports in 1.2 milliseconds. The one with a hard database driver installs nine and imports in 117.
 
 <!-- more -->

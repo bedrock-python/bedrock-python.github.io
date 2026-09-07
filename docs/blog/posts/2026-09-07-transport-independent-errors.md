@@ -14,6 +14,8 @@ tags:
 
 # Transport-independent errors: one domain error, HTTP and gRPC responses
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-transport-independent-errors" role="img" aria-label="One domain error, two transports, two correct shapes" markdown="0"></div>
+
 A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift. The HTTP handler learns to return a problem document; the gRPC servicer learns to call `context.abort`; and somewhere between them a `NotFound` becomes a 404 in one place and an `UNKNOWN` with a stack trace in the other. The fix is not a shared helper. It is deciding that the domain raises errors that name what happened, and that each transport is the only thing that knows how to say it.
 
 <!-- more -->

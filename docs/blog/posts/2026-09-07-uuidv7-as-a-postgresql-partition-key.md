@@ -14,6 +14,8 @@ tags:
 
 # UUIDv7 as a PostgreSQL partition key
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-uuidv7-as-a-postgresql-partition-key" role="img" aria-label="A time-ordered id is the time axis, so the key you already have is the partition key" markdown="0"></div>
+
 Range-partitioning a table by time normally costs you the primary key: PostgreSQL requires every unique constraint to contain the partition column, so `PRIMARY KEY (id)` becomes `PRIMARY KEY (id, created_at)`, and every foreign key pointing at the table has to carry the timestamp too. A time-ordered id removes the problem instead of working around it. UUIDv7 puts 48 bits of Unix milliseconds in its leading bits, so the id *is* the time axis, and a table keyed by one can be partitioned on the key it already has.
 
 <!-- more -->

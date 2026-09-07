@@ -14,6 +14,8 @@ tags:
 
 # How to partition an existing PostgreSQL table without rewriting your application
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-how-to-partition-an-existing-postgresql-table" role="img" aria-label="Adopt the old table as DEFAULT and drain it window by window while writes continue" markdown="0"></div>
+
 `ALTER TABLE ... PARTITION BY` does not exist. Turning a live table into a partitioned one means making a new parent, adopting the old table as its DEFAULT partition, and draining it window by window while the application keeps writing. I did it to a two-million-row table with a writer inserting the whole time and a reader counting the oldest month, and measured every step: what it locked, how long it held, and what the application saw. The writer's statement never changed, and no row was ever in two places.
 
 <!-- more -->

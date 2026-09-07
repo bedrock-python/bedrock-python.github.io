@@ -14,6 +14,8 @@ tags:
 
 # Reliability is not `retry=3`
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-reliability-is-not-retry-3" role="img" aria-label="Retries are one lever among four, and the only one that adds load" markdown="0"></div>
+
 `retry=3` is the first thing anybody adds to an HTTP client and the last thing anybody revisits. It is not a reliability strategy; it is one knob, and on a normal day it is invisible, which is exactly why it survives every review. I pointed forty callers at one dependency and measured what each mechanism does: retries, a deadline, a retry budget and a circuit breaker, alone and together. On a healthy dependency the retries cost nothing at all. On a failing one, they tripled the load on the thing that was already failing.
 
 <!-- more -->

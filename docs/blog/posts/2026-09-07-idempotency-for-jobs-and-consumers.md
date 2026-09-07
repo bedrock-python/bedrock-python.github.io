@@ -15,6 +15,8 @@ tags:
 
 # Idempotency for background jobs and Kafka consumers
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-idempotency-for-jobs-and-consumers" role="img" aria-label="Queues deliver at least once; the dedupe gate is what makes the effect happen once" markdown="0"></div>
+
 The `Idempotency-Key` header gets the attention because it has a name and a spec, but the same problem arrives at every worker that takes jobs from a queue, and it arrives more often, because queues deliver at least once by design. A worker sends the invoice email, dies before it acknowledges the job, and the job is delivered again; a visibility timeout expires while a slow worker is still running and a second worker picks the job up in parallel; a Kafka partition is rebalanced and the last uncommitted batch is replayed. None of those is a bug in the queue. All of them are a duplicate effect unless something dedupes it, and that something is the same idempotency key as the HTTP case, with one difference in what it should be made of.
 
 <!-- more -->

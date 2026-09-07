@@ -16,6 +16,8 @@ tags:
 
 # What every production Python microservice reimplements
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-what-every-microservice-reimplements" role="img" aria-label="The same infrastructure code, rebuilt in every service, around a small product core" markdown="0"></div>
+
 Open the repository of any backend service that has been in production for a year and look for the code that is not the product. It is there, in every one of them, and it is the same code: a startup sequence, a health endpoint, a shutdown handler that mostly works, a retry helper, a timeout that means the wrong thing, a session factory, a base model, a Kafka producer that needs closing, an outbox nobody finished, a metrics registry, a tracing setup, and a test that runs the migrations once. None of it is what the service is for. All of it is what the service falls over without. This post is that list, why the usual answer to it, a framework, is the wrong shape, and a hundred-line service that has all of it and none of it, run end to end.
 
 <!-- more -->

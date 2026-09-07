@@ -14,6 +14,8 @@ tags:
 
 # Idempotency across a chain of microservices
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-idempotency-across-a-chain-of-microservices" role="img" aria-label="The key travels with the request all the way down, so one intent means one effect" markdown="0"></div>
+
 One idempotency key in one service is a solved problem. A chain is not, because the retry that matters happens at the top and the effect that matters happens at the bottom, with two or three hops in between that each have their own retry policy. I built a gateway calling orders calling payments, made the first attempt take longer than the caller's timeout, and counted the charges. Without a key that travels, one user request produced four charges. With one, it produced one.
 
 <!-- more -->

@@ -15,6 +15,8 @@ tags:
 
 # Testing database migrations with Testcontainers: up, down and up again
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-testing-migrations-with-testcontainers" role="img" aria-label="A disposable real database, walked forward, back and forward again" markdown="0"></div>
+
 [The five migration tests](2026-09-07-five-alembic-migration-tests.md) post made the case; this one is the setup, step by step, from an empty `tests/` directory to a green job in CI that walks every revision forward, back and forward again against a real PostgreSQL. It is short because the hard part, the contract between the test runner and `env.py`, is fifteen lines, and everything else is a fixture and a marker. The numbers at the end are what the whole thing costs on a laptop and in a GitHub Actions job.
 
 <!-- more -->

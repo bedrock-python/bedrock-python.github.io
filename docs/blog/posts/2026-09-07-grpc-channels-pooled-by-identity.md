@@ -14,6 +14,8 @@ tags:
 
 # gRPC channels should not be pooled by address alone
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-grpc-channels-pooled-by-identity" role="img" aria-label="A channel's identity is address plus credentials plus options plus interceptors" markdown="0"></div>
+
 A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary keyed by `host:port`. It is the obvious key and it is wrong, because `grpc.aio` bakes more than the address into a channel when it is created: the credentials, the channel options, the compression, and the interceptor chain, none of which can be changed afterwards. Two callers who agree on the address and disagree on any of those get one channel, and the second caller silently runs its calls through the first caller's configuration. I measured the cheapest version of that: an audit client with no retry policy that retried anyway, three times, because it shared an address with the orders client.
 
 <!-- more -->

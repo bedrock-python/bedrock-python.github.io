@@ -14,6 +14,8 @@ tags:
 
 # Partition retention is not DROP TABLE
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-partition-retention-is-not-drop-table" role="img" aria-label="A retention job may only retire what it can prove it created" markdown="0"></div>
+
 The retention job is the one line of the partitioning setup that nobody reviews. Find the partitions older than the window, drop them, run it nightly. I gave that job a table with fifteen monthly partitions, one partition somebody else had attached, and a second table with a foreign key into the data. It dropped a partition it did not create, and, on its way past a `DROP` that PostgreSQL refused, it removed all seventeen foreign key constraints from a table it was never asked to touch.
 
 <!-- more -->

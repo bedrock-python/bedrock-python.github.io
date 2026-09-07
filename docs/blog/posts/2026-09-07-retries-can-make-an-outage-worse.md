@@ -14,6 +14,8 @@ tags:
 
 # Retries can make an outage worse: designing a retry budget
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-retries-can-make-an-outage-worse" role="img" aria-label="Retries at every hop multiply; a budget turns the flood back into a trickle" markdown="0"></div>
+
 Three retries at every hop of a five-service call is not resilience. It is a multiplier, and it multiplies hardest exactly when the bottom service is failing, which is the one moment it can least afford the traffic. Everybody knows this in the abstract and configures `max_attempts=3` anyway, because three is a small number. So I built a chain of services that each retry three times, put a failing origin at the bottom, sent ten requests in at the top, and counted what arrived at the bottom. Eight hundred and ten. This post is that measurement, the two mechanisms that turn it back into a small number, and the case where the right answer is to let the caller fail.
 
 <!-- more -->

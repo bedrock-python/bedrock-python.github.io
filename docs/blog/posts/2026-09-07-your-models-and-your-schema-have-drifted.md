@@ -15,6 +15,8 @@ tags:
 
 # Your models and your schema have drifted. Would CI notice?
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-your-models-and-your-schema-have-drifted" role="img" aria-label="Two things that should be identical, offset by exactly the amount nobody measured" markdown="0"></div>
+
 The migration ran, the deploy went out, and the models and the database now say different things. Nothing failed, because the thing most pipelines run, `alembic upgrade head` against an empty database, has no opinion about whether the schema it produced matches the models. I built six kinds of drift, each one revision away from a clean history, and ran three suites against all of them. The pipeline everybody has caught none of the six. Autogenerate caught three. The other three needed checks that autogenerate does not perform at all.
 
 <!-- more -->

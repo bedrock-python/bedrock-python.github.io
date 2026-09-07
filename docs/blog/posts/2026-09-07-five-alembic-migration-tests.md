@@ -17,6 +17,8 @@ tags:
 
 # The five migration tests every Python project should run in CI
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-five-alembic-migration-tests" role="img" aria-label="A revision history walked up, back and up again, with five checks planted along it" markdown="0"></div>
+
 We test application code until the coverage badge is green, and then we deploy database migrations that have been run exactly once, on a laptop, in one direction. The `downgrade()` function gets its first real run during an incident, by whoever is on call, against production. I wanted to know how much of that risk a test suite can take away, so I built a small schema with a four-revision history, planted five bugs I have personally shipped, and ran three suites against each: the one most pipelines already have, five checks written by hand against Alembic's own API, and the same five as a library. The first suite caught one bug in five.
 
 <!-- more -->

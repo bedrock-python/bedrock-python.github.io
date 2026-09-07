@@ -15,6 +15,8 @@ tags:
 
 # The production checklist for aiokafka
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-the-production-checklist-for-aiokafka" role="img" aria-label="Each default checked against a real broker, not against the documentation" markdown="0"></div>
+
 aiokafka is a good client with defaults chosen for a library, not for your service, and the gap between the two is where the incidents live. This is the list I go through before a consumer or a producer ships, with each item measured against a Kafka container rather than quoted from the documentation: what the client refuses to be built with, what the serializers do to your keys, what a replacement consumer re-reads, what auto-commit commits, and what happens to a member whose batch takes too long.
 
 <!-- more -->

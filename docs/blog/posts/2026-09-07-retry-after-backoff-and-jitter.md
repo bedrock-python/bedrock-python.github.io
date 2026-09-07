@@ -15,6 +15,8 @@ tags:
 
 # Retry-After, backoff and jitter: what a production HTTP client actually does
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-retry-after-backoff-and-jitter" role="img" aria-label="Growing gaps and scattered timing, with the server allowed to set the next one" markdown="0"></div>
+
 The retry loop every codebase has is four lines: try, catch, sleep, try again. A production HTTP client's retry policy is a checklist of about eight decisions that the four lines silently made wrong. It sleeps a fixed time, so every caller that failed together retries together. It ignores the header where the server said when to come back. It retries a `POST` whose request may have been received. It retries a `500`, which is the server saying the request itself is broken. None of these is exotic; each one is a line in an incident review I have read. This post is the checklist, with each item measured against an origin built to misbehave in exactly one way.
 
 <!-- more -->

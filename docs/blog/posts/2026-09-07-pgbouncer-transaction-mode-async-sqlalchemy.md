@@ -15,6 +15,8 @@ tags:
 
 # PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy" role="img" aria-label="Transaction pooling reassigns the lane on every transaction, and session state does not survive it" markdown="0"></div>
+
 Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves the problem PgBouncer was installed for, and a class of things that used to be true stop being true. Session settings leak between requests. Prepared statements vanish or collide. The schema you set at connect time is silently not set. None of it shows up in a unit test, because the unit test talks to PostgreSQL. This post measures what transaction pooling takes away, which of the folklore fixes still matter on a current PgBouncer, which one actually breaks the connection, and the configuration that comes out the other end.
 
 <!-- more -->

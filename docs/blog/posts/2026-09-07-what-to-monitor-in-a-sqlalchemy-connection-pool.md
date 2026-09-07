@@ -15,6 +15,8 @@ tags:
 
 # What to monitor in a SQLAlchemy connection pool
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool" role="img" aria-label="The number everyone dashboards is the one that says nothing" markdown="0"></div>
+
 The dashboard everyone builds first shows connections in use, and it is the least useful of the numbers available. I ran eight workers against a pool of four, made the database three times slower halfway through, and watched what the metrics did. Connections in use said `4/4` before the slowdown and `4/4` after it, unchanged through the entire incident. Everything that mattered was in the other three series.
 
 <!-- more -->

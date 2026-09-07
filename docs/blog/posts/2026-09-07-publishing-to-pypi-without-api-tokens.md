@@ -14,6 +14,8 @@ tags:
 
 # Publishing to PyPI without API tokens: Trusted Publishing end to end
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-publishing-to-pypi-without-api-tokens" role="img" aria-label="A short-lived identity replaces a stored key" markdown="0"></div>
+
 A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it. Trusted Publishing replaces it with an identity: GitHub Actions presents a short-lived OIDC token that says which repository, which workflow and which environment is asking, and PyPI decides whether that combination is allowed to publish. Nothing to store, nothing to rotate, nothing to leak. Here is the whole pipeline as it runs in the Bedrock repositories, from a merged pull request to a wheel on PyPI, including the day it goes wrong.
 
 <!-- more -->

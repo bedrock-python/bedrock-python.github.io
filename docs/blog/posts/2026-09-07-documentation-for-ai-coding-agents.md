@@ -14,6 +14,8 @@ tags:
 
 # We started writing documentation for AI coding agents
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-documentation-for-ai-coding-agents" role="img" aria-label="One page written for a model, handed over in a single click" markdown="0"></div>
+
 In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people. Coding assistants wiring my libraries into services have invented a class that does not exist, called a synchronous function with `await`, and passed a session where the library wants an engine, each time with complete confidence, because the documentation they had read was written for someone who browses. This post is about what I changed: a page per library written for a model, the rules I put on it, the mechanics that hand it to a chat window in one click, and what it turned out to cost.
 
 <!-- more -->

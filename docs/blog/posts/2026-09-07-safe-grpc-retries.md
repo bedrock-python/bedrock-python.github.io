@@ -15,6 +15,8 @@ tags:
 
 # Safe gRPC retries: which status codes you should actually retry
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-safe-grpc-retries" role="img" aria-label="Some status codes make the retry bet safe; two of them do not" markdown="0"></div>
+
 `max_attempts=3` is the most common line in a gRPC client configuration and the least examined. A retry is a bet: the bet that the server did not do the work, so doing it again is free. Some status codes tell you the bet is safe. Most do not, and one of them, `INTERNAL`, tells you the opposite and gets retried anyway in more configs than I would like to admit having written. So I built a payments server that counts every charge it makes and ran retry policies against it. Retrying `INTERNAL` charged the card three times. Retrying `UNAVAILABLE`, the code everyone agrees is safe, also charged it three times in one of the two ways a server can produce it. This post is the table of codes, the measurements behind it, and the three settings that make a retry policy honest.
 
 <!-- more -->

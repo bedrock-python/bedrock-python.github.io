@@ -15,6 +15,8 @@ tags:
 
 # The anatomy of a production Python gRPC server
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-the-anatomy-of-a-production-grpc-server" role="img" aria-label="A six-line server versus the assembly you can actually run" markdown="0"></div>
+
 A `grpc.aio` server is six lines. A `grpc.aio` server you can put behind a load balancer, roll out three times a day and hand to an on-call rota is a different object, and the difference is not size, it is a list of decisions that each have an incident behind them. I built the six-line one and asked a client what it got. It handed the caller the database password. It answered nothing when Kubernetes asked whether it was alive. It cancelled a payment mid-flight on every deploy. Below is each part, the failure it prevents, and what a client actually sees with and without it.
 
 <!-- more -->

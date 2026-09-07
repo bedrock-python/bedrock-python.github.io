@@ -16,6 +16,8 @@ tags:
 
 # Why I stopped wrapping HTTP clients
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-i-stopped-wrapping-http-clients" role="img" aria-label="Keep the client; attach the policy beside it" markdown="0"></div>
+
 Every company I have worked at eventually wrote its own HTTP client wrapper. It starts as a retry helper, grows a config class, learns to emit metrics, and ends as `class HttpClient` in a shared package that every service imports and nobody can migrate away from. I have written three of them. I think the wrapper is the wrong abstraction, not because the things it does are wrong, but because of the one thing it does by accident: it takes the client away. This post is about what a wrapper actually owns, what that costs, measured, and the shape I use instead, where the policy lives beside the native client and the client stays exactly the class its library documents.
 
 <!-- more -->

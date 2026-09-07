@@ -15,6 +15,8 @@ tags:
 
 # When should Redis fail open?
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-when-should-redis-fail-open" role="img" aria-label="The absent dependency is one thing; what to do without it is three different decisions" markdown="0"></div>
+
 Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it. Refuse them all, and a cache outage is a full outage. Let them all through, and a rate limiter that is not there is a rate limiter that allows everything, and an idempotency store that is not there is a payment that might be charged twice. The question has no single answer, and this post's argument is that it should not have one: the decision belongs to each *use* of Redis, not to the client. What the client owes every one of them is the ability to find out fast that Redis is gone, and that is where the measurement starts.
 
 <!-- more -->

@@ -16,6 +16,8 @@ tags:
 
 # Twelve libraries, one engineering standard, no monorepo
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-twelve-libraries-one-standard" role="img" aria-label="Sixteen independent repositories, cut to one edge profile" markdown="0"></div>
+
 Bedrock Python is sixteen repositories: twelve libraries, two tools, a template and this site. Every library releases on its own schedule, has a zero-dependency core, and can be installed without knowing the others exist. That was the point of splitting them, and it is also the classic argument for a monorepo, because sixteen repositories means sixteen copies of every CI file, lint rule, release pipeline and security setting, drifting in sixteen directions. This post is how they stopped drifting: one template that renders a complete library in 1.3 seconds, one script that configures a GitHub repository the same way every time, and the three things I got wrong on the way.
 
 <!-- more -->

@@ -15,6 +15,8 @@ tags:
 
 # Stop passing AsyncSession everywhere
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-stop-passing-asyncsession-everywhere" role="img" aria-label="A resource with a lifetime and an owner, not a parameter threaded through frames" markdown="0"></div>
+
 Every async SQLAlchemy codebase I have worked on has the same signature, repeated at every level:
 
 ```python

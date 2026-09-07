@@ -14,6 +14,8 @@ tags:
 
 # Circuit breakers should be per origin, not per client
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-circuit-breakers-should-be-per-origin" role="img" aria-label="One breaker per upstream, not one breaker for the client" markdown="0"></div>
+
 A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong. The explanation fits in a sentence: after enough failures, stop calling for a while, then probe. The mistake fits in a variable name: the counter lives on the client, and the client talks to three services. One of them goes down, the counter fills, the breaker opens, and the two healthy services go dark with it. I have shipped that breaker, and I measured it again for this post: one client, three upstreams, one of them failing, ten rounds of traffic. The breaker keyed on the client refused half the requests to the two services that were fine.
 
 <!-- more -->

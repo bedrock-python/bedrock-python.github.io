@@ -17,6 +17,8 @@ tags:
 
 # Timeouts are not deadlines: how latency budgets break across microservices
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-06-timeouts-are-not-deadlines" role="img" aria-label="A shared budget shrinks along a chain; identical per-hop timeouts do not" markdown="0"></div>
+
 Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config. That is not a bug in any HTTP client. The number in the config is a timeout, the number the SLO talks about is a deadline, and the two only look alike. This post measures the gap three times: on one HTTP call, on one HTTP call with retries, and across a chain of three gRPC services where a card gets charged a full second after the customer saw an error. Then the fix, which is arithmetic, and the three places the arithmetic has to live.
 
 <!-- more -->

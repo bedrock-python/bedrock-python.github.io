@@ -15,6 +15,8 @@ tags:
 
 # Graceful Kafka consumer shutdown in Kubernetes
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-graceful-kafka-consumer-shutdown" role="img" aria-label="Finish the batch, commit, leave the group -- then the replacement starts immediately" markdown="0"></div>
+
 A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it `SIGTERM` in the middle of a batch. What it does in the next second decides two things: whether the messages it was holding get processed twice, and how long its replacement waits before it can process anything. I built the consumer most codebases run, a loop with a commit at the end of each batch and a signal handler that exits, and measured a rollout against it. The replacement waited thirty seconds for its first message, and three messages were handled twice. Then the same loop under a lifecycle that finishes the batch, commits and leaves the group: zero duplicates, and the replacement was working within a third of a second.
 
 <!-- more -->

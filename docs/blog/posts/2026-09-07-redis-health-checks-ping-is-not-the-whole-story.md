@@ -14,6 +14,8 @@ tags:
 
 # Redis health checks: PING is not the whole story
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-redis-health-checks-ping-is-not-the-whole-story" role="img" aria-label="Three servers answer the same, two of them cannot take a write" markdown="0"></div>
+
 A health check that answers `True` for a server that cannot take a write is worse than no health check, because something acts on it. I started three Redis servers: a healthy one, one that had filled its memory limit with eviction turned off, and a read-only replica. All three answered `PONG`. Two of them fail every `SET` the application makes. Readiness stayed green, the pods kept taking traffic, and the only thing that noticed was the code doing the writing.
 
 <!-- more -->

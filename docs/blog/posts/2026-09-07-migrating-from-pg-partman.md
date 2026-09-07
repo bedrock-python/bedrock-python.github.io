@@ -14,6 +14,8 @@ tags:
 
 # Migrating from pg_partman to application-managed partitions
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-migrating-from-pg-partman" role="img" aria-label="Partitions are owned by their bounds, so an inherited tree is adopted where it stands" markdown="0"></div>
+
 pg_partman is the default answer for PostgreSQL partition maintenance, and it is a good one when you can install extensions and your team is comfortable operating inside the database. Teams leave it for three reasons: a managed PostgreSQL that does not offer the extension, a Python team that would rather have the logic in the application where it is tested and deployed like everything else, and the wish to see what maintenance will do before it does it. The question that stops the migration is always the same: what happens to the partitions that already exist? The answer, measured, is nothing. They are adopted where they stand.
 
 <!-- more -->

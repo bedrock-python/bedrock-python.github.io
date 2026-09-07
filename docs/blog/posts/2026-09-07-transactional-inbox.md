@@ -15,6 +15,8 @@ tags:
 
 # Transactional inbox: the other half of the outbox pattern
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-transactional-inbox" role="img" aria-label="The arriving message becomes a row in the same transaction as the effect" markdown="0"></div>
+
 The outbox gets the attention because it solves the dramatic problem, the event that never left. The inbox solves the quiet one: the event that arrived twice, or arrived once and was half-handled when the consumer died. Every Kafka consumer has this problem, most consumers handle it with a comment that says "handlers must be idempotent", and the comment is honoured by whoever wrote the first handler and forgotten by whoever wrote the fourth. This post is the inbox as a mechanism: a row per message in the consumer's own database, in the same transaction as the effect, and a measurement of what each way of acknowledging a message does when the handler fails halfway.
 
 <!-- more -->

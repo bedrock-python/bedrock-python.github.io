@@ -14,6 +14,8 @@ tags:
 
 # Why gRPC interceptors break on streaming RPCs
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs" role="img" aria-label="The wrapper closes before the stream has produced anything" markdown="0"></div>
+
 An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works. Then somebody adds a server-streaming method and the same twenty lines start lying: the latency histogram reports zero milliseconds for a call that took six hundred, the error counter stays at zero while the stream fails, and the request id is gone by the time the first item arrives. Nothing raises. The dashboards just quietly stop describing reality.
 
 <!-- more -->

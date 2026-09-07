@@ -15,6 +15,8 @@ tags:
 
 # Warmup, readiness and liveness are three different things
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-warmup-readiness-and-liveness-are-three-different-things" role="img" aria-label="Three questions, three probes, wired to three different things" markdown="0"></div>
+
 Most services answer all three questions with one handler, usually one that pings the database. Each conflation has its own outage. A liveness probe that checks the database restarts every pod in the fleet during a database blip. A readiness probe that never goes false sends traffic to a pod that is shutting down. A warmup folded into readiness serves cold caches, or, more often, gets the pod killed before it finishes. I put a warmup, a dependency outage and a `SIGTERM` through one service and watched the two probes and a route disagree, on purpose.
 
 <!-- more -->

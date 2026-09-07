@@ -15,6 +15,8 @@ tags:
 
 # AI code review should not be fully autonomous
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-ai-code-review-should-not-be-fully-autonomous" role="img" aria-label="The model drafts, a person decides; nothing reaches the review unread" markdown="0"></div>
+
 The obvious way to build an AI code reviewer is a webhook: a merge request opens, a model reads the diff, the comments appear. It is the first design everyone reaches for and the one I refused to build, because I had been on the receiving end of it. A bot that posts twelve comments on every merge request trains the team to skip all twelve, including the one that mattered, in about a week. This post is about the alternative that [mr-review](2026-05-28-introducing-mr-review.md) is built around: a pipeline where the model drafts and a person decides, and where nothing reaches the merge request that a human did not read first. It is a slower loop, on purpose, and it is the only version I have seen a team keep using.
 
 <!-- more -->

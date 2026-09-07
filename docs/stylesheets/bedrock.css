@@ -790,304 +790,415 @@ body, .md-typeset {
    derived from the same drawing by dark_variant.py. */
 
 .bdr-card__visual,
-.bdr-featured__visual {
+.bdr-featured__visual,
+.bdr-post__hero {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-.bdr-card[href*="2026-05-15-transactional-outbox-with-omni-box"] .bdr-card__visual {
+/* The article hero. Lines up with the prose column rather than the full grid:
+   the body text is capped at 42rem, and an image wider than the paragraphs it
+   introduces reads as a banner instead of as part of the article. */
+.bdr-post__hero {
+  max-width: 42rem;
+  margin: 0 auto 2.25rem;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  border: 1px solid var(--bdr-border);
+  background-color: var(--bdr-surface-2);
+}
+
+.bdr-card[href*="2026-05-15-transactional-outbox-with-omni-box"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-05-15-transactional-outbox-with-omni-box"] {
   background-image: url("../assets/blog/2026-05-15-transactional-outbox-with-omni-box.webp");
 }
-.bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual {
+.bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-05-28-introducing-mr-review"] {
   background-image: url("../assets/blog/2026-05-28-introducing-mr-review.webp");
 }
-.bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual {
+.bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-05-30-welcome"] {
   background-image: url("../assets/blog/2026-05-30-welcome.webp");
 }
-.bdr-card[href*="2026-09-06-pg-partsmith"] .bdr-card__visual {
+.bdr-card[href*="2026-09-06-pg-partsmith"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-06-pg-partsmith"] {
   background-image: url("../assets/blog/2026-09-06-pg-partsmith.webp");
 }
-.bdr-card[href*="2026-09-06-timeouts-are-not-deadlines"] .bdr-card__visual {
+.bdr-card[href*="2026-09-06-timeouts-are-not-deadlines"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-06-timeouts-are-not-deadlines"] {
   background-image: url("../assets/blog/2026-09-06-timeouts-are-not-deadlines.webp");
 }
-.bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] {
   background-image: url("../assets/blog/2026-09-07-ai-code-review-should-not-be-fully-autonomous.webp");
 }
-.bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-circuit-breakers-should-be-per-origin"] {
   background-image: url("../assets/blog/2026-09-07-circuit-breakers-should-be-per-origin.webp");
 }
-.bdr-card[href*="2026-09-07-documentation-for-ai-coding-agents"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-documentation-for-ai-coding-agents"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-documentation-for-ai-coding-agents"] {
   background-image: url("../assets/blog/2026-09-07-documentation-for-ai-coding-agents.webp");
 }
-.bdr-card[href*="2026-09-07-exactly-once-effects"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-exactly-once-effects"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-exactly-once-effects"] {
   background-image: url("../assets/blog/2026-09-07-exactly-once-effects.webp");
 }
-.bdr-card[href*="2026-09-07-five-alembic-migration-tests"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-five-alembic-migration-tests"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-five-alembic-migration-tests"] {
   background-image: url("../assets/blog/2026-09-07-five-alembic-migration-tests.webp");
 }
-.bdr-card[href*="2026-09-07-graceful-kafka-consumer-shutdown"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-graceful-kafka-consumer-shutdown"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-graceful-kafka-consumer-shutdown"] {
   background-image: url("../assets/blog/2026-09-07-graceful-kafka-consumer-shutdown.webp");
 }
-.bdr-card[href*="2026-09-07-graceful-shutdown-is-a-protocol"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-graceful-shutdown-is-a-protocol"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-graceful-shutdown-is-a-protocol"] {
   background-image: url("../assets/blog/2026-09-07-graceful-shutdown-is-a-protocol.webp");
 }
-.bdr-card[href*="2026-09-07-grpc-channels-pooled-by-identity"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-grpc-channels-pooled-by-identity"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-grpc-channels-pooled-by-identity"] {
   background-image: url("../assets/blog/2026-09-07-grpc-channels-pooled-by-identity.webp");
 }
-.bdr-card[href*="2026-09-07-how-i-start-a-production-grade-python-library"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-how-i-start-a-production-grade-python-library"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-how-i-start-a-production-grade-python-library"] {
   background-image: url("../assets/blog/2026-09-07-how-i-start-a-production-grade-python-library.webp");
 }
-.bdr-card[href*="2026-09-07-how-to-partition-an-existing-postgresql-table"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-how-to-partition-an-existing-postgresql-table"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-how-to-partition-an-existing-postgresql-table"] {
   background-image: url("../assets/blog/2026-09-07-how-to-partition-an-existing-postgresql-table.webp");
 }
-.bdr-card[href*="2026-09-07-idempotency-across-a-chain-of-microservices"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-idempotency-across-a-chain-of-microservices"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-idempotency-across-a-chain-of-microservices"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-across-a-chain-of-microservices.webp");
 }
-.bdr-card[href*="2026-09-07-idempotency-for-jobs-and-consumers"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-idempotency-for-jobs-and-consumers"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-idempotency-for-jobs-and-consumers"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-for-jobs-and-consumers.webp");
 }
-.bdr-card[href*="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.webp");
 }
-.bdr-card[href*="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] {
   background-image: url("../assets/blog/2026-09-07-mapping-python-exceptions-to-grpc-status-codes.webp");
 }
-.bdr-card[href*="2026-09-07-migrating-from-pg-partman"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-migrating-from-pg-partman"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-migrating-from-pg-partman"] {
   background-image: url("../assets/blog/2026-09-07-migrating-from-pg-partman.webp");
 }
-.bdr-card[href*="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] {
   background-image: url("../assets/blog/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron.webp");
 }
-.bdr-card[href*="2026-09-07-partition-retention-is-not-drop-table"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-partition-retention-is-not-drop-table"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-partition-retention-is-not-drop-table"] {
   background-image: url("../assets/blog/2026-09-07-partition-retention-is-not-drop-table.webp");
 }
-.bdr-card[href*="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] {
   background-image: url("../assets/blog/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy.webp");
 }
-.bdr-card[href*="2026-09-07-publishing-to-pypi-without-api-tokens"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-publishing-to-pypi-without-api-tokens"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-publishing-to-pypi-without-api-tokens"] {
   background-image: url("../assets/blog/2026-09-07-publishing-to-pypi-without-api-tokens.webp");
 }
-.bdr-card[href*="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] {
   background-image: url("../assets/blog/2026-09-07-redis-health-checks-ping-is-not-the-whole-story.webp");
 }
-.bdr-card[href*="2026-09-07-reliability-is-not-retry-3"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-reliability-is-not-retry-3"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-reliability-is-not-retry-3"] {
   background-image: url("../assets/blog/2026-09-07-reliability-is-not-retry-3.webp");
 }
-.bdr-card[href*="2026-09-07-retries-can-make-an-outage-worse"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-retries-can-make-an-outage-worse"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-retries-can-make-an-outage-worse"] {
   background-image: url("../assets/blog/2026-09-07-retries-can-make-an-outage-worse.webp");
 }
-.bdr-card[href*="2026-09-07-retry-after-backoff-and-jitter"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-retry-after-backoff-and-jitter"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-retry-after-backoff-and-jitter"] {
   background-image: url("../assets/blog/2026-09-07-retry-after-backoff-and-jitter.webp");
 }
-.bdr-card[href*="2026-09-07-safe-grpc-retries"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-safe-grpc-retries"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-safe-grpc-retries"] {
   background-image: url("../assets/blog/2026-09-07-safe-grpc-retries.webp");
 }
-.bdr-card[href*="2026-09-07-should-your-application-create-kafka-topics-on-startup"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-should-your-application-create-kafka-topics-on-startup"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-should-your-application-create-kafka-topics-on-startup"] {
   background-image: url("../assets/blog/2026-09-07-should-your-application-create-kafka-topics-on-startup.webp");
 }
-.bdr-card[href*="2026-09-07-stop-passing-asyncsession-everywhere"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-stop-passing-asyncsession-everywhere"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-stop-passing-asyncsession-everywhere"] {
   background-image: url("../assets/blog/2026-09-07-stop-passing-asyncsession-everywhere.webp");
 }
-.bdr-card[href*="2026-09-07-testing-migrations-with-testcontainers"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-testing-migrations-with-testcontainers"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-testing-migrations-with-testcontainers"] {
   background-image: url("../assets/blog/2026-09-07-testing-migrations-with-testcontainers.webp");
 }
-.bdr-card[href*="2026-09-07-the-anatomy-of-a-production-grpc-server"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-the-anatomy-of-a-production-grpc-server"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-the-anatomy-of-a-production-grpc-server"] {
   background-image: url("../assets/blog/2026-09-07-the-anatomy-of-a-production-grpc-server.webp");
 }
-.bdr-card[href*="2026-09-07-the-production-checklist-for-aiokafka"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-the-production-checklist-for-aiokafka"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-the-production-checklist-for-aiokafka"] {
   background-image: url("../assets/blog/2026-09-07-the-production-checklist-for-aiokafka.webp");
 }
-.bdr-card[href*="2026-09-07-transactional-inbox"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-transactional-inbox"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-transactional-inbox"] {
   background-image: url("../assets/blog/2026-09-07-transactional-inbox.webp");
 }
-.bdr-card[href*="2026-09-07-transport-independent-errors"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-transport-independent-errors"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-transport-independent-errors"] {
   background-image: url("../assets/blog/2026-09-07-transport-independent-errors.webp");
 }
-.bdr-card[href*="2026-09-07-twelve-libraries-one-standard"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-twelve-libraries-one-standard"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-twelve-libraries-one-standard"] {
   background-image: url("../assets/blog/2026-09-07-twelve-libraries-one-standard.webp");
 }
-.bdr-card[href*="2026-09-07-unit-of-work-in-sqlalchemy-2"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-unit-of-work-in-sqlalchemy-2"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-unit-of-work-in-sqlalchemy-2"] {
   background-image: url("../assets/blog/2026-09-07-unit-of-work-in-sqlalchemy-2.webp");
 }
-.bdr-card[href*="2026-09-07-uuidv7-as-a-postgresql-partition-key"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-uuidv7-as-a-postgresql-partition-key"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-uuidv7-as-a-postgresql-partition-key"] {
   background-image: url("../assets/blog/2026-09-07-uuidv7-as-a-postgresql-partition-key.webp");
 }
-.bdr-card[href*="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] {
   background-image: url("../assets/blog/2026-09-07-warmup-readiness-and-liveness-are-three-different-things.webp");
 }
-.bdr-card[href*="2026-09-07-what-every-microservice-reimplements"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-what-every-microservice-reimplements"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-what-every-microservice-reimplements"] {
   background-image: url("../assets/blog/2026-09-07-what-every-microservice-reimplements.webp");
 }
-.bdr-card[href*="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] {
   background-image: url("../assets/blog/2026-09-07-what-happens-when-kafka-is-down-for-an-hour.webp");
 }
-.bdr-card[href*="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] {
   background-image: url("../assets/blog/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool.webp");
 }
-.bdr-card[href*="2026-09-07-when-should-redis-fail-open"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-when-should-redis-fail-open"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-when-should-redis-fail-open"] {
   background-image: url("../assets/blog/2026-09-07-when-should-redis-fail-open.webp");
 }
-.bdr-card[href*="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] {
   background-image: url("../assets/blog/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.webp");
 }
-.bdr-card[href*="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] {
   background-image: url("../assets/blog/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.webp");
 }
-.bdr-card[href*="2026-09-07-why-i-stopped-wrapping-http-clients"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-why-i-stopped-wrapping-http-clients"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-why-i-stopped-wrapping-http-clients"] {
   background-image: url("../assets/blog/2026-09-07-why-i-stopped-wrapping-http-clients.webp");
 }
-.bdr-card[href*="2026-09-07-your-models-and-your-schema-have-drifted"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-your-models-and-your-schema-have-drifted"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-your-models-and-your-schema-have-drifted"] {
   background-image: url("../assets/blog/2026-09-07-your-models-and-your-schema-have-drifted.webp");
 }
-.bdr-card[href*="2026-09-07-zero-dependency-cores"] .bdr-card__visual {
+.bdr-card[href*="2026-09-07-zero-dependency-cores"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-07-zero-dependency-cores"] {
   background-image: url("../assets/blog/2026-09-07-zero-dependency-cores.webp");
 }
 
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-15-transactional-outbox-with-omni-box"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-15-transactional-outbox-with-omni-box"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-15-transactional-outbox-with-omni-box"] {
   background-image: url("../assets/blog/2026-05-15-transactional-outbox-with-omni-box-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-28-introducing-mr-review"] {
   background-image: url("../assets/blog/2026-05-28-introducing-mr-review-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-30-welcome"] {
   background-image: url("../assets/blog/2026-05-30-welcome-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-06-pg-partsmith"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-06-pg-partsmith"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-06-pg-partsmith"] {
   background-image: url("../assets/blog/2026-09-06-pg-partsmith-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-06-timeouts-are-not-deadlines"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-06-timeouts-are-not-deadlines"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-06-timeouts-are-not-deadlines"] {
   background-image: url("../assets/blog/2026-09-06-timeouts-are-not-deadlines-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] {
   background-image: url("../assets/blog/2026-09-07-ai-code-review-should-not-be-fully-autonomous-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-circuit-breakers-should-be-per-origin"] {
   background-image: url("../assets/blog/2026-09-07-circuit-breakers-should-be-per-origin-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-documentation-for-ai-coding-agents"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-documentation-for-ai-coding-agents"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-documentation-for-ai-coding-agents"] {
   background-image: url("../assets/blog/2026-09-07-documentation-for-ai-coding-agents-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-exactly-once-effects"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-exactly-once-effects"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-exactly-once-effects"] {
   background-image: url("../assets/blog/2026-09-07-exactly-once-effects-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-five-alembic-migration-tests"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-five-alembic-migration-tests"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-five-alembic-migration-tests"] {
   background-image: url("../assets/blog/2026-09-07-five-alembic-migration-tests-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-graceful-kafka-consumer-shutdown"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-graceful-kafka-consumer-shutdown"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-graceful-kafka-consumer-shutdown"] {
   background-image: url("../assets/blog/2026-09-07-graceful-kafka-consumer-shutdown-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-graceful-shutdown-is-a-protocol"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-graceful-shutdown-is-a-protocol"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-graceful-shutdown-is-a-protocol"] {
   background-image: url("../assets/blog/2026-09-07-graceful-shutdown-is-a-protocol-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-grpc-channels-pooled-by-identity"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-grpc-channels-pooled-by-identity"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-grpc-channels-pooled-by-identity"] {
   background-image: url("../assets/blog/2026-09-07-grpc-channels-pooled-by-identity-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-how-i-start-a-production-grade-python-library"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-how-i-start-a-production-grade-python-library"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-how-i-start-a-production-grade-python-library"] {
   background-image: url("../assets/blog/2026-09-07-how-i-start-a-production-grade-python-library-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-how-to-partition-an-existing-postgresql-table"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-how-to-partition-an-existing-postgresql-table"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-how-to-partition-an-existing-postgresql-table"] {
   background-image: url("../assets/blog/2026-09-07-how-to-partition-an-existing-postgresql-table-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-across-a-chain-of-microservices"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-across-a-chain-of-microservices"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-idempotency-across-a-chain-of-microservices"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-across-a-chain-of-microservices-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-for-jobs-and-consumers"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-for-jobs-and-consumers"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-idempotency-for-jobs-and-consumers"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-for-jobs-and-consumers-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong"] {
   background-image: url("../assets/blog/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-mapping-python-exceptions-to-grpc-status-codes"] {
   background-image: url("../assets/blog/2026-09-07-mapping-python-exceptions-to-grpc-status-codes-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-migrating-from-pg-partman"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-migrating-from-pg-partman"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-migrating-from-pg-partman"] {
   background-image: url("../assets/blog/2026-09-07-migrating-from-pg-partman-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron"] {
   background-image: url("../assets/blog/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-partition-retention-is-not-drop-table"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-partition-retention-is-not-drop-table"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-partition-retention-is-not-drop-table"] {
   background-image: url("../assets/blog/2026-09-07-partition-retention-is-not-drop-table-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy"] {
   background-image: url("../assets/blog/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-publishing-to-pypi-without-api-tokens"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-publishing-to-pypi-without-api-tokens"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-publishing-to-pypi-without-api-tokens"] {
   background-image: url("../assets/blog/2026-09-07-publishing-to-pypi-without-api-tokens-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-redis-health-checks-ping-is-not-the-whole-story"] {
   background-image: url("../assets/blog/2026-09-07-redis-health-checks-ping-is-not-the-whole-story-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-reliability-is-not-retry-3"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-reliability-is-not-retry-3"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-reliability-is-not-retry-3"] {
   background-image: url("../assets/blog/2026-09-07-reliability-is-not-retry-3-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-retries-can-make-an-outage-worse"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-retries-can-make-an-outage-worse"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-retries-can-make-an-outage-worse"] {
   background-image: url("../assets/blog/2026-09-07-retries-can-make-an-outage-worse-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-retry-after-backoff-and-jitter"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-retry-after-backoff-and-jitter"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-retry-after-backoff-and-jitter"] {
   background-image: url("../assets/blog/2026-09-07-retry-after-backoff-and-jitter-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-safe-grpc-retries"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-safe-grpc-retries"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-safe-grpc-retries"] {
   background-image: url("../assets/blog/2026-09-07-safe-grpc-retries-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-should-your-application-create-kafka-topics-on-startup"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-should-your-application-create-kafka-topics-on-startup"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-should-your-application-create-kafka-topics-on-startup"] {
   background-image: url("../assets/blog/2026-09-07-should-your-application-create-kafka-topics-on-startup-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-stop-passing-asyncsession-everywhere"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-stop-passing-asyncsession-everywhere"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-stop-passing-asyncsession-everywhere"] {
   background-image: url("../assets/blog/2026-09-07-stop-passing-asyncsession-everywhere-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-testing-migrations-with-testcontainers"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-testing-migrations-with-testcontainers"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-testing-migrations-with-testcontainers"] {
   background-image: url("../assets/blog/2026-09-07-testing-migrations-with-testcontainers-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-the-anatomy-of-a-production-grpc-server"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-the-anatomy-of-a-production-grpc-server"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-the-anatomy-of-a-production-grpc-server"] {
   background-image: url("../assets/blog/2026-09-07-the-anatomy-of-a-production-grpc-server-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-the-production-checklist-for-aiokafka"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-the-production-checklist-for-aiokafka"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-the-production-checklist-for-aiokafka"] {
   background-image: url("../assets/blog/2026-09-07-the-production-checklist-for-aiokafka-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-transactional-inbox"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-transactional-inbox"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-transactional-inbox"] {
   background-image: url("../assets/blog/2026-09-07-transactional-inbox-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-transport-independent-errors"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-transport-independent-errors"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-transport-independent-errors"] {
   background-image: url("../assets/blog/2026-09-07-transport-independent-errors-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-twelve-libraries-one-standard"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-twelve-libraries-one-standard"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-twelve-libraries-one-standard"] {
   background-image: url("../assets/blog/2026-09-07-twelve-libraries-one-standard-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-unit-of-work-in-sqlalchemy-2"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-unit-of-work-in-sqlalchemy-2"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-unit-of-work-in-sqlalchemy-2"] {
   background-image: url("../assets/blog/2026-09-07-unit-of-work-in-sqlalchemy-2-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-uuidv7-as-a-postgresql-partition-key"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-uuidv7-as-a-postgresql-partition-key"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-uuidv7-as-a-postgresql-partition-key"] {
   background-image: url("../assets/blog/2026-09-07-uuidv7-as-a-postgresql-partition-key-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-warmup-readiness-and-liveness-are-three-different-things"] {
   background-image: url("../assets/blog/2026-09-07-warmup-readiness-and-liveness-are-three-different-things-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-every-microservice-reimplements"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-every-microservice-reimplements"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-what-every-microservice-reimplements"] {
   background-image: url("../assets/blog/2026-09-07-what-every-microservice-reimplements-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-what-happens-when-kafka-is-down-for-an-hour"] {
   background-image: url("../assets/blog/2026-09-07-what-happens-when-kafka-is-down-for-an-hour-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"] {
   background-image: url("../assets/blog/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-when-should-redis-fail-open"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-when-should-redis-fail-open"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-when-should-redis-fail-open"] {
   background-image: url("../assets/blog/2026-09-07-when-should-redis-fail-open-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi"] {
   background-image: url("../assets/blog/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs"] {
   background-image: url("../assets/blog/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-i-stopped-wrapping-http-clients"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-why-i-stopped-wrapping-http-clients"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-why-i-stopped-wrapping-http-clients"] {
   background-image: url("../assets/blog/2026-09-07-why-i-stopped-wrapping-http-clients-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-your-models-and-your-schema-have-drifted"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-your-models-and-your-schema-have-drifted"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-your-models-and-your-schema-have-drifted"] {
   background-image: url("../assets/blog/2026-09-07-your-models-and-your-schema-have-drifted-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-zero-dependency-cores"] .bdr-card__visual {
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-zero-dependency-cores"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-zero-dependency-cores"] {
   background-image: url("../assets/blog/2026-09-07-zero-dependency-cores-dark.webp");
 }

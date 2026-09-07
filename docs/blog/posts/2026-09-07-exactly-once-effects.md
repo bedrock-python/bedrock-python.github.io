@@ -16,6 +16,8 @@ tags:
 
 # Exactly-once is a lie; exactly-once effects are not
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-exactly-once-effects" role="img" aria-label="Two systems, two commits, no shared transaction: close each window one at a time" markdown="0"></div>
+
 Kafka cannot make your database update exactly once. Nothing can, because the database and the broker are two systems with two commits and no transaction that spans them, and every guarantee a broker advertises stops at its own edge. What you can have is something better named and just as useful: every effect happens once, however many times the message that caused it is delivered. This post maps every window in which a commit and a publish can disagree, measures each of them against a real PostgreSQL and a real Kafka, and closes them one at a time with the outbox on the producer side, the inbox on the consumer side, and the idempotency key at the HTTP edge.
 
 <!-- more -->
