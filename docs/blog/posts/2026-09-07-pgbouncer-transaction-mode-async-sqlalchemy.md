@@ -107,17 +107,16 @@ The lab's server pool was five, shared by twenty clients running eight hundred s
 
 ## What to monitor
 
-The metric that predicts trouble is not connections in use. It is how long a request waited to get one. A pool at its limit with zero wait is a pool that is sized right; a pool at half its limit with a rising checkout wait is a pool behind a database that has slowed down. The library exposes both sides of the application pool:
+The metric that predicts trouble is not connections in use. It is how long a request waited to get one. A pool at its limit with zero wait is a pool that is sized right; a pool at half its limit with a rising checkout wait is a pool behind a database that has slowed down. The library exposes the pool's gauges and how long each connection is held, which is the number the wait grows out of:
 
 ```text
 postgres_db_pool_size                              gauge      what the pool is configured for
 postgres_db_pool_checked_out                       gauge      connections in use right now
 postgres_db_pool_overflow                          gauge      connections beyond pool_size, in use
-postgres_db_connection_checkout_duration_seconds   histogram  how long a checkout waited
-postgres_db_connection_timeouts_total              counter    checkouts that gave up waiting
+postgres_db_connection_checkout_duration_seconds   histogram  how long a connection was held between checkout and checkin
 ```
 
-Alert on the wait, graph the rest. On the PgBouncer side, `SHOW POOLS` gives `cl_waiting` and `maxwait`, which are the same two facts one layer down: clients queued for a server connection, and how long the oldest has been queued. If `maxwait` grows while the application's own wait is flat, the bottleneck is `default_pool_size`; if both grow, it is PostgreSQL.
+Alert on the wait (the [pool metrics post](2026-09-07-what-to-monitor-in-a-sqlalchemy-pool.md) measures what that looks like), graph the rest. On the PgBouncer side, `SHOW POOLS` gives `cl_waiting` and `maxwait`, which are the same two facts one layer down: clients queued for a server connection, and how long the oldest has been queued. If `maxwait` grows while the application's own wait is flat, the bottleneck is `default_pool_size`; if both grow, it is PostgreSQL.
 
 ## Closing pools during a rollout
 
