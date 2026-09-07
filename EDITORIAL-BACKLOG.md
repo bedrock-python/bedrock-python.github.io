@@ -69,7 +69,7 @@ Full briefs below.
 | 3 | Graceful shutdown in Kubernetes is a protocol, not a signal handler | Design | Lifecycle | review |
 | 4 | Idempotency keys: the part everyone gets wrong | Design | Reliability | review |
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | review |
-| 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | drafting, blocked on omni-box #29 |
+| 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | review |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | review |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
@@ -231,7 +231,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 6. Exactly-once is a lie; exactly-once effects are not
 
-- File: `docs/blog/posts/YYYY-MM-DD-exactly-once-effects.md`
+- File: `docs/blog/posts/2026-09-07-exactly-once-effects.md`, lab in `docs/blog/lab/2026-09-07-exactly-once-effects/`
+- Found while measuring, fixed and released as omni-box 0.2.0 (2026-09-07, [#29](https://github.com/bedrock-python/omni-box/issues/29) → #30): an inbox handler had no supported way to reach the transaction it runs in; `repo.session` now exists and the post's consumer writes through it.
 - Search title: *Exactly-Once Is a Lie. Exactly-Once Effects Are Not.*
 - LinkedIn hook: "Kafka cannot make your database update exactly once."
 - Tags: `omni-box`, `idempotency-kit`, `kafka`, `outbox`, `inbox`, `exactly-once`

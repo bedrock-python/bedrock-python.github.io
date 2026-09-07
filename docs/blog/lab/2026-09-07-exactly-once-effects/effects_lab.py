@@ -126,22 +126,17 @@ async def main(db_url: str, bootstrap: str) -> None:
     print("\n--- inbox: both copies arrive; the invoice is written once ---")
 
     class InboxTxProvider(InboxTransactionProviderProtocol):
-        session = None  # TEMPORARY until omni-box exposes repo.session: the handler needs the transaction it runs in
-
         @asynccontextmanager
         async def transaction(self) -> AsyncIterator[InboxEventRepository]:
             async with session_factory() as session, session.begin():
-                self.session = session
                 yield PostgresInboxRepository(session, model_class=InboxEventDB)
 
-    provider = InboxTxProvider()
-
     async def create_invoice(event: InboxEvent, repo: InboxEventRepository) -> None:
-        await provider.session.execute(invoices.insert().values(order_id=event.payload["order_id"]))  # same transaction as the inbox row
+        await repo.session.execute(invoices.insert().values(order_id=event.payload["order_id"]))  # same transaction as the inbox row
 
     kafka_consumer = AIOKafkaConsumer("orders.outbox", bootstrap_servers=bootstrap, group_id="billing",
                                       auto_offset_reset="earliest", enable_auto_commit=False)
-    runner = InboxConsumerRunner(consumer=KafkaEventConsumer(kafka_consumer), transaction_provider=provider,
+    runner = InboxConsumerRunner(consumer=KafkaEventConsumer(kafka_consumer), transaction_provider=InboxTxProvider(),
                                  handler=create_invoice, worker_id="billing-1", consumer_group="billing")
     await runner.start()
     try:

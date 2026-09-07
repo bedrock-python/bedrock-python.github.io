@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-exactly-once-effects/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Exactly-once is a lie; exactly-once effects are not</h3>
+      <p class="bdr-card__lede">
+        Kafka cannot make your database update exactly once. Measured against PostgreSQL and
+        Kafka: the two dual-write windows, an outbox relay that crashes after the send and
+        publishes twice, and an inbox that receives both copies and writes the invoice once.
+        At-least-once delivery plus one unique key per boundary is the only exactly-once there
+        is, and it is the one you wanted.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
       <div class="bdr-card__visual bdr-card__visual--libraries"></div>
       <div class="bdr-card__eyebrow">Libraries</div>
@@ -87,19 +101,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Idempotency keys: the part everyone gets wrong</h3>
-      <p class="bdr-card__lede">
-        A result cache looks like an idempotency key until a client retries while the first
-        request is still running. Measured against a provider that counts its charges: the
-        cache charged twice with identical responses, a reservation charged once, a reused key
-        with a different amount was refused, a failed action was not cached, and a missing store
-        failed open. What the key promises, and why it is still not a lock.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

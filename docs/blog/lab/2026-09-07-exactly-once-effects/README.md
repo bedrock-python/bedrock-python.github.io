@@ -4,7 +4,7 @@ One script behind the measurements. PostgreSQL 17 and Kafka run in containers st
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "omni-box[postgres,kafka]" "testcontainers[kafka,postgres]" asyncpg
+uv pip install --python .venv/bin/python "omni-box[postgres,kafka]==0.2.0" "testcontainers[kafka,postgres]" asyncpg
 .venv/bin/python effects_lab.py
 ```
 
