@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-zero-dependency-cores/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Zero-dependency cores</h3>
+      <p class="bdr-card__lede">
+        An infrastructure library ends up in every service, and so does every dependency
+        it declares. Measured: three of eight install exactly one distribution, and the FastAPI
+        extra adds twenty-two.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-how-i-start-a-production-grade-python-library/">
       <div class="bdr-card__visual bdr-card__visual--meta"></div>
       <div class="bdr-card__eyebrow">Meta</div>
@@ -79,17 +91,6 @@ hide:
         What happens to the partitions that already exist? Measured against pg_partman
         5.5: nothing. Both maintainers run side by side, and ownership is decided by bounds
         rather than names.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">Mapping Python exceptions to gRPC status codes</h3>
-      <p class="bdr-card__lede">
-        Eleven exceptions through four configurations of one gRPC server. With no map
-        every failure is UNKNOWN and two of them put a database password in the status details.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

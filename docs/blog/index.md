@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-zero-dependency-cores/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Zero-dependency cores</h3>
+    <p class="bdr-card__lede">
+      An infrastructure library ends up in every service, and so does every dependency it
+      declares. Measured across eight libraries: three install exactly one distribution and one
+      of them imports in 1.2 ms, while the FastAPI extra adds twenty-two distributions and 16 MB
+      — paid only by the services that asked for it.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-how-i-start-a-production-grade-python-library/">
     <div class="bdr-card__visual bdr-card__visual--meta"></div>
     <div class="bdr-card__eyebrow">Meta</div>
