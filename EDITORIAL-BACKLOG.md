@@ -110,7 +110,7 @@ what to do at 03:00.
 | 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |
 | 31 | Partition retention is not DROP TABLE | Design | Database | planned |
-| 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | planned |
+| 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | review |
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | drafting, blocked on sqlalchemy-foundation-kit #26 |
 | 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | planned |
@@ -537,7 +537,8 @@ SIGTERM arrives mid-batch. Finish the batch or abandon it, commit offsets or
 not, leave the group cleanly so the rebalance is cheap, and fit all of it in
 `terminationGracePeriodSeconds`. A timeline post with the numbers measured
 on a consumer of a stated batch size. Closes on aiokafka-foundation-kit
-under a servicewright lifecycle.
+under a servicewright lifecycle. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-graceful-kafka-consumer-shutdown.md`, lab in `docs/blog/lab/2026-09-07-kafka-consumer-shutdown/`.
 
 ### 33. Why gRPC interceptors break on streaming RPCs
 

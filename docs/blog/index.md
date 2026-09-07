@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-graceful-kafka-consumer-shutdown/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">Graceful Kafka consumer shutdown in Kubernetes</h3>
+    <p class="bdr-card__lede">
+      Every rollout sends the consumer SIGTERM mid-batch. Measured: a loop that exits on the
+      signal left three messages to be processed twice and made its replacement wait 29.6 s
+      for a rebalance; the same loop under a lifecycle finished the batch, committed, left the
+      group, exited in 0.45 s, and the replacement was working in 0.31 s with no duplicates.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-idempotency-for-jobs-and-consumers/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>
