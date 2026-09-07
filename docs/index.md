@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-the-production-checklist-for-aiokafka/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">The production checklist for aiokafka</h3>
+      <p class="bdr-card__lede">
+        Ten items, each measured against a Kafka container: what auto-commit really
+        commits, what one bad message does to a JSON deserializer, and what happens to a
+        member whose batch outlives the poll interval.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -79,18 +91,6 @@ hide:
         A paused broker, twenty events and two designs. The request path was told three
         times that a send had failed, and one of those three was delivered anyway; the outbox
         spent no retries and drained the backlog in one cycle.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Redis health checks: PING is not the whole story</h3>
-      <p class="bdr-card__lede">
-        Three Redis servers answered PONG: a healthy one, one full at its memory limit
-        with eviction off, and a read-only replica. Two of them fail every SET, and readiness
-        stayed green for all three.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

@@ -190,30 +190,52 @@ async def section_autocommit_loss(bootstrap: str) -> None:
 
 
 async def section_poll_interval(bootstrap: str) -> None:
-    log("--- 5. work that outlives max_poll_interval_ms")
+    log("--- 5. work that outlives max_poll_interval_ms, in a group with a second member")
     group = f"slow-{uuid.uuid4().hex[:6]}"
     topic = f"slow-{group}"
-    await seed(bootstrap, topic, n=3)
+    settings_producer = BaseKafkaProducerSettings(bootstrap_servers=bootstrap)
+    await ensure_topics_async([TopicConfig(name=topic, num_partitions=2, replication_factor=1)], settings_producer)
+    producer = AIOKafkaProducer(bootstrap_servers=bootstrap)
+    await producer.start()
+    for i in range(8):
+        await producer.send_and_wait(topic, value=json.dumps({"n": i}).encode(), partition=i % 2)
+    await producer.stop()
+
     settings = consumer_settings(
         bootstrap, group, auto_offset_reset="earliest",
         max_poll_interval_ms=6000, session_timeout_ms=6000, heartbeat_interval_ms=1000,
     )
-    async with consumer_lifecycle(settings, topics=(topic,)) as consumer:
-        batch = await consumer.getmany(timeout_ms=5000, max_records=3)
-        n = sum(len(v) for v in batch.values())
-        started = time.perf_counter()
-        await asyncio.sleep(9)  # 9 s of "work" per batch, on a 6 s poll interval
-        commit = "committed"
-        try:
-            await consumer.commit()
-        except CommitFailedError as error:
-            commit = f"CommitFailedError: {str(error).splitlines()[0]}"
-        except KafkaError as error:
-            commit = f"{type(error).__name__}: {error}"
-        log(f"    {n} messages, {time.perf_counter() - started:.0f} s of work, then commit -> {commit}")
-    async with consumer_lifecycle(settings, topics=(topic,)) as consumer:
-        again = await drain(consumer, 3, timeout=6.0)
-    log(f"    the next consumer in the group read {len(again)} of the same 3 messages")
+    slow_read: list[int] = []
+    fast_read: list[int] = []
+    commit_result = {"value": "not attempted"}
+
+    async def slow_member() -> None:
+        async with consumer_lifecycle(settings, topics=(topic,)) as consumer:
+            batch = await consumer.getmany(timeout_ms=6000, max_records=4)
+            for records in batch.values():
+                slow_read.extend(r.value["n"] for r in records)
+            await asyncio.sleep(9)  # 9 s of "work" on a 6 s poll interval
+            try:
+                await consumer.commit()
+                commit_result["value"] = "committed"
+            except CommitFailedError as error:
+                commit_result["value"] = f"CommitFailedError: {str(error).splitlines()[0]}"
+            except KafkaError as error:
+                commit_result["value"] = f"{type(error).__name__}: {error}"
+
+    async def fast_member() -> None:
+        deadline = time.monotonic() + 20
+        async with consumer_lifecycle(settings, topics=(topic,)) as consumer:
+            while time.monotonic() < deadline:
+                batch = await consumer.getmany(timeout_ms=1000, max_records=4)
+                for records in batch.values():
+                    fast_read.extend(r.value["n"] for r in records)
+                    await consumer.commit()
+
+    await asyncio.gather(slow_member(), fast_member())
+    log(f"    the slow member read {sorted(slow_read)} and then slept 9 s; its commit -> {commit_result['value']}")
+    log(f"    the other member read {sorted(fast_read)}")
+    log(f"    messages handled twice: {sorted(set(slow_read) & set(fast_read))}")
 
 
 # --- 6. topics and health --------------------------------------------------------------------

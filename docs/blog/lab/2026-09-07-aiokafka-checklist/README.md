@@ -10,7 +10,7 @@ health probe costs against a paused broker.
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "aiokafka-foundation-kit[models]==0.1.2" "testcontainers[kafka]"
+uv pip install --python .venv/bin/python "aiokafka-foundation-kit[models]==0.1.3" "testcontainers[kafka]"
 .venv/bin/python checklist_lab.py
 .venv/bin/python topic_probe.py
 ```

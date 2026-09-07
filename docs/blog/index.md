@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-production-checklist-for-aiokafka/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">The production checklist for aiokafka</h3>
+    <p class="bdr-card__lede">
+      Ten items, each measured against a Kafka container: what the client refuses to be built
+      with, what a JSON deserializer does to one bad message, what auto-commit commits (seven
+      messages nobody processed), and what happens to a member whose batch outlives the poll
+      interval (four messages handled twice, by two processes).
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>
