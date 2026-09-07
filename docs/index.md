@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-transport-independent-errors/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Transport-independent errors: one domain error, two protocols</h3>
+      <p class="bdr-card__lede">
+        A service that speaks HTTP outward and gRPC inward has two answers for every
+        failure. Seven calls through both transports: the same domain error, the same code, and
+        the undeclared exception masked identically.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-idempotency-across-a-chain-of-microservices/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Forty callers against one dependency. On a healthy one, retries cost nothing;
         on a failing one they tripled its load for zero extra successes. What a deadline, a
         budget and a breaker each add.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">How to partition an existing PostgreSQL table</h3>
-      <p class="bdr-card__lede">
-        Two million rows turned into twelve monthly partitions while a writer inserted
-        the whole time. Every step measured, including the sequence that refuses to let the old
-        table go.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

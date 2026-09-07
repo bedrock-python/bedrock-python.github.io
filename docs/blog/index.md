@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-transport-independent-errors/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Transport-independent errors: one domain error, two protocols</h3>
+    <p class="bdr-card__lede">
+      A service that speaks HTTP outward and gRPC inward has two answers for every failure,
+      and they drift. Seven calls through both transports of one service: the same domain error
+      becomes 404 and NOT_FOUND, the same code travels in both envelopes, and the exception
+      nobody declared is masked identically instead of printing its message to the caller.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-idempotency-across-a-chain-of-microservices/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

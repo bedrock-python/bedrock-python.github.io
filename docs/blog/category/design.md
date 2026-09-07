@@ -2,6 +2,7 @@
 
 Architecture and design decisions behind the Bedrock Python ecosystem.
 
+- **2026-09-07** — [Transport-independent errors: one domain error, two protocols](../posts/2026-09-07-transport-independent-errors.md)
 - **2026-09-07** — [Idempotency across a chain of microservices](../posts/2026-09-07-idempotency-across-a-chain-of-microservices.md)
 - **2026-09-07** — [Reliability is not retry=3](../posts/2026-09-07-reliability-is-not-retry-3.md)
 - **2026-09-07** — [Should your application create Kafka topics on startup?](../posts/2026-09-07-should-your-application-create-kafka-topics-on-startup.md)
