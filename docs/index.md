@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">How to partition an existing PostgreSQL table</h3>
+      <p class="bdr-card__lede">
+        Two million rows turned into twelve monthly partitions while a writer inserted
+        the whole time. Every step measured, including the sequence that refuses to let the old
+        table go.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -79,18 +91,6 @@ hide:
         A producer wrote to a topic name with a typo and got no error: the broker
         created it with one partition, and the real consumer sat idle. What the broker, the
         application and a person each get wrong.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">UUIDv7 as a PostgreSQL partition key</h3>
-      <p class="bdr-card__lede">
-        Range-partitioning by time normally costs you the primary key. A time-ordered
-        id removes the problem: single-column key, one partition scanned for an id range, and
-        three kinds of id that do not fit.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

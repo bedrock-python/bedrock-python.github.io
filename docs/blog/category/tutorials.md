@@ -3,6 +3,7 @@
 Step-by-step guides for using the Bedrock Python libraries in real production
 scenarios.
 
+- **2026-09-07** — [How to partition an existing PostgreSQL table](../posts/2026-09-07-how-to-partition-an-existing-postgresql-table.md)
 - **2026-09-07** — [Publishing to PyPI without API tokens](../posts/2026-09-07-publishing-to-pypi-without-api-tokens.md)
 - **2026-09-07** — [The production checklist for aiokafka](../posts/2026-09-07-the-production-checklist-for-aiokafka.md)
 - **2026-09-07** — [What to monitor in a SQLAlchemy connection pool](../posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool.md)

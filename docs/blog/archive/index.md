@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [How to partition an existing PostgreSQL table](../posts/2026-09-07-how-to-partition-an-existing-postgresql-table.md) *(Tutorials)*
 - **2026-09-07** — [Publishing to PyPI without API tokens](../posts/2026-09-07-publishing-to-pypi-without-api-tokens.md) *(Tutorials)*
 - **2026-09-07** — [Should your application create Kafka topics on startup?](../posts/2026-09-07-should-your-application-create-kafka-topics-on-startup.md) *(Design)*
 - **2026-09-07** — [UUIDv7 as a PostgreSQL partition key](../posts/2026-09-07-uuidv7-as-a-postgresql-partition-key.md) *(Design)*

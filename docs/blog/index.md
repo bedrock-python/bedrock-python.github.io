@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
+    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+    <div class="bdr-card__eyebrow">Tutorials</div>
+    <h3 class="bdr-card__title">How to partition an existing PostgreSQL table</h3>
+    <p class="bdr-card__lede">
+      Two million rows turned into twelve monthly partitions while a writer inserted the whole
+      time. Every step measured: the key change that blocks writers for 413 ms and the one that
+      blocks them for 3, a 14-second drain with the writer's median insert at 0.8 ms, and the
+      sequence that refuses to let the old table go.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

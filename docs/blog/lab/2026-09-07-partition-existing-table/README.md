@@ -8,6 +8,6 @@ the empty DEFAULT. Every step prints its duration and what the writer and the re
 
 ```bash
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "pg-partsmith==1.5.0" asyncpg "testcontainers[postgres]"
+uv pip install --python .venv/bin/python "pg-partsmith==1.5.1" asyncpg "testcontainers[postgres]"
 .venv/bin/python migrate_lab.py
 ```

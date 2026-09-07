@@ -370,15 +370,23 @@ async def main() -> None:
             log(f"    rows left in events_legacy: {left}")
             await timed(
                 admin,
-                "DETACH PARTITION events_legacy; DROP TABLE events_legacy",
+                "DETACH PARTITION events_legacy",
                 """
                 BEGIN;
                 SET LOCAL lock_timeout = '2s';
                 ALTER TABLE events DETACH PARTITION events_legacy;
-                DROP TABLE events_legacy;
                 COMMIT;
                 """,
             )
+            await expect_error(admin, "DROP TABLE events_legacy", "DROP TABLE events_legacy")
+            owner = await admin.fetchval(
+                "SELECT c.relname FROM pg_class s JOIN pg_depend d ON d.objid = s.oid AND d.deptype = 'a' "
+                "JOIN pg_class c ON c.oid = d.refobjid WHERE s.relname = 'events_id_seq'"
+            )
+            log(f"    the sequence events_id_seq is owned by: {owner}")
+            await timed(admin, "ALTER SEQUENCE events_id_seq OWNED BY events.id",
+                        "ALTER SEQUENCE events_id_seq OWNED BY events.id")
+            await timed(admin, "DROP TABLE events_legacy", "DROP TABLE events_legacy")
 
         await load.stop()
         await engine.dispose()
