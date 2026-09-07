@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-reliability-is-not-retry-3/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Reliability is not retry=3</h3>
+      <p class="bdr-card__lede">
+        Forty callers against one dependency. On a healthy one, retries cost nothing;
+        on a failing one they tripled its load for zero extra successes. What a deadline, a
+        budget and a breaker each add.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -79,18 +91,6 @@ hide:
         A PyPI token in a repository secret is a password with no expiry and no audit
         trail. The whole Trusted Publishing pipeline from a merged pull request to a wheel, as
         it ran for six libraries today.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Should your application create Kafka topics on startup?</h3>
-      <p class="bdr-card__lede">
-        A producer wrote to a topic name with a typo and got no error: the broker
-        created it with one partition, and the real consumer sat idle. What the broker, the
-        application and a person each get wrong.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

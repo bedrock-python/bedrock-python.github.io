@@ -133,7 +133,7 @@ posts about how the libraries are built.
 | 44 | UUIDv7 as a PostgreSQL partition key | Design | Database | review |
 | 45 | Publishing to PyPI without API tokens: Trusted Publishing end to end | Tutorials | Bedrock | review |
 | 46 | Zero-dependency cores: why optional dependencies matter in infrastructure libraries | Design | Bedrock | drafting, blocked on servicewright #51 |
-| 47 | Reliability is not `retry=3` | Design | Reliability | drafting |
+| 47 | Reliability is not `retry=3` | Design | Reliability | review |
 | 48 | How I start a production-grade Python library in 2026 | Meta | Bedrock | planned |
 
 ## Briefs: block 1

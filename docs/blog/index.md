@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-reliability-is-not-retry-3/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Reliability is not retry=3</h3>
+    <p class="bdr-card__lede">
+      Forty callers against one dependency, through four mechanisms. On a healthy dependency
+      retries cost exactly nothing, which is why nobody revisits them. On a failing one they
+      tripled its load for zero extra successes. What a deadline, a budget and a per-origin
+      breaker each add, and what none of them make safe.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>
