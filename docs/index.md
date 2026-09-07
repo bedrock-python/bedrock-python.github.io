@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Warmup, readiness and liveness are three different things</h3>
+      <p class="bdr-card__lede">
+        Two probes and a route polled every 100 ms through a warmup, a dependency
+        outage and a SIGTERM. Readiness went false while liveness stayed true, and requests
+        kept succeeding for two seconds afterwards.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-partition-retention-is-not-drop-table/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
@@ -79,18 +91,6 @@ hide:
         Ten items, each measured against a Kafka container: what auto-commit really
         commits, what one bad message does to a JSON deserializer, and what happens to a
         member whose batch outlives the poll interval.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">What to monitor in a SQLAlchemy connection pool</h3>
-      <p class="bdr-card__lede">
-        Eight workers, a pool of four, and a database that got twenty times slower halfway
-        through. Connections in use read 4/4 before the incident and 4/4 after it; everything
-        that mattered was in the other three series.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>

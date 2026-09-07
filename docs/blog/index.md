@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Warmup, readiness and liveness are three different things</h3>
+    <p class="bdr-card__lede">
+      One service, two probes and a route polled every 100 ms through a warmup, a dependency
+      outage and a SIGTERM. Nothing answered for the first 3.3 seconds, readiness went false
+      while liveness stayed true and the route kept serving, and requests kept succeeding for
+      two seconds after readiness went false. Each conflation has its own outage.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-partition-retention-is-not-drop-table/">
     <div class="bdr-card__visual bdr-card__visual--design"></div>
     <div class="bdr-card__eyebrow">Design</div>

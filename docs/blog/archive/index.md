@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [Warmup, readiness and liveness are three different things](../posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things.md) *(Design)*
 - **2026-09-07** — [Partition retention is not DROP TABLE](../posts/2026-09-07-partition-retention-is-not-drop-table.md) *(Design)*
 - **2026-09-07** — [The production checklist for aiokafka](../posts/2026-09-07-the-production-checklist-for-aiokafka.md) *(Tutorials)*
 - **2026-09-07** — [What to monitor in a SQLAlchemy connection pool](../posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool.md) *(Tutorials)*
