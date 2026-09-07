@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-partition-retention-is-not-drop-table/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">Partition retention is not DROP TABLE</h3>
+    <p class="bdr-card__lede">
+      A retention job given a table with fifteen partitions dropped one it did not create,
+      and, talking its way past a refusal with CASCADE, removed all seventeen foreign keys from
+      a table it was never asked to touch. What retention looks like when ownership, a plan, a
+      grace period and an archive hook come first.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-production-checklist-for-aiokafka/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

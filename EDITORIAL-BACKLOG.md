@@ -109,7 +109,7 @@ what to do at 03:00.
 | 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | review |
 | 29 | Stop passing AsyncSession everywhere | Design | Database | review |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | review |
-| 31 | Partition retention is not DROP TABLE | Design | Database | planned |
+| 31 | Partition retention is not DROP TABLE | Design | Database | review |
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | review |
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | drafting, blocked on grpc-client-kit #19 |
 | 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | review |

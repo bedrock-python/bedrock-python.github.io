@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-partition-retention-is-not-drop-table/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">Partition retention is not DROP TABLE</h3>
+      <p class="bdr-card__lede">
+        A retention job dropped a partition it did not create and, using CASCADE to get
+        past a refusal, removed all seventeen foreign keys from another table. What retention
+        looks like with ownership, a plan and a grace period in front of it.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-the-production-checklist-for-aiokafka/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -79,18 +91,6 @@ hide:
         Eight workers, a pool of four, and a database that got twenty times slower halfway
         through. Connections in use read 4/4 before the incident and 4/4 after it; everything
         that mattered was in the other three series.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">What happens when Kafka is down for an hour?</h3>
-      <p class="bdr-card__lede">
-        A paused broker, twenty events and two designs. The request path was told three
-        times that a send had failed, and one of those three was delivered anyway; the outbox
-        spent no retries and drained the backlog in one cycle.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
