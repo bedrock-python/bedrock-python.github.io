@@ -90,7 +90,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 17 | Circuit breakers should be per origin, not per client | Design | Reliability | review |
 | 18 | Retry-After, backoff and jitter: what a production HTTP client actually does | Tutorials | Reliability | review |
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | planned |
-| 20 | gRPC channels should not be pooled by address alone | Design | Clients | planned |
+| 20 | gRPC channels should not be pooled by address alone | Design | Clients | review |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
 | 22 | When should Redis fail open? | Design | Reliability | planned |
 | 23 | AI code review should not be fully autonomous | Tools | AI tooling | planned |
@@ -424,7 +424,8 @@ Two callers ask for a channel to the same address with different
 credentials, options or interceptors, and a pool keyed on the address hands
 them the same one. The post defines channel identity as the full tuple,
 shows the bug this prevents, and covers health monitoring of pooled channels
-and when a pooled channel should be evicted. Closes on grpc-client-kit.
+and when a pooled channel should be evicted. Closes on grpc-client-kit. Drafted 2026-09-07:
+`docs/blog/posts/2026-09-07-grpc-channels-pooled-by-identity.md`, lab in `docs/blog/lab/2026-09-07-grpc-channel-identity/`.
 
 ### 21. The Unit of Work pattern in SQLAlchemy 2
 

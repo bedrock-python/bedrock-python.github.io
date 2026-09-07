@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-grpc-channels-pooled-by-identity/">
+    <div class="bdr-card__visual bdr-card__visual--design"></div>
+    <div class="bdr-card__eyebrow">Design</div>
+    <h3 class="bdr-card__title">gRPC channels should not be pooled by address alone</h3>
+    <p class="bdr-card__lede">
+      grpc.aio bakes credentials, options, compression and the interceptor chain into a
+      channel at creation, so a pool keyed by host:port hands one caller another caller's
+      configuration. Measured: an audit client with no retry policy that retried three times,
+      a chain rebuilt per request minting a channel per call, and keepalive as part of the
+      identity.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-retry-after-backoff-and-jitter/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

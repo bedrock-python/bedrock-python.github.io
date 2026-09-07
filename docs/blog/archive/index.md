@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [gRPC channels should not be pooled by address alone](../posts/2026-09-07-grpc-channels-pooled-by-identity.md) *(Design)*
 - **2026-09-07** — [Retry-After, backoff and jitter: what a production HTTP client actually does](../posts/2026-09-07-retry-after-backoff-and-jitter.md) *(Tutorials)*
 - **2026-09-07** — [The Unit of Work pattern in SQLAlchemy 2](../posts/2026-09-07-unit-of-work-in-sqlalchemy-2.md) *(Tutorials)*
 - **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md) *(Design)*

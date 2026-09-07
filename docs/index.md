@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-grpc-channels-pooled-by-identity/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">gRPC channels should not be pooled by address alone</h3>
+      <p class="bdr-card__lede">
+        grpc.aio bakes credentials, options, compression and the interceptor chain into a
+        channel at creation, so a pool keyed by host:port hands one caller another caller's
+        configuration. Measured: an audit client with no retry policy that retried three times,
+        a chain rebuilt per request minting a channel per call, and keepalive as part of the
+        identity.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-retry-after-backoff-and-jitter/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -86,18 +100,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Circuit breakers should be per origin, not per client</h3>
-      <p class="bdr-card__lede">
-        One client, three upstreams, one of them down: a breaker keyed on the client refused
-        half the requests to the two that were fine. Measured: the origin as the key, which
-        responses should trip a breaker and which should not, attempts against logical calls
-        under retries, and the single probe after the recovery timeout.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
