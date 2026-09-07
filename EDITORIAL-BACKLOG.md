@@ -74,7 +74,7 @@ Full briefs below.
 | 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
-| 11 | What every production Python microservice reimplements | Meta | Bedrock | planned |
+| 11 | What every production Python microservice reimplements | Meta | Bedrock | review |
 | 12 | Twelve repositories, one engineering standard | Meta | Bedrock | review |
 
 ### Block 2: going deeper
@@ -310,7 +310,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 11. What every production Python microservice reimplements
 
-- File: `docs/blog/posts/YYYY-MM-DD-what-every-python-microservice-reimplements.md`
+- File: `docs/blog/posts/2026-09-07-what-every-microservice-reimplements.md`, lab in `docs/blog/lab/2026-09-07-what-every-microservice-reimplements/`
 - Search title: *What Every Production Python Microservice Reimplements*
 - LinkedIn hook: "I kept seeing the same 3,000 lines in every service. None of it was the product."
 - Tags: `bedrock-python`, `architecture`, `microservices`

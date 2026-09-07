@@ -31,6 +31,20 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-what-every-microservice-reimplements/">
+    <div class="bdr-card__visual bdr-card__visual--meta"></div>
+    <div class="bdr-card__eyebrow">Meta</div>
+    <h3 class="bdr-card__title">What every production Python microservice reimplements</h3>
+    <p class="bdr-card__lede">
+      Lifecycle, health, shutdown, retries, timeouts, deadlines, sessions, transactions,
+      idempotency, outbox, metrics, tracing, migration tests: the same code in every service,
+      none of it the product. Why a framework is the wrong shape for it, and a hundred-line
+      service with four independent libraries, run against a real PostgreSQL from readiness
+      to exit 0.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-twelve-libraries-one-standard/">
     <div class="bdr-card__visual bdr-card__visual--meta"></div>
     <div class="bdr-card__eyebrow">Meta</div>
