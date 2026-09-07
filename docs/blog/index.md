@@ -31,6 +31,19 @@ hide:
 </nav>
 
 <div class="bdr-grid" data-bdr-grid markdown="0">
+  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-how-i-start-a-production-grade-python-library/">
+    <div class="bdr-card__visual bdr-card__visual--meta"></div>
+    <div class="bdr-card__eyebrow">Meta</div>
+    <h3 class="bdr-card__title">How I start a production-grade Python library in 2026</h3>
+    <p class="bdr-card__lede">
+      One command, forty-one files, a green gate in three seconds. What each group of files
+      decides, what a template cannot give you, and the line of linting configuration that
+      selected the rules for naive datetimes and then ignored them — in every library generated
+      from it.
+    </p>
+    <div class="bdr-card__meta">September 7, 2026</div>
+  </a>
+
   <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-migrating-from-pg-partman/">
     <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
     <div class="bdr-card__eyebrow">Tutorials</div>

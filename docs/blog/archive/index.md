@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [How I start a production-grade Python library in 2026](../posts/2026-09-07-how-i-start-a-production-grade-python-library.md) *(Meta)*
 - **2026-09-07** — [Migrating from pg_partman to application-managed partitions](../posts/2026-09-07-migrating-from-pg-partman.md) *(Tutorials)*
 - **2026-09-07** — [Mapping Python exceptions to gRPC status codes](../posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes.md) *(Tutorials)*
 - **2026-09-07** — [Transport-independent errors: one domain error, two protocols](../posts/2026-09-07-transport-independent-errors.md) *(Design)*

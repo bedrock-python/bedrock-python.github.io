@@ -8,4 +8,4 @@ Browse posts by topic.
 | [Tools](tools.md) | Posts about standalone developer tools like `mr-review` and `mattermind` | 3 |
 | [Design](design.md) | Architecture and design decisions behind the ecosystem | 25 |
 | [Tutorials](tutorials.md) | Step-by-step guides for using the libraries | 14 |
-| [Meta](meta.md) | Announcements about the blog and ecosystem itself | 4 |
+| [Meta](meta.md) | Announcements about the blog and ecosystem itself | 5 |

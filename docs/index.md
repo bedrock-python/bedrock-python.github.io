@@ -59,6 +59,18 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-how-i-start-a-production-grade-python-library/">
+      <div class="bdr-card__visual bdr-card__visual--meta"></div>
+      <div class="bdr-card__eyebrow">Meta</div>
+      <h3 class="bdr-card__title">How I start a production-grade Python library in 2026</h3>
+      <p class="bdr-card__lede">
+        One command, forty-one files, a green gate in three seconds. What each group of
+        files decides, and the line of configuration that selected a rule family and then
+        ignored it.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-migrating-from-pg-partman/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -78,18 +90,6 @@ hide:
       <p class="bdr-card__lede">
         Eleven exceptions through four configurations of one gRPC server. With no map
         every failure is UNKNOWN and two of them put a database password in the status details.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-09-07-transport-independent-errors/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Transport-independent errors: one domain error, two protocols</h3>
-      <p class="bdr-card__lede">
-        A service that speaks HTTP outward and gRPC inward has two answers for every
-        failure. Seven calls through both transports: the same domain error, the same code, and
-        the undeclared exception masked identically.
       </p>
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
