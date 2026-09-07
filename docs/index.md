@@ -59,6 +59,20 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-when-should-redis-fail-open/">
+      <div class="bdr-card__visual bdr-card__visual--design"></div>
+      <div class="bdr-card__eyebrow">Design</div>
+      <h3 class="bdr-card__title">When should Redis fail open?</h3>
+      <p class="bdr-card__lede">
+        Redis is gone and it is your cache, your rate limiter and your idempotency store. The
+        decision is per use, not per client, and what the client owes every use is finding out
+        fast. Measured against a paused Redis: twenty seconds for a default redis-py client,
+        half a second with timeouts and zero retries, and what each use should do with that
+        half second.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-testing-migrations-with-testcontainers/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
@@ -85,18 +99,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Why application lifecycle should not belong to FastAPI</h3>
-      <p class="bdr-card__lede">
-        FastAPI's lifespan is a good API and the wrong owner. The pool, the warmup and the health
-        checks live there until the service needs a worker, which has no lifespan and rewrites
-        the plumbing by hand, without readiness or a drain window. The two files it produces,
-        and the dictionary they should have been.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 

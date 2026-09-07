@@ -92,7 +92,7 @@ Second posts in each series: the follow-up questions readers of block 1 ask.
 | 19 | Why application lifecycle should not belong to FastAPI | Design | Lifecycle | review |
 | 20 | gRPC channels should not be pooled by address alone | Design | Clients | review |
 | 21 | The Unit of Work pattern in SQLAlchemy 2 | Tutorials | Database | review |
-| 22 | When should Redis fail open? | Design | Reliability | drafting, blocked on redis-client-kit #25 |
+| 22 | When should Redis fail open? | Design | Reliability | review |
 | 23 | AI code review should not be fully autonomous | Tools | AI tooling | review |
 | 24 | What happens when Kafka is down for an hour? | Design | Effectively-once | drafting, blocked on omni-box #32 |
 
@@ -105,14 +105,14 @@ what to do at 03:00.
 |---|---|---|---|---|
 | 25 | How to partition an existing PostgreSQL table without rewriting your application | Tutorials | Database | planned |
 | 26 | The production checklist for aiokafka | Tutorials | Effectively-once | planned |
-| 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | planned |
+| 27 | Your models and your schema have drifted. Would CI notice? | Design | Database | drafting, blocked on alembic-gauntlet #37 |
 | 28 | The anatomy of a production Python gRPC server | Tutorials | Clients | planned |
 | 29 | Stop passing AsyncSession everywhere | Design | Database | planned |
 | 30 | Idempotency for background jobs and Kafka consumers | Tutorials | Effectively-once | planned |
 | 31 | Partition retention is not DROP TABLE | Design | Database | planned |
 | 32 | Graceful Kafka consumer shutdown in Kubernetes | Tutorials | Effectively-once | planned |
 | 33 | Why gRPC interceptors break on streaming RPCs | Design | Clients | planned |
-| 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | planned |
+| 34 | What to monitor in a SQLAlchemy connection pool | Tutorials | Database | drafting, blocked on sqlalchemy-foundation-kit #26 |
 | 35 | Redis health checks: PING is not the whole story | Design | Lifecycle | planned |
 | 36 | Can local LLMs review production code? Fifty real bugs, four models | Tools | AI tooling | planned |
 
@@ -447,7 +447,10 @@ cache fails open, a rate limiter fails open with an alert, an idempotency
 store depends on what the operation costs to repeat. Covers the client
 timeouts that make fail-open possible and how Redis health feeds readiness
 without taking the whole service down. Closes on redis-client-kit and
-idempotency-kit together.
+idempotency-kit together. Drafted 2026-09-07: `docs/blog/posts/2026-09-07-when-should-redis-fail-open.md`,
+lab in `docs/blog/lab/2026-09-07-when-should-redis-fail-open/`. Found while measuring, fixed and released as
+redis-client-kit 0.1.4 (#25 → #27): disabled retries still let redis-py's default ten retries run; a second
+finding, the async factory handing redis-py the sync `Retry` class (#26), is in progress.
 
 ### 23. AI code review should not be fully autonomous
 
