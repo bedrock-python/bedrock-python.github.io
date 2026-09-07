@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-09-07** — [PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough](../posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy.md) *(Tutorials)*
 - **2026-09-07** — [What every production Python microservice reimplements](../posts/2026-09-07-what-every-microservice-reimplements.md) *(Meta)*
 - **2026-09-07** — [Twelve libraries, one engineering standard, no monorepo](../posts/2026-09-07-twelve-libraries-one-standard.md) *(Meta)*
 - **2026-09-07** — [Why I stopped wrapping HTTP clients](../posts/2026-09-07-why-i-stopped-wrapping-http-clients.md) *(Design)*

@@ -71,7 +71,7 @@ Full briefs below.
 | 5 | Why I stopped wrapping HTTP clients | Design | Clients | review |
 | 6 | Exactly-once is a lie; exactly-once effects are not | Design | Effectively-once | planned |
 | 7 | We started writing documentation for AI coding agents | Meta | AI tooling | review |
-| 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | planned |
+| 8 | PgBouncer transaction mode and async SQLAlchemy | Tutorials | Database | review |
 | 9 | RAG was the wrong abstraction for searching our team chat | Tools | AI tooling | planned |
 | 10 | Safe gRPC retries: which status codes you should actually retry | Design | Reliability | review |
 | 11 | What every production Python microservice reimplements | Meta | Bedrock | review |
@@ -262,7 +262,8 @@ mention. The section plan is a starting point, not a contract.
 
 ### 8. PgBouncer transaction mode and async SQLAlchemy
 
-- File: `docs/blog/posts/YYYY-MM-DD-pgbouncer-transaction-mode-async-sqlalchemy.md`
+- File: `docs/blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy.md`, lab in `docs/blog/lab/2026-09-07-pgbouncer-async-sqlalchemy/`
+- Found while measuring, fixed and released as sqlalchemy-foundation-kit 0.3.0 (2026-09-07, [#23](https://github.com/bedrock-python/sqlalchemy-foundation-kit/issues/23) → #24): the default config sent `jit=off` and `search_path` as startup parameters, which PgBouncer refuses or silently drops. The post keeps the 0.2.1 rows as the measured failure and closes on 0.3.0; PgBouncer ≥ 1.22 makes the classic prepared-statement error disappear by default, which is the post's second finding.
 - Search title: *PostgreSQL + PgBouncer + Async SQLAlchemy: The Production Setup Nobody Documents Enough*
 - LinkedIn hook: "Your SQLAlchemy config works perfectly until PgBouncer enters transaction mode."
 - Tags: `sqlalchemy-foundation-kit`, `sqlalchemy`, `pgbouncer`, `postgresql`, `asyncpg`

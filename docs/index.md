@@ -59,6 +59,19 @@ hide:
   </div>
 
   <div class="bdr-grid">
+    <a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
+      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
+      <div class="bdr-card__eyebrow">Tutorials</div>
+      <h3 class="bdr-card__title">PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough</h3>
+      <p class="bdr-card__lede">
+        Transaction pooling takes the session away, and everything that lived on it goes with
+        it. Measured on PgBouncer 1.25: a bare SET leaking to the next client, the prepared
+        statement error that stopped happening in 1.22, the one startup parameter that refuses
+        every connection, and the configuration that survived the table.
+      </p>
+      <div class="bdr-card__meta">September 7, 2026</div>
+    </a>
+
     <a class="bdr-card" href="blog/posts/2026-09-07-what-every-microservice-reimplements/">
       <div class="bdr-card__visual bdr-card__visual--meta"></div>
       <div class="bdr-card__eyebrow">Meta</div>
@@ -86,19 +99,6 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Why I stopped wrapping HTTP clients</h3>
-      <p class="bdr-card__lede">
-        Every company writes an HTTP client wrapper: a retry helper that grows a config class
-        and ends as a dialect nobody can migrate away from. What the wrapper owns is not HTTP,
-        and what it takes is the client. Measured: the native type kept on three libraries,
-        one policy driving two of them with the same metrics, nine requests from two stacked
-        retry loops, and a build that fails when an adapter cannot honour a setting.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
 
 
 
