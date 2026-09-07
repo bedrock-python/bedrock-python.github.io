@@ -116,7 +116,7 @@ postgres_db_pool_overflow                          gauge      connections beyond
 postgres_db_connection_checkout_duration_seconds   histogram  how long a connection was held between checkout and checkin
 ```
 
-Alert on the wait (the [pool metrics post](2026-09-07-what-to-monitor-in-a-sqlalchemy-pool.md) measures what that looks like), graph the rest. On the PgBouncer side, `SHOW POOLS` gives `cl_waiting` and `maxwait`, which are the same two facts one layer down: clients queued for a server connection, and how long the oldest has been queued. If `maxwait` grows while the application's own wait is flat, the bottleneck is `default_pool_size`; if both grow, it is PostgreSQL.
+Alert on the wait, graph the rest; a later post in this series measures what a pool looks like while it runs out. On the PgBouncer side, `SHOW POOLS` gives `cl_waiting` and `maxwait`, which are the same two facts one layer down: clients queued for a server connection, and how long the oldest has been queued. If `maxwait` grows while the application's own wait is flat, the bottleneck is `default_pool_size`; if both grow, it is PostgreSQL.
 
 ## Closing pools during a rollout
 
