@@ -1,0 +1,1 @@
+0002 creates order_status without 'shipped'; the model has it. Autogenerate does not compare enum members.

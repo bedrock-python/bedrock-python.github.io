@@ -13,6 +13,8 @@ tags:
 
 # Introducing mr-review: AI-powered merge request reviews
 
+<div class="bdr-post__hero" data-bdr-post="2026-05-28-introducing-mr-review" role="img" aria-label="A machine drafts remarks on a diff; a gate decides which of them get posted" markdown="0"></div>
+
 Code review is one of the highest-leverage activities in a software team, and also one of the most inconsistent. Reviewers get tired, context-switch mid-review, miss things. **mr-review** is a CLI tool that runs locally and uses an LLM to walk through a merge request diff the way a thorough engineer would.
 
 <!-- more -->

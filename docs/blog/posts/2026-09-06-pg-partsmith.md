@@ -16,6 +16,8 @@ tags:
 
 # Managing PostgreSQL partitions, one failure at a time
 
+<div class="bdr-post__hero" data-bdr-post="2026-09-06-pg-partsmith" role="img" aria-label="A tree of time-ordered partitions kept correct: one created ahead, one retired, one never touched" markdown="0"></div>
+
 There are two ways a partitioned table gets you out of bed. The first is an INSERT at 03:00 that PostgreSQL rejects because nobody created next month's partition. The second is quieter and worse: a retention job that dropped a table it did not make. Creating the partitions is the easy part. Keeping a tree of them right every night, for years, without ever touching a table that is not yours, is the part nobody budgets for, and it is the part I kept rewriting from one service to the next until it became **pg-partsmith**. Its shape follows the failures, and so does this post: not knowing what maintenance will do, dropping something you did not make, two replicas ticking at once, a team with no Python in it, an archiver that has to run before the drop, and an assistant that guesses an API which does not exist.
 
 <!-- more -->

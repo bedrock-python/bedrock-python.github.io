@@ -1,0 +1,1 @@
+0001 creates email as String(100); the model says String(255). Autogenerate sees this.

@@ -14,6 +14,8 @@ tags:
 
 # The Transactional Outbox pattern in Python: omni-box
 
+<div class="bdr-post__hero" data-bdr-post="2026-05-15-transactional-outbox-with-omni-box" role="img" aria-label="One transaction holds both the row and the event; a separate relay carries the event onward" markdown="0"></div>
+
 Distributed systems have a classic problem: you want to update your database and publish an event to Kafka in the same operation, but there is no cross-system transaction. If your service crashes between the `INSERT` and the `kafka.produce()`, you get silent data loss. **omni-box** solves this with the Transactional Outbox pattern.
 
 <!-- more -->

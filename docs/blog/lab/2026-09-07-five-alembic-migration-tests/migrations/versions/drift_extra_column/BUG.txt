@@ -1,0 +1,1 @@
+0001 adds a legacy_flag column the model does not have. Autogenerate sees this.

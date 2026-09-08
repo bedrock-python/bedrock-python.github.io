@@ -1,0 +1,1 @@
+0003 does nothing; the model declares the amount check. Autogenerate never compares check constraints.

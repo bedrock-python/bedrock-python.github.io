@@ -1,0 +1,1 @@
+0004 was edited by hand after autogenerate: the column is nullable in the migration and NOT NULL in the model.

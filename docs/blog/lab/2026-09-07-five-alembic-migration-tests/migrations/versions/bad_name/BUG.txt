@@ -1,0 +1,1 @@
+0003 adds the check constraint as raw SQL, so the convention never touches its name.

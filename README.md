@@ -32,7 +32,7 @@ date: YYYY-MM-DD
 authors:
   - alex
 categories:
-  - Releases      # or: Design, Meta, Tutorial
+  - Tutorials     # or: Design, Libraries, Tools, Meta
 tags:
   - library-name
 ---
@@ -44,6 +44,30 @@ One-sentence summary shown in the post list.
 <!-- more -->
 
 Full content here.
+```
+
+The blog directory is generated from the posts: titles, summaries, dates, formats,
+tags, topics, reading times, and the local search catalog. Topics are inferred from
+library tags and the article's subject. Use accurate tags; there is no separate
+JavaScript list to update. The first paragraph after the title and optional hero
+illustration supplies the summary.
+
+Run `make docs-catalog` after adding a post or changing its metadata/content, and
+commit the updated `docs/blog/catalog.json` and generated article block in
+`docs/blog/index.md` alongside the post. `make docs-serve`, `make docs-build`, and
+the deployment workflow regenerate these automatically. If a development server
+is already running, run `make docs-catalog` again to refresh the directory.
+
+The equivalent command without Make is:
+
+```bash
+uv run --no-dev --group docs python scripts/build_blog_catalog.py
+```
+
+Check that committed catalog files are current with:
+
+```bash
+uv run --no-dev --group docs python scripts/build_blog_catalog.py --check
 ```
 
 ## Deployment
