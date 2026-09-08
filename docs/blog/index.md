@@ -1,707 +1,688 @@
 ---
 title: Blog
-description: Guides, design notes and plain engineering articles from the Bedrock Python ecosystem.
+description: Practical field notes on production Python. Find articles on PostgreSQL, gRPC, Kafka, service lifecycle, and resilient systems.
 hide:
+  - navigation
   - toc
 ---
 
-# Blog
+<div class="bdr-explorer" data-blog-explorer data-catalog-url="catalog.json" data-view="list" markdown="0">
+  <header class="bdr-journal">
+    <div>
+      <div class="bdr-journal__eyebrow"><span></span> THE BEDROCK BLOG</div>
+      <h1>Engineering beyond<br>the <em>happy path.</em></h1>
+      <p>Field notes on building Python systems that hold up in production.<br class="bdr-desktop-break"> The decisions, the trade-offs, and the code behind them.</p>
+    </div>
+    <div class="bdr-journal__aside" aria-hidden="true">
+      <svg viewBox="0 0 130 100" fill="none"><path d="M65 8 112 33 65 58 18 33 65 8Z"/><path d="m18 48 47 25 47-25M18 63l47 25 47-25"/><path d="M65 58v30M18 33v30M112 33v30"/><path class="bdr-journal__accent" d="m65 8 47 25-47 25-47-25L65 8Z"/></svg>
+      <span>FROM THE<br>INFRASTRUCTURE LAYER</span>
+    </div>
+  </header>
 
-<style>
-  .md-content__inner > h1:first-of-type { display: none; }
-</style>
-
-<section class="bdr-hero" markdown="0">
-  <div class="bdr-hero__eyebrow">Bedrock Python</div>
-  <h1 class="bdr-hero__title">Blog</h1>
-  <p class="bdr-hero__lede">
-    Guides, design notes and plain engineering articles from the libraries and tools
-    that power our backend services — the infrastructure layer, in writing.
-  </p>
-</section>
-
-<nav class="bdr-chips" data-bdr-chips markdown="0">
-  <a class="bdr-chip is-active" data-bdr-filter="all" href="#">All</a>
-  <a class="bdr-chip" data-bdr-filter="libraries" href="category/libraries/">Libraries</a>
-  <a class="bdr-chip" data-bdr-filter="tools" href="category/tools/">Tools</a>
-  <a class="bdr-chip" data-bdr-filter="design" href="category/design/">Design</a>
-  <a class="bdr-chip" data-bdr-filter="tutorials" href="category/tutorials/">Tutorials</a>
-  <a class="bdr-chip" data-bdr-filter="meta" href="category/meta/">Meta</a>
-  <a class="bdr-chip" data-bdr-filter="archive" href="archive/">Archive</a>
-</nav>
-
-<div class="bdr-grid" data-bdr-grid markdown="0">
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-zero-dependency-cores/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Zero-dependency cores</h3>
-    <p class="bdr-card__lede">
-      An infrastructure library ends up in every service, and so does every dependency it
-      declares. Measured across eight libraries: three install exactly one distribution and one
-      of them imports in 1.2 ms, while the FastAPI extra adds twenty-two distributions and 16 MB
-      — paid only by the services that asked for it.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-how-i-start-a-production-grade-python-library/">
-    <div class="bdr-card__visual bdr-card__visual--meta"></div>
-    <div class="bdr-card__eyebrow">Meta</div>
-    <h3 class="bdr-card__title">How I start a production-grade Python library in 2026</h3>
-    <p class="bdr-card__lede">
-      One command, forty-one files, a green gate in three seconds. What each group of files
-      decides, what a template cannot give you, and the line of linting configuration that
-      selected the rules for naive datetimes and then ignored them — in every library generated
-      from it.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-migrating-from-pg-partman/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Migrating from pg_partman to application-managed partitions</h3>
-    <p class="bdr-card__lede">
-      The question that stops the migration is what happens to the partitions that already
-      exist. Measured against pg_partman 5.5: the plan says nothing to do, both maintainers run
-      side by side without conflict, and after the switch a policy of its own creates one month
-      and retires one of pg_partman's — because ownership is decided by bounds, not names.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Mapping Python exceptions to gRPC status codes</h3>
-    <p class="bdr-card__lede">
-      Eleven exceptions through four configurations of one gRPC server. With no map every
-      failure is UNKNOWN and two of the eleven put a database password in the status details.
-      With a map, each code tells the caller what to do — and the rule for which messages may
-      be published is mechanical enough to check in review.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-transport-independent-errors/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Transport-independent errors: one domain error, two protocols</h3>
-    <p class="bdr-card__lede">
-      A service that speaks HTTP outward and gRPC inward has two answers for every failure,
-      and they drift. Seven calls through both transports of one service: the same domain error
-      becomes 404 and NOT_FOUND, the same code travels in both envelopes, and the exception
-      nobody declared is masked identically instead of printing its message to the caller.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-idempotency-across-a-chain-of-microservices/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Idempotency across a chain of microservices</h3>
-    <p class="bdr-card__lede">
-      A gateway calling orders calling payments, each with one retry, and a first attempt
-      that outlives the caller's timeout. Without a key that travels, one user action produced
-      four charges. With a key minted per attempt, two. With one key per intent, one, and a
-      later retry answered from the store in 4 ms.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-reliability-is-not-retry-3/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Reliability is not retry=3</h3>
-    <p class="bdr-card__lede">
-      Forty callers against one dependency, through four mechanisms. On a healthy dependency
-      retries cost exactly nothing, which is why nobody revisits them. On a failing one they
-      tripled its load for zero extra successes. What a deadline, a budget and a per-origin
-      breaker each add, and what none of them make safe.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">How to partition an existing PostgreSQL table</h3>
-    <p class="bdr-card__lede">
-      Two million rows turned into twelve monthly partitions while a writer inserted the whole
-      time. Every step measured: the key change that blocks writers for 413 ms and the one that
-      blocks them for 3, a 14-second drain with the writer's median insert at 0.8 ms, and the
-      sequence that refuses to let the old table go.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Publishing to PyPI without API tokens</h3>
-    <p class="bdr-card__lede">
-      A PyPI token in a repository secret is a password with no expiry and no audit trail.
-      Trusted Publishing replaces it with an identity: repository, workflow and environment,
-      checked by PyPI on every upload. The whole pipeline from a merged pull request to a
-      wheel, as it ran for six libraries today, including the escape hatch.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Should your application create Kafka topics on startup?</h3>
-    <p class="bdr-card__lede">
-      A producer wrote to a topic name with a typo in it and got no error: the broker created
-      it, with one partition, and every message went there while the real consumer sat idle.
-      What the broker, the application and a person each get wrong, and why a declared partition
-      count is documentation after the first deploy.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">UUIDv7 as a PostgreSQL partition key</h3>
-    <p class="bdr-card__lede">
-      Range-partitioning by time normally costs you the primary key: every unique constraint
-      has to contain the partition column. A time-ordered id removes the problem instead.
-      Measured: single-column primary key accepted, one partition scanned for an id range,
-      four for the same range on a timestamp column, and three kinds of id that do not fit.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Why gRPC interceptors break on streaming RPCs</h3>
-    <p class="bdr-card__lede">
-      An interceptor that works for unary calls reports 0 ms for a 609 ms stream, counts no
-      errors while the stream fails, and loses its request id before the first item arrives.
-      One object inheriting all four gRPC interceptor base classes is registered for one kind
-      of call, silently. What the four kinds actually require.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Warmup, readiness and liveness are three different things</h3>
-    <p class="bdr-card__lede">
-      One service, two probes and a route polled every 100 ms through a warmup, a dependency
-      outage and a SIGTERM. Nothing answered for the first 3.3 seconds, readiness went false
-      while liveness stayed true and the route kept serving, and requests kept succeeding for
-      two seconds after readiness went false. Each conflation has its own outage.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-partition-retention-is-not-drop-table/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Partition retention is not DROP TABLE</h3>
-    <p class="bdr-card__lede">
-      A retention job given a table with fifteen partitions dropped one it did not create,
-      and, talking its way past a refusal with CASCADE, removed all seventeen foreign keys from
-      a table it was never asked to touch. What retention looks like when ownership, a plan, a
-      grace period and an archive hook come first.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-production-checklist-for-aiokafka/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">The production checklist for aiokafka</h3>
-    <p class="bdr-card__lede">
-      Ten items, each measured against a Kafka container: what the client refuses to be built
-      with, what a JSON deserializer does to one bad message, what auto-commit commits (seven
-      messages nobody processed), and what happens to a member whose batch outlives the poll
-      interval (four messages handled twice, by two processes).
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">What to monitor in a SQLAlchemy connection pool</h3>
-    <p class="bdr-card__lede">
-      Eight workers, a pool of four, and a database that got twenty times slower halfway
-      through. Connections in use read 4/4 before the incident and 4/4 after it. The wait in
-      front of the pool, the held time behind it and the timeout counter are where the whole
-      story was, and they say different things.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">What happens when Kafka is down for an hour?</h3>
-    <p class="bdr-card__lede">
-      A paused broker, twenty events and two designs. The request path was told three times
-      that a send had failed, and one of those three was delivered anyway. The outbox kept its
-      rows pending, spent no retries, and drained the whole backlog in one cycle when the
-      broker came back.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Redis health checks: PING is not the whole story</h3>
-    <p class="bdr-card__lede">
-      Three Redis servers answered PONG: a healthy one, one full at its memory limit with
-      eviction off, and a read-only replica. Two of them fail every SET the application makes,
-      and readiness stayed green for all three. What a readiness check owes the caller, and
-      what a write probe costs.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-your-models-and-your-schema-have-drifted/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Your models and your schema have drifted. Would CI notice?</h3>
-    <p class="bdr-card__lede">
-      Six kinds of schema drift, each one revision away from a clean history, against three
-      suites. The pipeline everybody runs, alembic upgrade head, caught none of them.
-      Autogenerate caught three. A check constraint, an enum member and a server default need
-      checks Alembic does not perform at all.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-stop-passing-asyncsession-everywhere/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Stop passing AsyncSession everywhere</h3>
-    <p class="bdr-card__lede">
-      The most-repeated parameter in an async SQLAlchemy codebase is not a parameter: it is a
-      pooled connection, a transaction and an identity map with no owner. Measured: an order
-      committed with no outbox row, five of six requests failing on a pool of two because each
-      held two connections, and an INSERT that vanished inside a read block.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">The anatomy of a production Python gRPC server</h3>
-    <p class="bdr-card__lede">
-      A six-line grpc.aio server handed the caller the database password in a status message,
-      answered UNIMPLEMENTED when Kubernetes asked whether it was serving, and cancelled a
-      request mid-flight on every deploy. Each part of the production server, the incident it
-      prevents, and the status code a client actually gets with it and without it.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-graceful-kafka-consumer-shutdown/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Graceful Kafka consumer shutdown in Kubernetes</h3>
-    <p class="bdr-card__lede">
-      Every rollout sends the consumer SIGTERM mid-batch. Measured: a loop that exits on the
-      signal left three messages to be processed twice and made its replacement wait 29.6 s
-      for a rebalance; the same loop under a lifecycle finished the batch, committed, left the
-      group, exited in 0.45 s, and the replacement was working in 0.31 s with no duplicates.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-idempotency-for-jobs-and-consumers/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Idempotency for background jobs and Kafka consumers</h3>
-    <p class="bdr-card__lede">
-      Queues deliver at least once by design, and every worker meets the crash before the ack,
-      the visibility timeout that hands one job to two workers, and the rebalance that
-      replays a batch. Measured against Redis: two mails and one, both workers waiting on one
-      reservation, the key that named the delivery instead of the effect, and where the inbox
-      stops and the key begins.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-when-should-redis-fail-open/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">When should Redis fail open?</h3>
-    <p class="bdr-card__lede">
-      Redis is gone and it is your cache, your rate limiter and your idempotency store. The
-      decision is per use, not per client, and what the client owes every use is finding out
-      fast. Measured against a paused Redis: twenty seconds for a default redis-py client,
-      half a second with timeouts and zero retries, and what each use should do with that
-      half second.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-testing-migrations-with-testcontainers/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Testing database migrations with Testcontainers: up, down and up again</h3>
-    <p class="bdr-card__lede">
-      From an empty tests directory to a green CI job that walks every Alembic revision forward,
-      back and forward again against a real PostgreSQL: the session-scoped container, the two
-      pytest settings that are not optional, the fifteen-line env.py contract with SET LOCAL,
-      the test file, the workflow, and what it costs.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tools" href="posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
-    <div class="bdr-card__visual bdr-card__visual--tools"></div>
-    <div class="bdr-card__eyebrow">Tools</div>
-    <h3 class="bdr-card__title">AI code review should not be fully autonomous</h3>
-    <p class="bdr-card__lede">
-      A bot that posts twelve comments on every merge request trains the team to skip all
-      twelve within a week. The alternative is a pipeline where the model drafts and a person
-      decides: brief, dispatch, polish, post, with nothing reaching the merge request that a
-      human did not read first. Why the polish stage is the design, not a safety valve.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Why application lifecycle should not belong to FastAPI</h3>
-    <p class="bdr-card__lede">
-      FastAPI's lifespan is a good API and the wrong owner. The pool, the warmup and the health
-      checks live there until the service needs a worker, which has no lifespan and rewrites
-      the plumbing by hand, without readiness or a drain window. The two files it produces,
-      and the dictionary they should have been.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-transactional-inbox/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Transactional inbox: the other half of the outbox pattern</h3>
-    <p class="bdr-card__lede">
-      A broker delivers at least once, and a handler can fail halfway. An inbox row per message,
-      in the same transaction as the effect, answers both. Measured: a duplicate delivery
-      that ran no handler, and a handler that fails after its write under four ack
-      strategies, two of which lose the message and two of which end with exactly one
-      invoice.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-grpc-channels-pooled-by-identity/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">gRPC channels should not be pooled by address alone</h3>
-    <p class="bdr-card__lede">
-      grpc.aio bakes credentials, options, compression and the interceptor chain into a
-      channel at creation, so a pool keyed by host:port hands one caller another caller's
-      configuration. Measured: an audit client with no retry policy that retried three times,
-      a chain rebuilt per request minting a channel per call, and keepalive as part of the
-      identity.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-retry-after-backoff-and-jitter/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">Retry-After, backoff and jitter: what a production HTTP client actually does</h3>
-    <p class="bdr-card__lede">
-      The four-line retry loop makes eight decisions wrong. Measured: a Retry-After honoured
-      and ignored, fifty callers whose fixed backoff put 49 retries in one ten-millisecond
-      window, a timed-out POST received once by default and three times when declared
-      idempotent, and which of six answers a client should retry at all.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">The Unit of Work pattern in SQLAlchemy 2</h3>
-    <p class="bdr-card__lede">
-      Every first repository has a commit in it, and a use case that touches two of them can
-      leave half of itself in the database. Measured: users=1 orders=0 with self-committing
-      repositories, users=0 orders=0 with a unit of work, a read-only block that discards a
-      write, a savepoint that keeps one failed step from poisoning the transaction, and the
-      use case under test with a list instead of PostgreSQL.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-circuit-breakers-should-be-per-origin/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Circuit breakers should be per origin, not per client</h3>
-    <p class="bdr-card__lede">
-      One client, three upstreams, one of them down: a breaker keyed on the client refused
-      half the requests to the two that were fine. Measured: the origin as the key, which
-      responses should trip a breaker and which should not, attempts against logical calls
-      under retries, and the single probe after the recovery timeout.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-exactly-once-effects/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Exactly-once is a lie; exactly-once effects are not</h3>
-    <p class="bdr-card__lede">
-      Kafka cannot make your database update exactly once. Measured against PostgreSQL and
-      Kafka: the two dual-write windows, an outbox relay that crashes after the send and
-      publishes twice, and an inbox that receives both copies and writes the invoice once.
-      At-least-once delivery plus one unique key per boundary is the only exactly-once there
-      is, and it is the one you wanted.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="libraries" href="posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
-    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
-    <div class="bdr-card__eyebrow">Libraries</div>
-    <h3 class="bdr-card__title">One lifecycle for HTTP, gRPC, workers and cron jobs</h3>
-    <p class="bdr-card__lede">
-      An API, a scheduler and a worker are one application with three ways for work to
-      enter, and most codebases give each its own startup, readiness and shutdown. One
-      AppSpec run as one process and as two, every lifecycle call printed: bind in order,
-      readiness after the last bind, drain in reverse, the pool closed last, exit 0, and
-      the split into two deployments costing one dictionary.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-retries-can-make-an-outage-worse/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Retries can make an outage worse: designing a retry budget</h3>
-    <p class="bdr-card__lede">
-      Three attempts at every hop of a four-layer chain is 81 requests at the bottom for one
-      at the top, measured: 810 for ten callers against a dead origin. A per-origin retry
-      budget bounds the storm from the first request, a circuit breaker stops it once the
-      dependency has proven it is down, and the one case where the budget makes every caller
-      fail is the case where it should.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Idempotency keys: the part everyone gets wrong</h3>
-    <p class="bdr-card__lede">
-      A result cache looks like an idempotency key until a client retries while the first
-      request is still running. Measured against a provider that counts its charges: the
-      cache charged twice with identical responses, a reservation charged once, a reused key
-      with a different amount was refused, a failed action was not cached, and a missing store
-      failed open. What the key promises, and why it is still not a lock.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough</h3>
-    <p class="bdr-card__lede">
-      Transaction pooling takes the session away, and everything that lived on it goes with
-      it. Measured on PgBouncer 1.25: a bare SET leaking to the next client, the prepared
-      statement error that stopped happening in 1.22, the one startup parameter that refuses
-      every connection, and the configuration that survived the table.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-what-every-microservice-reimplements/">
-    <div class="bdr-card__visual bdr-card__visual--meta"></div>
-    <div class="bdr-card__eyebrow">Meta</div>
-    <h3 class="bdr-card__title">What every production Python microservice reimplements</h3>
-    <p class="bdr-card__lede">
-      Lifecycle, health, shutdown, retries, timeouts, deadlines, sessions, transactions,
-      idempotency, outbox, metrics, tracing, migration tests: the same code in every service,
-      none of it the product. Why a framework is the wrong shape for it, and a hundred-line
-      service with four independent libraries, run against a real PostgreSQL from readiness
-      to exit 0.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-twelve-libraries-one-standard/">
-    <div class="bdr-card__visual bdr-card__visual--meta"></div>
-    <div class="bdr-card__eyebrow">Meta</div>
-    <h3 class="bdr-card__title">Twelve libraries, one engineering standard, no monorepo</h3>
-    <p class="bdr-card__lede">
-      Sixteen repositories that agree on tooling, CI, releases, security settings and docs, without
-      a monorepo. A Copier template that renders a green library in five seconds, a script that
-      makes a GitHub repository match, Release Please with Trusted Publishing, and the three
-      lessons the standard now carries so nobody learns them twice.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Why I stopped wrapping HTTP clients</h3>
-    <p class="bdr-card__lede">
-      Every company writes an HTTP client wrapper: a retry helper that grows a config class
-      and ends as a dialect nobody can migrate away from. What the wrapper owns is not HTTP,
-      and what it takes is the client. Measured: the native type kept on three libraries,
-      one policy driving two of them with the same metrics, nine requests from two stacked
-      retry loops, and a build that fails when an adapter cannot honour a setting.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-safe-grpc-retries/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Safe gRPC retries: which status codes you should actually retry</h3>
-    <p class="bdr-card__lede">
-      A retry is a bet that the server did not do the work. Measured against a payments
-      server that counts its charges: retrying INTERNAL charged the card three times, so did
-      UNAVAILABLE in one of the two ways a server produces it, the deadline did not triple
-      across attempts, the breaker counted attempts, and a retried stream replayed what the
-      consumer had already seen. The table of codes, and the three settings that make a
-      policy honest.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-07-graceful-shutdown-is-a-protocol/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Graceful shutdown in Kubernetes is a protocol, not a signal handler</h3>
-    <p class="bdr-card__lede">
-      SIGTERM, finish in-flight requests, exit: that is what every framework calls graceful,
-      and it refused 44 of 47 requests in the second after the signal, because Kubernetes
-      keeps routing while the endpoint removal propagates. The four steps a pod has to
-      follow, the one everybody skips, measured before and after, and the arithmetic for
-      terminationGracePeriodSeconds.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
-    <div class="bdr-card__visual bdr-card__visual--meta"></div>
-    <div class="bdr-card__eyebrow">Meta</div>
-    <h3 class="bdr-card__title">We started writing documentation for AI coding agents</h3>
-    <p class="bdr-card__lede">
-      A coding assistant invented a class, awaited a sync function and passed a session
-      where the library wants an engine, all with complete confidence. The docs were not
-      wrong; they were written for a reader who browses. One page per library, written
-      for a model: the invariants as numbered rules, WRONG next to RIGHT, every page also
-      served as Markdown, and what keeping fourteen of them true costs.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tutorials" href="posts/2026-09-07-five-alembic-migration-tests/">
-    <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-    <div class="bdr-card__eyebrow">Tutorials</div>
-    <h3 class="bdr-card__title">The five migration tests every Python project should run in CI</h3>
-    <p class="bdr-card__lede">
-      Four Alembic revisions, five bugs I have shipped, three test suites. The one most
-      pipelines have, a plain upgrade to head, caught one bug in five. Five short checks
-      written against Alembic's own API caught all of them, each for its own reason, with
-      the messages you would otherwise read during an incident.
-    </p>
-    <div class="bdr-card__meta">September 7, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="design" href="posts/2026-09-06-timeouts-are-not-deadlines/">
-    <div class="bdr-card__visual bdr-card__visual--design"></div>
-    <div class="bdr-card__eyebrow">Design</div>
-    <h3 class="bdr-card__title">Timeouts are not deadlines: how latency budgets break across microservices</h3>
-    <p class="bdr-card__lede">
-        A timeout measures patience; a deadline is a point on the clock. Measured three times: an
-        httpx call that took four seconds under a one-second timeout, a retry loop that tripled
-        it, and a chain of three gRPC services where the card was charged a second after the
-        customer saw the error. Then the arithmetic that fixes it, and the three places it has
-        to live.
-    </p>
-    <div class="bdr-card__meta">September 6, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="libraries tools" href="posts/2026-09-06-pg-partsmith/">
-    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
-    <div class="bdr-card__eyebrow">Libraries · Tools</div>
-    <h3 class="bdr-card__title">Managing PostgreSQL partitions, one failure at a time</h3>
-    <p class="bdr-card__lede">
-      The pain of keeping a partitioned table right every night, and how pg-partsmith
-      answers it: a plan you can read before it runs, ownership that never drops a table
-      it did not make, the same API async and sync, a command line and a container image
-      for teams with no Python, hooks from a YAML document, and one page written for the
-      AI assistant doing the wiring.
-    </p>
-    <div class="bdr-card__meta">September 6, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="meta" href="posts/2026-05-30-welcome/">
-    <div class="bdr-card__visual bdr-card__visual--meta"></div>
-    <div class="bdr-card__eyebrow">Meta</div>
-    <h3 class="bdr-card__title">Welcome to the Bedrock Python Blog</h3>
-    <p class="bdr-card__lede">
-      An introduction to the ecosystem — what Bedrock Python is, the libraries that
-      form the foundation, reliability, and testing layers, and what you can expect
-      from this blog.
-    </p>
-    <div class="bdr-card__meta">May 30, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="tools" href="posts/2026-05-28-introducing-mr-review/">
-    <div class="bdr-card__visual bdr-card__visual--tools"></div>
-    <div class="bdr-card__eyebrow">Tools</div>
-    <h3 class="bdr-card__title">Introducing mr-review: AI-powered merge request reviews</h3>
-    <p class="bdr-card__lede">
-      A new CLI tool that runs locally and uses an LLM to walk through a merge request
-      diff the way a thorough engineer would — staged review with brief, dispatch,
-      polish, and post phases, plus presets for thorough, security, style, and
-      performance reviews.
-    </p>
-    <div class="bdr-card__meta">May 28, 2026</div>
-  </a>
-
-  <a class="bdr-card" data-bdr-cat="libraries design" href="posts/2026-05-15-transactional-outbox-with-omni-box/">
-    <div class="bdr-card__visual bdr-card__visual--libraries"></div>
-    <div class="bdr-card__eyebrow">Libraries · Design</div>
-    <h3 class="bdr-card__title">The Transactional Outbox pattern in Python: omni-box</h3>
-    <p class="bdr-card__lede">
-      How <code>omni-box</code> solves the classic dual-write problem between Postgres
-      and Kafka using the Transactional Outbox pattern, plus the Inbox side for
-      idempotent consumers.
-    </p>
-    <div class="bdr-card__meta">May 15, 2026</div>
-  </a>
-</div>
-
-<section markdown="0">
-  <div class="bdr-section-head">
-    <h2 class="bdr-section-head__title">Recommended reading</h2>
-    <span class="bdr-section-head__note">Written elsewhere, by other people. Worth your time.</span>
+  <div class="bdr-discovery" data-blog-controls hidden>
+    <div class="bdr-searchbox" role="search" aria-label="Search blog articles">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+      <label class="bdr-sr-only" for="blog-query">Search articles by title, topic, or library</label>
+      <input id="blog-query" data-blog-query type="search" placeholder="Find an article, a topic, a library…" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-controls="blog-results">
+      <button class="bdr-searchbox__clear" data-blog-clear-query type="button" aria-label="Clear search" hidden>×</button>
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <span class="bdr-discovery__hint">A specific problem in mind? Start here.</span>
   </div>
+  <p class="bdr-load-status" data-blog-load-status role="status">Explore all articles below. <a href="archive/">Browse the archive →</a></p>
 
-  <div class="bdr-grid">
-    <a class="bdr-card" href="https://medium.com/@shimovolos.stas/your-llm-is-streaming-to-nobody-how-to-handle-client-disconnects-in-fastapi-8cdf8c5d519e">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Medium · Stanislav Shimovolos</div>
-      <h3 class="bdr-card__title">Your LLM Is Streaming to Nobody: How to Handle Client Disconnects in FastAPI</h3>
-      <p class="bdr-card__lede">
-        The client closes the tab and your endpoint keeps going: the GPU generates tokens
-        nobody reads, the transaction never commits, the pool gets a broken connection back.
-        The full path of a disconnect from TCP through ASGI to asyncio, and working code for
-        both streaming and plain endpoints on FastAPI and uvicorn.
-      </p>
-      <div class="bdr-card__meta">January 19, 2026 · ~30 min read</div>
+  <section class="bdr-collections" aria-labelledby="collections-title">
+    <div class="bdr-collections__heading"><h2 id="collections-title">A few good places to start</h2><span>Follow your curiosity</span></div>
+    <div class="bdr-collections__grid">
+      <a class="bdr-collection bdr-collection--resilience" data-blog-collection="reliability" href="posts/2026-09-07-reliability-is-not-retry-3/">
+        <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="4" y="16" width="12" height="16" rx="3"/><rect x="32" y="16" width="12" height="16" rx="3"/><path d="M16 24h16m-11-5 5 5-5 5M10 10V6m28 36v-4"/></svg></div>
+        <div><span class="bdr-collection__label">WHEN DEPENDENCIES FAIL</span><h3>Build resilient services</h3><p>Deadlines, retries & circuit breakers</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="bdr-collection bdr-collection--postgres" data-blog-collection="postgres" href="posts/2026-09-06-pg-partsmith/">
+        <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><ellipse cx="24" cy="11" rx="15" ry="6"/><path d="M9 11v25c0 3.3 6.7 6 15 6s15-2.7 15-6V11M9 23c0 3.3 6.7 6 15 6s15-2.7 15-6M9 35c0 3.3 6.7 6 15 6s15-2.7 15-6"/></svg></div>
+        <div><span class="bdr-collection__label">BEYOND THE QUERY</span><h3>Postgres in production</h3><p>Partitions, sessions & migrations</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="bdr-collection bdr-collection--messaging" data-blog-collection="messaging" href="posts/2026-05-15-transactional-outbox-with-omni-box/">
+        <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="3" y="18" width="10" height="12" rx="2"/><rect x="35" y="18" width="10" height="12" rx="2"/><rect x="19" y="6" width="10" height="12" rx="2"/><rect x="19" y="30" width="10" height="12" rx="2"/><path d="m13 24 6-12m10 0 6 12m-22 0 6 12m10 0 6-12"/></svg></div>
+        <div><span class="bdr-collection__label">MAKE EVERY EVENT COUNT</span><h3>Deliver messages reliably</h3><p>Kafka, outbox & exactly-once effects</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <div class="bdr-explorer__layout">
+    <aside class="bdr-explorer__sidebar" data-blog-controls hidden>
+      <details class="bdr-topics" data-blog-topics-panel open>
+        <summary>Explore by topic <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7 5 5 5-5"/></svg></summary>
+        <nav aria-label="Article topics" class="bdr-topics__nav">
+          <button data-blog-topic="all" type="button" aria-pressed="true"><span class="bdr-topic-symbol" aria-hidden="true">✳</span><span>All articles</span><span data-topic-count></span></button>
+          <button data-blog-topic="postgres" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">▤</span><span>PostgreSQL & SQLAlchemy</span><span data-topic-count></span></button>
+          <button data-blog-topic="reliability" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">↻</span><span>HTTP & resilience</span><span data-topic-count></span></button>
+          <button data-blog-topic="grpc" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">⇄</span><span>gRPC</span><span data-topic-count></span></button>
+          <button data-blog-topic="messaging" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">⇢</span><span>Kafka & messaging</span><span data-topic-count></span></button>
+          <button data-blog-topic="lifecycle" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">◷</span><span>Service lifecycle</span><span data-topic-count></span></button>
+          <button data-blog-topic="redis" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">◇</span><span>Redis & idempotency</span><span data-topic-count></span></button>
+          <button data-blog-topic="engineering" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">⌘</span><span>Python & tooling</span><span data-topic-count></span></button>
+        </nav>
+      </details>
+      <div class="bdr-explorer__note"><span>BUILT IN THE OPEN</span><p>Real production problems.<br>Working code. Lessons shared.</p><a href="archive/">The complete archive <span aria-hidden="true">↗</span></a></div>
+    </aside>
+
+    <section class="bdr-explorer__main" aria-labelledby="blog-results-heading">
+      <div class="bdr-results-heading" data-blog-results-heading>
+        <div><h2 id="blog-results-heading" tabindex="-1">The articles</h2><span data-blog-count role="status" aria-live="polite" aria-atomic="true">Notes from the infrastructure layer</span></div>
+        <div class="bdr-view-switch" role="group" aria-label="Article layout" data-blog-controls hidden>
+          <button data-blog-view="list" type="button" aria-label="List view" title="List view" aria-pressed="true"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 5h10M7 10h10M7 15h10M3 5h.5M3 10h.5M3 15h.5"/></svg></button>
+          <button data-blog-view="grid" type="button" aria-label="Grid view" title="Grid view" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx=".5"/><rect x="12" y="3" width="5" height="5" rx=".5"/><rect x="3" y="12" width="5" height="5" rx=".5"/><rect x="12" y="12" width="5" height="5" rx=".5"/></svg></button>
+        </div>
+      </div>
+      <div class="bdr-toolbar" data-blog-controls hidden>
+        <div class="bdr-toolbar__filters">
+          <label><span class="bdr-sr-only">Article format</span><select data-blog-format aria-controls="blog-results"><option value="all">All formats</option><option value="design">Design</option><option value="tutorials">Tutorials</option><option value="libraries">Libraries</option><option value="tools">Tools</option><option value="meta">Meta</option></select></label>
+          <label><span class="bdr-sr-only">Reading time</span><select data-blog-duration aria-controls="blog-results"><option value="all">Any reading time</option><option value="short">8 min or less</option><option value="long">Over 8 min</option></select></label>
+        </div>
+        <label class="bdr-toolbar__sort"><span>Sort:</span><select data-blog-sort aria-label="Sort articles" aria-controls="blog-results"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="shortest">Shortest read</option><option value="title">Title A–Z</option></select></label>
+      </div>
+      <div class="bdr-active-filters" data-blog-active hidden></div>
+      <div class="bdr-results" id="blog-results" data-blog-results>
+<!-- catalog:articles:start -->
+  <article class="bdr-entry" data-article-id="2026-09-07-ai-code-review-should-not-be-fully-autonomous">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
+        <h3 class="bdr-entry__title">AI code review should not be fully autonomous</h3>
+        <p class="bdr-entry__description">The obvious way to build an AI code reviewer is a webhook: a merge request opens, a model reads the diff, the comments appear.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
     </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-circuit-breakers-should-be-per-origin">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-circuit-breakers-should-be-per-origin/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Circuit breakers should be per origin, not per client</h3>
+        <p class="bdr-entry__description">A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-exactly-once-effects">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-exactly-once-effects/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Exactly-once is a lie; exactly-once effects are not</h3>
+        <p class="bdr-entry__description">Kafka cannot make your database update exactly once. Nothing can, because the database and the broker are two systems with two commits and no transaction that spans them, and…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-graceful-kafka-consumer-shutdown">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-graceful-kafka-consumer-shutdown/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Graceful Kafka consumer shutdown in Kubernetes</h3>
+        <p class="bdr-entry__description">A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it SIGTERM in the middle of a batch.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-graceful-shutdown-is-a-protocol">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-graceful-shutdown-is-a-protocol/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Graceful shutdown in Kubernetes is a protocol, not a signal handler</h3>
+        <p class="bdr-entry__description">Every web framework handles SIGTERM. It stops accepting connections, lets the requests already in flight finish, and exits cleanly.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-grpc-channels-pooled-by-identity">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-grpc-channels-pooled-by-identity/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">gRPC channels should not be pooled by address alone</h3>
+        <p class="bdr-entry__description">A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-how-i-start-a-production-grade-python-library">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-how-i-start-a-production-grade-python-library/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">How I start a production-grade Python library in 2026</h3>
+        <p class="bdr-entry__description">Every library in this series started the same way: one command, forty-one files, and a green quality gate about three seconds later.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-how-to-partition-an-existing-postgresql-table">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-how-to-partition-an-existing-postgresql-table/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">How to partition an existing PostgreSQL table without rewriting your application</h3>
+        <p class="bdr-entry__description">ALTER TABLE ... PARTITION BY does not exist. Turning a live table into a partitioned one means making a new parent, adopting the old table as its DEFAULT partition, and draining…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-idempotency-across-a-chain-of-microservices">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-idempotency-across-a-chain-of-microservices/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Idempotency across a chain of microservices</h3>
+        <p class="bdr-entry__description">One idempotency key in one service is a solved problem. A chain is not, because the retry that matters happens at the top and the effect that matters happens at the bottom, with…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-idempotency-for-jobs-and-consumers">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-idempotency-for-jobs-and-consumers/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Idempotency for background jobs and Kafka consumers</h3>
+        <p class="bdr-entry__description">The Idempotency-Key header gets the attention because it has a name and a spec, but the same problem arrives at every worker that takes jobs from a queue, and it arrives more…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-idempotency-keys-the-part-everyone-gets-wrong">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Idempotency keys: the part everyone gets wrong</h3>
+        <p class="bdr-entry__description">An Idempotency-Key header is the most widely copied idea in payment APIs, and the most widely misimplemented.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-mapping-python-exceptions-to-grpc-status-codes">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Mapping Python exceptions to gRPC status codes without leaking internals</h3>
+        <p class="bdr-entry__description">gRPC has sixteen status codes and your service has a hundred exception types, so somebody has to write the map.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-migrating-from-pg-partman">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-migrating-from-pg-partman/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Migrating from pg_partman to application-managed partitions</h3>
+        <p class="bdr-entry__description">pg_partman is the default answer for PostgreSQL partition maintenance, and it is a good one when you can install extensions and your team is comfortable operating inside the…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Libraries</div>
+        <h3 class="bdr-entry__title">One lifecycle for HTTP, gRPC, workers and cron jobs</h3>
+        <p class="bdr-entry__description">An HTTP API, a gRPC server, a Kafka consumer and a nightly job are one application with four ways for work to enter it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-partition-retention-is-not-drop-table">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-partition-retention-is-not-drop-table/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Partition retention is not DROP TABLE</h3>
+        <p class="bdr-entry__description">The retention job is the one line of the partitioning setup that nobody reviews. Find the partitions older than the window, drop them, run it nightly.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough</h3>
+        <p class="bdr-entry__description">Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-publishing-to-pypi-without-api-tokens">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-publishing-to-pypi-without-api-tokens/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Publishing to PyPI without API tokens: Trusted Publishing end to end</h3>
+        <p class="bdr-entry__description">A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-redis-health-checks-ping-is-not-the-whole-story">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Redis health checks: PING is not the whole story</h3>
+        <p class="bdr-entry__description">A health check that answers True for a server that cannot take a write is worse than no health check, because something acts on it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-reliability-is-not-retry-3">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-reliability-is-not-retry-3/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Reliability is not retry=3</h3>
+        <p class="bdr-entry__description">retry=3 is the first thing anybody adds to an HTTP client and the last thing anybody revisits.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-retries-can-make-an-outage-worse">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-retries-can-make-an-outage-worse/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Retries can make an outage worse: designing a retry budget</h3>
+        <p class="bdr-entry__description">Three retries at every hop of a five-service call is not resilience. It is a multiplier, and it multiplies hardest exactly when the bottom service is failing, which is the one…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-retry-after-backoff-and-jitter">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-retry-after-backoff-and-jitter/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Retry-After, backoff and jitter: what a production HTTP client actually does</h3>
+        <p class="bdr-entry__description">The retry loop every codebase has is four lines: try, catch, sleep, try again. A production HTTP client&#x27;s retry policy is a checklist of about eight decisions that the four lines…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-safe-grpc-retries">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-safe-grpc-retries/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Safe gRPC retries: which status codes you should actually retry</h3>
+        <p class="bdr-entry__description">max_attempts=3 is the most common line in a gRPC client configuration and the least examined.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-should-your-application-create-kafka-topics-on-startup">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Should your application create Kafka topics on startup?</h3>
+        <p class="bdr-entry__description">Somebody has to create the topic. The three candidates are the broker, doing it automatically the first time anyone mentions a name; the application, doing it at startup; and a…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-stop-passing-asyncsession-everywhere">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-stop-passing-asyncsession-everywhere/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Stop passing AsyncSession everywhere</h3>
+        <p class="bdr-entry__description">Every async SQLAlchemy codebase I have worked on has the same signature, repeated at every level:</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-testing-migrations-with-testcontainers">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-testing-migrations-with-testcontainers/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Testing database migrations with Testcontainers: up, down and up again</h3>
+        <p class="bdr-entry__description">The five migration tests post made the case; this one is the setup, step by step, from an empty tests/ directory to a green job in CI that walks every revision forward, back and…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>4 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-the-anatomy-of-a-production-grpc-server">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-the-anatomy-of-a-production-grpc-server/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">The anatomy of a production Python gRPC server</h3>
+        <p class="bdr-entry__description">A grpc.aio server is six lines. A grpc.aio server you can put behind a load balancer, roll out three times a day and hand to an on-call rota is a different object, and the…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>10 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-five-alembic-migration-tests">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-five-alembic-migration-tests/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">The five migration tests every Python project should run in CI</h3>
+        <p class="bdr-entry__description">We test application code until the coverage badge is green, and then we deploy database migrations that have been run exactly once, on a laptop, in one direction.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>10 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-the-production-checklist-for-aiokafka">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-the-production-checklist-for-aiokafka/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">The production checklist for aiokafka</h3>
+        <p class="bdr-entry__description">aiokafka is a good client with defaults chosen for a library, not for your service, and the gap between the two is where the incidents live.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-unit-of-work-in-sqlalchemy-2">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-unit-of-work-in-sqlalchemy-2/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">The Unit of Work pattern in SQLAlchemy 2</h3>
+        <p class="bdr-entry__description">Every repository I have ever seen written for the first time has a commit() in it. It is there so that the id comes back, so that the next repository can use it, so that the test…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-transactional-inbox">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-transactional-inbox/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Transactional inbox: the other half of the outbox pattern</h3>
+        <p class="bdr-entry__description">The outbox gets the attention because it solves the dramatic problem, the event that never left.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-transport-independent-errors">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-transport-independent-errors/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Transport-independent errors: one domain error, HTTP and gRPC responses</h3>
+        <p class="bdr-entry__description">A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-twelve-libraries-one-standard">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-twelve-libraries-one-standard/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">Twelve libraries, one engineering standard, no monorepo</h3>
+        <p class="bdr-entry__description">Bedrock Python is sixteen repositories: twelve libraries, two tools, a template and this site.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-uuidv7-as-a-postgresql-partition-key">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">UUIDv7 as a PostgreSQL partition key</h3>
+        <p class="bdr-entry__description">Range-partitioning a table by time normally costs you the primary key: PostgreSQL requires every unique constraint to contain the partition column, so PRIMARY KEY (id) becomes…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-warmup-readiness-and-liveness-are-three-different-things">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Warmup, readiness and liveness are three different things</h3>
+        <p class="bdr-entry__description">Most services answer all three questions with one handler, usually one that pings the database. Each conflation has its own outage.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-documentation-for-ai-coding-agents">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">We started writing documentation for AI coding agents</h3>
+        <p class="bdr-entry__description">In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>9 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-what-every-microservice-reimplements">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-what-every-microservice-reimplements/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">What every production Python microservice reimplements</h3>
+        <p class="bdr-entry__description">Open the repository of any backend service that has been in production for a year and look for the code that is not the product.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-what-happens-when-kafka-is-down-for-an-hour">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">What happens when Kafka is down for an hour?</h3>
+        <p class="bdr-entry__description">Not &quot;is down for a second, and the retry catches it&quot;. An hour: a broker rolling badly, a disk full on every node, a network partition between availability zones.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">What to monitor in a SQLAlchemy connection pool</h3>
+        <p class="bdr-entry__description">The dashboard everyone builds first shows connections in use, and it is the least useful of the numbers available.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-when-should-redis-fail-open">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-when-should-redis-fail-open/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">When should Redis fail open?</h3>
+        <p class="bdr-entry__description">Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Why application lifecycle should not belong to FastAPI</h3>
+        <p class="bdr-entry__description">FastAPI&#x27;s lifespan is a good API. It is an async context manager: whatever you set up before the yield is the startup, whatever you do after it is the shutdown, and it runs…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Why gRPC interceptors break on streaming RPCs</h3>
+        <p class="bdr-entry__description">An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-why-i-stopped-wrapping-http-clients">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Why I stopped wrapping HTTP clients</h3>
+        <p class="bdr-entry__description">Every company I have worked at eventually wrote its own HTTP client wrapper. It starts as a retry helper, grows a config class, learns to emit metrics, and ends as class…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-your-models-and-your-schema-have-drifted">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-your-models-and-your-schema-have-drifted/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Your models and your schema have drifted. Would CI notice?</h3>
+        <p class="bdr-entry__description">The migration ran, the deploy went out, and the models and the database now say different things.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-zero-dependency-cores">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-zero-dependency-cores/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Zero-dependency cores: why optional dependencies matter in infrastructure libraries</h3>
+        <p class="bdr-entry__description">An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-06-pg-partsmith">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-06-pg-partsmith/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Libraries</div>
+        <h3 class="bdr-entry__title">Managing PostgreSQL partitions, one failure at a time</h3>
+        <p class="bdr-entry__description">There are two ways a partitioned table gets you out of bed. The first is an INSERT at 03:00 that PostgreSQL rejects because nobody created next month&#x27;s partition.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>12 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-06-timeouts-are-not-deadlines">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-06-timeouts-are-not-deadlines/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Timeouts are not deadlines: how latency budgets break across microservices</h3>
+        <p class="bdr-entry__description">Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>10 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-05-30-welcome">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-05-30-welcome/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">Welcome to the Bedrock Python Blog</h3>
+        <p class="bdr-entry__description">This is the home of the Bedrock Python ecosystem — what it is, why it exists, and the thinking behind it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-05-30">May 30, 2026</time><span>·</span><span>2 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-05-28-introducing-mr-review">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-05-28-introducing-mr-review/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
+        <h3 class="bdr-entry__title">Introducing mr-review: AI-powered merge request reviews</h3>
+        <p class="bdr-entry__description">Code review is one of the highest-leverage activities in a software team, and also one of the most inconsistent. Reviewers get tired, context-switch mid-review, miss things.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-05-28">May 28, 2026</time><span>·</span><span>2 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-05-15-transactional-outbox-with-omni-box">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-05-15-transactional-outbox-with-omni-box/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Libraries</div>
+        <h3 class="bdr-entry__title">The Transactional Outbox pattern in Python: omni-box</h3>
+        <p class="bdr-entry__description">Distributed systems have a classic problem: you want to update your database and publish an event to Kafka in the same operation, but there is no cross-system transaction.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-05-15">May 15, 2026</time><span>·</span><span>2 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+<!-- catalog:articles:end -->
+      </div>
+      <div class="bdr-empty" data-blog-empty hidden>
+        <span class="bdr-empty__icon" aria-hidden="true">⌕</span><h3>No articles found. A different angle?</h3>
+        <p>Try a broader term like “retries” or “PostgreSQL”, or clear a filter.</p>
+        <button class="bdr-btn bdr-btn--primary" type="button" data-blog-reset>Clear all filters</button>
+      </div>
+      <footer class="bdr-results-footer" data-blog-controls hidden>
+        <span data-blog-range></span><nav class="bdr-pagination" aria-label="Article pages" data-blog-pagination></nav>
+      </footer>
+    </section>
   </div>
-</section>
+</div>

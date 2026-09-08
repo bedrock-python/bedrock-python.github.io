@@ -15,23 +15,114 @@ hide:
   .md-main__inner { margin-top: 0; }
 </style>
 
-<section class="bdr-hero" markdown="0">
-  <div class="bdr-hero__eyebrow">The Bedrock Python ecosystem</div>
-  <h1 class="bdr-hero__title">Foundations for serious Python services.</h1>
-  <p class="bdr-hero__lede">
-    A focused set of open-source libraries and developer tools — a service runtime,
-    gRPC and HTTP clients, Postgres, Redis, Kafka, Outbox, idempotency, deadlines,
-    partitioning, migrations, AI-powered code review — built for the same production
-    stack, versioned together, tested together.
-  </p>
-  <div class="bdr-hero__actions">
-    <a class="bdr-btn bdr-btn--primary" href="libraries/">Browse libraries →</a>
-    <a class="bdr-btn bdr-btn--ghost" href="blog/">Read the blog</a>
+<section class="bdr-home-hero" aria-labelledby="home-title" markdown="0">
+  <div class="bdr-home-hero__copy">
+    <div class="bdr-home-hero__eyebrow"><span></span> The Bedrock Python ecosystem</div>
+    <h1 id="home-title">Foundations for<br>serious <em>Python</em><br>services.</h1>
+    <p class="bdr-home-hero__lede">Open-source libraries for the infrastructure behind your service. Runtime, clients, data and reliability — built for the same production stack.</p>
+    <div class="bdr-home-hero__actions">
+      <a class="bdr-btn bdr-btn--primary" href="libraries/">Explore the libraries <span aria-hidden="true">↗</span></a>
+      <a class="bdr-home-hero__blog" href="blog/">Read the engineering blog <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="bdr-home-hero__proof">
+      <a href="libraries/"><strong>12</strong> libraries</a><span aria-hidden="true">/</span>
+      <a href="tools/"><strong>2</strong> developer tools</a><span aria-hidden="true">/</span>
+      <span>Open source</span>
+    </div>
   </div>
+  <figure class="bdr-stack" aria-labelledby="stack-caption">
+    <div class="bdr-stack__heading"><span class="bdr-stack__index">01 — 04</span><span>Independent pieces. Shared foundations.</span></div>
+    <!-- SVG links use xlink so instant navigation leaves their read-only href properties intact. -->
+    <svg class="bdr-stack__diagram" viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Explore four groups of Bedrock Python libraries">
+      <defs>
+        <pattern id="bdr-stack-dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="currentColor"/></pattern>
+        <radialGradient id="bdr-stack-fade"><stop offset="0" stop-color="white"/><stop offset="1" stop-color="black"/></radialGradient>
+        <mask id="bdr-stack-mask"><rect width="600" height="470" fill="url(#bdr-stack-fade)"/></mask>
+      </defs>
+      <g aria-hidden="true">
+        <rect class="bdr-stack__dots" width="600" height="470" fill="url(#bdr-stack-dots)" mask="url(#bdr-stack-mask)"/>
+        <path class="bdr-stack__floor" d="m46 354 170-85 170 85-170 85-170-85Zm34 17 170-85m-136 102 170-85m-136 102 170-85m-136 102 170-85M80 337l170 85M114 320l170 85M148 303l170 85M182 286l170 85"/>
+        <path class="bdr-stack__axis" d="M216 42v383M76 137v217M356 137v217"/>
+        <text class="bdr-stack__service-label" x="216" y="30" text-anchor="middle">YOUR PYTHON SERVICE</text>
+        <path class="bdr-stack__service-line" d="M216 40v23"/>
+      </g>
+      <a class="bdr-stack__layer bdr-stack__layer--database" xlink:href="libraries/#database" aria-label="Database operations: partitions and migration tests">
+        <g class="bdr-stack__block">
+          <path class="bdr-stack__face bdr-stack__face--left" d="m76 318 140 70v19L76 337Z"/>
+          <path class="bdr-stack__face bdr-stack__face--right" d="m216 388 140-70v19l-140 70Z"/>
+          <path class="bdr-stack__top" d="m216 248 140 70-140 70-140-70Z"/>
+          <path class="bdr-stack__inset" d="m216 264 108 54-108 54-108-54Z"/>
+          <path class="bdr-stack__surface-detail" d="m132 306 84 42 84-42m-168 12 84 42 84-42"/>
+        </g>
+        <path class="bdr-stack__connector" d="M356 325h30l12 12h16"/>
+        <circle class="bdr-stack__port" cx="356" cy="325" r="3"/>
+        <text class="bdr-stack__number" x="420" y="319">04 / OPERATE</text>
+        <text class="bdr-stack__label" x="420" y="342">Database operations</text>
+        <text class="bdr-stack__description" x="420" y="362">Partitions · migrations</text>
+        <path class="bdr-stack__link-arrow" d="M565 319h8v8m-8 0 8-8"/>
+      </a>
+      <a class="bdr-stack__layer bdr-stack__layer--reliability" xlink:href="libraries/#reliability" aria-label="Reliability patterns: outbox, idempotency and deadlines">
+        <g class="bdr-stack__block">
+          <path class="bdr-stack__face bdr-stack__face--left" d="m76 257 140 70v19L76 276Z"/>
+          <path class="bdr-stack__face bdr-stack__face--right" d="m216 327 140-70v19l-140 70Z"/>
+          <path class="bdr-stack__top" d="m216 187 140 70-140 70-140-70Z"/>
+          <path class="bdr-stack__inset" d="m216 203 108 54-108 54-108-54Z"/>
+          <path class="bdr-stack__surface-detail" d="m167 266 22 11 20-25 22 11 34-10"/>
+        </g>
+        <path class="bdr-stack__connector" d="M356 264h58"/>
+        <circle class="bdr-stack__port" cx="356" cy="264" r="3"/>
+        <text class="bdr-stack__number" x="420" y="246">03 / PROTECT</text>
+        <text class="bdr-stack__label" x="420" y="269">Reliability patterns</text>
+        <text class="bdr-stack__description" x="420" y="289">Outbox · keys · deadlines</text>
+        <path class="bdr-stack__link-arrow" d="M565 246h8v8m-8 0 8-8"/>
+      </a>
+      <a class="bdr-stack__layer bdr-stack__layer--data" xlink:href="libraries/#data" aria-label="Data and messaging: PostgreSQL, Redis and Kafka">
+        <g class="bdr-stack__block">
+          <path class="bdr-stack__face bdr-stack__face--left" d="m76 196 140 70v19L76 215Z"/>
+          <path class="bdr-stack__face bdr-stack__face--right" d="m216 266 140-70v19l-140 70Z"/>
+          <path class="bdr-stack__top" d="m216 126 140 70-140 70-140-70Z"/>
+          <path class="bdr-stack__inset" d="m216 142 108 54-108 54-108-54Z"/>
+          <path class="bdr-stack__surface-detail" d="m158 202 20-10 20 10-20 10-20-10Zm39 20 20-10 20 10-20 10-20-10Zm40-20 20-10 20 10-20 10-20-10Z"/>
+        </g>
+        <path class="bdr-stack__connector" d="M356 203h30l12-12h16"/>
+        <circle class="bdr-stack__port" cx="356" cy="203" r="3"/>
+        <text class="bdr-stack__number" x="420" y="173">02 / CONNECT</text>
+        <text class="bdr-stack__label" x="420" y="196">Data &amp; messaging</text>
+        <text class="bdr-stack__description" x="420" y="216">Postgres · Redis · Kafka</text>
+        <path class="bdr-stack__link-arrow" d="M565 173h8v8m-8 0 8-8"/>
+      </a>
+      <a class="bdr-stack__layer bdr-stack__layer--runtime" xlink:href="libraries/#runtime" aria-label="Runtime and transports: services, HTTP and gRPC">
+        <g class="bdr-stack__block">
+          <path class="bdr-stack__face bdr-stack__face--left" d="m76 135 140 70v19L76 154Z"/>
+          <path class="bdr-stack__face bdr-stack__face--right" d="m216 205 140-70v19l-140 70Z"/>
+          <path class="bdr-stack__top" d="m216 65 140 70-140 70-140-70Z"/>
+          <path class="bdr-stack__inset" d="m216 81 108 54-108 54-108-54Z"/>
+          <path class="bdr-stack__core-top" d="m216 98 42 21-42 21-42-21Z"/>
+          <path class="bdr-stack__core-left" d="m174 119 42 21v33l-42-21Z"/>
+          <path class="bdr-stack__core-right" d="m216 140 42-21v33l-42 21Z"/>
+          <path class="bdr-stack__core-mark" d="m190 137 12 6m26 3 15-7"/>
+        </g>
+        <path class="bdr-stack__connector" d="M356 142h30l12-24h16"/>
+        <circle class="bdr-stack__port" cx="356" cy="142" r="3"/>
+        <text class="bdr-stack__number" x="420" y="100">01 / BUILD</text>
+        <text class="bdr-stack__label" x="420" y="123">Runtime &amp; transports</text>
+        <text class="bdr-stack__description" x="420" y="143">Services · HTTP · gRPC</text>
+        <path class="bdr-stack__link-arrow" d="M565 100h8v8m-8 0 8-8"/>
+      </a>
+      <g class="bdr-stack__base-note" aria-hidden="true"><path d="M192 434h48"/><text x="216" y="455" text-anchor="middle">BUILT ON BEDROCK</text></g>
+    </svg>
+    <nav class="bdr-stack__mobile" aria-label="Explore the service foundations">
+      <a href="libraries/#runtime"><span class="bdr-stack__mobile-number" data-layer="runtime">01</span><span><strong>Runtime &amp; transports</strong><small>Services · HTTP · gRPC</small></span><span aria-hidden="true">↗</span></a>
+      <a href="libraries/#data"><span class="bdr-stack__mobile-number" data-layer="data">02</span><span><strong>Data &amp; messaging</strong><small>Postgres · Redis · Kafka</small></span><span aria-hidden="true">↗</span></a>
+      <a href="libraries/#reliability"><span class="bdr-stack__mobile-number" data-layer="reliability">03</span><span><strong>Reliability patterns</strong><small>Outbox · keys · deadlines</small></span><span aria-hidden="true">↗</span></a>
+      <a href="libraries/#database"><span class="bdr-stack__mobile-number" data-layer="database">04</span><span><strong>Database operations</strong><small>Partitions · migrations</small></span><span aria-hidden="true">↗</span></a>
+    </nav>
+    <figcaption id="stack-caption"><span class="bdr-stack__caption-dot" aria-hidden="true"></span>Choose a layer to explore<span class="bdr-stack__caption-end" aria-hidden="true">↗</span></figcaption>
+  </figure>
 </section>
 
 <section class="bdr-featured" markdown="0">
-  <div class="bdr-featured__visual"></div>
+  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-09-06-pg-partsmith/" aria-label="Read Managing PostgreSQL partitions, one failure at a time"></a>
   <div>
     <div class="bdr-featured__eyebrow">Featured · Libraries</div>
     <h2 class="bdr-featured__title">
@@ -121,184 +212,50 @@ hide:
   </div>
 </section>
 
-<section markdown="0">
-  <div class="bdr-section-head">
-    <h2 class="bdr-section-head__title">Libraries</h2>
-    <a class="bdr-section-head__link" href="libraries/">All libraries →</a>
+<section class="bdr-home-pathways" aria-labelledby="home-pathways-title" markdown="0">
+  <div class="bdr-home-pathways__heading">
+    <div>
+      <div class="bdr-home-pathways__eyebrow">FROM READING TO BUILDING</div>
+      <h2 id="home-pathways-title">Put the ideas to work.</h2>
+    </div>
+    <p>Pick a task. Find the right starting point.</p>
   </div>
-
-  <div class="bdr-rows">
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/servicewright/">servicewright</a>
-        <p class="bdr-row__desc">One <code>Host</code>, many <code>Entrypoint</code>s: FastAPI, Litestar, gRPC, scheduler, daemon or one-shot batch under a single Kubernetes-correct lifecycle.</p>
+  <div class="bdr-home-pathways__grid">
+    <article class="bdr-home-path bdr-home-path--libraries" aria-labelledby="home-libraries-title">
+      <div class="bdr-home-path__intro">
+        <div class="bdr-home-path__heading">
+          <div>
+            <span class="bdr-home-path__label">01 / LIBRARIES</span>
+            <h3 id="home-libraries-title">Build your service.</h3>
+          </div>
+          <span class="bdr-home-path__icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m16 4 11 6-11 6-11-6 11-6Zm-11 6v12l11 6 11-6V10M16 16v12M5 16l11 6 11-6"/></svg></span>
+        </div>
+        <p>Composable Python foundations for your runtime, data and reliability.</p>
       </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="servicewright" href="https://pypi.org/project/servicewright/" title="On PyPI">v0.9.0</a>
-        <span>Python 3.12+</span>
-        <span>zero-dependency kernel</span>
-        <a href="https://github.com/bedrock-python/servicewright">GitHub</a>
+      <nav class="bdr-home-path__routes" aria-label="Find a library by task">
+        <a href="libraries/#runtime"><span>Run a Python service</span><small>Runtime · HTTP · gRPC</small><span aria-hidden="true">↗</span></a>
+        <a href="libraries/#data"><span>Connect your data</span><small>Postgres · Redis · Kafka</small><span aria-hidden="true">↗</span></a>
+        <a href="libraries/#reliability"><span>Make work reliable</span><small>Outbox · keys · deadlines</small><span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="bdr-home-path__all" href="libraries/">Explore all libraries <span aria-hidden="true">→</span></a>
+    </article>
+    <article class="bdr-home-path bdr-home-path--tools" aria-labelledby="home-tools-title">
+      <div class="bdr-home-path__intro">
+        <div class="bdr-home-path__heading">
+          <div>
+            <span class="bdr-home-path__label">02 / TOOLS</span>
+            <h3 id="home-tools-title">Clear the busywork.</h3>
+          </div>
+          <span class="bdr-home-path__icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3"/><path d="M4 12h24m-17 5 3 3-3 3m7 0h5"/><path d="M8 9h.01M11 9h.01"/></svg></span>
+        </div>
+        <p>Focused tools to review code, find answers and plan database changes.</p>
       </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/clientwright/">clientwright</a>
-        <p class="bdr-row__desc">One resilience and observability core wired <em>under</em> the public API of httpx, aiohttp, requests and urllib3 — you get back the genuine native client.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="On PyPI">v0.2.0</a>
-        <span>Python 3.12+</span>
-        <span>zero-dependency core</span>
-        <a href="https://github.com/bedrock-python/clientwright">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/grpc-server-kit/">grpc-server-kit</a>
-        <p class="bdr-row__desc"><code>grpc.aio</code> servers without the boilerplate: a <code>GrpcApp</code> facade, TLS/mTLS, graceful shutdown, health checking, streaming-aware interceptors.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="grpc-server-kit" href="https://pypi.org/project/grpc-server-kit/" title="On PyPI">v0.1.0</a>
-        <span>Python 3.12+</span>
-        <span>grpcio only</span>
-        <a href="https://github.com/bedrock-python/grpc-server-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/grpc-client-kit/">grpc-client-kit</a>
-        <p class="bdr-row__desc">The caller side: a channel pool keyed by full channel identity, load balancing, health monitoring, and retries under a deadline that spans the whole call.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="grpc-client-kit" href="https://pypi.org/project/grpc-client-kit/" title="On PyPI">v0.1.0</a>
-        <span>Python 3.12+</span>
-        <span>grpcio only</span>
-        <a href="https://github.com/bedrock-python/grpc-client-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">sqlalchemy-foundation-kit</a>
-        <p class="bdr-row__desc">Async session management that stays pgbouncer-safe, a Unit of Work, base ORM models, pool metrics and tracing, dishka and dependency-injector providers.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="sqlalchemy-foundation-kit" href="https://pypi.org/project/sqlalchemy-foundation-kit/" title="On PyPI">v0.2.0</a>
-        <span>Python 3.11+</span>
-        <a href="https://github.com/bedrock-python/sqlalchemy-foundation-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/redis-client-kit/">redis-client-kit</a>
-        <p class="bdr-row__desc">Async and sync redis-py clients with cluster support, pooling, health checks and retries; Pydantic settings, Prometheus and Dishka as extras.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="redis-client-kit" href="https://pypi.org/project/redis-client-kit/" title="On PyPI">v0.1.2</a>
-        <span>Python 3.10+</span>
-        <a href="https://github.com/bedrock-python/redis-client-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/aiokafka-foundation-kit/">aiokafka-foundation-kit</a>
-        <p class="bdr-row__desc">Producer and consumer factories over aiokafka with Pydantic settings, retry policies, health checks, Prometheus metrics and OpenTelemetry.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="aiokafka-foundation-kit" href="https://pypi.org/project/aiokafka-foundation-kit/" title="On PyPI">v0.1.1</a>
-        <span>Python 3.11+</span>
-        <a href="https://github.com/bedrock-python/aiokafka-foundation-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/omni-box/">omni-box</a>
-        <p class="bdr-row__desc">Transactional Outbox and Inbox: the event goes in the same transaction as the business row, out to Kafka from a background publisher, in with deduplication.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="omni-box" href="https://pypi.org/project/omni-box/" title="On PyPI">v0.1.1</a>
-        <span>Python 3.12+</span>
-        <a href="https://github.com/bedrock-python/omni-box">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/idempotency-kit/">idempotency-kit</a>
-        <p class="bdr-row__desc">Execute an operation once per idempotency key: a coordinator and a decorator over Redis, collision handling, graceful degradation, metrics.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="idempotency-kit" href="https://pypi.org/project/idempotency-kit/" title="On PyPI">v0.1.1</a>
-        <span>Python 3.11+</span>
-        <a href="https://github.com/bedrock-python/idempotency-kit">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/deadline-budget/">deadline-budget</a>
-        <p class="bdr-row__desc">One request deadline budget with per-call caps and a safety margin — the budget that clientwright, grpc-client-kit and servicewright propagate across hops.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="deadline-budget" href="https://pypi.org/project/deadline-budget/" title="On PyPI">v0.1.2</a>
-        <span>Python 3.10+</span>
-        <span>zero dependencies</span>
-        <a href="https://github.com/bedrock-python/deadline-budget">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/pg-partsmith/">pg-partsmith</a>
-        <p class="bdr-row__desc">PostgreSQL partition lifecycle management with a plan you can read before it runs: RANGE, LIST and HASH nested to any depth — as a library, a CLI and a container image.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="On PyPI">v1.5.0</a>
-        <span>Python 3.11+</span>
-        <span>stable</span>
-        <a href="https://github.com/bedrock-python/pg-partsmith">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/alembic-gauntlet/">alembic-gauntlet</a>
-        <p class="bdr-row__desc">A pytest plugin that runs Alembic migrations through the gauntlet: stairway up and down, models drift, single head, full downgrade, naming conventions.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="alembic-gauntlet" href="https://pypi.org/project/alembic-gauntlet/" title="On PyPI">v0.2.1</a>
-        <span>Python 3.10+</span>
-        <span>pytest plugin</span>
-        <a href="https://github.com/bedrock-python/alembic-gauntlet">GitHub</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section markdown="0">
-  <div class="bdr-section-head">
-    <h2 class="bdr-section-head__title">Tools</h2>
-    <a class="bdr-section-head__link" href="tools/">All tools →</a>
-  </div>
-
-  <div class="bdr-rows">
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/mr-review/">mr-review</a>
-        <p class="bdr-row__desc">Self-hosted AI merge request review for GitLab, GitHub, Gitea, Forgejo and Bitbucket with Claude, OpenAI or any compatible model: a web UI, a four-stage review, and every comment approved by you before it is posted.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <span>Python 3.12 backend</span>
-        <span>Docker · images on GHCR</span>
-        <a href="https://github.com/bedrock-python/mr-review">GitHub</a>
-      </div>
-    </div>
-    <div class="bdr-row">
-      <div class="bdr-row__main">
-        <a class="bdr-row__name" href="https://bedrock-python.github.io/mattermind/">mattermind</a>
-        <p class="bdr-row__desc">Ask your Mattermost workspace questions in plain language: an agentic loop over full-text search that cites every claim with a permalink. <code>ask</code>, a <code>chat</code> TUI, <code>--json</code> for scripts.</p>
-      </div>
-      <div class="bdr-row__meta">
-        <a class="bdr-row__version" data-pypi="mattermind" href="https://pypi.org/project/mattermind/" title="On PyPI">v0.1.1</a>
-        <span>Python 3.12+</span>
-        <span>uv tool install</span>
-        <a href="https://github.com/bedrock-python/mattermind">GitHub</a>
-      </div>
-    </div>
+      <nav class="bdr-home-path__routes" aria-label="Find a developer tool by task">
+        <a href="tools/#mr-review"><span>Review code</span><small>mr-review</small><span aria-hidden="true">↗</span></a>
+        <a href="tools/#mattermind"><span>Search your workspace</span><small>mattermind</small><span aria-hidden="true">↗</span></a>
+        <a href="tools/#from-libraries"><span>Plan a database change</span><small>pg-partsmith CLI</small><span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="bdr-home-path__all" href="tools/">Explore all tools <span aria-hidden="true">→</span></a>
+    </article>
   </div>
 </section>

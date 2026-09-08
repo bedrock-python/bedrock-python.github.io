@@ -1,0 +1,1171 @@
+{
+  "articles": [
+    {
+      "id": "2026-09-07-ai-code-review-should-not-be-fully-autonomous",
+      "title": "AI code review should not be fully autonomous",
+      "description": "The obvious way to build an AI code reviewer is a webhook: a merge request opens, a model reads the diff, the comments appear.",
+      "url": "posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/",
+      "date": "2026-09-07",
+      "categories": [
+        "tools"
+      ],
+      "tags": [
+        "mr-review",
+        "code-review",
+        "llm",
+        "ai-agents",
+        "gitlab",
+        "github"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 6,
+      "search": "AI code review should not be fully autonomous The obvious way to build an AI code reviewer is a webhook: a merge request opens, a model reads the diff, the comments appear. mr-review code-review llm ai-agents gitlab github Tools Python & tooling What goes wrong when the bot posts The pipeline What the person adds The copilot, not the gatekeeper What it costs"
+    },
+    {
+      "id": "2026-09-07-circuit-breakers-should-be-per-origin",
+      "title": "Circuit breakers should be per origin, not per client",
+      "description": "A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong.",
+      "url": "posts/2026-09-07-circuit-breakers-should-be-per-origin/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "clientwright",
+        "circuit-breaker",
+        "retries",
+        "reliability",
+        "httpx"
+      ],
+      "topics": [
+        "reliability"
+      ],
+      "minutes": 5,
+      "search": "Circuit breakers should be per origin, not per client A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong. clientwright circuit-breaker retries reliability httpx Design HTTP & resilience Measured: one counter, three upstreams What counts as a failure One signal per logical call The probe The configuration"
+    },
+    {
+      "id": "2026-09-07-exactly-once-effects",
+      "title": "Exactly-once is a lie; exactly-once effects are not",
+      "description": "Kafka cannot make your database update exactly once. Nothing can, because the database and the broker are two systems with two commits and no transaction that spans them, and…",
+      "url": "posts/2026-09-07-exactly-once-effects/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "omni-box",
+        "idempotency-kit",
+        "kafka",
+        "outbox",
+        "inbox",
+        "exactly-once",
+        "postgresql"
+      ],
+      "topics": [
+        "messaging",
+        "redis"
+      ],
+      "minutes": 7,
+      "search": "Exactly-once is a lie; exactly-once effects are not Kafka cannot make your database update exactly once. Nothing can, because the database and the broker are two systems with two commits and no transaction that spans them, and… omni-box idempotency-kit kafka outbox inbox exactly-once postgresql Design Kafka & messaging Redis & idempotency Messages versus effects Every window, measured The outbox closes the producer side The inbox closes the consumer side The HTTP edge The whole path Why the library must not own the transaction What it looks like"
+    },
+    {
+      "id": "2026-09-07-graceful-kafka-consumer-shutdown",
+      "title": "Graceful Kafka consumer shutdown in Kubernetes",
+      "description": "A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it SIGTERM in the middle of a batch.",
+      "url": "posts/2026-09-07-graceful-kafka-consumer-shutdown/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "aiokafka-foundation-kit",
+        "servicewright",
+        "kafka",
+        "graceful-shutdown",
+        "kubernetes",
+        "workers"
+      ],
+      "topics": [
+        "messaging",
+        "lifecycle"
+      ],
+      "minutes": 5,
+      "search": "Graceful Kafka consumer shutdown in Kubernetes A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it SIGTERM in the middle of a batch. aiokafka-foundation-kit servicewright kafka graceful-shutdown kubernetes workers Tutorials Kafka & messaging Service lifecycle What the group does when a member disappears Measured: the consumer that exits The protocol The numbers to set The pieces"
+    },
+    {
+      "id": "2026-09-07-graceful-shutdown-is-a-protocol",
+      "title": "Graceful shutdown in Kubernetes is a protocol, not a signal handler",
+      "description": "Every web framework handles SIGTERM. It stops accepting connections, lets the requests already in flight finish, and exits cleanly.",
+      "url": "posts/2026-09-07-graceful-shutdown-is-a-protocol/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "servicewright",
+        "kubernetes",
+        "graceful-shutdown",
+        "asyncio",
+        "fastapi",
+        "uvicorn"
+      ],
+      "topics": [
+        "lifecycle"
+      ],
+      "minutes": 8,
+      "search": "Graceful shutdown in Kubernetes is a protocol, not a signal handler Every web framework handles SIGTERM. It stops accepting connections, lets the requests already in flight finish, and exits cleanly. servicewright kubernetes graceful-shutdown asyncio fastapi uvicorn Design Service lifecycle What Kubernetes actually does The measurement The protocol The same measurement, with the protocol Sizing the numbers Not only HTTP What changed in the code"
+    },
+    {
+      "id": "2026-09-07-grpc-channels-pooled-by-identity",
+      "title": "gRPC channels should not be pooled by address alone",
+      "description": "A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary…",
+      "url": "posts/2026-09-07-grpc-channels-pooled-by-identity/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "grpc-client-kit",
+        "grpc",
+        "connection-pooling",
+        "retries",
+        "keepalive"
+      ],
+      "topics": [
+        "grpc"
+      ],
+      "minutes": 5,
+      "search": "gRPC channels should not be pooled by address alone A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary… grpc-client-kit grpc connection-pooling retries keepalive Design gRPC What a channel is Measured: the audit client that retried The opposite mistake: a channel per call Options are identity too Health, per address The pool"
+    },
+    {
+      "id": "2026-09-07-how-i-start-a-production-grade-python-library",
+      "title": "How I start a production-grade Python library in 2026",
+      "description": "Every library in this series started the same way: one command, forty-one files, and a green quality gate about three seconds later.",
+      "url": "posts/2026-09-07-how-i-start-a-production-grade-python-library/",
+      "date": "2026-09-07",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "python-library-template",
+        "packaging",
+        "ci",
+        "release",
+        "documentation"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 6,
+      "search": "How I start a production-grade Python library in 2026 Every library in this series started the same way: one command, forty-one files, and a green quality gate about three seconds later. python-library-template packaging ci release documentation Meta Python & tooling One command What is in the forty-one The gate has to run what it claims The things a template cannot give you The order I actually work in The pieces"
+    },
+    {
+      "id": "2026-09-07-how-to-partition-an-existing-postgresql-table",
+      "title": "How to partition an existing PostgreSQL table without rewriting your application",
+      "description": "ALTER TABLE ... PARTITION BY does not exist. Turning a live table into a partitioned one means making a new parent, adopting the old table as its DEFAULT partition, and draining…",
+      "url": "posts/2026-09-07-how-to-partition-an-existing-postgresql-table/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning",
+        "migrations",
+        "zero-downtime"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 8,
+      "search": "How to partition an existing PostgreSQL table without rewriting your application ALTER TABLE ... PARTITION BY does not exist. Turning a live table into a partitioned one means making a new parent, adopting the old table as its DEFAULT partition, and draining… pg-partsmith postgresql partitioning migrations zero-downtime Tutorials PostgreSQL & SQLAlchemy Step 1: the primary key has to contain the partition column Step 2: the swap Step 3: the first maintenance tick Step 4: the drain Step 5: the foreign key comes back, composite Step 6: the empty DEFAULT, and the sequence The result The order, and where the risk is The pieces"
+    },
+    {
+      "id": "2026-09-07-idempotency-across-a-chain-of-microservices",
+      "title": "Idempotency across a chain of microservices",
+      "description": "One idempotency key in one service is a solved problem. A chain is not, because the retry that matters happens at the top and the effect that matters happens at the bottom, with…",
+      "url": "posts/2026-09-07-idempotency-across-a-chain-of-microservices/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "idempotency-kit",
+        "reliability",
+        "microservices",
+        "retries",
+        "redis"
+      ],
+      "topics": [
+        "redis"
+      ],
+      "minutes": 6,
+      "search": "Idempotency across a chain of microservices One idempotency key in one service is a solved problem. A chain is not, because the retry that matters happens at the top and the effect that matters happens at the bottom, with… idempotency-kit reliability microservices retries redis Design Redis & idempotency The shape of the problem The mistake that looks like a fix The key belongs to the request, not to the attempt The line that says the work is not finished When there is no key to propagate What to standardise across the chain The pieces"
+    },
+    {
+      "id": "2026-09-07-idempotency-for-jobs-and-consumers",
+      "title": "Idempotency for background jobs and Kafka consumers",
+      "description": "The Idempotency-Key header gets the attention because it has a name and a spec, but the same problem arrives at every worker that takes jobs from a queue, and it arrives more…",
+      "url": "posts/2026-09-07-idempotency-for-jobs-and-consumers/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "idempotency-kit",
+        "idempotency",
+        "background-jobs",
+        "kafka",
+        "redis",
+        "workers"
+      ],
+      "topics": [
+        "redis",
+        "messaging"
+      ],
+      "minutes": 6,
+      "search": "Idempotency for background jobs and Kafka consumers The Idempotency-Key header gets the attention because it has a name and a spec, but the same problem arrives at every worker that takes jobs from a queue, and it arrives more… idempotency-kit idempotency background-jobs kafka redis workers Tutorials Redis & idempotency Kafka & messaging The crash before the ack Two workers, one job What the key is made of Consumers: the inbox and the key are not the same tool Lifetime"
+    },
+    {
+      "id": "2026-09-07-idempotency-keys-the-part-everyone-gets-wrong",
+      "title": "Idempotency keys: the part everyone gets wrong",
+      "description": "An Idempotency-Key header is the most widely copied idea in payment APIs, and the most widely misimplemented.",
+      "url": "posts/2026-09-07-idempotency-keys-the-part-everyone-gets-wrong/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "idempotency-kit",
+        "idempotency",
+        "http",
+        "redis",
+        "distributed-systems",
+        "payments"
+      ],
+      "topics": [
+        "redis"
+      ],
+      "minutes": 8,
+      "search": "Idempotency keys: the part everyone gets wrong An Idempotency-Key header is the most widely copied idea in payment APIs, and the most widely misimplemented. idempotency-kit idempotency http redis distributed-systems payments Design Redis & idempotency What the key promises Measured: the request that is still running It is still not a lock The key is not the request Failures are not cached, and neither is the store Scope and lifetime The shape"
+    },
+    {
+      "id": "2026-09-07-mapping-python-exceptions-to-grpc-status-codes",
+      "title": "Mapping Python exceptions to gRPC status codes without leaking internals",
+      "description": "gRPC has sixteen status codes and your service has a hundred exception types, so somebody has to write the map.",
+      "url": "posts/2026-09-07-mapping-python-exceptions-to-grpc-status-codes/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "grpc-server-kit",
+        "grpc",
+        "errors",
+        "security",
+        "api-design"
+      ],
+      "topics": [
+        "grpc"
+      ],
+      "minutes": 6,
+      "search": "Mapping Python exceptions to gRPC status codes without leaking internals gRPC has sixteen status codes and your service has a hundred exception types, so somebody has to write the map. grpc-server-kit grpc errors security api-design Tutorials gRPC What happens with no map at all The default map The map is a client contract, not a formatting decision Details: the two-tier rule What belongs where The pieces"
+    },
+    {
+      "id": "2026-09-07-migrating-from-pg-partman",
+      "title": "Migrating from pg_partman to application-managed partitions",
+      "description": "pg_partman is the default answer for PostgreSQL partition maintenance, and it is a good one when you can install extensions and your team is comfortable operating inside the…",
+      "url": "posts/2026-09-07-migrating-from-pg-partman/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "pg-partsmith",
+        "pg-partman",
+        "postgresql",
+        "partitioning",
+        "migrations"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 6,
+      "search": "Migrating from pg_partman to application-managed partitions pg_partman is the default answer for PostgreSQL partition maintenance, and it is a good one when you can install extensions and your team is comfortable operating inside the… pg-partsmith pg-partman postgresql partitioning migrations Tutorials PostgreSQL & SQLAlchemy What pg_partman built The configuration is the migration Adoption is not a step Running both at once Switching pg_partman off What you give up, and what you get The pieces"
+    },
+    {
+      "id": "2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron",
+      "title": "One lifecycle for HTTP, gRPC, workers and cron jobs",
+      "description": "An HTTP API, a gRPC server, a Kafka consumer and a nightly job are one application with four ways for work to enter it.",
+      "url": "posts/2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron/",
+      "date": "2026-09-07",
+      "categories": [
+        "libraries"
+      ],
+      "tags": [
+        "servicewright",
+        "lifecycle",
+        "fastapi",
+        "apscheduler",
+        "workers",
+        "kubernetes"
+      ],
+      "topics": [
+        "lifecycle"
+      ],
+      "minutes": 7,
+      "search": "One lifecycle for HTTP, gRPC, workers and cron jobs An HTTP API, a gRPC server, a Kafka consumer and a nightly job are one application with four ways for work to enter it. servicewright lifecycle fastapi apscheduler workers kubernetes Libraries Service lifecycle Host and entrypoints One process Two processes What the entrypoints look like The one thing to get right"
+    },
+    {
+      "id": "2026-09-07-partition-retention-is-not-drop-table",
+      "title": "Partition retention is not DROP TABLE",
+      "description": "The retention job is the one line of the partitioning setup that nobody reviews. Find the partitions older than the window, drop them, run it nightly.",
+      "url": "posts/2026-09-07-partition-retention-is-not-drop-table/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning",
+        "retention",
+        "operations"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 7,
+      "search": "Partition retention is not DROP TABLE The retention job is the one line of the partitioning setup that nobody reviews. Find the partitions older than the window, drop them, run it nightly. pg-partsmith postgresql partitioning retention operations Design PostgreSQL & SQLAlchemy The job everybody writes Print the plan first Detach and drop are two steps The archive runs before the drop, and may refuse it What a foreign key does to retention The checklist for a retention job The pieces"
+    },
+    {
+      "id": "2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy",
+      "title": "PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough",
+      "description": "Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves…",
+      "url": "posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "sqlalchemy",
+        "pgbouncer",
+        "postgresql",
+        "asyncpg",
+        "connection-pooling"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 8,
+      "search": "PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves… sqlalchemy-foundation-kit sqlalchemy pgbouncer postgresql asyncpg connection-pooling Tutorials PostgreSQL & SQLAlchemy What transaction mode takes away The prepared statement error, and when it stopped happening The setting that actually breaks the connection Pool sizing when there is a pool in front of your pool What to monitor Closing pools during a rollout The configuration"
+    },
+    {
+      "id": "2026-09-07-publishing-to-pypi-without-api-tokens",
+      "title": "Publishing to PyPI without API tokens: Trusted Publishing end to end",
+      "description": "A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it.",
+      "url": "posts/2026-09-07-publishing-to-pypi-without-api-tokens/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "python-library-template",
+        "pypi",
+        "github-actions",
+        "release",
+        "security"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 6,
+      "search": "Publishing to PyPI without API tokens: Trusted Publishing end to end A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it. python-library-template pypi github-actions release security Tutorials Python & tooling What replaces the token The environment is the gate From a merged pull request to a tag The publish trigger, and why it is a workflow_run The day something goes wrong What this buys, concretely The pieces"
+    },
+    {
+      "id": "2026-09-07-redis-health-checks-ping-is-not-the-whole-story",
+      "title": "Redis health checks: PING is not the whole story",
+      "description": "A health check that answers True for a server that cannot take a write is worse than no health check, because something acts on it.",
+      "url": "posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "redis-client-kit",
+        "redis",
+        "health-checks",
+        "kubernetes",
+        "asyncio"
+      ],
+      "topics": [
+        "redis"
+      ],
+      "minutes": 5,
+      "search": "Redis health checks: PING is not the whole story A health check that answers True for a server that cannot take a write is worse than no health check, because something acts on it. redis-client-kit redis health-checks kubernetes asyncio Design Redis & idempotency What PING answers Liveness and readiness are different questions What it costs, and what it does not answer The rule The pieces"
+    },
+    {
+      "id": "2026-09-07-reliability-is-not-retry-3",
+      "title": "Reliability is not retry=3",
+      "description": "retry=3 is the first thing anybody adds to an HTTP client and the last thing anybody revisits.",
+      "url": "posts/2026-09-07-reliability-is-not-retry-3/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "clientwright",
+        "deadline-budget",
+        "reliability",
+        "retries",
+        "circuit-breakers"
+      ],
+      "topics": [
+        "reliability"
+      ],
+      "minutes": 6,
+      "search": "Reliability is not retry=3 retry=3 is the first thing anybody adds to an HTTP client and the last thing anybody revisits. clientwright deadline-budget reliability retries circuit-breakers Design HTTP & resilience Why retries look free What they cost when it matters A deadline is the first real mechanism A retry budget removes the amplification A circuit breaker protects the next wave, not this one What none of them do The list The pieces"
+    },
+    {
+      "id": "2026-09-07-retries-can-make-an-outage-worse",
+      "title": "Retries can make an outage worse: designing a retry budget",
+      "description": "Three retries at every hop of a five-service call is not resilience. It is a multiplier, and it multiplies hardest exactly when the bottom service is failing, which is the one…",
+      "url": "posts/2026-09-07-retries-can-make-an-outage-worse/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "clientwright",
+        "retries",
+        "circuit-breaker",
+        "reliability",
+        "microservices"
+      ],
+      "topics": [
+        "reliability"
+      ],
+      "minutes": 7,
+      "search": "Retries can make an outage worse: designing a retry budget Three retries at every hop of a five-service call is not resilience. It is a multiplier, and it multiplies hardest exactly when the bottom service is failing, which is the one… clientwright retries circuit-breaker reliability microservices Design HTTP & resilience The arithmetic Measured: one hop When the budget is invisible, and when it hurts Measured: three services deep Where retries belong The policy"
+    },
+    {
+      "id": "2026-09-07-retry-after-backoff-and-jitter",
+      "title": "Retry-After, backoff and jitter: what a production HTTP client actually does",
+      "description": "The retry loop every codebase has is four lines: try, catch, sleep, try again. A production HTTP client's retry policy is a checklist of about eight decisions that the four lines…",
+      "url": "posts/2026-09-07-retry-after-backoff-and-jitter/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "clientwright",
+        "httpx",
+        "retries",
+        "backoff",
+        "jitter",
+        "reliability"
+      ],
+      "topics": [
+        "reliability"
+      ],
+      "minutes": 5,
+      "search": "Retry-After, backoff and jitter: what a production HTTP client actually does The retry loop every codebase has is four lines: try, catch, sleep, try again. A production HTTP client's retry policy is a checklist of about eight decisions that the four lines… clientwright httpx retries backoff jitter reliability Tutorials HTTP & resilience Honour Retry-After Jitter, or the herd A read timeout is not a connection error What is retried at all The checklist"
+    },
+    {
+      "id": "2026-09-07-safe-grpc-retries",
+      "title": "Safe gRPC retries: which status codes you should actually retry",
+      "description": "max_attempts=3 is the most common line in a gRPC client configuration and the least examined.",
+      "url": "posts/2026-09-07-safe-grpc-retries/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "grpc-client-kit",
+        "grpc",
+        "retries",
+        "deadlines",
+        "circuit-breaker",
+        "idempotency"
+      ],
+      "topics": [
+        "grpc"
+      ],
+      "minutes": 7,
+      "search": "Safe gRPC retries: which status codes you should actually retry max_attempts=3 is the most common line in a gRPC client configuration and the least examined. grpc-client-kit grpc retries deadlines circuit-breaker idempotency Design gRPC What a status code tells you about the work Measured: five ways to fail a charge The deadline is for the call, not the attempt The breaker counts attempts Streams are not calls The policy, written down"
+    },
+    {
+      "id": "2026-09-07-should-your-application-create-kafka-topics-on-startup",
+      "title": "Should your application create Kafka topics on startup?",
+      "description": "Somebody has to create the topic. The three candidates are the broker, doing it automatically the first time anyone mentions a name; the application, doing it at startup; and a…",
+      "url": "posts/2026-09-07-should-your-application-create-kafka-topics-on-startup/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "aiokafka-foundation-kit",
+        "kafka",
+        "topics",
+        "operations",
+        "deployment"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 6,
+      "search": "Should your application create Kafka topics on startup? Somebody has to create the topic. The three candidates are the broker, doing it automatically the first time anyone mentions a name; the application, doing it at startup; and a… aiokafka-foundation-kit kafka topics operations deployment Design Kafka & messaging What the broker does for you What the application does The shape is decided once, forever Three replicas start at the same time A shape the cluster cannot give you So, should it? The pieces"
+    },
+    {
+      "id": "2026-09-07-stop-passing-asyncsession-everywhere",
+      "title": "Stop passing AsyncSession everywhere",
+      "description": "Every async SQLAlchemy codebase I have worked on has the same signature, repeated at every level:",
+      "url": "posts/2026-09-07-stop-passing-asyncsession-everywhere/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "sqlalchemy",
+        "postgresql",
+        "unit-of-work",
+        "dependency-injection",
+        "asyncio"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 8,
+      "search": "Stop passing AsyncSession everywhere Every async SQLAlchemy codebase I have worked on has the same signature, repeated at every level: sqlalchemy-foundation-kit sqlalchemy postgresql unit-of-work dependency-injection asyncio Design PostgreSQL & SQLAlchemy What the parameter is hiding What \"the same session\" is worth What it costs the pool One session, one task What leaves the block What it looks like when the session has an owner The pieces"
+    },
+    {
+      "id": "2026-09-07-testing-migrations-with-testcontainers",
+      "title": "Testing database migrations with Testcontainers: up, down and up again",
+      "description": "The five migration tests post made the case; this one is the setup, step by step, from an empty tests/ directory to a green job in CI that walks every revision forward, back and…",
+      "url": "posts/2026-09-07-testing-migrations-with-testcontainers/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "alembic-gauntlet",
+        "alembic",
+        "testcontainers",
+        "postgresql",
+        "pytest",
+        "ci"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 4,
+      "search": "Testing database migrations with Testcontainers: up, down and up again The five migration tests post made the case; this one is the setup, step by step, from an empty tests/ directory to a green job in CI that walks every revision forward, back and… alembic-gauntlet alembic testcontainers postgresql pytest ci Tutorials PostgreSQL & SQLAlchemy Step 1: a database that exists only for the test session Step 2: pytest configuration Step 3: the contract with env.py Step 4: the test file Step 5: CI What it costs"
+    },
+    {
+      "id": "2026-09-07-the-anatomy-of-a-production-grpc-server",
+      "title": "The anatomy of a production Python gRPC server",
+      "description": "A grpc.aio server is six lines. A grpc.aio server you can put behind a load balancer, roll out three times a day and hand to an on-call rota is a different object, and the…",
+      "url": "posts/2026-09-07-the-anatomy-of-a-production-grpc-server/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "grpc-server-kit",
+        "grpc",
+        "asyncio",
+        "tls",
+        "health-checks",
+        "graceful-shutdown"
+      ],
+      "topics": [
+        "grpc"
+      ],
+      "minutes": 10,
+      "search": "The anatomy of a production Python gRPC server A grpc.aio server is six lines. A grpc.aio server you can put behind a load balancer, roll out three times a day and hand to an on-call rota is a different object, and the… grpc-server-kit grpc asyncio tls health-checks graceful-shutdown Tutorials gRPC The handler that raises Where the reporting interceptor goes Message size Shutdown Health TLS, and the file permissions Reflection, and the rest of the list The order The pieces"
+    },
+    {
+      "id": "2026-09-07-five-alembic-migration-tests",
+      "title": "The five migration tests every Python project should run in CI",
+      "description": "We test application code until the coverage badge is green, and then we deploy database migrations that have been run exactly once, on a laptop, in one direction.",
+      "url": "posts/2026-09-07-five-alembic-migration-tests/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "alembic-gauntlet",
+        "alembic",
+        "sqlalchemy",
+        "postgresql",
+        "migrations",
+        "testing",
+        "ci",
+        "testcontainers"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 10,
+      "search": "The five migration tests every Python project should run in CI We test application code until the coverage badge is green, and then we deploy database migrations that have been run exactly once, on a laptop, in one direction. alembic-gauntlet alembic sqlalchemy postgresql migrations testing ci testcontainers Tutorials PostgreSQL & SQLAlchemy The test most pipelines have Five bugs, one file each Five tests, by hand What each test caught The thing the naming test taught me Running it in CI The contract with env.py The five tests as one import"
+    },
+    {
+      "id": "2026-09-07-the-production-checklist-for-aiokafka",
+      "title": "The production checklist for aiokafka",
+      "description": "aiokafka is a good client with defaults chosen for a library, not for your service, and the gap between the two is where the incidents live.",
+      "url": "posts/2026-09-07-the-production-checklist-for-aiokafka/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "aiokafka-foundation-kit",
+        "aiokafka",
+        "kafka",
+        "consumers",
+        "producers",
+        "asyncio"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 7,
+      "search": "The production checklist for aiokafka aiokafka is a good client with defaults chosen for a library, not for your service, and the gap between the two is where the incidents live. aiokafka-foundation-kit aiokafka kafka consumers producers asyncio Tutorials Kafka & messaging The producer The consumer Topics and health The list, short The pieces"
+    },
+    {
+      "id": "2026-09-07-unit-of-work-in-sqlalchemy-2",
+      "title": "The Unit of Work pattern in SQLAlchemy 2",
+      "description": "Every repository I have ever seen written for the first time has a commit() in it. It is there so that the id comes back, so that the next repository can use it, so that the test…",
+      "url": "posts/2026-09-07-unit-of-work-in-sqlalchemy-2/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "sqlalchemy",
+        "unit-of-work",
+        "postgresql",
+        "transactions",
+        "testing"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 6,
+      "search": "The Unit of Work pattern in SQLAlchemy 2 Every repository I have ever seen written for the first time has a commit() in it. It is there so that the id comes back, so that the next repository can use it, so that the test… sqlalchemy-foundation-kit sqlalchemy unit-of-work postgresql transactions testing Tutorials PostgreSQL & SQLAlchemy Before: repositories that commit After: the use case owns the boundary Read-only means read-only Savepoints: one failed step, not one failed transaction The use case under test Who owns the transaction"
+    },
+    {
+      "id": "2026-09-07-transactional-inbox",
+      "title": "Transactional inbox: the other half of the outbox pattern",
+      "description": "The outbox gets the attention because it solves the dramatic problem, the event that never left.",
+      "url": "posts/2026-09-07-transactional-inbox/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "omni-box",
+        "kafka",
+        "inbox",
+        "outbox",
+        "idempotency",
+        "postgresql"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 6,
+      "search": "Transactional inbox: the other half of the outbox pattern The outbox gets the attention because it solves the dramatic problem, the event that never left. omni-box kafka inbox outbox idempotency postgresql Design Kafka & messaging The consumer's two problems The inbox row Measured: the handler fails halfway What the inbox does not do The pair"
+    },
+    {
+      "id": "2026-09-07-transport-independent-errors",
+      "title": "Transport-independent errors: one domain error, HTTP and gRPC responses",
+      "description": "A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift.",
+      "url": "posts/2026-09-07-transport-independent-errors/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "servicewright",
+        "grpc",
+        "fastapi",
+        "errors",
+        "api-design"
+      ],
+      "topics": [
+        "lifecycle",
+        "grpc"
+      ],
+      "minutes": 5,
+      "search": "Transport-independent errors: one domain error, HTTP and gRPC responses A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift. servicewright grpc fastapi errors api-design Design Service lifecycle gRPC The domain raises, and does not format The same seven calls, two transports What each layer is allowed to know Testing it once What this does not solve The pieces"
+    },
+    {
+      "id": "2026-09-07-twelve-libraries-one-standard",
+      "title": "Twelve libraries, one engineering standard, no monorepo",
+      "description": "Bedrock Python is sixteen repositories: twelve libraries, two tools, a template and this site.",
+      "url": "posts/2026-09-07-twelve-libraries-one-standard/",
+      "date": "2026-09-07",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "bedrock-python",
+        "python-library-template",
+        "uv",
+        "ruff",
+        "release-please",
+        "github",
+        "copier"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 7,
+      "search": "Twelve libraries, one engineering standard, no monorepo Bedrock Python is sixteen repositories: twelve libraries, two tools, a template and this site. bedrock-python python-library-template uv ruff release-please github copier Meta Python & tooling What \"one standard\" means in practice The template The script Releases without a human typing a version The three things I got wrong Why not a monorepo"
+    },
+    {
+      "id": "2026-09-07-uuidv7-as-a-postgresql-partition-key",
+      "title": "UUIDv7 as a PostgreSQL partition key",
+      "description": "Range-partitioning a table by time normally costs you the primary key: PostgreSQL requires every unique constraint to contain the partition column, so PRIMARY KEY (id) becomes…",
+      "url": "posts/2026-09-07-uuidv7-as-a-postgresql-partition-key/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning",
+        "uuid",
+        "database"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 6,
+      "search": "UUIDv7 as a PostgreSQL partition key Range-partitioning a table by time normally costs you the primary key: PostgreSQL requires every unique constraint to contain the partition column, so PRIMARY KEY (id) becomes… pg-partsmith postgresql partitioning uuid database Design PostgreSQL & SQLAlchemy One column in the primary key The bounds are UUIDs Pruning happens on the id, not on the timestamp The three ids that do not fit Retention has the same edge When to reach for it The pieces"
+    },
+    {
+      "id": "2026-09-07-warmup-readiness-and-liveness-are-three-different-things",
+      "title": "Warmup, readiness and liveness are three different things",
+      "description": "Most services answer all three questions with one handler, usually one that pings the database. Each conflation has its own outage.",
+      "url": "posts/2026-09-07-warmup-readiness-and-liveness-are-three-different-things/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "servicewright",
+        "kubernetes",
+        "health-checks",
+        "graceful-shutdown",
+        "lifecycle",
+        "asyncio"
+      ],
+      "topics": [
+        "lifecycle"
+      ],
+      "minutes": 7,
+      "search": "Warmup, readiness and liveness are three different things Most services answer all three questions with one handler, usually one that pings the database. Each conflation has its own outage. servicewright kubernetes health-checks graceful-shutdown lifecycle asyncio Design Service lifecycle The whole life of a pod, in six transitions Warmup is not readiness, and neither is it liveness Liveness is about the process, not the dependencies Readiness has to go false before the pod stops serving The three, in one table The pieces"
+    },
+    {
+      "id": "2026-09-07-documentation-for-ai-coding-agents",
+      "title": "We started writing documentation for AI coding agents",
+      "description": "In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people.",
+      "url": "posts/2026-09-07-documentation-for-ai-coding-agents/",
+      "date": "2026-09-07",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "bedrock-python",
+        "documentation",
+        "ai-agents",
+        "llm",
+        "python-library-template"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 9,
+      "search": "We started writing documentation for AI coding agents In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people. bedrock-python documentation ai-agents llm python-library-template Meta Python & tooling Two readers, two questions One page per library Rules that hold or break the code WRONG, then RIGHT The page has to reach the model Keeping it true What it did for the humans"
+    },
+    {
+      "id": "2026-09-07-what-every-microservice-reimplements",
+      "title": "What every production Python microservice reimplements",
+      "description": "Open the repository of any backend service that has been in production for a year and look for the code that is not the product.",
+      "url": "posts/2026-09-07-what-every-microservice-reimplements/",
+      "date": "2026-09-07",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "bedrock-python",
+        "architecture",
+        "microservices",
+        "servicewright",
+        "sqlalchemy-foundation-kit",
+        "clientwright",
+        "deadline-budget"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 8,
+      "search": "What every production Python microservice reimplements Open the repository of any backend service that has been in production for a year and look for the code that is not the product. bedrock-python architecture microservices servicewright sqlalchemy-foundation-kit clientwright deadline-budget Meta Python & tooling The list Why not a framework A hundred lines Run How the pieces stay apart"
+    },
+    {
+      "id": "2026-09-07-what-happens-when-kafka-is-down-for-an-hour",
+      "title": "What happens when Kafka is down for an hour?",
+      "description": "Not \"is down for a second, and the retry catches it\". An hour: a broker rolling badly, a disk full on every node, a network partition between availability zones.",
+      "url": "posts/2026-09-07-what-happens-when-kafka-is-down-for-an-hour/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "omni-box",
+        "kafka",
+        "outbox",
+        "postgresql",
+        "reliability",
+        "asyncio"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 6,
+      "search": "What happens when Kafka is down for an hour? Not \"is down for a second, and the retry catches it\". An hour: a broker rolling badly, a disk full on every node, a network partition between availability zones. omni-box kafka outbox postgresql reliability asyncio Design Kafka & messaging Publishing from the request path The outbox during the outage What an hour actually costs you What it does not solve The pieces"
+    },
+    {
+      "id": "2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool",
+      "title": "What to monitor in a SQLAlchemy connection pool",
+      "description": "The dashboard everyone builds first shows connections in use, and it is the least useful of the numbers available.",
+      "url": "posts/2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool/",
+      "date": "2026-09-07",
+      "categories": [
+        "tutorials"
+      ],
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "sqlalchemy",
+        "postgresql",
+        "prometheus",
+        "observability",
+        "asyncio"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 7,
+      "search": "What to monitor in a SQLAlchemy connection pool The dashboard everyone builds first shows connections in use, and it is the least useful of the numbers available. sqlalchemy-foundation-kit sqlalchemy postgresql prometheus observability asyncio Tutorials PostgreSQL & SQLAlchemy The run Saturation is not an incident The wait is the request's latency Held time is the cause The timeout counter is your error budget Throughput, and what it tells you about capacity The six to graph The pieces"
+    },
+    {
+      "id": "2026-09-07-when-should-redis-fail-open",
+      "title": "When should Redis fail open?",
+      "description": "Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it.",
+      "url": "posts/2026-09-07-when-should-redis-fail-open/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "redis-client-kit",
+        "idempotency-kit",
+        "redis",
+        "reliability",
+        "timeouts",
+        "kubernetes"
+      ],
+      "topics": [
+        "redis"
+      ],
+      "minutes": 6,
+      "search": "When should Redis fail open? Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it. redis-client-kit idempotency-kit redis reliability timeouts kubernetes Design Redis & idempotency Before deciding anything: how long does it take to know? The cache: open, always The rate limiter: open, and say so The idempotency store: it depends on what repeating costs Health: what readiness should depend on And then it comes back The shape"
+    },
+    {
+      "id": "2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi",
+      "title": "Why application lifecycle should not belong to FastAPI",
+      "description": "FastAPI's lifespan is a good API. It is an async context manager: whatever you set up before the yield is the startup, whatever you do after it is the shutdown, and it runs…",
+      "url": "posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "servicewright",
+        "fastapi",
+        "lifecycle",
+        "architecture",
+        "kubernetes"
+      ],
+      "topics": [
+        "lifecycle"
+      ],
+      "minutes": 5,
+      "search": "Why application lifecycle should not belong to FastAPI FastAPI's lifespan is a good API. It is an async context manager: whatever you set up before the yield is the startup, whatever you do after it is the shutdown, and it runs… servicewright fastapi lifecycle architecture kubernetes Design Service lifecycle The API, as usually written The worker, as usually written The framework is an entrypoint What FastAPI's lifespan is still for"
+    },
+    {
+      "id": "2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs",
+      "title": "Why gRPC interceptors break on streaming RPCs",
+      "description": "An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works.",
+      "url": "posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "grpc-client-kit",
+        "grpc",
+        "interceptors",
+        "observability",
+        "asyncio"
+      ],
+      "topics": [
+        "grpc"
+      ],
+      "minutes": 7,
+      "search": "Why gRPC interceptors break on streaming RPCs An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works. grpc-client-kit grpc interceptors observability asyncio Design gRPC The interceptor that is registered for one kind out of four What a unary interceptor measures on a stream Doing it by hand The four kinds, one implementation The part that only shows up on streams What to check in your own interceptors The pieces"
+    },
+    {
+      "id": "2026-09-07-why-i-stopped-wrapping-http-clients",
+      "title": "Why I stopped wrapping HTTP clients",
+      "description": "Every company I have worked at eventually wrote its own HTTP client wrapper. It starts as a retry helper, grows a config class, learns to emit metrics, and ends as class…",
+      "url": "posts/2026-09-07-why-i-stopped-wrapping-http-clients/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "clientwright",
+        "httpx",
+        "aiohttp",
+        "requests",
+        "retries",
+        "circuit-breaker",
+        "observability"
+      ],
+      "topics": [
+        "reliability"
+      ],
+      "minutes": 7,
+      "search": "Why I stopped wrapping HTTP clients Every company I have worked at eventually wrote its own HTTP client wrapper. It starts as a retry helper, grows a config class, learns to emit metrics, and ends as class… clientwright httpx aiohttp requests retries circuit-breaker observability Design HTTP & resilience The life of a wrapper What the wrapper actually owns Measured: the price Capability honesty The shape"
+    },
+    {
+      "id": "2026-09-07-your-models-and-your-schema-have-drifted",
+      "title": "Your models and your schema have drifted. Would CI notice?",
+      "description": "The migration ran, the deploy went out, and the models and the database now say different things.",
+      "url": "posts/2026-09-07-your-models-and-your-schema-have-drifted/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "alembic-gauntlet",
+        "alembic",
+        "sqlalchemy",
+        "postgresql",
+        "migrations",
+        "ci"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 7,
+      "search": "Your models and your schema have drifted. Would CI notice? The migration ran, the deploy went out, and the models and the database now say different things. alembic-gauntlet alembic sqlalchemy postgresql migrations ci Design PostgreSQL & SQLAlchemy Where drift comes from The six drifts The check that catches half of them The one it will not look at unless you ask The two it will never look at What to run in CI The pieces"
+    },
+    {
+      "id": "2026-09-07-zero-dependency-cores",
+      "title": "Zero-dependency cores: why optional dependencies matter in infrastructure libraries",
+      "description": "An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too.",
+      "url": "posts/2026-09-07-zero-dependency-cores/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "deadline-budget",
+        "clientwright",
+        "servicewright",
+        "packaging",
+        "dependencies"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 6,
+      "search": "Zero-dependency cores: why optional dependencies matter in infrastructure libraries An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too. deadline-budget clientwright servicewright packaging dependencies Design Python & tooling What each library costs The failure mode this prevents What a good core looks like The message is the feature When a hard dependency is right The checklist The pieces"
+    },
+    {
+      "id": "2026-09-06-pg-partsmith",
+      "title": "Managing PostgreSQL partitions, one failure at a time",
+      "description": "There are two ways a partitioned table gets you out of bed. The first is an INSERT at 03:00 that PostgreSQL rejects because nobody created next month's partition.",
+      "url": "posts/2026-09-06-pg-partsmith/",
+      "date": "2026-09-06",
+      "categories": [
+        "libraries",
+        "tools"
+      ],
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning",
+        "asyncio",
+        "cli",
+        "docker"
+      ],
+      "topics": [
+        "postgres"
+      ],
+      "minutes": 12,
+      "search": "Managing PostgreSQL partitions, one failure at a time There are two ways a partitioned table gets you out of bed. The first is an INSERT at 03:00 that PostgreSQL rejects because nobody created next month's partition. pg-partsmith postgresql partitioning asyncio cli docker Libraries Tools PostgreSQL & SQLAlchemy Not knowing what maintenance will do Dropping something you did not make Two replicas tick at once The team with no Python in it The archiver has to run before the drop Wiring it with an assistant in the loop Where to read more"
+    },
+    {
+      "id": "2026-09-06-timeouts-are-not-deadlines",
+      "title": "Timeouts are not deadlines: how latency budgets break across microservices",
+      "description": "Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config.",
+      "url": "posts/2026-09-06-timeouts-are-not-deadlines/",
+      "date": "2026-09-06",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "deadline-budget",
+        "clientwright",
+        "grpc-client-kit",
+        "timeouts",
+        "deadlines",
+        "httpx",
+        "grpc",
+        "microservices"
+      ],
+      "topics": [
+        "reliability",
+        "grpc"
+      ],
+      "minutes": 10,
+      "search": "Timeouts are not deadlines: how latency budgets break across microservices Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config. deadline-budget clientwright grpc-client-kit timeouts deadlines httpx grpc microservices Design HTTP & resilience gRPC A timeout limits an operation Retries multiply it Across a hop, the timeout becomes a lie Where the deadline lives The safety margin What changed in the code"
+    },
+    {
+      "id": "2026-05-30-welcome",
+      "title": "Welcome to the Bedrock Python Blog",
+      "description": "This is the home of the Bedrock Python ecosystem — what it is, why it exists, and the thinking behind it.",
+      "url": "posts/2026-05-30-welcome/",
+      "date": "2026-05-30",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "welcome",
+        "bedrock-python"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 2,
+      "search": "Welcome to the Bedrock Python Blog This is the home of the Bedrock Python ecosystem — what it is, why it exists, and the thinking behind it. welcome bedrock-python Meta Python & tooling Why this exists The decision What to expect from this blog"
+    },
+    {
+      "id": "2026-05-28-introducing-mr-review",
+      "title": "Introducing mr-review: AI-powered merge request reviews",
+      "description": "Code review is one of the highest-leverage activities in a software team, and also one of the most inconsistent. Reviewers get tired, context-switch mid-review, miss things.",
+      "url": "posts/2026-05-28-introducing-mr-review/",
+      "date": "2026-05-28",
+      "categories": [
+        "tools"
+      ],
+      "tags": [
+        "mr-review",
+        "ai",
+        "gitlab",
+        "github"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 2,
+      "search": "Introducing mr-review: AI-powered merge request reviews Code review is one of the highest-leverage activities in a software team, and also one of the most inconsistent. Reviewers get tired, context-switch mid-review, miss things. mr-review ai gitlab github Tools Python & tooling The problem How it works Preset-based review modes Model flexibility Getting started"
+    },
+    {
+      "id": "2026-05-15-transactional-outbox-with-omni-box",
+      "title": "The Transactional Outbox pattern in Python: omni-box",
+      "description": "Distributed systems have a classic problem: you want to update your database and publish an event to Kafka in the same operation, but there is no cross-system transaction.",
+      "url": "posts/2026-05-15-transactional-outbox-with-omni-box/",
+      "date": "2026-05-15",
+      "categories": [
+        "libraries",
+        "design"
+      ],
+      "tags": [
+        "omni-box",
+        "kafka",
+        "sqlalchemy",
+        "patterns"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 2,
+      "search": "The Transactional Outbox pattern in Python: omni-box Distributed systems have a classic problem: you want to update your database and publish an event to Kafka in the same operation, but there is no cross-system transaction. omni-box kafka sqlalchemy patterns Libraries Design Kafka & messaging The dual-write problem The Outbox pattern Using omni-box The Inbox side Why a library?"
+    }
+  ],
+  "topics": [
+    {
+      "id": "postgres",
+      "label": "PostgreSQL & SQLAlchemy"
+    },
+    {
+      "id": "reliability",
+      "label": "HTTP & resilience"
+    },
+    {
+      "id": "grpc",
+      "label": "gRPC"
+    },
+    {
+      "id": "messaging",
+      "label": "Kafka & messaging"
+    },
+    {
+      "id": "lifecycle",
+      "label": "Service lifecycle"
+    },
+    {
+      "id": "redis",
+      "label": "Redis & idempotency"
+    },
+    {
+      "id": "engineering",
+      "label": "Python & tooling"
+    }
+  ],
+  "categories": [
+    {
+      "id": "design",
+      "label": "Design"
+    },
+    {
+      "id": "libraries",
+      "label": "Libraries"
+    },
+    {
+      "id": "meta",
+      "label": "Meta"
+    },
+    {
+      "id": "tools",
+      "label": "Tools"
+    },
+    {
+      "id": "tutorials",
+      "label": "Tutorials"
+    }
+  ]
+}

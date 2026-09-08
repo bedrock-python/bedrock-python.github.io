@@ -1,53 +1,19 @@
 /* Bedrock Python — small enhancements.
  *
- * 1. Client-side category filter for the blog index chips.
- *    The "All" chip and category chips (data-bdr-filter="<slug>") filter
- *    cards in the grid by their data-bdr-cat (space-separated).
- *    Real category-page links (e.g. category/libraries/) still navigate.
- *
- * 2. Live package versions. Every element with data-pypi="<package>" ships
+ * 1. Live package versions. Every element with data-pypi="<package>" ships
  *    with the version that was current when the page was written; on load it
  *    is replaced with whatever PyPI reports now, so the catalog does not go
  *    stale between site deploys. Any failure leaves the static text in place.
  *
- * 3. Links to other sites open in a new tab; anything on our own host
+ * 2. Links to other sites open in a new tab; anything on our own host
  *    (this site and every library's docs under bedrock-python.github.io)
  *    stays in the current tab. The host comes from the canonical link, so
  *    a local `zensical serve` behaves like production. An author-set
  *    target is left alone.
  *
- * 4. Wire `document$` for instant-navigation compatibility.
+ * 3. Wire `document$` for instant-navigation compatibility.
+ *    Article discovery lives in blog-explorer.js.
  */
-
-const initBlogFilter = () => {
-  // Filter chips on the blog index. Only intercept clicks for the "All" chip;
-  // category chips link to real category pages so they work without JS too,
-  // but if we're on the blog index, prefer client-side filtering.
-  const chipsRoot = document.querySelector("[data-bdr-chips]");
-  const grid = document.querySelector("[data-bdr-grid]");
-  if (!chipsRoot || !grid) return;
-
-  const chips = chipsRoot.querySelectorAll("[data-bdr-filter]");
-  const cards = grid.querySelectorAll(".bdr-card");
-
-  chips.forEach((chip) => {
-    chip.addEventListener("click", (event) => {
-      const filter = chip.dataset.bdrFilter;
-      // Don't intercept the Archive chip — it has its own page.
-      if (filter === "archive") return;
-      event.preventDefault();
-
-      chips.forEach((c) => c.classList.remove("is-active"));
-      chip.classList.add("is-active");
-
-      cards.forEach((card) => {
-        const cats = (card.dataset.bdrCat || "").split(/\s+/);
-        const match = filter === "all" || cats.includes(filter);
-        card.style.display = match ? "" : "none";
-      });
-    });
-  });
-};
 
 const refreshPypiVersions = () => {
   const nodes = document.querySelectorAll("[data-pypi]");
@@ -92,10 +58,57 @@ const openExternalLinksInNewTab = () => {
     });
 };
 
+// The fullscreen search overlay needs an explicit exit on touch screens.
+const initMobileSearchClose = () => {
+  if (!document.querySelector("#__search") || document.querySelector("[data-bdr-search-close]")) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "bdr-mobile-search-close";
+  button.dataset.bdrSearchClose = "";
+  button.textContent = "Close search";
+  button.hidden = true;
+  button.addEventListener("click", () => {
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    const trigger = document.querySelector('.md-header label[for="__search"]');
+    if (trigger) {
+      trigger.tabIndex = -1;
+      trigger.focus();
+    }
+  });
+  document.body.append(button);
+
+  // Zensical renders search in an open shadow root. Its checkbox alone does
+  // not reflect closing with Escape or opening with the keyboard shortcut.
+  const searchRoots = new Set();
+  const syncSearchState = () => {
+    const open = [...searchRoots].some((root) => {
+      const input = root.querySelector('[role="combobox"]');
+      return input?.getClientRects().length && getComputedStyle(input).pointerEvents !== "none";
+    });
+    button.hidden = !open;
+    const toggle = document.querySelector("#__search");
+    if (toggle) toggle.checked = open;
+  };
+  const observeSearch = () => {
+    for (const host of document.body.children) {
+      const root = host.shadowRoot;
+      if (!root || searchRoots.has(root)) continue;
+      searchRoots.add(root);
+      new MutationObserver(syncSearchState).observe(root, {
+        childList: true, subtree: true, attributes: true,
+        attributeFilter: ["class", "style", "hidden"],
+      });
+    }
+    syncSearchState();
+  };
+  new MutationObserver(observeSearch).observe(document.body, { childList: true });
+  observeSearch();
+};
+
 const initBedrock = () => {
-  initBlogFilter();
   refreshPypiVersions();
   openExternalLinksInNewTab();
+  initMobileSearchClose();
 };
 
 if (typeof document$ !== "undefined") {

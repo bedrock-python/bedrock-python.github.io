@@ -1,4 +1,4 @@
-.PHONY: install fmt docs-serve docs-build clean
+.PHONY: install fmt docs-catalog docs-serve docs-build clean
 
 install:
 	uv sync --group dev
@@ -7,10 +7,13 @@ install:
 fmt:
 	uv run pre-commit run --all-files
 
-docs-serve:
+docs-catalog:
+	uv run --no-dev --group docs python scripts/build_blog_catalog.py
+
+docs-serve: docs-catalog
 	uv run --no-dev --group docs zensical serve
 
-docs-build:
+docs-build: docs-catalog
 	uv run --no-dev --group docs zensical build --clean
 
 clean:

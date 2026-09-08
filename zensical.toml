@@ -12,10 +12,17 @@ site_dir = "site"
 
 extra_css = [
     "stylesheets/bedrock.css",
+    "stylesheets/home.css",
+    "stylesheets/blog-explorer.css",
+    "stylesheets/libraries.css",
+    "stylesheets/tools.css",
+    "stylesheets/responsive.css",
 ]
 
 extra_javascript = [
     "javascripts/bedrock.js",
+    "javascripts/blog-explorer.js",
+    "javascripts/libraries.js",
 ]
 
 nav = [
@@ -23,7 +30,7 @@ nav = [
     { "Libraries" = "libraries/index.md" },
     { "Tools" = "tools/index.md" },
     { "Blog" = [
-        { "Latest" = "blog/index.md" },
+        { "All articles" = "blog/index.md" },
         { "Archive" = "blog/archive/index.md" },
         { "Categories" = [
             { "Overview" = "blog/category/index.md" },
