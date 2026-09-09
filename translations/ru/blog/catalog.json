@@ -1,0 +1,124 @@
+{
+  "articles": [
+    {
+      "id": "2026-09-06-timeouts-are-not-deadlines",
+      "title": "Таймаут — не дедлайн: как теряется бюджет времени в микросервисах",
+      "description": "Во всех сервисах, которые я запускал, на каждом исходящем вызове стоял таймаут. И каждый из этих сервисов всё равно умудрялся отвечать дольше любого числа в конфигурации.",
+      "url": "posts/2026-09-06-timeouts-are-not-deadlines/",
+      "date": "2026-09-06",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "deadline-budget",
+        "clientwright",
+        "grpc-client-kit",
+        "timeouts",
+        "deadlines",
+        "httpx",
+        "grpc",
+        "microservices"
+      ],
+      "topics": [
+        "reliability",
+        "grpc"
+      ],
+      "minutes": 9,
+      "search": "Таймаут — не дедлайн: как теряется бюджет времени в микросервисах Во всех сервисах, которые я запускал, на каждом исходящем вызове стоял таймаут. И каждый из этих сервисов всё равно умудрялся отвечать дольше любого числа в конфигурации. deadline-budget clientwright grpc-client-kit timeouts deadlines httpx grpc microservices Архитектура HTTP и отказоустойчивость gRPC Таймаут ограничивает операцию { #a-timeout-limits-an-operation } Повторы умножают время { #retries-multiply-it } При переходе между сервисами таймаут начинает врать { #across-a-hop-the-timeout-becomes-a-lie } Где живёт дедлайн { #where-the-deadline-lives } Запас на завершение { #the-safety-margin } Что изменилось в коде { #what-changed-in-the-code }"
+    },
+    {
+      "id": "2026-05-30-welcome",
+      "title": "Добро пожаловать в блог Bedrock Python",
+      "description": "Здесь мы рассказываем об экосистеме Bedrock Python: что это такое, зачем она существует и какие идеи за ней стоят.",
+      "url": "posts/2026-05-30-welcome/",
+      "date": "2026-05-30",
+      "categories": [
+        "meta"
+      ],
+      "tags": [
+        "welcome",
+        "bedrock-python"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 2,
+      "search": "Добро пожаловать в блог Bedrock Python Здесь мы рассказываем об экосистеме Bedrock Python: что это такое, зачем она существует и какие идеи за ней стоят. welcome bedrock-python Об экосистеме Python и инструменты Зачем всё это { #why-this-exists } Решение { #the-decision } Чего ждать от блога { #what-to-expect-from-this-blog }"
+    },
+    {
+      "id": "2026-05-15-transactional-outbox-with-omni-box",
+      "title": "Паттерн Transactional Outbox на Python: omni-box",
+      "description": "У распределённых систем есть классическая проблема: нужно обновить базу данных и опубликовать событие в Kafka в рамках одной операции, но общей транзакции между ними нет.",
+      "url": "posts/2026-05-15-transactional-outbox-with-omni-box/",
+      "date": "2026-05-15",
+      "categories": [
+        "libraries",
+        "design"
+      ],
+      "tags": [
+        "omni-box",
+        "kafka",
+        "sqlalchemy",
+        "patterns"
+      ],
+      "topics": [
+        "messaging"
+      ],
+      "minutes": 2,
+      "search": "Паттерн Transactional Outbox на Python: omni-box У распределённых систем есть классическая проблема: нужно обновить базу данных и опубликовать событие в Kafka в рамках одной операции, но общей транзакции между ними нет. omni-box kafka sqlalchemy patterns Библиотеки Архитектура Kafka и обмен сообщениями Проблема двойной записи { #the-dual-write-problem } Паттерн Outbox { #the-outbox-pattern } Использование omni-box { #using-omni-box } Сторона Inbox { #the-inbox-side } Зачем библиотека? { #why-a-library }"
+    }
+  ],
+  "language": "ru",
+  "topics": [
+    {
+      "id": "postgres",
+      "label": "PostgreSQL и SQLAlchemy"
+    },
+    {
+      "id": "reliability",
+      "label": "HTTP и отказоустойчивость"
+    },
+    {
+      "id": "grpc",
+      "label": "gRPC"
+    },
+    {
+      "id": "messaging",
+      "label": "Kafka и обмен сообщениями"
+    },
+    {
+      "id": "lifecycle",
+      "label": "Жизненный цикл сервиса"
+    },
+    {
+      "id": "redis",
+      "label": "Redis и идемпотентность"
+    },
+    {
+      "id": "engineering",
+      "label": "Python и инструменты"
+    }
+  ],
+  "categories": [
+    {
+      "id": "design",
+      "label": "Архитектура"
+    },
+    {
+      "id": "libraries",
+      "label": "Библиотеки"
+    },
+    {
+      "id": "meta",
+      "label": "Об экосистеме"
+    },
+    {
+      "id": "tools",
+      "label": "Инструменты"
+    },
+    {
+      "id": "tutorials",
+      "label": "Руководства"
+    }
+  ]
+}

@@ -16,6 +16,8 @@ from pathlib import Path
 import markdown
 import yaml
 
+from site_i18n import messages, registry, translate
+
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "docs" / "blog"
 START = "<!-- catalog:articles:start -->"
@@ -62,7 +64,6 @@ TECHNOLOGY_TOPICS = {
     "redis": "redis",
     "idempotency": "redis",
 }
-MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
 class PlainText(HTMLParser):
@@ -137,27 +138,32 @@ def slug(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", label.casefold()).strip("-")
 
 
-def read_article(path: Path) -> tuple[dict, dict[str, str]]:
+def read_article(path: Path, language: str = "en") -> tuple[dict, dict[str, str]]:
+    text = messages(language)
     source = path.read_text(encoding="utf-8-sig")
     front_matter = re.match(r"\A---\s*\n(.*?)\n---\s*\n(.*)\Z", source, flags=re.DOTALL)
     if not front_matter:
-        raise ValueError(f"{path.relative_to(ROOT)}: missing YAML front matter")
+        raise ValueError(f"{path}: missing YAML front matter")
     metadata = yaml.safe_load(front_matter[1])
     body = front_matter[2]
     heading = re.search(r"^#\s+(.+)$", body, flags=re.MULTILINE)
     if not heading:
-        raise ValueError(f"{path.relative_to(ROOT)}: missing article title")
+        raise ValueError(f"{path}: missing article title")
     title = plain_text(heading[1])
     date = metadata.get("date")
     if isinstance(date, dt.datetime):
         date = date.date()
     elif not isinstance(date, dt.date):
         date = dt.date.fromisoformat(str(date))
-    labels = {slug(str(label)): str(label) for label in metadata.get("categories", [])}
+    labels = {slug(str(label)): text.get(str(label), str(label)) for label in metadata.get("categories", [])}
     tags = [str(tag) for tag in metadata.get("tags", [])]
     description = summarize(body)
     headings = plain_text(" ".join(re.findall(r"^#{2,6}\s+(.+)$", body, flags=re.MULTILINE)))
     topics = article_topics(title, tags)
+    # Topic IDs follow the source article even when translated title words differ.
+    original = BLOG / "posts" / path.name
+    if language != "en" and original.exists():
+        topics = read_article(original)[0]["topics"]
     return {
         "id": path.stem,
         "title": title,
@@ -168,23 +174,25 @@ def read_article(path: Path) -> tuple[dict, dict[str, str]]:
         "tags": tags,
         "topics": topics,
         "minutes": reading_minutes(body),
-        "search": " ".join([title, description, *tags, *labels.values(), *(TOPICS[topic] for topic in topics), headings]),
+        "search": " ".join([title, description, *tags, *labels.values(), *(text[TOPICS[topic]] for topic in topics), headings]),
     }, labels
 
 
-def render_article(article: dict, categories: dict[str, str]) -> str:
+def render_article(article: dict, categories: dict[str, str], language: str = "en") -> str:
+    text = messages(language)
     escaped = {key: html.escape(str(article[key]), quote=True) for key in ("id", "url", "title", "description", "date", "minutes")}
-    topic = html.escape(TOPICS[article["topics"][0]])
-    category = html.escape(categories[article["categories"][0]]) if article["categories"] else "Article"
+    topic = html.escape(text[TOPICS[article["topics"][0]]])
+    category = html.escape(categories[article["categories"][0]]) if article["categories"] else text["Article"]
     date = dt.date.fromisoformat(article["date"])
-    display_date = f"{MONTHS[date.month - 1]} {date.day}, {date.year}"
+    display_date = text["date_format"].format(month=text["months"][date.month - 1], day=date.day, year=date.year)
+    reading_time = translate(text, "{minutes} min read", minutes=article["minutes"])
     return f'''  <article class="bdr-entry" data-article-id="{escaped['id']}">
     <a class="bdr-entry__link bdr-card" href="{escaped['url']}">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">{topic} <span>·</span> {category}</div>
         <h3 class="bdr-entry__title">{escaped['title']}</h3>
         <p class="bdr-entry__description">{escaped['description']}</p>
-        <div class="bdr-entry__meta"><time datetime="{escaped['date']}">{display_date}</time><span>·</span><span>{escaped['minutes']} min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="{escaped['date']}">{display_date}</time><span>·</span><span>{reading_time}</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -192,44 +200,106 @@ def render_article(article: dict, categories: dict[str, str]) -> str:
   </article>'''
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Fail if generated files need updating; do not write files.")
-    args = parser.parse_args()
+def directory_pages(blog: Path, articles: list[dict], language: str) -> dict[Path, str]:
+    text = messages(language)
+    labels = {slug(label): text[label] for label in ("Libraries", "Tools", "Design", "Tutorials", "Meta")}
+    archive = [f"# {text['Archive']}", "", text["archive_intro"], ""]
+    last_year = None
+    for article in articles:
+        year = article["date"][:4]
+        if year != last_year:
+            archive.extend([f"## {year}", ""])
+            last_year = year
+        title = html.escape(article['title'])
+        archive.append(f"- **{article['date']}** — [{title}](../posts/{article['id']}.md)")
+    overview = [f"# {text['Categories']}", "", text["categories_intro"], "",
+                f'<nav class="bdr-category-grid" aria-label="{text["Blog categories"]}" markdown="0">']
+    outputs = {blog / "archive/index.md": "\n".join(archive) + "\n"}
+    for key, label in labels.items():
+        matching = [article for article in articles if key in article["categories"]]
+        count = translate(text, "{count} articles", language, count=len(matching))
+        description = text[f"category_{key}"]
+        overview.append(f'  <a class="bdr-category-card" href="{key}/"><span><strong>{label}</strong><small>{count}</small></span><p>{description}</p><span class="bdr-category-card__arrow" aria-hidden="true">↗</span></a>')
+        content = [f"# {label}", "", description, ""]
+        content.extend(f"- **{article['date']}** — [{html.escape(article['title'])}](../posts/{article['id']}.md)" for article in matching)
+        if not matching:
+            content.extend([text["category_empty"], "", f'[{text["All articles"]}](../index.md)'])
+        outputs[blog / "category" / f"{key}.md"] = "\n".join(content) + "\n"
+    outputs[blog / "category/index.md"] = "\n".join([*overview, "</nav>", ""])
+    return outputs
+
+
+def build_catalog(blog: Path, language: str = "en", check: bool = False) -> list[str]:
+    text = messages(language)
     articles = []
-    categories: dict[str, str] = {}
-    for path in sorted((BLOG / "posts").glob("*.md")):
-        article, labels = read_article(path)
+    categories = {slug(label): text[label] for label in ("Libraries", "Tools", "Design", "Tutorials", "Meta")}
+    for path in sorted((blog / "posts").glob("*.md")):
+        article, labels = read_article(path, language)
         articles.append(article)
         categories.update(labels)
     articles.sort(key=lambda article: (-dt.date.fromisoformat(article["date"]).toordinal(), article["title"].casefold()))
     catalog = {
         "articles": articles,
-        "topics": [{"id": key, "label": label} for key, label in TOPICS.items()],
+        "language": language,
+        "topics": [{"id": key, "label": text[label]} for key, label in TOPICS.items()],
         "categories": [{"id": key, "label": label} for key, label in sorted(categories.items())],
     }
-    index_path = BLOG / "index.md"
+    index_path = blog / "index.md"
     index = index_path.read_text(encoding="utf-8-sig")
     if index.count(START) != 1 or index.count(END) != 1 or index.index(END) < index.index(START):
         raise ValueError("docs/blog/index.md must contain one ordered pair of catalog:articles markers")
     before, remainder = index.split(START, 1)
     _, after = remainder.split(END, 1)
-    generated = "\n" + "\n".join(render_article(article, categories) for article in articles) + "\n"
+    generated = "\n" + "\n".join(render_article(article, categories, language) for article in articles) + "\n"
     outputs = {
-        BLOG / "catalog.json": json.dumps(catalog, ensure_ascii=False, indent=2) + "\n",
+        blog / "catalog.json": json.dumps(catalog, ensure_ascii=False, indent=2) + "\n",
         index_path: before + START + generated + END + after,
+        **directory_pages(blog, articles, language),
     }
     stale = []
+    home = blog.parent / "index.md"
+    home_source = home.read_text(encoding="utf-8")
+    home_start, home_end = "<!-- catalog:home:start -->", "<!-- catalog:home:end -->"
+    if home_start in home_source and home_end in home_source:
+        cards = []
+        for article in articles[:3]:
+            cards.append(f'''<a class="bdr-card" href="blog/{html.escape(article['url'])}">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">{html.escape(categories[article['categories'][0]])}</div>
+  <h3 class="bdr-card__title">{html.escape(article['title'])}</h3>
+  <p class="bdr-card__lede">{html.escape(article['description'])}</p>
+  <div class="bdr-card__meta">{article['date']}</div>
+</a>''')
+        before, remainder = home_source.split(home_start, 1)
+        _, after = remainder.split(home_end, 1)
+        outputs[home] = before + home_start + "\n" + "\n".join(cards) + "\n" + home_end + after
     for path, content in outputs.items():
         if not path.exists() or path.read_text(encoding="utf-8") != content:
-            stale.append(str(path.relative_to(ROOT)))
-            if not args.check:
+            stale.append(str(path))
+            if not check:
+                path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8", newline="\n")
+    print(f"[{language}] Blog catalog {'checked' if check else 'generated'}: {len(articles)} articles, {len(TOPICS)} topics.")
+    return stale
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="Fail if generated files need updating; do not write files.")
+    parser.add_argument("--language", help="Generate one language; by default generate all enabled editions.")
+    args = parser.parse_args()
+    languages = registry()["languages"]
+    if args.language and args.language not in languages:
+        parser.error(f"Unknown language: {args.language}")
+    stale = []
+    for code, language in languages.items():
+        if args.language and args.language != code:
+            continue
+        stale.extend(build_catalog(ROOT / language["source"] / "blog", code, args.check))
     if args.check and stale:
         print("Blog catalog is stale: " + ", ".join(stale), file=sys.stderr)
         print("Run: uv run --no-dev --group docs python scripts/build_blog_catalog.py", file=sys.stderr)
         return 1
-    print(f"Blog catalog {'checked' if args.check else 'generated'}: {len(articles)} articles, {len(TOPICS)} topics.")
     return 0
 
 

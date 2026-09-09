@@ -1,0 +1,23 @@
+{% set i18n = config.extra.i18n %}
+{% set translations = (i18n.pages[page.url] | default({})) if page else {} %}
+<div class="md-header__option bdr-language-option" data-md-component="language">
+  <details class="bdr-language" data-language-menu>
+    <summary aria-label="{{ i18n.messages['Choose language'] }}">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 5h12M9 3v2m4 0c-1 6-5 9-10 11m2-8c1 3 4 6 8 8m1 5 4-11 4 11m-6-4h4"/></svg>
+      <span>{{ config.theme.language | upper }}</span>
+      <span class="bdr-language__chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="bdr-language__menu">
+      {% for language in config.extra.alternate %}
+        {% set destination = translations[language.lang] %}
+        {% if destination or not page or page.url == '404.html' %}
+          <a href="{{ destination.path if destination else language.link }}" hreflang="{{ language.lang }}" lang="{{ language.lang }}" data-language-link data-language-code="{{ language.lang }}" data-language-name="{{ language.name }}" {% if language.lang == config.theme.language %}aria-current="true"{% endif %}>
+            <span>{{ language.name }}</span>{% if language.lang == config.theme.language %}<span aria-hidden="true">✓</span>{% endif %}
+          </a>
+        {% else %}
+          <span class="bdr-language__unavailable" aria-disabled="true" data-language-code="{{ language.lang }}" data-language-name="{{ language.name }}"><span lang="{{ language.lang }}">{{ language.name }}</span><small>{{ i18n.messages['Translation not available'] }}</small></span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </details>
+</div>

@@ -3,6 +3,7 @@
   const registration = Symbol.for("bedrock.blogExplorer");
   if (window[registration]) return;
   window[registration] = true;
+  const { t, language } = window.bedrockI18n;
 
   const PAGE_SIZE = 12;
   const VIEW_STORAGE = "bedrock-blog-view";
@@ -48,7 +49,7 @@
     link.className = "bdr-post-back";
     link.dataset.blogReturn = "";
     link.href = destination.href;
-    link.textContent = "← Back to articles";
+    link.textContent = t("← Back to articles");
     const title = content.querySelector("h1");
     if (title) title.before(link);
     else content.prepend(link);
@@ -110,7 +111,7 @@
       const duration = root.querySelector("[data-blog-duration]");
       const sort = root.querySelector("[data-blog-sort]");
       const defaultSortOption = sort?.querySelector("option[value='newest']");
-      const defaultSortLabel = defaultSortOption?.textContent || "Newest first";
+      const defaultSortLabel = defaultSortOption?.textContent || t("Newest first");
       const count = root.querySelector("[data-blog-count]");
       const range = root.querySelector("[data-blog-range]");
       const active = root.querySelector("[data-blog-active]");
@@ -173,20 +174,20 @@
       const renderPills = () => {
         if (!active) return;
         const labels = [];
-        if (state.query.trim()) labels.push(["query", `Search: ${state.query.trim()}`]);
+        if (state.query.trim()) labels.push(["query", t("Search: {query}", { query: state.query.trim() })]);
         if (state.topic !== "all") labels.push(["topic", topicLabels.get(state.topic)]);
         if (state.format !== "all") labels.push(["format", formatLabels.get(state.format)]);
         if (state.duration !== "all") labels.push(["duration",
-          state.duration === "short" ? "8 minutes or less" : "Over 8 minutes"]);
+          t(state.duration === "short" ? "8 minutes or less" : "Over 8 minutes")]);
         const fragment = document.createDocumentFragment();
         labels.forEach(([key, label]) => {
           const pill = button(`${label} ×`, "bdr-filter-pill");
           pill.dataset.removeFilter = key;
-          pill.setAttribute("aria-label", `Remove filter: ${label}`);
+          pill.setAttribute("aria-label", t("Remove filter: {label}", { label }));
           fragment.append(pill);
         });
         if (labels.length > 1) {
-          const reset = button("Clear all", "bdr-filter-pill bdr-filter-pill--reset");
+          const reset = button(t("Clear all"), "bdr-filter-pill bdr-filter-pill--reset");
           reset.dataset.blogReset = "";
           fragment.append(reset);
         }
@@ -204,9 +205,9 @@
           control.dataset.blogPage = String(page);
           return control;
         };
-        const previous = pageButton(state.page - 1, "← Previous", "bdr-page--previous");
+        const previous = pageButton(state.page - 1, t("← Previous"), "bdr-page--previous");
         previous.disabled = state.page === 1;
-        previous.setAttribute("aria-label", "Previous page");
+        previous.setAttribute("aria-label", t("Previous page"));
         pagination.append(previous);
         const pages = totalPages <= 7
           ? Array.from({ length: totalPages }, (_, index) => index + 1)
@@ -222,14 +223,14 @@
             pagination.append(gap);
           }
           const control = pageButton(page, String(page));
-          control.setAttribute("aria-label", `Page ${page}`);
+          control.setAttribute("aria-label", t("Page {page}", { page }));
           if (page === state.page) control.setAttribute("aria-current", "page");
           pagination.append(control);
           last = page;
         });
-        const next = pageButton(state.page + 1, "Next →", "bdr-page--next");
+        const next = pageButton(state.page + 1, t("Next →"), "bdr-page--next");
         next.disabled = state.page === totalPages;
-        next.setAttribute("aria-label", "Next page");
+        next.setAttribute("aria-label", t("Next page"));
         pagination.append(next);
       };
 
@@ -250,7 +251,7 @@
             (record.descriptionText.includes(token) ? 4 : 0), 0);
         matching.sort((a, b) => {
           let difference = 0;
-          if (state.sort === "title") difference = a.title.localeCompare(b.title, "en");
+          if (state.sort === "title") difference = a.title.localeCompare(b.title, language);
           else if (state.sort === "shortest") difference = a.minutes - b.minutes;
           else if (state.sort === "oldest") difference = a.date.localeCompare(b.date);
           else if (tokens.length) difference = relevance(b) - relevance(a);
@@ -277,12 +278,12 @@
         if (format) format.value = state.format;
         if (duration) duration.value = state.duration;
         if (sort) sort.value = state.sort;
-        if (defaultSortOption) defaultSortOption.textContent = tokens.length ? "Best match" : defaultSortLabel;
-        const countText = `${total} ${total === 1 ? "article" : "articles"}`;
+        if (defaultSortOption) defaultSortOption.textContent = tokens.length ? t("Best match") : defaultSortLabel;
+        const countText = t("{count} articles", { count: total });
         if (count && count.textContent !== countText) count.textContent = countText;
         if (range) range.textContent = total
-          ? `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total}`
-          : "Showing 0 of 0";
+          ? t("Showing {start}–{end} of {total}", { start: start + 1, end: Math.min(start + PAGE_SIZE, total), total })
+          : t("Showing 0 of 0");
         if (empty) empty.hidden = total !== 0;
         topicButtons.forEach((control) => {
           const topic = control.dataset.blogTopic;
@@ -418,9 +419,9 @@
       if (status) {
         const archive = document.createElement("a");
         archive.href = new URL("archive/", catalogUrl || document.baseURI).href;
-        archive.textContent = "Browse the archive";
+        archive.textContent = t("Browse the archive");
         status.replaceChildren(document.createTextNode(
-          "Search is temporarily unavailable. All articles are listed below. "), archive);
+          t("search_unavailable")), archive);
         status.hidden = false;
       }
     }

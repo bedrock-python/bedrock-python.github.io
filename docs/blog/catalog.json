@@ -1116,6 +1116,7 @@
       "search": "The Transactional Outbox pattern in Python: omni-box Distributed systems have a classic problem: you want to update your database and publish an event to Kafka in the same operation, but there is no cross-system transaction. omni-box kafka sqlalchemy patterns Libraries Design Kafka & messaging The dual-write problem The Outbox pattern Using omni-box The Inbox side Why a library?"
     }
   ],
+  "language": "en",
   "topics": [
     {
       "id": "postgres",

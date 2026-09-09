@@ -1,9 +1,10 @@
 # English and Russian editions
 
-Research and implementation proposal, 2026-09-08. Verified against the installed
-Zensical 0.0.58 using an isolated two-language prototype. This document describes
-the proposed implementation; translations and production integration are not yet
-implemented.
+Research completed 2026-09-08 against Zensical 0.0.58. The initial implementation
+on 2026-09-09 provides both builds, language switching, localized interfaces,
+main pages and three translated articles. See the README for commands and the
+translation workflow. The remaining article corpus and lab prose are a subsequent
+translation stage; build/translation-coverage.json reports missing pages.
 
 ## Decision
 

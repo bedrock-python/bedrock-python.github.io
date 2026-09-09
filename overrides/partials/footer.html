@@ -3,46 +3,47 @@
   Zensical/Material footer with a multi-column layout inspired by
   claude.com / openai.com.
 -#}
+{% set text = config.extra.i18n.messages if config.extra.i18n else {} %}
+{% macro t(key) %}{{ text[key] | default(key, true) }}{% endmacro %}
 <footer class="md-footer">
   <div class="bdr-footer">
     <div class="bdr-footer__brand">
       <img class="bdr-footer__mark" src="{{ 'assets/logo-dark.svg' | url }}" alt="" aria-hidden="true">
       <h3>Bedrock Python</h3>
       <p>
-        Production-grade Python libraries and developer tools for the
-        infrastructure layer of modern backend services.
+        {{ text['site_description'] | default(config.site_description, true) }}
       </p>
     </div>
 
     <div class="bdr-footer__col">
-      <h4>Libraries</h4>
+      <h4>{{ t('Libraries') }}</h4>
       <ul>
         <li><a href="https://bedrock-python.github.io/servicewright/">servicewright</a></li>
         <li><a href="https://bedrock-python.github.io/clientwright/">clientwright</a></li>
         <li><a href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">sqlalchemy-foundation-kit</a></li>
         <li><a href="https://bedrock-python.github.io/omni-box/">omni-box</a></li>
         <li><a href="https://bedrock-python.github.io/pg-partsmith/">pg-partsmith</a></li>
-        <li><a href="{{ 'libraries/' | url }}">All libraries →</a></li>
+        <li><a href="{{ 'libraries/' | url }}">{{ t('All libraries →') }}</a></li>
       </ul>
     </div>
 
     <div class="bdr-footer__col">
-      <h4>Tools</h4>
+      <h4>{{ t('Tools') }}</h4>
       <ul>
         <li><a href="https://bedrock-python.github.io/mr-review/">mr-review</a></li>
         <li><a href="https://bedrock-python.github.io/mattermind/">mattermind</a></li>
-        <li><a href="{{ 'tools/' | url }}">All tools →</a></li>
+        <li><a href="{{ 'tools/' | url }}">{{ t('All tools →') }}</a></li>
       </ul>
     </div>
 
     <div class="bdr-footer__col">
-      <h4>Resources</h4>
+      <h4>{{ t('Resources') }}</h4>
       <ul>
-        <li><a href="{{ 'blog/' | url }}">Blog</a></li>
-        <li><a href="{{ 'blog/category/' | url }}">Categories</a></li>
-        <li><a href="{{ 'blog/archive/' | url }}">Archive</a></li>
-        <li><a href="https://github.com/bedrock-python">GitHub org</a></li>
-        <li><a href="https://pypi.org/user/bedrock-python/">PyPI org</a></li>
+        <li><a href="{{ 'blog/' | url }}">{{ t('Blog') }}</a></li>
+        <li><a href="{{ 'blog/category/' | url }}">{{ t('Categories') }}</a></li>
+        <li><a href="{{ 'blog/archive/' | url }}">{{ t('Archive') }}</a></li>
+        <li><a href="https://github.com/bedrock-python">{{ t('GitHub org') }}</a></li>
+        <li><a href="https://pypi.org/user/bedrock-python/">{{ t('PyPI org') }}</a></li>
       </ul>
     </div>
   </div>
@@ -50,7 +51,7 @@
   <div class="bdr-footer__bottom">
     <span>{{ config.copyright | default("") }}</span>
     <span>
-      Built with
+      {{ t('Built with') }}
       <a href="https://zensical.org/" rel="noopener" style="color:inherit;text-decoration:underline;">Zensical</a>
     </span>
   </div>

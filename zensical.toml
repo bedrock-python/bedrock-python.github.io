@@ -17,9 +17,11 @@ extra_css = [
     "stylesheets/libraries.css",
     "stylesheets/tools.css",
     "stylesheets/responsive.css",
+    "stylesheets/i18n.css",
 ]
 
 extra_javascript = [
+    "javascripts/i18n.js",
     "javascripts/bedrock.js",
     "javascripts/blog-explorer.js",
     "javascripts/libraries.js",
@@ -44,6 +46,7 @@ nav = [
 ]
 
 [project.theme]
+language = "en"
 custom_dir = "overrides"
 logo = "assets/logo.svg"
 favicon = "assets/favicon-32.png"

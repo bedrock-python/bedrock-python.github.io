@@ -1,0 +1,25 @@
+.bdr-language { position: relative; font-size: .7rem; }
+.bdr-language summary { display: flex; align-items: center; gap: .3rem; min-height: 44px; padding: .35rem .5rem; border-radius: .5rem; cursor: pointer; list-style: none; font-weight: 600; }
+.bdr-language summary::-webkit-details-marker { display: none; }
+.bdr-language summary:hover, .bdr-language[open] summary { background: var(--md-code-bg-color); }
+.bdr-language summary svg { width: 1rem; height: 1rem; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.bdr-language summary:focus-visible, .bdr-language__menu a:focus-visible { outline: 2px solid var(--md-accent-fg-color); outline-offset: 2px; }
+.bdr-language__menu { position: absolute; z-index: 10; right: 0; top: calc(100% + .3rem); width: 12rem; max-width: calc(100vw - 1.2rem); padding: .35rem; border: 1px solid var(--md-default-fg-color--lightest); border-radius: .7rem; background: var(--md-default-bg-color); color: var(--md-default-fg-color); box-shadow: 0 .6rem 1.8rem #0002; }
+.bdr-language__menu a, .bdr-language__unavailable { display: flex; justify-content: space-between; gap: .4rem; min-height: 44px; padding: .55rem .7rem; border-radius: .4rem; align-items: center; }
+.bdr-language__menu a:hover, .bdr-language__menu a[aria-current] { background: var(--md-code-bg-color); color: var(--md-accent-fg-color); }
+.bdr-language__unavailable { flex-direction: column; align-items: flex-start; color: var(--md-default-fg-color--light); }
+.bdr-language__unavailable small { font-size: .6rem; }
+.bdr-translation-note { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding: .9rem 1rem; margin: 1.2rem 0; border: 1px solid var(--md-default-fg-color--lightest); border-radius: .6rem; font-size: .75rem; }
+.bdr-translation-note p { flex: 1 1 18rem; margin: 0; }
+.bdr-translation-note a { font-weight: 600; }
+.bdr-english-label { font-size: .65rem; color: var(--md-default-fg-color--light); }
+.bdr-collection .bdr-english-label { grid-column: 2 / -1; font-size: 11px; }
+.bdr-lib-extras { flex-wrap: wrap; flex-shrink: 1; min-width: 0; max-width: 100%; }
+@media (max-width: 600px) {
+  .bdr-language-option { display: block !important; }
+  .bdr-language summary { padding: .3rem; gap: .2rem; }
+  .bdr-language summary svg, .bdr-language__chevron { display: none; }
+  .bdr-language__menu { position: fixed; right: .6rem; top: 3rem; }
+  .bdr-translation-note { font-size: .8rem; }
+  .bdr-translation-note a { display: flex; align-items: center; min-height: 44px; }
+}

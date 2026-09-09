@@ -1,4 +1,4 @@
-.PHONY: install fmt docs-catalog docs-serve docs-build clean
+.PHONY: install fmt docs-catalog docs-serve docs-serve-en docs-build docs-check clean
 
 install:
 	uv sync --group dev
@@ -10,11 +10,19 @@ fmt:
 docs-catalog:
 	uv run --no-dev --group docs python scripts/build_blog_catalog.py
 
-docs-serve: docs-catalog
+docs-serve:
+	uv run --no-dev --group docs python scripts/build_site.py --serve
+
+docs-serve-en:
+	uv run --no-dev --group docs python scripts/build_blog_catalog.py --language en
 	uv run --no-dev --group docs zensical serve
 
-docs-build: docs-catalog
-	uv run --no-dev --group docs zensical build --clean
+docs-build:
+	uv run --no-dev --group docs python scripts/build_site.py
+
+docs-check:
+	uv run --no-dev --group docs python -m unittest discover -s tests
+	uv run --no-dev --group docs python scripts/build_blog_catalog.py --check
 
 clean:
 	python -c "import shutil, os; [shutil.rmtree(p, ignore_errors=True) for p in ['site', '.cache'] if os.path.exists(p)]"

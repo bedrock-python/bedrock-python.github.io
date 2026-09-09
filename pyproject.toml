@@ -13,6 +13,7 @@ Site = "https://bedrock-python.github.io"
 
 [dependency-groups]
 docs = [
+    "babel>=2.17,<3",
     "zensical>=0.0.43",
 ]
 dev = [
