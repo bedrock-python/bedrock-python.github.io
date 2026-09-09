@@ -6,7 +6,7 @@ site_url = "https://bedrock-python.github.io"
 repo_name = "bedrock-python/bedrock-python.github.io"
 repo_url = "https://github.com/bedrock-python/bedrock-python.github.io"
 edit_uri = "edit/master/docs/"
-copyright = "Copyright &copy; 2026 Alex Shalaev"
+copyright = 'Copyright &copy; 2026 <a href="https://github.com/AlexeyShalaev" style="color:inherit;text-decoration:underline;">Alex Shalaev</a>'
 docs_dir = "docs"
 site_dir = "site"
 

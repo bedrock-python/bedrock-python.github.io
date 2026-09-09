@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import unittest
+import markdown
 from unittest.mock import patch
 from pathlib import Path
 from string import Formatter
@@ -20,6 +21,26 @@ from site_i18n import messages, page_url, registry, translate
 
 
 class Translations(unittest.TestCase):
+    def test_russian_edition_covers_all_source_pages(self):
+        original = {path.relative_to(ROOT / "docs") for path in (ROOT / "docs").rglob("*.md")}
+        translated = {path.relative_to(ROOT / "translations/ru") for path in (ROOT / "translations/ru").rglob("*.md")}
+        self.assertEqual(original, translated)
+
+    def test_translated_sections_keep_original_anchors_and_code(self):
+        for translated in (ROOT / "translations/ru/blog").rglob("*.md"):
+            if "posts" not in translated.parts and "lab" not in translated.parts:
+                continue
+            original = ROOT / "docs" / translated.relative_to(ROOT / "translations/ru")
+            sources = [path.read_text(encoding="utf-8-sig") for path in (original, translated)]
+            headings = []
+            for source in sources:
+                body = re.sub(r"\A---\n.*?\n---\n", "", source, flags=re.S)
+                rendered = markdown.markdown(body, extensions=["toc", "attr_list", "tables", "pymdownx.superfences"])
+                headings.append(re.findall(r'<h[1-6] id="([^"]+)"', rendered))
+            self.assertEqual(headings[0], headings[1], translated.name)
+            pattern = r"(?ms)^```(python|bash|sh|shell|sql|yaml|toml|json|dockerfile)\n(.*?)^```"
+            self.assertEqual(re.findall(pattern, sources[0]), re.findall(pattern, sources[1]), translated.name)
+
     def test_language_pairs_only_include_published_translations(self):
         languages = registry()["languages"]
         sources = {"en": {"index.md", "blog/posts/example.md", "blog/posts/pending.md"},
@@ -80,6 +101,8 @@ class Translations(unittest.TestCase):
             self.assertEqual(re.findall(pattern, original.read_text(encoding="utf-8"), re.S),
                              re.findall(pattern, translated.read_text(encoding="utf-8"), re.S), translated.name)
             self.assertRegex(russian["title"], r"[А-Яа-я]")
+            self.assertNotIn("{#", russian["title"], translated.name)
+            self.assertNotIn("{#", russian["search"], translated.name)
 
     def test_install_commands_are_not_translated_or_truncated(self):
         for relative in ("libraries/index.md", "tools/index.md"):
@@ -134,10 +157,13 @@ class Translations(unittest.TestCase):
                     '<url><loc>https://example.org/</loc></url>'
                     + ('<url><loc>https://example.org/ru/</loc></url>' if site.name == 'ru' else '')
                     + '</urlset>', encoding="utf-8")
-            combine_sitemaps(root, sites)
+            articles = ["https://example.org/blog/posts/article/", "https://example.org/ru/blog/posts/article/"]
+            combine_sitemaps(root, sites, ["https://example.org/", *articles])
             xml = (root / "sitemap.xml").read_text(encoding="utf-8")
             self.assertEqual(xml.count('<loc>https://example.org/</loc>'), 1)
             self.assertEqual(xml.count('<loc>https://example.org/ru/</loc>'), 1)
+            for url in articles:
+                self.assertEqual(xml.count(f'<loc>{url}</loc>'), 1)
 
     def test_publishing_removes_deleted_translations(self):
         (ROOT / "build").mkdir(exist_ok=True)

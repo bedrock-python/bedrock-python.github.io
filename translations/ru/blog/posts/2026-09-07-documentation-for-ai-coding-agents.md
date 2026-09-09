@@ -35,12 +35,12 @@ tags:
 У страниц общий каркас, и в нём основа подхода. Вот начало страницы deadline-budget — первое, что читает модель:
 
 ```text
-| Package      | deadline-budget on PyPI, import root deadline_budget                         |
-| Requires     | Python 3.10+, no runtime dependencies                                        |
-| Install      | pip install deadline-budget · extras: settings (Pydantic models), dishka     |
-| Entry points | DeadlineBudget, BudgetContext — both from deadline_budget                    |
-| Async        | None. Every method is synchronous and returns immediately; it reads a clock, |
-|              | it never sleeps, awaits or cancels                                           |
+| Пакет       | deadline-budget на PyPI, корень импортов — deadline_budget                    |
+| Требования  | Python 3.10+, без зависимостей времени выполнения                             |
+| Установка   | pip install deadline-budget · extras: settings (модели Pydantic), dishka     |
+| Точки входа | DeadlineBudget, BudgetContext — оба из deadline_budget                       |
+| Асинхронность | Нет. Все методы синхронны и сразу возвращают результат: читают часы,        |
+|               | не спят, ничего не ожидают и не отменяют                                    |
 ```
 
 Имя пакета и корень импортов: они различаются, а модели их путают. Места импорта точек входа: именно здесь модель ошибается первой. Сведения о том, есть ли асинхронный API, ещё до первого примера: увидев один `await`, модель начинает ожидать всё.

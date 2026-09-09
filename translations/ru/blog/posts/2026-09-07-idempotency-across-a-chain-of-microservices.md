@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-idempotency-across-a-chain): три сервиса внутри процесса и Redis в контейнере. Версии: idempotency-kit 0.3.0, httpx 0.28.1, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-idempotency-across-a-chain/README.md): три сервиса внутри процесса и Redis в контейнере. Версии: idempotency-kit 0.3.0, httpx 0.28.1, Python 3.13.
 
 ## Устройство проблемы {#the-shape-of-the-problem}
 

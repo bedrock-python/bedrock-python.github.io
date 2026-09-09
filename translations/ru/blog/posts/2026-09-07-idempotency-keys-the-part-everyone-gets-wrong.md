@@ -21,7 +21,7 @@ tags:
 
 <!-- more -->
 
-Числа получены [скриптом статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-idempotency-keys) с Redis 7 в контейнере. Версии: idempotency-kit 0.3.0, redis 8.1.0, Python 3.13.
+Числа получены [скриптом статьи](../lab/2026-09-07-idempotency-keys/README.md) с Redis 7 в контейнере. Версии: idempotency-kit 0.3.0, redis 8.1.0, Python 3.13.
 
 ## Что обещает ключ {#what-the-key-promises}
 

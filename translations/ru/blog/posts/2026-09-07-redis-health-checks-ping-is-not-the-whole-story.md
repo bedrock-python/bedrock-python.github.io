@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-redis-health-checks): три контейнера Redis 7 в одной сети. Версии: redis-client-kit 0.2.0, redis-py 8.1.0, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-redis-health-checks/README.md): три контейнера Redis 7 в одной сети. Версии: redis-client-kit 0.2.0, redis-py 8.1.0, Python 3.13.
 
 ## На что отвечает PING {#what-ping-answers}
 

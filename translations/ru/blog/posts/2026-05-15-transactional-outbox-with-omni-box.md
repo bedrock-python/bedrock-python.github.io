@@ -12,7 +12,7 @@ tags:
   - patterns
 ---
 
-# Паттерн Transactional Outbox на Python: omni-box
+# Паттерн Transactional Outbox на Python: omni-box {#the-transactional-outbox-pattern-in-python-omni-box}
 
 <div class="bdr-post__hero" data-bdr-post="2026-05-15-transactional-outbox-with-omni-box" role="img" aria-label="Одна транзакция сохраняет строку и событие, а отдельный процесс передаёт событие дальше" markdown="0"></div>
 

@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-partition-existing-table) с PostgreSQL 17 в контейнере. Writer вставляет строку каждые 5 мс, reader считает старейший месяц каждые 20 мс. Версии: pg-partsmith 1.5.1, asyncpg 0.31.0, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-partition-existing-table/README.md) с PostgreSQL 17 в контейнере. Writer вставляет строку каждые 5 мс, reader считает старейший месяц каждые 20 мс. Версии: pg-partsmith 1.5.1, asyncpg 0.31.0, Python 3.13.
 
 Таблица `events`: два миллиона строк за год, 263 МБ с индексами, `PRIMARY KEY (id)`. Есть таблица `event_notes` с внешним ключом на неё.
 

@@ -20,7 +20,7 @@ pg_partman — стандартный и хороший ответ на обсл
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-migrating-from-pg-partman): PostgreSQL 17 с pg_partman 5.5.0 в контейнере. Версии: pg-partsmith 1.5.1, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-migrating-from-pg-partman/README.md): PostgreSQL 17 с pg_partman 5.5.0 в контейнере. Версии: pg-partsmith 1.5.1, Python 3.13.
 
 ## Что построил pg_partman {#what-pg_partman-built}
 

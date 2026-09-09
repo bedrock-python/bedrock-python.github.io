@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-reliability-is-not-retry-3): сорок конкурентных клиентов и origin внутри процесса. Версии: clientwright 0.2.2, httpx 0.28.1, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-reliability-is-not-retry-3/README.md): сорок конкурентных клиентов и origin внутри процесса. Версии: clientwright 0.2.2, httpx 0.28.1, Python 3.13.
 
 ## Почему повторы кажутся бесплатными {#why-retries-look-free}
 

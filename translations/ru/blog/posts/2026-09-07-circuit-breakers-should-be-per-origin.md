@@ -20,7 +20,7 @@ Circuit breaker проще всего объяснить и проще всег�
 
 <!-- more -->
 
-Числа получены [экспериментальным скриптом статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-circuit-breakers-per-origin) с тремя origin внутри процесса. Версии: clientwright 0.2.2, httpx 0.28.1, Python 3.13.
+Числа получены [экспериментальным скриптом статьи](../lab/2026-09-07-circuit-breakers-per-origin/README.md) с тремя origin внутри процесса. Версии: clientwright 0.2.2, httpx 0.28.1, Python 3.13.
 
 ## Измерение: один счётчик, три внешних сервиса {#measured-one-counter-three-upstreams}
 

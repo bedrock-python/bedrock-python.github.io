@@ -93,7 +93,7 @@ class PlainText(HTMLParser):
 
 def plain_text(source: str) -> str:
     parser = PlainText()
-    parser.feed(markdown.markdown(source, extensions=["fenced_code", "tables"]))
+    parser.feed(markdown.markdown(source, extensions=["fenced_code", "tables", "attr_list"]))
     return " ".join("".join(parser.parts).split())
 
 
@@ -149,7 +149,7 @@ def read_article(path: Path, language: str = "en") -> tuple[dict, dict[str, str]
     heading = re.search(r"^#\s+(.+)$", body, flags=re.MULTILINE)
     if not heading:
         raise ValueError(f"{path}: missing article title")
-    title = plain_text(heading[1])
+    title = plain_text(heading[0])
     date = metadata.get("date")
     if isinstance(date, dt.datetime):
         date = date.date()
@@ -158,7 +158,7 @@ def read_article(path: Path, language: str = "en") -> tuple[dict, dict[str, str]
     labels = {slug(str(label)): text.get(str(label), str(label)) for label in metadata.get("categories", [])}
     tags = [str(tag) for tag in metadata.get("tags", [])]
     description = summarize(body)
-    headings = plain_text(" ".join(re.findall(r"^#{2,6}\s+(.+)$", body, flags=re.MULTILINE)))
+    headings = plain_text("\n\n".join(re.findall(r"^#{2,6}\s+.+$", body, flags=re.MULTILINE)))
     topics = article_topics(title, tags)
     # Topic IDs follow the source article even when translated title words differ.
     original = BLOG / "posts" / path.name

@@ -12,7 +12,7 @@ tags:
   - documentation
 ---
 
-# Как я начинаю разработку Python-библиотеки для production в 2026 году {#how-i-start-a-production-grade-python-library-in-2026}
+# Как я начинаю разработку Python-библиотеки для продакшена в 2026 году {#how-i-start-a-production-grade-python-library-in-2026}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-07-how-i-start-a-production-grade-python-library" role="img" aria-label="Один шаблон создаёт полную библиотеку, и через несколько секунд проверки уже зелёные" markdown="0"></div>
 

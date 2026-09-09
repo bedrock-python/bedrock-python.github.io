@@ -21,7 +21,7 @@ tags:
 
 <!-- more -->
 
-Все числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-graceful-shutdown): два сервера с одинаковыми маршрутами и скрипт, имитирующий Kubernetes. Версии: uvicorn 0.52.4, FastAPI 0.141.1, servicewright 0.10.0, httpx 0.28.1, Python 3.13.
+Все числа получены в [эксперименте статьи](../lab/2026-09-07-graceful-shutdown/README.md): два сервера с одинаковыми маршрутами и скрипт, имитирующий Kubernetes. Версии: uvicorn 0.52.4, FastAPI 0.141.1, servicewright 0.10.0, httpx 0.28.1, Python 3.13.
 
 ## Что на самом деле делает Kubernetes {#what-kubernetes-actually-does}
 
@@ -67,7 +67,7 @@ Uvicorn здесь не ошибается. Он не знает, что зап�
 Общее ограничение времени:
 
 ```text
-terminationGracePeriodSeconds  >  delay + drain grace + cleanup budget + slack
+terminationGracePeriodSeconds  >  задержка + время завершения запросов + бюджет очистки + запас
 ```
 
 Если ошибиться, kubelet отправит `SIGKILL` посреди третьего шага, и запрос, ради которого этот шаг существует, всё равно погибнет.

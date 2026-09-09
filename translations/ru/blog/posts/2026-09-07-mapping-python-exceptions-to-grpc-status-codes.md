@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Результаты получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-python-exceptions-to-grpc-status-codes). Версии: grpc-server-kit 0.1.1, grpcio 1.83.1, Python 3.13.
+Результаты получены в [эксперименте статьи](../lab/2026-09-07-python-exceptions-to-grpc-status-codes/README.md). Версии: grpc-server-kit 0.1.1, grpcio 1.83.1, Python 3.13.
 
 ## Если отображения вообще нет {#what-happens-with-no-map-at-all}
 

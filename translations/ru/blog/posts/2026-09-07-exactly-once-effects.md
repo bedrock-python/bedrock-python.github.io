@@ -22,7 +22,7 @@ Kafka не может гарантировать ровно одно обнов�
 
 <!-- more -->
 
-Результаты получены [экспериментальным скриптом статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-exactly-once-effects): он запускает PostgreSQL 17 и Kafka в контейнерах и считает строки и сообщения после каждого сценария. Версии: omni-box 0.2.0, aiokafka 0.14.0, SQLAlchemy 2.0.52, Python 3.13. Отправляющей стороне outbox посвящена [отдельная статья](2026-05-15-transactional-outbox-with-omni-box.md); здесь рассматривается весь путь.
+Результаты получены [экспериментальным скриптом статьи](../lab/2026-09-07-exactly-once-effects/README.md): он запускает PostgreSQL 17 и Kafka в контейнерах и считает строки и сообщения после каждого сценария. Версии: omni-box 0.2.0, aiokafka 0.14.0, SQLAlchemy 2.0.52, Python 3.13. Отправляющей стороне outbox посвящена [отдельная статья](2026-05-15-transactional-outbox-with-omni-box.md); здесь рассматривается весь путь.
 
 ## Сообщения и эффекты {#messages-versus-effects}
 
@@ -81,17 +81,17 @@ async def create_invoice(event: InboxEvent, repo: InboxEventRepository) -> None:
 ## Весь путь {#the-whole-path}
 
 ```text
-HTTP request        ──  idempotency key: the same request is handled once
+HTTP-запрос         ──  ключ идемпотентности: тот же запрос обрабатывается один раз
       │
-PostgreSQL          ──  one transaction: the business row and the outbox row
+PostgreSQL          ──  одна транзакция: бизнес-запись и строка outbox
       │
-relay               ──  at least once: publish, then mark completed
+ретранслятор        ──  минимум один раз: публикация, затем отметка completed
       │
-Kafka               ──  delivers each message at least once
+Kafka               ──  доставляет каждое сообщение минимум один раз
       │
-inbox               ──  (message_id, consumer_group): the same message is handled once
+inbox               ──  (message_id, consumer_group): то же сообщение обрабатывается один раз
       │
-consumer            ──  one transaction: the inbox row and the effect
+консьюмер           ──  одна транзакция: строка inbox и результат обработки
 ```
 
 Каждая стрелка на схеме означает at-least-once. Каждый блок — место, где однократность обеспечивается уникальным ключом внутри одной транзакции. Гарантия всей цепочки: каждый эффект возникает ровно один раз. Она построена из доставки at-least-once и трёх ключей, поэтому выдерживает сбои на каждой стрелке, а отдельным компонентам не приходится обещать больше, чем они могут.

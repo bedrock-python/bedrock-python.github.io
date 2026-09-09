@@ -125,26 +125,26 @@ hide:
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
-<a class="bdr-card" href="blog/posts/2026-09-06-timeouts-are-not-deadlines/">
+<a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Таймаут — не дедлайн: как теряется бюджет времени в микросервисах</h3>
-  <p class="bdr-card__lede">Во всех сервисах, которые я запускал, на каждом исходящем вызове стоял таймаут. И каждый из этих сервисов всё равно умудрялся отвечать дольше любого числа в конфигурации.</p>
-  <div class="bdr-card__meta">2026-09-06</div>
+  <h3 class="bdr-card__title">Circuit breaker должен быть отдельным для каждого origin, а не клиента</h3>
+  <p class="bdr-card__lede">Circuit breaker проще всего объяснить и проще всего привязать не к тому ключу. Объяснение помещается в предложение: после достаточного числа сбоев ненадолго прекратить вызовы…</p>
+  <div class="bdr-card__meta">2026-09-07</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-05-30-welcome/">
+<a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Об экосистеме</div>
-  <h3 class="bdr-card__title">Добро пожаловать в блог Bedrock Python</h3>
-  <p class="bdr-card__lede">Здесь мы рассказываем об экосистеме Bedrock Python: что это такое, зачем она существует и какие идеи за ней стоят.</p>
-  <div class="bdr-card__meta">2026-05-30</div>
+  <div class="bdr-card__eyebrow">Руководства</div>
+  <h3 class="bdr-card__title">PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации</h3>
+  <p class="bdr-card__lede">Конфигурация SQLAlchemy прекрасно работает напрямую с PostgreSQL. Затем перед БД ставят PgBouncer в режиме транзакций, ради которого обычно и нужен пулер, и прежние предположения…</p>
+  <div class="bdr-card__meta">2026-09-07</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-05-15-transactional-outbox-with-omni-box/">
+<a class="bdr-card" href="blog/posts/2026-09-07-retry-after-backoff-and-jitter/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Библиотеки</div>
-  <h3 class="bdr-card__title">Паттерн Transactional Outbox на Python: omni-box</h3>
-  <p class="bdr-card__lede">У распределённых систем есть классическая проблема: нужно обновить базу данных и опубликовать событие в Kafka в рамках одной операции, но общей транзакции между ними нет.</p>
-  <div class="bdr-card__meta">2026-05-15</div>
+  <div class="bdr-card__eyebrow">Руководства</div>
+  <h3 class="bdr-card__title">Retry-After, backoff и jitter: что делает HTTP-клиент в продакшене</h3>
+  <p class="bdr-card__lede">Обычный цикл повторов — четыре строки: попытаться, поймать, подождать, повторить. Рабочая политика HTTP-клиента требует примерно восьми решений, которые этот цикл молча принимает…</p>
+  <div class="bdr-card__meta">2026-09-07</div>
 </a>
 <!-- catalog:home:end -->
 </div>

@@ -194,7 +194,7 @@ def validate_links(public: Path, base_path: str = "/") -> None:
         raise ValueError("Broken internal links:\n" + "\n".join(errors[:40]))
 
 
-def combine_sitemaps(public: Path, language_outputs: list[Path]) -> None:
+def combine_sitemaps(public: Path, language_outputs: list[Path], page_urls: list[str] | None = None) -> None:
     namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
     ET.register_namespace("", namespace)
     result = ET.Element(f"{{{namespace}}}urlset")
@@ -205,6 +205,13 @@ def combine_sitemaps(public: Path, language_outputs: list[Path]) -> None:
             if url not in seen:
                 result.append(entry)
                 seen.add(url)
+    # Zensical's sitemap omits pages outside navigation, including our articles
+    # and labs. The published translation map also contains those pages.
+    for url in sorted(page_urls or []):
+        if url not in seen:
+            entry = ET.SubElement(result, f"{{{namespace}}}url")
+            ET.SubElement(entry, f"{{{namespace}}}loc").text = url
+            seen.add(url)
     content = ET.tostring(result, encoding="utf-8", xml_declaration=True)
     (public / "sitemap.xml").write_bytes(content)
     (public / "sitemap.xml.gz").write_bytes(gzip.compress(content, mtime=0))
@@ -266,7 +273,7 @@ def build(output: Path) -> dict:
             if prefix and (public / prefix).exists():
                 raise ValueError(f"Language prefix collides with default content: {prefix}")
             shutil.copytree(built, public / prefix, dirs_exist_ok=True)
-        combine_sitemaps(public, outputs)
+        combine_sitemaps(public, outputs, [page["canonical"] for editions in pairs.values() for page in editions.values()])
         base_path = urlsplit(config["site_url"]).path.rstrip("/") + "/"
         validate_links(public, base_path)
         # All paths are on the repository filesystem. Renaming avoids serving a

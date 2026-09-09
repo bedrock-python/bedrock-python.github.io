@@ -20,7 +20,7 @@ tags:
 
 <!-- more -->
 
-Числа получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-partition-retention) с PostgreSQL 17 в контейнере. Версии: pg-partsmith 1.5.0, Python 3.13.
+Числа получены в [эксперименте статьи](../lab/2026-09-07-partition-retention/README.md) с PostgreSQL 17 в контейнере. Версии: pg-partsmith 1.5.0, Python 3.13.
 
 ## Задача, которую пишут все {#the-job-everybody-writes}
 

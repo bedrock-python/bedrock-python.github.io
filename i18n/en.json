@@ -1,4 +1,10 @@
 {
+  "Search": "Search",
+  "Filters": "Filters",
+  "Tags": "Tags",
+  "Search filters": "Search filters",
+  "Toggle line selection": "Toggle line selection",
+  "search_result_label": {"one": "result", "other": "results"},
   "Home": "Home",
   "Libraries": "Libraries",
   "Tools": "Tools",

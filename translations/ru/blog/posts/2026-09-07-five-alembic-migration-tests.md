@@ -23,7 +23,7 @@ tags:
 
 <!-- more -->
 
-Всё ниже запускалось на одном ноутбуке с PostgreSQL 17 в контейнере; код находится в [каталоге эксперимента](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-five-alembic-migration-tests). Версии: Alembic 1.19.2, SQLAlchemy 2.0.52, asyncpg 0.31.0, testcontainers 4.15.0, pytest 9.1.1, pytest-asyncio 1.4.0, alembic-gauntlet 0.2.2, Python 3.13.
+Всё ниже запускалось на одном ноутбуке с PostgreSQL 17 в контейнере; код находится в [каталоге эксперимента](../lab/2026-09-07-five-alembic-migration-tests/README.md). Версии: Alembic 1.19.2, SQLAlchemy 2.0.52, asyncpg 0.31.0, testcontainers 4.15.0, pytest 9.1.1, pytest-asyncio 1.4.0, alembic-gauntlet 0.2.2, Python 3.13.
 
 ## Тест, который уже есть в большинстве CI {#the-test-most-pipelines-have}
 

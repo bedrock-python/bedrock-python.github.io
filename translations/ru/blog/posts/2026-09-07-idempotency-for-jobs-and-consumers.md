@@ -13,7 +13,7 @@ tags:
   - workers
 ---
 
-# Идемпотентность фоновых задач и Kafka consumer {#idempotency-for-background-jobs-and-kafka-consumers}
+# Идемпотентность фоновых задач и консьюмеров Kafka {#idempotency-for-background-jobs-and-kafka-consumers}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-07-idempotency-for-jobs-and-consumers" role="img" aria-label="Очереди доставляют как минимум один раз; дедупликация обеспечивает однократный эффект" markdown="0"></div>
 
@@ -21,7 +21,7 @@ tags:
 
 <!-- more -->
 
-Числа получены [скриптом статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-idempotency-for-jobs-and-consumers) с Redis 7 в контейнере и внутрипроцессной очередью at-least-once. Версии: idempotency-kit 0.3.0, redis-py 8.1.0, Python 3.13.
+Числа получены [скриптом статьи](../lab/2026-09-07-idempotency-for-jobs-and-consumers/README.md) с Redis 7 в контейнере и внутрипроцессной очередью at-least-once. Версии: idempotency-kit 0.3.0, redis-py 8.1.0, Python 3.13.
 
 ## Сбой до подтверждения {#the-crash-before-the-ack}
 

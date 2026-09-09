@@ -1,10 +1,12 @@
 # English and Russian editions
 
-Research completed 2026-09-08 against Zensical 0.0.58. The initial implementation
-on 2026-09-09 provides both builds, language switching, localized interfaces,
-main pages and three translated articles. See the README for commands and the
-translation workflow. The remaining article corpus and lab prose are a subsequent
-translation stage; build/translation-coverage.json reports missing pages.
+Research completed 2026-09-08 against Zensical 0.0.58. Implementation completed
+on 2026-09-09: both builds, language switching, localized interfaces, and full
+Russian coverage of all 99 pages, including 49 articles and 39 lab READMEs.
+The search and code-control labels left in English by Zensical are translated
+by a small browser adapter. See the README for commands and the translation
+workflow; build/translation-coverage.json reports missing pages. Tests enforce
+Russian page coverage, stable section anchors, and unchanged executable examples.
 
 ## Decision
 

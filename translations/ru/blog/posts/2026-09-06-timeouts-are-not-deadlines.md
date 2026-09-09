@@ -15,7 +15,7 @@ tags:
   - microservices
 ---
 
-# Таймаут — не дедлайн: как теряется бюджет времени в микросервисах
+# Таймаут — не дедлайн: как теряется бюджет времени в микросервисах {#timeouts-are-not-deadlines-how-latency-budgets-break-across-microservices}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-06-timeouts-are-not-deadlines" role="img" aria-label="Общий бюджет уменьшается вдоль цепочки вызовов, а одинаковые таймауты на каждом шаге — нет" markdown="0"></div>
 
@@ -23,7 +23,7 @@ tags:
 
 <!-- more -->
 
-Все числа ниже измерены на одном ноутбуке с серверами на loopback-интерфейсе. Скрипты находятся в [лаборатории статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-06-timeouts-are-not-deadlines). Версии пакетов: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, grpc-client-kit 0.1.0, Python 3.13.
+Все числа ниже измерены на одном ноутбуке с серверами на loopback-интерфейсе. Скрипты находятся в [лаборатории статьи](../lab/2026-09-06-timeouts-are-not-deadlines/README.md). Версии пакетов: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, grpc-client-kit 0.1.0, Python 3.13.
 
 ## Таймаут ограничивает операцию { #a-timeout-limits-an-operation }
 

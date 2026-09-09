@@ -13,7 +13,7 @@ tags:
   - workers
 ---
 
-# Корректная остановка Kafka consumer в Kubernetes {#graceful-kafka-consumer-shutdown-in-kubernetes}
+# Корректная остановка консьюмера Kafka в Kubernetes {#graceful-kafka-consumer-shutdown-in-kubernetes}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-07-graceful-kafka-consumer-shutdown" role="img" aria-label="Завершить пакет, зафиксировать смещения, выйти из группы — и новая реплика сразу начнёт работу" markdown="0"></div>
 
@@ -21,7 +21,7 @@ Kafka consumer в Kubernetes развёртывается заново неск�
 
 <!-- more -->
 
-Результаты получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-kafka-consumer-shutdown): Kafka в контейнере и управляющий скрипт, имитирующий обновление. Версии: aiokafka-foundation-kit 0.1.2, aiokafka 0.14.0, servicewright 0.10.0, Python 3.13.
+Результаты получены в [эксперименте статьи](../lab/2026-09-07-kafka-consumer-shutdown/README.md): Kafka в контейнере и управляющий скрипт, имитирующий обновление. Версии: aiokafka-foundation-kit 0.1.2, aiokafka 0.14.0, servicewright 0.10.0, Python 3.13.
 
 ## Что делает группа, когда участник исчезает {#what-the-group-does-when-a-member-disappears}
 

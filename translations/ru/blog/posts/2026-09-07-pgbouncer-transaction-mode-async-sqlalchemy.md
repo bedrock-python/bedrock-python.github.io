@@ -13,7 +13,7 @@ tags:
   - connection-pooling
 ---
 
-# PgBouncer в режиме транзакций и async SQLAlchemy: рабочая конфигурация, которой не хватает в документации {#pgbouncer-transaction-mode-and-async-sqlalchemy-the-production-setup-nobody-documents-enough}
+# PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации {#pgbouncer-transaction-mode-and-async-sqlalchemy-the-production-setup-nobody-documents-enough}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy" role="img" aria-label="При каждой транзакции соединение назначается заново, а состояние сессии больше не принадлежит клиенту" markdown="0"></div>
 
@@ -21,7 +21,7 @@ tags:
 
 <!-- more -->
 
-Все измерения выполнены с PostgreSQL 17 и PgBouncer 1.25.2 в контейнерах через [скрипты статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-pgbouncer-async-sqlalchemy). Версии: SQLAlchemy 2.0.52, asyncpg 0.31.0, sqlalchemy-foundation-kit 0.3.0, Python 3.13.
+Все измерения выполнены с PostgreSQL 17 и PgBouncer 1.25.2 в контейнерах через [скрипты статьи](../lab/2026-09-07-pgbouncer-async-sqlalchemy/README.md). Версии: SQLAlchemy 2.0.52, asyncpg 0.31.0, sqlalchemy-foundation-kit 0.3.0, Python 3.13.
 
 ## Что забирает режим транзакций {#what-transaction-mode-takes-away}
 

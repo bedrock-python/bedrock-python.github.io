@@ -13,7 +13,7 @@ tags:
   - kubernetes
 ---
 
-# Один жизненный цикл для HTTP, gRPC, worker и cron {#one-lifecycle-for-http-grpc-workers-and-cron-jobs}
+# Один жизненный цикл для HTTP, gRPC, воркеров и cron {#one-lifecycle-for-http-grpc-workers-and-cron-jobs}
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron" role="img" aria-label="Общий жизненный цикл и четыре способа поступления работы" markdown="0"></div>
 
@@ -21,7 +21,7 @@ HTTP API, gRPC-сервер, Kafka consumer и ночная задача — о�
 
 <!-- more -->
 
-Временные шкалы получены в [эксперименте статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-one-lifecycle): одно определение сервиса, три способа запуска, печать каждого вызова жизненного цикла. Версии: servicewright 0.10.0, FastAPI 0.141.1, uvicorn 0.52.4, APScheduler 4.0.0a6, Python 3.13.
+Временные шкалы получены в [эксперименте статьи](../lab/2026-09-07-one-lifecycle/README.md): одно определение сервиса, три способа запуска, печать каждого вызова жизненного цикла. Версии: servicewright 0.10.0, FastAPI 0.141.1, uvicorn 0.52.4, APScheduler 4.0.0a6, Python 3.13.
 
 ## Host и точки входа {#host-and-entrypoints}
 

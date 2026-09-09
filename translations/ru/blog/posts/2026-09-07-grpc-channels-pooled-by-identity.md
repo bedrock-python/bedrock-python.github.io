@@ -20,7 +20,7 @@ gRPC-канал дорого открывать и дёшево держать �
 
 <!-- more -->
 
-Результаты получены [скриптом статьи](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-grpc-channel-identity) с сервером внутри процесса, считающим входящие попытки. Версии: grpc-client-kit 0.1.0, grpcio 1.83.1, Python 3.13.
+Результаты получены [скриптом статьи](../lab/2026-09-07-grpc-channel-identity/README.md) с сервером внутри процесса, считающим входящие попытки. Версии: grpc-client-kit 0.1.0, grpcio 1.83.1, Python 3.13.
 
 ## Что такое канал {#what-a-channel-is}
 

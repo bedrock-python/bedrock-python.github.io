@@ -92,10 +92,10 @@ and templates from `overrides/`; generated copies are not committed.
 ## Translations
 
 English is the source language and keeps the existing URLs. Russian uses `/ru/`.
-The initial Russian edition includes all main pages and three complete articles:
-the welcome post, Transactional Outbox, and timeouts versus deadlines. Remaining
-articles and lab documentation are available in English; untranslated pages are
-not duplicated into the Russian search index.
+The Russian edition covers all 99 source pages: 49 articles, 39 lab READMEs,
+and the main pages, archive, and categories. Article links open the corresponding
+Russian lab documentation; runnable examples and their output retain the original
+code and identifiers. Both editions have their own complete search catalog.
 
 To translate a page, create its counterpart under `translations/ru/` using the
 same relative path as in `docs/`. For example:
@@ -109,30 +109,38 @@ Translate the title, prose, descriptions, and accessibility labels. Keep dates,
 authors, category names in front matter, tags, package names, commands, and code
 examples consistent with the original. Category/topic IDs stay stable; their
 display labels come from `i18n/ru.json`. Preserve important heading anchors with
-explicit IDs, such as `## Решение { #the-decision }`.
+explicit IDs, such as `## Решение { #the-decision }`. Translate lab READMEs too;
+link articles to their local `../lab/<slug>/README.md` counterpart and provide
+a link from the lab to its source code on GitHub.
 
 Run `make docs-catalog`, then `make docs-check` and `make docs-build`. Commit the
 translation and regenerated files. `build/translation-coverage.json` lists the
-remaining translations after a build. Revisit the corresponding translations
+remaining translations after a build. Tests require Russian page coverage to
+match the English edition and verify section anchors and executable examples.
+Revisit the corresponding translations
 when editing an English source; automatic stale-translation detection is not
 implemented.
 
 Language switching goes to the corresponding page and reloads the edition's
 search/messages. The selector marks unavailable translations; translated pages
 that link to an untranslated article show an explicit English link. The Russian
-catalog includes only translated articles and links to the complete English
-catalog. Per-page canonical and alternate links describe only published pages.
+catalog includes only translated articles. An edition with partial coverage links
+to the complete English catalog. Per-page canonical and alternate links describe
+only published pages.
 
 Custom interface messages live in `i18n/en.json` and `i18n/ru.json`. Keep their keys
 and format variables in sync. Babel and `Intl.PluralRules` handle language-specific
-count forms. Zensical's own new global search window still has English interface
-labels; this does not prevent Cyrillic searches.
+count forms. `docs/javascripts/i18n.js` also localizes the search placeholder,
+filters, result-count labels, and code line-selection controls that Zensical
+0.0.58 leaves in English. Check this compatibility adapter when upgrading the
+theme; it only changes controls, preserving search results and code content.
 
 To add a language, register its code, name, URL prefix, source directory and locale
 in `i18n/locales.toml`, add a matching message dictionary, and create its main
 pages and translated posts. The build generates navigation and language links
-from this registry. Navigation pages must exist; article translations can be
-added gradually. Start from the existing translated page structure and retain
+from this registry. Navigation pages must exist; article translations for new
+languages can be added gradually. Maintain full Russian coverage when adding
+English pages. Start from the existing translated page structure and retain
 catalog generation markers. Do not place translated Markdown inside `docs/`.
 
 ## License
