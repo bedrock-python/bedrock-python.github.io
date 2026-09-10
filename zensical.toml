@@ -99,7 +99,7 @@ link = "https://github.com/bedrock-python"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/python"
-link = "https://pypi.org/user/bedrock-python/"
+link = "https://pypi.org/user/shalaev/"
 
 [project.plugins.blog]
 enabled = true
