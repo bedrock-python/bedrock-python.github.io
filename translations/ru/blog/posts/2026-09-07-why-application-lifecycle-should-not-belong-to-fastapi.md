@@ -102,6 +102,40 @@ run_sync(Service(spec, entrypoints=ENTRYPOINTS[role]), Settings())
 
 Отдельный файл worker исчез. Сигналы, событие остановки, `finally` пула, готовность, бюджет drain и прогрев определены один раз. Worker содержит лишь цикл. Планировщик добавляется записью словаря; API и worker разделяются на развёртывания выбором его ключей.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Приложение владеет ресурсами, фреймворки принимают трафик</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Приложение владеет ресурсами, фреймворки принимают трафик
+    accDescr: Пулы БД и общие клиенты принадлежат Host приложения. Точки входа HTTP и воркера используют эти ресурсы и подчиняются общему порядку запуска и завершения.
+    H["Host приложения"] --> R["Общие ресурсы приложения"]
+    H --> A["FastAPI / HTTP"]
+    H --> W["Точка входа воркера"]
+    A -.->|"Использует"| R
+    W -.->|"Использует"| R
+    R --> D[("PostgreSQL")]
+    R --> C["Исходящие клиенты"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Пулы БД и общие клиенты принадлежат Host приложения. Точки входа HTTP и воркера используют эти ресурсы и подчиняются общему порядку запуска и завершения.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Для чего остаётся lifespan FastAPI {#what-fastapis-lifespan-is-still-for}
 
 Ресурсам только HTTP-приложения: шаблонизатору, кешу маршрутов, настройке OpenAPI. Правило простое: lifespan владеет нужным только HTTP-точке, Host — нужным процессу. Пул БД относится ко второму; раньше он жил в lifespan, потому что другого места не было.

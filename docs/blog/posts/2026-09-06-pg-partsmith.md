@@ -92,6 +92,37 @@ The comment on the retention line is the idea everything else rests on. A `RANGE
 
 A [plan](https://bedrock-python.github.io/pg-partsmith/concepts/plan/) is also a document: JSON with each operation's `is_destructive` flag and heaviest lock, and a `config_fingerprint` over the table configuration, so a plan saved on Tuesday and applied on Thursday, after someone edited the retention count, is refused with `PlanConfigMismatchError`. A second run over a converged tree issues zero DDL, and that is an integration test counting statements, not a promise.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Inspect, then execute an explicit plan</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Inspect, then execute an explicit plan
+    accDescr: Planning describes intended changes. Maintenance executes DDL separately; it is not one atomic transaction across every partition.
+ C[("PostgreSQL catalog")] --> I["Inspect actual partitions"]
+ P["Retention / creation policy"] --> B["Build plan"]
+ I --> B
+ B --> M["Execute DDL steps"] --> O["Report results"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Planning describes intended changes. Maintenance executes DDL separately; it is not one atomic transaction across every partition.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Dropping something you did not make
 
 The question a DBA asks about any tool with DROP is "is this mine?". The answer comes from the [catalog](https://bedrock-python.github.io/pg-partsmith/concepts/ownership/), with no metadata table to fall out of step with it, and whenever the library cannot tell, the answer is no.

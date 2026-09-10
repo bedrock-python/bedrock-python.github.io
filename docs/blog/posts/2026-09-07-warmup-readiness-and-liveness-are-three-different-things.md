@@ -36,6 +36,40 @@ The numbers come from [the post's lab](https://github.com/bedrock-python/bedrock
 
 A three-second warmup, then a Redis outage from six to nine seconds, then `SIGTERM` at eleven. Every line where the columns differ is a decision somebody has to make.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Dependency failure changes readiness, not liveness</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+    accTitle: Dependency failure changes readiness, not liveness
+    accDescr: In this service the listener binds after warmup. A hard dependency outage removes the pod from routing without requesting a restart; shutdown also disables readiness before the listener closes.
+    direction TB
+    state "Warmup: listener not bound" as Warmup
+    state "Serving: live 200 / ready 200" as Ready
+    state "Dependency down: live 200 / ready 503" as Degraded
+    state "Draining: live 200 / ready 503" as Draining
+    [*] --> Warmup
+    Warmup --> Ready: Warmup finished; bind listener
+    Ready --> Degraded: Hard dependency fails
+    Degraded --> Ready: Dependency recovers
+    Ready --> Draining: SIGTERM
+    Draining --> [*]: Propagation delay, drain, close
+```
+
+</div>
+<p class="bdr-diagram__caption">In this service the listener binds after warmup. A hard dependency outage removes the pod from routing without requesting a restart; shutdown also disables readiness before the listener closes.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Warmup is not readiness, and neither is it liveness
 
 For the first 3.3 seconds nothing answered anything: not the route, not readiness, not liveness. The listener is bound after the warmup, because a service that accepts connections before its caches, pools and clients are primed is a service that serves errors.

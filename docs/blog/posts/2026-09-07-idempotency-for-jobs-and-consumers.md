@@ -66,6 +66,36 @@ Two jobs were enqueued for the same order, by a retrying producer or two code pa
 
 The middle row is a mistake I made writing the lab and left in, because it is exactly the kind a reader will make. The key contained a colon, which the library reserves as the separator in its storage key, so the record failed validation; the coordinator treats validation trouble the way it treats storage trouble, counts it, logs it and runs the action unprotected, and the two jobs sent two mails. The rule is documented and the failure is logged, and it is still the sort of thing to have a test for: a key that cannot be stored is a job with no idempotency, and nothing raises.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Deduplicate the effect, not the delivery ID</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Deduplicate the effect, not the delivery ID
+    accDescr: Two deliveries can represent one business operation. Use that operation's identity for deduplication; external effects still require their own crash-safe idempotency boundary.
+ A["Delivery A"] --> K["order-9.invoice"]
+ B["Delivery B"] --> K
+ K --> I["Idempotency check"] --> E["Send invoice"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Two deliveries can represent one business operation. Use that operation&#x27;s identity for deduplication; external effects still require their own crash-safe idempotency boundary.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Consumers: the inbox and the key are not the same tool
 
 A Kafka consumer has all three of the scenarios above, and it also has [the inbox](2026-09-07-transactional-inbox.md). The two solve different halves of the problem and a consumer that does anything external needs both.

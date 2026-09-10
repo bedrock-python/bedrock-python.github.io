@@ -101,6 +101,36 @@ The hook raised, nothing was dropped, and the run reported the error. The partit
 
 The inverse arrangement, where the archiver is a separate job that runs before the retention job, has a race in it that only shows up under load: the retention job does not know whether the archive finished. Making the archive a step of the drop rather than a neighbour of it removes the question.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Detach is reversible; drop is the final step</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Detach is reversible; drop is the final step
+    accDescr: Expired partitions are detached before deletion. A grace period and a successful archive hook precede DROP; a failed hook must leave the detached data intact.
+ E["Eligible expired partition"] --> D["DETACH"] --> G["Grace period"] --> A["Archive hook"] --> Q{"Succeeded?"}
+ Q -->|"Yes"| X["DROP"]
+ Q -->|"No"| K["Keep data; report failure"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Expired partitions are detached before deletion. A grace period and a successful archive hook precede DROP; a failed hook must leave the detached data intact.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What a foreign key does to retention
 
 The third partition in that run was never detached:

@@ -199,7 +199,7 @@ hide:
         <div class="bdr-entry__eyebrow">Redis и идемпотентность <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Идемпотентность фоновых задач и консьюмеров Kafka</h3>
         <p class="bdr-entry__description">Заголовок Idempotency-Key привлекает внимание, потому что у него есть имя и спецификация. Но та же проблема возникает у каждого worker очереди, причём чаще: очереди по своей…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -391,7 +391,7 @@ hide:
         <div class="bdr-entry__eyebrow">HTTP и отказоустойчивость <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Повторы могут усугубить сбой: проектируем бюджет повторных попыток</h3>
         <p class="bdr-entry__description">Три попытки на каждом переходе цепочки из пяти сервисов — усилитель нагрузки, который сильнее всего действует именно при сбое нижнего сервиса, когда тот меньше всего способен…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -535,7 +535,7 @@ hide:
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Тестирование миграций с Testcontainers: вперёд, назад и снова вперёд</h3>
         <p class="bdr-entry__description">Статья о пяти тестах миграций объяснила, зачем они нужны. Здесь пошаговая настройка: от пустого tests/ до зелёной задачи CI, проходящей каждую ревизию вперёд, назад и снова…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

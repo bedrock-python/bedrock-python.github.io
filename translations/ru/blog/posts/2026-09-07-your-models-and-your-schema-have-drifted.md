@@ -134,6 +134,39 @@ AssertionError: Enum values are out of sync with ORM models:
 
 Нужна настоящая БД. SQLite не ответит, как PostgreSQL применил DDL. Контейнер на тестовую сессию, новая схема на тест; вся матрица запускается за несколько минут.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Сравнить результат миграций с декларациями моделей</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Сравнить результат миграций с декларациями моделей
+    accDescr: Autogenerate сравнивает значительную часть схемы, но не весь контракт. Сравнение серверных значений по умолчанию нужно включить явно, а пропущенные ограничения и значения enum проверить отдельно.
+    M["Выполнить миграции на пустой БД"] --> D[("Фактическая схема PostgreSQL")]
+    D --> C["Diff autogenerate, включая server defaults"]
+    O["ORM metadata"] --> C
+    C --> A["CI: каждое отличие должно быть обосновано"]
+    D --> E["Явные проверки: CHECK и значения enum"]
+    E --> A
+```
+
+</div>
+<p class="bdr-diagram__caption">Autogenerate сравнивает значительную часть схемы, но не весь контракт. Сравнение серверных значений по умолчанию нужно включить явно, а пропущенные ограничения и значения enum проверить отдельно.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 Набор предоставляет базовый класс [alembic-gauntlet](https://bedrock-python.github.io/alembic-gauntlet/). Передайте `MetaData`, включите `migration_diff_compare_server_default = True` для defaults. Fixture контейнера и изолированной схемы входят в библиотеку. От вас нужен `env.py`, использующий переданные соединение и схему, как описано в [статье о тестах миграций](2026-09-07-five-alembic-migration-tests.md).

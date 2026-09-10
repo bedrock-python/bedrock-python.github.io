@@ -96,6 +96,39 @@ Producer записал в `ordrs.events` с опечаткой и не полу
 
 **В обоих случаях** отключите автоматическое создание в production, храните декларацию в коде, даже если применяет её человек, и проверяйте структуру при старте. Именно проверка найдёт топик, вручную созданный год назад с одной партицией.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Создание и проверка — разные шаги</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Создание и проверка — разные шаги
+    accDescr: ensure_topics_async создаёт отсутствующий топик, но не меняет существующий. Приложение явно проверяет фактическую конфигурацию; общие топики могут создаваться отдельно.
+    A{"Наш топик?"} -->|"Да"| B["Создать, если отсутствует"]
+    A -->|"Нет"| C["Прочитать параметры"]
+    B --> C
+    C --> D{"Параметры верны?"}
+    D -->|"Да"| E["Запустить сервис"]
+    D -->|"Нет"| F["Отложить старт; исправить параметры"]
+```
+
+</div>
+<p class="bdr-diagram__caption">ensure_topics_async создаёт отсутствующий топик, но не меняет существующий. Приложение явно проверяет фактическую конфигурацию; общие топики могут создаваться отдельно.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 В примере используется [aiokafka-foundation-kit](https://bedrock-python.github.io/aiokafka-foundation-kit/): `TopicConfig` для каждого топика, `ensure_topics_async`, считающий существование успехом, и жизненный цикл producer с возможностью выполнить создание до запуска. Два отдельных аргумента сохраняют разницу между «у меня есть топики» и «создай их». Существующий топик библиотека не перестраивает по причинам выше.

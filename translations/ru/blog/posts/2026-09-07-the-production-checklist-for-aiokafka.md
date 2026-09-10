@@ -148,6 +148,37 @@ Aiokafka — хороший клиент со значениями по умол
 9. Создавать топики намеренно, идемпотентно, с безопасным повторным запуском.
 10. Ограничить проверку здоровья таймаутом и отдельно наблюдать отставание.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Четыре части интеграции с Kafka</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Четыре части интеграции с Kafka
+    accDescr: Надёжность продюсера, обработка сообщений, конфигурация топиков и жизненный цикл требуют отдельных решений. Подтверждение отправки не фиксирует атомарно запись в БД или offset консюмера.
+    K["Интеграция с Kafka"] --> P["Продюсер: acks, идемпотентность, ошибки"]
+    K --> C["Консюмер: обработка до коммита offset"]
+    K --> T["Топики: партиции, реплики, retention"]
+    K --> L["Жизненный цикл: health, завершение, close"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Надёжность продюсера, обработка сообщений, конфигурация топиков и жизненный цикл требуют отдельных решений. Подтверждение отправки не фиксирует атомарно запись в БД или offset консюмера.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 Всё выше — поведение самой aiokafka. [Aiokafka-foundation-kit](https://bedrock-python.github.io/aiokafka-foundation-kit/) добавляет объект настроек, жизненный цикл, идемпотентное создание топиков и проверку здоровья. Клиент намеренно не оборачивается: после входа в lifecycle вы получаете `AIOKafkaProducer` или `AIOKafkaConsumer`. Отправка, получение и commit остаются API aiokafka.

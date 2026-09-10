@@ -79,6 +79,37 @@ async def pay_order(order_id: str) -> Receipt:
 
 Остаются два решения. *Публичны ли подробности?* Это оценка содержания, поэтому она живёт на классе ошибки. *Что делать, если никто не решил?* Это общая политика: скрывать, с обработкой всех остальных исключений на внешней границе транспорта. Именно неучтённое иначе и утечёт.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Одна доменная ошибка, два представления</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Одна доменная ошибка, два представления
+    accDescr: Домен определяет тип ошибки и безопасные публичные детали. Транспортные адаптеры выбирают представление HTTP или gRPC; неожиданные внутренние детали остаются в серверных логах.
+    D["Доменная ошибка: тип + публичные детали"] --> H["Адаптер HTTP"]
+    D --> G["Адаптер gRPC"]
+    H --> R["HTTP-статус + тело ошибки"]
+    G --> S["gRPC-статус + безопасные детали"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Домен определяет тип ошибки и безопасные публичные детали. Транспортные адаптеры выбирают представление HTTP или gRPC; неожиданные внутренние детали остаются в серверных логах.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Один согласованный тест {#testing-it-once}
 
 Проверять стоит не только HTTP 404, а согласованность транспортов:

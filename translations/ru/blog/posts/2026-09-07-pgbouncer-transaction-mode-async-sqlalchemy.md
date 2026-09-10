@@ -40,6 +40,44 @@ client A ran SET search_path TO leaked; client B sees search_path = 'leaked'
 
 Клиент B ничего не настраивал, но теперь читает и пишет в незнакомой схеме. Ошибка воспроизводится только у запросов, попавших в это соединение. `SET LOCAL` внутри транзакции заканчивается вместе с ней и безопасен; обычный `SET` через transaction pooler создаёт непредсказуемую область воздействия.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Серверное соединение закреплено за транзакцией</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Серверное соединение закреплено за транзакцией
+    accDescr: После COMMIT PgBouncer может выдать другое серверное соединение. Состояние сессии из предыдущей транзакции нельзя считать гарантией для следующей.
+ participant S as SQLAlchemy
+ participant P as PgBouncer
+ participant D as PostgreSQL
+ S->>P: BEGIN + query
+ P->>D: Использовать серверное соединение A
+ S->>P: COMMIT
+ P->>D: COMMIT
+ Note over P,D: Соединение A возвращается в пул
+ S->>P: BEGIN + query
+ P->>D: Может использовать соединение B
+ Note over S,D: Не полагаться на прежний сессионный SET
+```
+
+</div>
+<p class="bdr-diagram__caption">После COMMIT PgBouncer может выдать другое серверное соединение. Состояние сессии из предыдущей транзакции нельзя считать гарантией для следующей.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Ошибка prepared statement и когда она исчезла {#the-prepared-statement-error-and-when-it-stopped-happening}
 
 Знакомая по обсуждениям asyncpg с PgBouncer ошибка выглядит так:

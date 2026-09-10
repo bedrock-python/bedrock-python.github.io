@@ -36,6 +36,40 @@ tags:
 
 Три секунды прогрева, Redis недоступен с шестой до девятой, `SIGTERM` на одиннадцатой. Каждое различие столбцов — отдельное решение.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Сбой зависимости меняет readiness, а не liveness</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+    accTitle: Сбой зависимости меняет readiness, а не liveness
+    accDescr: В этом сервисе сокет открывается после прогрева. Сбой обязательной зависимости убирает под из маршрутизации без перезапуска; завершение также выключает readiness до закрытия сокета.
+    direction TB
+    state "Прогрев: сокет ещё закрыт" as Warmup
+    state "Работа: live 200 / ready 200" as Ready
+    state "Сбой зависимости: live 200 / ready 503" as Degraded
+    state "Завершение: live 200 / ready 503" as Draining
+    [*] --> Warmup
+    Warmup --> Ready: Прогрев завершён; открыть сокет
+    Ready --> Degraded: Сбой обязательной зависимости
+    Degraded --> Ready: Зависимость восстановлена
+    Ready --> Draining: SIGTERM
+    Draining --> [*]: Пауза, завершение запросов, закрытие
+```
+
+</div>
+<p class="bdr-diagram__caption">В этом сервисе сокет открывается после прогрева. Сбой обязательной зависимости убирает под из маршрутизации без перезапуска; завершение также выключает readiness до закрытия сокета.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Прогрев отличается от readiness и liveness {#warmup-is-not-readiness-and-neither-is-it-liveness}
 
 Первые 3,3 секунды не отвечало ничего: ни маршрут, ни пробы. Слушатель привязывается после прогрева, чтобы не принимать запросы до подготовки кешей, пулов и клиентов.

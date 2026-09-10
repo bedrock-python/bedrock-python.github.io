@@ -83,6 +83,39 @@ else:
 
 Перед каждой командой runner задаёт `connection` и `target_schema`, после удаляет. В production их нет, работает прежняя ветка `else`. Критична строка `SET LOCAL`: обычный `SET search_path` переживает транзакцию и возвращается с соединением в пул, направляя следующий тест в уже удалённую схему.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Тест и Alembic должны работать с одной схемой</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Тест и Alembic должны работать с одной схемой
+    accDescr: Контейнер даёт настоящий PostgreSQL. Каждый тест изолирует свою схему; env.py должен использовать переданное соединение, чтобы миграции и проверки обращались в одно место.
+    P[("PostgreSQL / Testcontainers")] --> S["Отдельная схема для теста"]
+    S --> C["Соединение с тестовым search_path"]
+    C --> E["Alembic env.py"]
+    E --> M["Выполнить миграции"]
+    M --> A["Проверить схему и данные"]
+    A --> X["Удалить тестовую схему"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Контейнер даёт настоящий PostgreSQL. Каждый тест изолирует свою схему; env.py должен использовать переданное соединение, чтобы миграции и проверки обращались в одно место.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Шаг 4: файл тестов {#step-4-the-test-file}
 
 ```python

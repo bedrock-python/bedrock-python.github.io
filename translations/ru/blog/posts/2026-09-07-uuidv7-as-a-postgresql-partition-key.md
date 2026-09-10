@@ -78,6 +78,38 @@ tags:
 
 Приложению нужен используемый на практике перевод момента в минимальный UUIDv7 и запросы `id >= from_time(a) AND id < from_time(b)`. Это пара функций и соглашение. Без них партиционирование незаметно не помогает таким чтениям.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Отсечение партиций следует за ключом</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Отсечение партиций следует за ключом
+    accDescr: Временной интервал преобразуется в диапазон UUIDv7 по id. Фильтр только по created_at не задаёт границы ключа партиционирования, даже если описывает тот же временной интервал.
+    T["Временной интервал"] --> U["Вычислить минимальный UUIDv7 на границах"]
+    U --> Q["id ≥ from_uuid AND id &lt; to_uuid"]
+    Q --> P["Отсечь лишние партиции"]
+    T --> C["created_at ≥ from_time"]
+    C --> A["Это условие не даёт отсечения по id"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Временной интервал преобразуется в диапазон UUIDv7 по id. Фильтр только по created_at не задаёт границы ключа партиционирования, даже если описывает тот же временной интервал.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Три неподходящих идентификатора {#the-three-ids-that-do-not-fit}
 
 ```text

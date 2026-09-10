@@ -28,6 +28,34 @@ A retry is a bet that the next attempt will do better than the last one. When a 
 
 In a chain, the attempts multiply. A request enters at the top with three attempts. Each attempt becomes a call to the next service, which makes three attempts of its own, and so on down. Four layers of three attempts is `3⁴ = 81` requests at the bottom for one at the top, if nothing stops it. Nothing stopping it is the default.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Retry counts multiply across service boundaries</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Retry counts multiply across service boundaries
+    accDescr: With at most three attempts at each of three hops, one request can generate up to 27 calls at the deepest dependency. This is the worst-case bound, not a measured rate.
+ R["1 incoming request"] -->|"× 3"| A["Up to 3 calls"] -->|"× 3"| B["Up to 9 calls"] -->|"× 3"| C["Up to 27 calls"]
+```
+
+</div>
+<p class="bdr-diagram__caption">With at most three attempts at each of three hops, one request can generate up to 27 calls at the deepest dependency. This is the worst-case bound, not a measured rate.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Measured: one hop
 
 Fifty concurrent callers, one origin, and the origin answers `503` to everything:

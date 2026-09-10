@@ -87,6 +87,38 @@ Open is not forever. After the recovery timeout the next call becomes a probe: i
 
 Threshold three, recovery half a second. Three failures, one refusal that says exactly when the probe will happen, and after the timeout the first call through is the probe, finds the upstream recovered, and closes the circuit for the call after it. The refusal carries the time until the next probe, so a caller that wants to degrade gracefully knows how long to serve from cache.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>One origin, one recovery decision</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+    accTitle: One origin, one recovery decision
+    accDescr: Each origin owns this state machine. Only the probe decides whether traffic resumes; a cancelled probe releases its slot without declaring success or failure.
+    direction TB
+    state "Closed: requests pass" as Closed
+    state "Open: fail fast" as Open
+    state "Half-open: limited probes" as HalfOpen
+    [*] --> Closed
+    Closed --> Open: Failure threshold
+    Open --> HalfOpen: Recovery time elapsed
+    HalfOpen --> Closed: Probe succeeds
+    HalfOpen --> Open: Probe fails
+```
+
+</div>
+<p class="bdr-diagram__caption">Each origin owns this state machine. Only the probe decides whether traffic resumes; a cancelled probe releases its slot without declaring success or failure.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The configuration
 
 ```python

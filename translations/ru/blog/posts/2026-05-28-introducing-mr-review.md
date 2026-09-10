@@ -46,6 +46,36 @@ mr-review подключается к вашей системе управлен
 
 **Post** — вы интерактивно просматриваете итоговый список и выбираете комментарии для публикации. Без вашего подтверждения в MR ничего не отправляется.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Где решение остаётся за ревьюером</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Где решение остаётся за ревьюером
+    accDescr: Модель собирает и уточняет замечания. Человек задаёт условия ревью и утверждает то, что будет опубликовано в merge request.
+ B["Подготовить задание"] --> D["Запустить ревьюеров"] --> P["Доработать замечания"] --> A{"Утверждено?"}
+ A -->|"Да"| R["Опубликовать"]
+ A -->|"Исправить"| P
+```
+
+</div>
+<p class="bdr-diagram__caption">Модель собирает и уточняет замечания. Человек задаёт условия ревью и утверждает то, что будет опубликовано в merge request.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Готовые режимы проверки {#preset-based-review-modes}
 
 Разным ревью нужен разный фокус. В mr-review есть четыре предустановленных режима:

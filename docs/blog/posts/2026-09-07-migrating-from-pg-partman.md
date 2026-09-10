@@ -117,6 +117,34 @@ Create one month further ahead, keep one month less history. It created its own 
 
 The last line is the safety property. Before detaching, the library writes a marker into the table's comment recording that it detached it and from where. That marker is what a later drop checks: a detached table without it was detached by somebody else and is never dropped. So the July partition is now the library's to retire after the grace period, and any other table sitting around detached is not — which is [the retention argument](2026-09-07-partition-retention-is-not-drop-table.md) with an inherited tree as its subject.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Transfer the maintenance policy, not the data</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Transfer the maintenance policy, not the data
+    accDescr: pg-partsmith inspects the existing partition tree. Match the old policy, inspect its plan, then transfer scheduling ownership; overlapping maintainers are not a general concurrency guarantee.
+ A["pg_partman part_config"] --> B["Map equivalent policy"] --> C["Inspect the existing tree"] --> D["Review maintenance plan"] --> E["Disable old scheduler; enable new one"]
+```
+
+</div>
+<p class="bdr-diagram__caption">pg-partsmith inspects the existing partition tree. Match the old policy, inspect its plan, then transfer scheduling ownership; overlapping maintainers are not a general concurrency guarantee.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What you give up, and what you get
 
 **You give up** the background worker. pg_partman can maintain itself inside the database with `pg_partman_bgw`; an application-managed library needs something to call it — a Kubernetes CronJob, APScheduler, Celery beat, whatever already runs your scheduled work. That is a real operational difference, and for a team whose database is more reliable than its scheduler it is a reason to stay.

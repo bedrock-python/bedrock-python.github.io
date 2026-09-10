@@ -108,6 +108,41 @@ That is the rule worth writing down: **a message is publishable only if the type
 
 For anything richer than a sentence, use gRPC's `error_details` rather than stuffing structure into the details string: a machine-readable payload in the trailing metadata is what a client can branch on, and it keeps the human string human.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Choose the status and the public message separately</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Choose the status and the public message separately
+    accDescr: Domain errors can return a deliberate client-facing explanation. Unexpected internal exceptions need a generic response and detailed server-side reporting.
+ E["Python exception"] --> M["Map to gRPC status"]
+ E --> P{"Known public domain error?"}
+ P -->|"Yes"| D["Safe domain details"]
+ P -->|"No"| G["Generic details"]
+ E -.-> L["Server-side logs and tracing"]
+ M --> R["gRPC response"]
+ D --> R
+ G --> R
+```
+
+</div>
+<p class="bdr-diagram__caption">Domain errors can return a deliberate client-facing explanation. Unexpected internal exceptions need a generic response and detailed server-side reporting.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What belongs where
 
 - **The map lives in the transport layer**, not in handlers. A handler that catches its own exception to choose a status has moved API design into business logic, and the next handler will choose differently.

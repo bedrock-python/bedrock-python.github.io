@@ -49,6 +49,37 @@ Then a section called **Scope** with two paragraphs: what the library does, and 
 
 Then a **Mental model**, four to six nouns and the flow between them, and a **Wiring** section with the smallest complete program. Then the API as tables: name, signature, what it returns, what it raises. Then the two sections that do most of the work.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Give the agent the whole contract</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Give the agent the whole contract
+    accDescr: A single agents page combines imports, signatures, invariants and examples. It reduces the missing context that the model would otherwise fill with guesses.
+ A["Imports and signatures"] --> D["agents.md"]
+ R["Rules and boundaries"] --> D
+ E["Wrong / right examples"] --> D
+ D --> M["Coding agent"] --> C["Integration code"]
+```
+
+</div>
+<p class="bdr-diagram__caption">A single agents page combines imports, signatures, invariants and examples. It reduces the missing context that the model would otherwise fill with guesses.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Rules that hold or break the code
 
 Every page has a numbered list under that heading. They are not tips. Each one is an invariant that the library will not enforce for you and that produces working-looking code when broken. A few, from different libraries:

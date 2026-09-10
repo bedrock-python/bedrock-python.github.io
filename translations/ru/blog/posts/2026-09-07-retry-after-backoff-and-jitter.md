@@ -100,3 +100,37 @@ client = build("httpx", config)
 Четырёхстрочный цикл содержит лишь одно из девяти решений — число попыток, — и часто путает даже его с числом повторов. Здесь явно записаны стандартные настройки [clientwright](https://bedrock-python.github.io/clientwright/guide/retries/). Сервис обычно меняет общий бюджет времени, а место вызова — идемпотентность `POST`, который действительно сделан безопасным для повторения.
 
 Суть — в столбце измерения списаний: один запрос или три запроса на списание.
+
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Для повтора нужны основание и время</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Для повтора нужны основание и время
+    accDescr: Повторяйте только безопасную операцию при подходящем результате. Учитывайте Retry-After, иначе используйте backoff с jitter; останавливайтесь, если ожидание и новая попытка не укладываются в дедлайн.
+    F["Безопасный допустимый повтор"] --> H{"Retry-After?"}
+    H -->|"Да"| A["Задержка сервера"]
+    H -->|"Нет"| B["Backoff + jitter"]
+    A --> D{"Остались время и бюджет?"}
+    B --> D
+    D -->|"Да"| R["Повторить"]
+    D -->|"Нет"| E["Остановиться"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Повторяйте только безопасную операцию при подходящем результате. Учитывайте Retry-After, иначе используйте backoff с jitter; останавливайтесь, если ожидание и новая попытка не укладываются в дедлайн.</p>
+</figure>
+<!-- /diagram:concept -->

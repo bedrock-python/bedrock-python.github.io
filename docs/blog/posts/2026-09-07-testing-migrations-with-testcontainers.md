@@ -83,6 +83,39 @@ else:
 
 Two attributes, `connection` and `target_schema`, are set by the runner before every command and removed after. In production neither is set and the `else` branch runs as before. The one line to get right is `SET LOCAL`: a plain `SET search_path` outlives the transaction, goes back to the pool with the connection, and sends the next test's queries into a schema that was dropped.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The test and Alembic must reach the same schema</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: The test and Alembic must reach the same schema
+    accDescr: A real PostgreSQL container supplies the database. Each test isolates its schema, and env.py must honor the supplied connection so migrations and assertions inspect the same place.
+    P[("PostgreSQL / Testcontainers")] --> S["Isolated schema per test"]
+    S --> C["Connection with the test search_path"]
+    C --> E["Alembic env.py"]
+    E --> M["Run migrations"]
+    M --> A["Assert schema and data"]
+    A --> X["Clean up the test schema"]
+```
+
+</div>
+<p class="bdr-diagram__caption">A real PostgreSQL container supplies the database. Each test isolates its schema, and env.py must honor the supplied connection so migrations and assertions inspect the same place.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Step 4: the test file
 
 ```python

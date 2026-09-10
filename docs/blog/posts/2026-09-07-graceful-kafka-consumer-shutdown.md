@@ -94,6 +94,43 @@ The signal handler is the runtime's, the event is what it sets, and the consumer
 
 The signal arrived during the batch that held messages six to ten; the batch finished, the commit landed, the loop saw the event, the consumer left the group, and the process exited zero within half a second. The replacement joined a group that already knew the old member was gone and had its first message three tenths of a second after starting. Ten plus twenty is thirty, the size of the topic, and nothing was processed twice.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Finish the batch before handing over</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Finish the batch before handing over
+    accDescr: On shutdown, stop taking new work, finish the current batch, commit its offsets and leave the group. A replacement can resume from the committed position.
+ participant H as Host
+ participant C as Consumer
+ participant K as Kafka
+ H->>C: SIGTERM
+ Note over C: No new batches
+ C->>C: Finish current batch
+ C->>K: Commit processed offsets
+ K-->>C: Commit confirmed
+ C->>K: Leave group / stop
+ C-->>H: Clean exit
+```
+
+</div>
+<p class="bdr-diagram__caption">On shutdown, stop taking new work, finish the current batch, commit its offsets and leave the group. A replacement can resume from the committed position.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The numbers to set
 
 The batch bounds the shutdown: five messages at two hundred milliseconds is one second of work the shutdown has to wait for, and the grace budget has to cover it. `max_records` times the slowest message is the drain time; `drain_grace_seconds` has to exceed it; `terminationGracePeriodSeconds` has to exceed that plus the cleanup, which is the arithmetic from the shutdown post with the batch as the in-flight request.

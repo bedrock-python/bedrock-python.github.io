@@ -48,6 +48,35 @@ pool keyed by identity: orders -> UNAVAILABLE after 3 attempt(s) at the server
 
 Two channels to one address, one per interceptor chain, and each client gets exactly the policy it declared. Two channels is not waste; it is the minimum number of channels that can carry two different configurations, because the configuration lives in the channel.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Same address does not mean the same channel</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Same address does not mean the same channel
+    accDescr: An interceptor chain is part of channel identity. Reuse each identity across requests, while keeping clients with different policies on separate channels.
+ O["Orders client: retry chain"] --> A["Channel A"] --> S["orders:443"]
+ U["Audit client: no retry chain"] --> B["Channel B"] --> S
+```
+
+</div>
+<p class="bdr-diagram__caption">An interceptor chain is part of channel identity. Reuse each identity across requests, while keeping clients with different policies on separate channels.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The opposite mistake: a channel per call
 
 Once the chain is part of the identity, the cost of getting it wrong flips. A chain is a list of interceptor *instances*, and two lists built from the same configuration are two identities, so a service that rebuilds its chain per request, out of caution or because the builder call is inside a request handler, mints a new channel for every call:

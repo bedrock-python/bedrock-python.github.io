@@ -78,6 +78,38 @@ The second line is the tax, and it is the thing to design around. The `created_a
 
 So a table keyed this way needs the conversion to exist somewhere the application actually uses: a helper that turns an instant into the smallest UUIDv7 for it, and queries written as `id >= from_time(a) AND id < from_time(b)`. It is two functions and a habit, and if it is not there, the partitioning quietly does nothing for reads.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Pruning follows the partition key</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Pruning follows the partition key
+    accDescr: A time interval becomes a UUIDv7 range on id. Filtering only created_at does not provide that partition-key bound, even when its values describe the same time interval.
+    T["Time interval"] --> U["Compute minimum UUIDv7 at each boundary"]
+    U --> Q["id ≥ from_uuid AND id &lt; to_uuid"]
+    Q --> P["Prune unrelated partitions"]
+    T --> C["created_at ≥ from_time"]
+    C --> A["No pruning by id from this condition"]
+```
+
+</div>
+<p class="bdr-diagram__caption">A time interval becomes a UUIDv7 range on id. Filtering only created_at does not provide that partition-key bound, even when its values describe the same time interval.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The three ids that do not fit
 
 ```text

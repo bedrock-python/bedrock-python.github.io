@@ -159,6 +159,43 @@ The request still fails. It fails half a second sooner, nobody is charged, and t
 
 Two things about that log are worth saying plainly. grpc.aio does cancel the server-side handler when the caller's deadline passes, and the log shows it doing so at 2.02 s in the first run. What it cannot cancel is a charge that has already been sent, which is why the fix has to happen before the call, not after. And the safety margin between 1.51 s and 2.00 s in the second run is not luck: Orders answered with time to spare because the refusal cost nothing.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Pass the remaining time, not a fresh timeout</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Pass the remaining time, not a fresh timeout
+    accDescr: Every outgoing call is limited by the time left in the incoming request. Work and retries consume the same end-to-end budget.
+ participant G as Gateway
+ participant O as Orders
+ participant I as Inventory
+ participant B as Billing
+ G->>O: Request + remaining budget
+ O->>I: Call with remaining budget
+ I-->>O: Response
+ O->>B: Call with a smaller remaining budget
+ B-->>O: Response
+ O-->>G: Response
+```
+
+</div>
+<p class="bdr-diagram__caption">Every outgoing call is limited by the time left in the incoming request. Work and retries consume the same end-to-end budget.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Where the deadline lives
 
 The rule that makes the second log possible is simple to state. The deadline is created once, where the request enters the system. At every hop, the callee reads what arrived and rebuilds its own budget from it. Each outgoing call is issued with the smaller of what the client is configured for and what the request has left.

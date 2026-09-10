@@ -18,6 +18,7 @@ extra_css = [
     "stylesheets/tools.css",
     "stylesheets/responsive.css",
     "stylesheets/i18n.css",
+    "stylesheets/diagrams.css",
 ]
 
 extra_javascript = [
@@ -25,6 +26,7 @@ extra_javascript = [
     "javascripts/bedrock.js",
     "javascripts/blog-explorer.js",
     "javascripts/libraries.js",
+    "javascripts/diagrams.js",
 ]
 
 nav = [

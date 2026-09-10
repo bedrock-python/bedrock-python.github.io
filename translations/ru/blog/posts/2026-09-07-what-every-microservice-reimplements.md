@@ -168,3 +168,36 @@ Runner поднимает PostgreSQL с одной строкой `orders`, ск
 Так устроена организация: небольшие библиотеки, минимальные ядра, extras интеграций и протоколы между ними. Сервис выбирает нужные части. В списке четырнадцать строк и двенадцать библиотек; этому сервису не понадобились Redis, Kafka, хранилище идемпотентности, outbox, тесты миграций, менеджер партиций и два набора gRPC. Им посвящены другие статьи серии.
 
 Я снова и снова видел одинаковую инфраструктуру в разных сервисах. [Bedrock Python](https://bedrock-python.github.io/libraries/) выносит её в небольшие независимые библиотеки. Здесь показан минимальный сервис, в котором этот подход работает целиком.
+
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>У инфраструктуры тоже есть границы</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: У инфраструктуры тоже есть границы
+    accDescr: Host управляет жизненным циклом, сценарий — бизнес-операцией, а отдельные библиотеки обеспечивают работу с БД и транспортами. Доменные правила остаются в приложении.
+    H["Host / servicewright"] --> E["Точка входа HTTP, gRPC или воркер"]
+    E --> U["Сценарий приложения"]
+    U --> D["Unit of Work / PostgreSQL"]
+    U --> C["Исходящие клиенты HTTP или gRPC"]
+    H -.->|"Управляет жизненным циклом"| D
+    H -.->|"Управляет жизненным циклом"| C
+```
+
+</div>
+<p class="bdr-diagram__caption">Host управляет жизненным циклом, сценарий — бизнес-операцией, а отдельные библиотеки обеспечивают работу с БД и транспортами. Доменные правила остаются в приложении.</p>
+</figure>
+<!-- /diagram:concept -->

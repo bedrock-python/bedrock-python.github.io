@@ -64,6 +64,38 @@ await kafka_producer.send("user-created", payload)  # might never run
 
 Бизнес-данные и событие либо вместе сохраняются в Postgres, либо вместе откатываются. После коммита воркер повторяет отправку, пока Kafka не подтвердит получение сообщения. Доставка имеет семантику at-least-once: одно событие может прийти повторно.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Транзакция завершается до доставки</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Транзакция завершается до доставки
+    accDescr: Бизнес-запись и строка outbox фиксируются вместе. Доставка в Kafka происходит позже; сбой после отправки, но до отметки о доставке, может привести к повтору.
+    T["Транзакция PostgreSQL: бизнес-запись + событие outbox"] -->|COMMIT| W["Воркер outbox"]
+    W -->|publish| K[(Kafka)]
+    K -->|ack| M["Отметить доставку в outbox"]
+    classDef focus stroke-width:3px;
+    class T focus;
+```
+
+</div>
+<p class="bdr-diagram__caption">Бизнес-запись и строка outbox фиксируются вместе. Доставка в Kafka происходит позже; сбой после отправки, но до отметки о доставке, может привести к повтору.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Использование omni-box { #using-omni-box }
 
 omni-box предоставляет таблицу `outbox_events`, фоновый процесс и интеграцию с Unit of Work. Внутри сценария использования:

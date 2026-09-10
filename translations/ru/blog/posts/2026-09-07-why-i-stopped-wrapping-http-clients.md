@@ -71,6 +71,39 @@ aiohttp  status=200  origin saw 3 requests  attempt records=3
 
 Одинаковые повторы, исход и формат записи; два отличающихся label называют библиотеку и место подключения движка. График переживает миграцию, политика остаётся на месте.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Сохранить родной клиент, подключить политики под ним</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Сохранить родной клиент, подключить политики под ним
+    accDescr: Движок политик использует точку расширения каждой библиотеки. Вызывающий код сохраняет родной тип клиента и API; проверка возможностей адаптера выявляет настройки, которые библиотека не поддерживает.
+    P["Общие политики: дедлайны, повторы, breaker, метрики"] --> H["Транспорт httpx"]
+    P --> A["Middleware aiohttp"]
+    P --> R["Адаптер requests"]
+    H --> HC["httpx.AsyncClient"]
+    A --> AC["aiohttp.ClientSession"]
+    R --> RC["requests.Session"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Движок политик использует точку расширения каждой библиотеки. Вызывающий код сохраняет родной тип клиента и API; проверка возможностей адаптера выявляет настройки, которые библиотека не поддерживает.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Честность о возможностях {#capability-honesty}
 
 Аргумент за обёртку — единый API и одинаковое поведение. Но библиотеки различаются. Requests не умеет принудительно отменить блокирующую попытку; aiohttp не имеет отдельного write timeout. Предлагать поверх requests `timeout_attempt=0.5`, не имея способа обеспечить его, — создавать ложное ожидание до часовой зависшей загрузки.

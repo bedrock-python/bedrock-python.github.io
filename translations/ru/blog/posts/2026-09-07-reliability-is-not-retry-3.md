@@ -116,6 +116,38 @@ Origin был исправен пять секунд, прежде чем кли
 
 `retry=3` — только второй пункт, без первого, третьего и четвёртого, с молчаливым предположением о пятом.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Повторы находятся внутри ограниченного вызова</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Повторы находятся внутри ограниченного вызова
+    accDescr: Дедлайн ограничивает общее время, бюджет — дополнительную работу, circuit breaker — вызовы нездорового origin. Каждый механизм ограничивает отдельную часть сбоя.
+ D["Запустить бюджет времени"] --> B{"Circuit breaker пропускает?"}
+ B -->|"Нет"| F["Быстро отказать"]
+ B -->|"Да"| A["Одна попытка HTTP"] --> S{"Повтор безопасен, есть бюджет и время?"}
+ S -->|"Да"| W["Backoff + jitter в пределах дедлайна"] --> A
+ S -->|"Нет"| R["Вернуть итог вызова"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Дедлайн ограничивает общее время, бюджет — дополнительную работу, circuit breaker — вызовы нездорового origin. Каждый механизм ограничивает отдельную часть сбоя.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 Все четыре настраиваются в одном клиенте [clientwright](https://bedrock-python.github.io/clientwright/): `TimeoutConfig`, `RetryConfig` с `max_attempts`, статусами и `budget_ratio`, `CircuitBreakerConfig` по origin. Дедлайн между сервисами передаёт [deadline-budget](https://bedrock-python.github.io/deadline-budget/), безопасный повтор записи обеспечивает ключ [idempotency-kit](https://bedrock-python.github.io/idempotency-kit/).

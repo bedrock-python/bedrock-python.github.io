@@ -77,6 +77,39 @@ UNAVAILABLE after the charge, Charge not in idempotent_methods  -> UNAVAILABLE  
 
 Политика сочетает два решения: статус указывает транспортную возможность повтора, метод — допустимость для бизнеса. Нужны оба.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Для повтора нужны три условия</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Для повтора нужны три условия
+    accDescr: Одного подходящего статуса недостаточно: метод должен допускать повтор, а задержка и попытка — укладываться в оставшийся дедлайн и лимит попыток.
+    A{"Код в политике?"} -->|"Да"| B{"Метод идемпотентен?"}
+    A -->|"Нет"| S["Вернуть ошибку"]
+    B -->|"Да"| C{"Есть бюджет?"}
+    B -->|"Нет"| S
+    C -->|"Да"| R["Задержка, затем повтор"]
+    C -->|"Нет"| S
+```
+
+</div>
+<p class="bdr-diagram__caption">Одного подходящего статуса недостаточно: метод должен допускать повтор, а задержка и попытка — укладываться в оставшийся дедлайн и лимит попыток.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Дедлайн относится к вызову, а не попытке {#the-deadline-is-for-the-call-not-the-attempt}
 
 Вторая популярная настройка — таймаут, вторая популярная ошибка — перемножить её с попытками. Три попытки по десять секунд превращаются в тридцать, если нет общего ограничения.

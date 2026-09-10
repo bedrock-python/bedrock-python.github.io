@@ -45,6 +45,38 @@ The second row is the fix, and it is a reservation. Before running the action, t
 
 The third row is the same reservation with the other answer to "someone is already doing this": fail fast. The second caller gets an error that an HTTP layer maps to `409 Conflict`, which is what Stripe does, and which is the right choice for a public API where the caller should not be holding a connection open while somebody else's request runs. Internal callers usually prefer to wait. Both are correct; both are one setting; the cache is neither.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>What happens when the same key arrives twice</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: What happens when the same key arrives twice
+    accDescr: This shows the default wait policy: reserve the key atomically before running the action. A matching in-flight request waits for the first result; a different payload with the same key is rejected.
+ R["Request + key"] --> K{"Won atomic reservation?"}
+ K -->|"Yes"| N["Run action; save result"] --> S["Return / replay result"]
+ K -->|"No"| P{"Payload matches?"}
+ P -->|"No"| X["Reject key reuse"]
+ P -->|"Yes"| W["Wait if in flight"] --> S
+```
+
+</div>
+<p class="bdr-diagram__caption">This shows the default wait policy: reserve the key atomically before running the action. A matching in-flight request waits for the first result; a different payload with the same key is rejected.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## It is still not a lock
 
 The reservation looks like a lock and people call it one, and then they try to use it as one, so it is worth saying what it is not. A lock protects a resource for a duration. A reservation protects a *key* for the length of one attempt: it says "this request is being handled" and nothing about the order, the account balance, or anything else two different keys might contend for. Two requests with two keys that both charge the same card go through in parallel, as they should; the key is the client's statement that these two are the same request, not a claim on the card.

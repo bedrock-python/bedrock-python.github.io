@@ -115,6 +115,39 @@ async def place_order(uow: AsyncUnitOfWork, order: Order) -> None:
 
 Мой ориентир на ревью: **если функция получает session, но не открывает транзакцию, проверьте, нужна ли она в сигнатуре**. Репозиторию передайте её в конструктор, сценарию использования — unit of work.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Один владелец, одна транзакция, несколько репозиториев</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Один владелец, одна транзакция, несколько репозиториев
+    accDescr: Сценарий использования управляет коммитом и откатом. Репозитории последовательно работают с одной сессией транзакции; параллельным задачам нужны отдельные сессии и границы транзакций.
+    F["Фабрика сессий уровня приложения"] --> U["Сценарий / Unit of Work"]
+    U --> T["Одна AsyncSession на транзакцию"]
+    T --> A["OrderRepository"]
+    T --> B["OutboxRepository"]
+    A --> D[("Одна транзакция PostgreSQL")]
+    B --> D
+```
+
+</div>
+<p class="bdr-diagram__caption">Сценарий использования управляет коммитом и откатом. Репозитории последовательно работают с одной сессией транзакции; параллельным задачам нужны отдельные сессии и границы транзакций.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 [sqlalchemy-foundation-kit](https://bedrock-python.github.io/sqlalchemy-foundation-kit/) предоставляет менеджер session с владением engine и пулом, unit of work с `transaction()`, фиксирующим успех и откатывающим ошибку, `savepoint()` для допустимого частичного сбоя, блок чтения без явного commit и провайдеры dishka. Контейнер передаёт сценарию unit of work, а обработчик не ищет session. Механика паттерна разобрана в [статье о Unit of Work](2026-09-07-unit-of-work-in-sqlalchemy-2.md); здесь вопрос во владении.

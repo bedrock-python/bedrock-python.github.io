@@ -102,6 +102,40 @@ run_sync(Service(spec, entrypoints=ENTRYPOINTS[role]), Settings())
 
 The worker file is gone. The signal handler, the stop event, the pool's `finally`, the readiness, the drain budget and the warmup are on the host, once, and the worker is the loop and nothing else. Adding the scheduler was one more entry in the dictionary. Splitting the API and the worker into two deployments was the dictionary's keys.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The application owns resources; frameworks serve traffic</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: The application owns resources; frameworks serve traffic
+    accDescr: Database pools and shared clients belong to the application host. HTTP and worker entrypoints use those resources and follow the same startup and shutdown ordering.
+    H["Application Host"] --> R["Shared application resources"]
+    H --> A["FastAPI / HTTP"]
+    H --> W["Worker entrypoint"]
+    A -.->|"Uses"| R
+    W -.->|"Uses"| R
+    R --> D[("PostgreSQL")]
+    R --> C["Outbound clients"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Database pools and shared clients belong to the application host. HTTP and worker entrypoints use those resources and follow the same startup and shutdown ordering.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What FastAPI's lifespan is still for
 
 Not nothing. Things that are genuinely about the HTTP app and nothing else, a template engine, a router-level cache, an OpenAPI customisation, belong in the lifespan, because the app is their lifecycle. The rule is the same one that decides where any code goes: the lifespan owns what only the HTTP entrypoint needs; the host owns what the process needs. A database pool is the second kind, and it was only ever in the lifespan because there was nowhere else to put it.

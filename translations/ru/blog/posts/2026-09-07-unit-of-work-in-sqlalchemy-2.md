@@ -103,6 +103,47 @@ order 2 -> users=1 orders=1   (one commit, both rows)
 
 Одна фиксация и обе строки либо ни фиксации, ни строк. Id заказа равен 2, не 1: неудачная попытка израсходовала значение последовательности до отката. Выдача значений PostgreSQL sequence не откатывается вместе с транзакцией; пропуск id сам по себе не ошибка.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Один владелец определяет результат всей операции</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Один владелец определяет результат всей операции
+    accDescr: Оба репозитория используют одну транзакцию. Flush отправляет SQL, но не фиксирует его; Unit of Work сохраняет обе записи при успехе или откатывает обе при ошибке.
+    autonumber
+    participant U as Сценарий / UoW
+    participant R as Репозитории
+    participant D as PostgreSQL
+    U->>D: BEGIN
+    U->>R: Добавить пользователя
+    R->>D: INSERT + flush
+    U->>R: Добавить заказ
+    R->>D: INSERT + flush
+    alt Все записи успешны
+      U->>D: COMMIT
+    else Ошибка любой записи
+      U->>D: ROLLBACK
+    end
+```
+
+</div>
+<p class="bdr-diagram__caption">Оба репозитория используют одну транзакцию. Flush отправляет SQL, но не фиксирует его; Unit of Work сохраняет обе записи при успехе или откатывает обе при ошибке.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Блок чтения не фиксирует запись {#read-only-means-read-only}
 
 Вторая возможность паттерна — блок, обещающий не сохранять изменения:

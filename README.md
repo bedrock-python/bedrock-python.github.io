@@ -80,6 +80,17 @@ Check that committed catalog files are current with:
 uv run --no-dev --group docs python scripts/build_blog_catalog.py --check
 ```
 
+## Article diagrams
+
+Use native Mermaid figures to explain a concrete decision, sequence or state
+transition. Every article has a corresponding diagram in English and Russian,
+with a visible caption and accessible SVG description. Shared styles support
+both themes, a scrollable mobile viewport and an expanded dialog.
+
+See [the diagram authoring guide](plans/article-diagrams.md) for the figure
+template, supported layouts, translation rules and browser checks. Run
+`make docs-catalog` after editing a diagram's caption, then `make docs-check`.
+
 ## Deployment
 
 Any push to `master` triggers the [Docs workflow](.github/workflows/docs.yml) which builds with `zensical` and deploys to GitHub Pages automatically.

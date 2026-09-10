@@ -168,3 +168,36 @@ There are four libraries in that file and none of them imports another. The life
 That is the whole design of the organisation: small libraries, zero-dependency cores, extras for the integrations, and protocol-shaped seams between them, so that a service takes the lines of the list it needs and leaves the rest. The list has fourteen lines and there are twelve libraries; the ones this service did not need are the Redis client, the Kafka client, the idempotency store, the outbox, the migration tests, the partition manager and the two gRPC kits, and each of them has a post of its own in this series or will.
 
 I kept seeing the same infrastructure code repeated across services. [Bedrock Python](https://bedrock-python.github.io/libraries/) is an attempt to pull those pieces into small independent libraries instead of creating another mega-framework. This was the smallest service that shows what that looks like when it runs.
+
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Infrastructure has boundaries too</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Infrastructure has boundaries too
+    accDescr: The host coordinates lifetime, the use case coordinates business work, and focused libraries provide database and transport mechanics. Domain rules stay in the application.
+    H["Host / servicewright"] --> E["HTTP, gRPC or worker entrypoint"]
+    E --> U["Application use case"]
+    U --> D["Unit of Work / PostgreSQL"]
+    U --> C["Outbound clients / HTTP or gRPC"]
+    H -.->|"Owns lifetime"| D
+    H -.->|"Owns lifetime"| C
+```
+
+</div>
+<p class="bdr-diagram__caption">The host coordinates lifetime, the use case coordinates business work, and focused libraries provide database and transport mechanics. Domain rules stay in the application.</p>
+</figure>
+<!-- /diagram:concept -->

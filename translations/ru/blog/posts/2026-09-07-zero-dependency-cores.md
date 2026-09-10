@@ -66,6 +66,36 @@ tags:
     build('httpx') -> ImportError: httpx support requires clientwright[httpx]; install it.
 ```
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Необязательные интеграции зависят от ядра</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart BT
+    accTitle: Необязательные интеграции зависят от ядра
+    accDescr: Ядро не импортирует фреймворки и необязательные адаптеры. Extras добавляют интеграции вокруг его контрактов; пакет, посвящённый интеграции с SQLAlchemy, при этом может напрямую зависеть от SQLAlchemy.
+    A["Необязательный адаптер транспорта"] -->|"Импортирует"| C["Ядро: контракты, состояния, политики"]
+    B["Необязательная интеграция фреймворка"] -->|"Импортирует"| C
+    O["Необязательная интеграция наблюдаемости"] -->|"Импортирует"| C
+```
+
+</div>
+<p class="bdr-diagram__caption">Ядро не импортирует фреймворки и необязательные адаптеры. Extras добавляют интеграции вокруг его контрактов; пакет, посвящённый интеграции с SQLAlchemy, при этом может напрямую зависеть от SQLAlchemy.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Сообщение об ошибке — часть возможности {#the-message-is-the-feature}
 
 У необязательной зависимости есть сценарий отсутствия, и его интерфейс — сообщение. В эксперименте три формы, различающие двухминутную и двадцатиминутную диагностику:

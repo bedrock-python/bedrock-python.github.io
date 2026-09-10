@@ -42,7 +42,7 @@
       "topics": [
         "reliability"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "Circuit breakers should be per origin, not per client A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong. clientwright circuit-breaker retries reliability httpx Design HTTP & resilience Measured: one counter, three upstreams What counts as a failure One signal per logical call The probe The configuration"
     },
     {
@@ -91,7 +91,7 @@
         "messaging",
         "lifecycle"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "Graceful Kafka consumer shutdown in Kubernetes A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it SIGTERM in the middle of a batch. aiokafka-foundation-kit servicewright kafka graceful-shutdown kubernetes workers Tutorials Kafka & messaging Service lifecycle What the group does when a member disappears Measured: the consumer that exits The protocol The numbers to set The pieces"
     },
     {
@@ -136,7 +136,7 @@
       "topics": [
         "grpc"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "gRPC channels should not be pooled by address alone A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary… grpc-client-kit grpc connection-pooling retries keepalive Design gRPC What a channel is Measured: the audit client that retried The opposite mistake: a channel per call Options are identity too Health, per address The pool"
     },
     {
@@ -361,7 +361,7 @@
       "topics": [
         "postgres"
       ],
-      "minutes": 8,
+      "minutes": 9,
       "search": "PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves… sqlalchemy-foundation-kit sqlalchemy pgbouncer postgresql asyncpg connection-pooling Tutorials PostgreSQL & SQLAlchemy What transaction mode takes away The prepared statement error, and when it stopped happening The setting that actually breaks the connection Pool sizing when there is a pool in front of your pool What to monitor Closing pools during a rollout The configuration"
     },
     {
@@ -383,7 +383,7 @@
       "topics": [
         "engineering"
       ],
-      "minutes": 6,
+      "minutes": 7,
       "search": "Publishing to PyPI without API tokens: Trusted Publishing end to end A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it. python-library-template pypi github-actions release security Tutorials Python & tooling What replaces the token The environment is the gate From a merged pull request to a tag The publish trigger, and why it is a workflow_run The day something goes wrong What this buys, concretely The pieces"
     },
     {
@@ -405,7 +405,7 @@
       "topics": [
         "redis"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "Redis health checks: PING is not the whole story A health check that answers True for a server that cannot take a write is worse than no health check, because something acts on it. redis-client-kit redis health-checks kubernetes asyncio Design Redis & idempotency What PING answers Liveness and readiness are different questions What it costs, and what it does not answer The rule The pieces"
     },
     {
@@ -703,7 +703,7 @@
         "lifecycle",
         "grpc"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "Transport-independent errors: one domain error, HTTP and gRPC responses A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift. servicewright grpc fastapi errors api-design Design Service lifecycle gRPC The domain raises, and does not format The same seven calls, two transports What each layer is allowed to know Testing it once What this does not solve The pieces"
     },
     {
@@ -887,7 +887,7 @@
       "topics": [
         "redis"
       ],
-      "minutes": 6,
+      "minutes": 7,
       "search": "When should Redis fail open? Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it. redis-client-kit idempotency-kit redis reliability timeouts kubernetes Design Redis & idempotency Before deciding anything: how long does it take to know? The cache: open, always The rate limiter: open, and say so The idempotency store: it depends on what repeating costs Health: what readiness should depend on And then it comes back The shape"
     },
     {
@@ -909,7 +909,7 @@
       "topics": [
         "lifecycle"
       ],
-      "minutes": 5,
+      "minutes": 6,
       "search": "Why application lifecycle should not belong to FastAPI FastAPI's lifespan is a good API. It is an async context manager: whatever you set up before the yield is the startup, whatever you do after it is the shutdown, and it runs… servicewright fastapi lifecycle architecture kubernetes Design Service lifecycle The API, as usually written The worker, as usually written The framework is an entrypoint What FastAPI's lifespan is still for"
     },
     {

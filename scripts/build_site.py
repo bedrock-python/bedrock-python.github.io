@@ -268,6 +268,10 @@ def build(output: Path) -> dict:
             subprocess.run([sys.executable, "-m", "zensical", "build", "--clean", "-f", str(config_path)],
                            cwd=config_path.parent, check=True)
             built = config_path.parent / "site"
+            # Instant navigation reads this edition's sitemap, not the combined
+            # root sitemap. Include articles and labs before copying either one.
+            combine_sitemaps(built, [built], [editions[code]["canonical"]
+                                             for editions in pairs.values() if code in editions])
             outputs.append(built)
             prefix = data["languages"][code]["prefix"]
             if prefix and (public / prefix).exists():

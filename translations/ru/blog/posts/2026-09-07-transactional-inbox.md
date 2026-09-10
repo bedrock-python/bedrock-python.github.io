@@ -73,6 +73,46 @@ EXACTLY_ONCE_INBOX (default)       first: processed=False committed=False  secon
 
 Последние две дают один счёт. Обработчик запускался дважды: первая ошибка откатила и счёт, и inbox, оставив offset незафиксированным. Новый consumer получил сообщение, вторая обработка записала единственный счёт. Это однократный *эффект*, а не однократный запуск обработчика. Стандарт `EXACTLY_ONCE_INBOX` — последняя строка; от предыдущей отличается обработкой дубликатов и занятых записей, которую runner берёт на себя.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Ошибка обработчика откатывает и запись inbox</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Ошибка обработчика откатывает и запись inbox
+    accDescr: Запись inbox и бизнес-изменение входят в одну транзакцию БД. При ошибке обе записи откатываются, поэтому повторная доставка может запустить обработку; подтверждать сообщение нужно после успешного коммита.
+    participant K as Kafka
+    participant H as Обработчик
+    participant D as PostgreSQL
+    K->>H: Доставить событие E
+    H->>D: BEGIN + записать E в inbox
+    Note over H,D: Бизнес-обработка завершается ошибкой
+    H->>D: ROLLBACK
+    Note over K,H: Offset не сохранён: возможна повторная доставка
+    K->>H: Доставить событие E
+    H->>D: BEGIN + записать E в inbox
+    H->>D: Выполнить бизнес-изменение
+    H->>D: COMMIT
+    H->>K: Сохранить offset
+```
+
+</div>
+<p class="bdr-diagram__caption">Запись inbox и бизнес-изменение входят в одну транзакцию БД. При ошибке обе записи откатываются, поэтому повторная доставка может запустить обработку; подтверждать сообщение нужно после успешного коммита.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Чего inbox не делает {#what-the-inbox-does-not-do}
 
 Не делает однократным эффект *вне* БД. Отправленное перед ошибкой письмо уйдёт снова при повторе: оно не входит в транзакцию. Защищены только эффекты той же БД; остальным нужен собственный ключ, как в [статье об идемпотентности](2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md) для исходящего вызова.

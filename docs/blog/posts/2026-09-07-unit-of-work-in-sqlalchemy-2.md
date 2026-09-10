@@ -103,6 +103,47 @@ order 2 -> users=1 orders=1   (one commit, both rows)
 
 One commit, both rows, or no commit and no rows. The order id is 2 and not 1 because the failed attempt consumed a sequence value before it rolled back; sequences are the one thing in PostgreSQL that does not participate in the transaction, which is worth knowing the first time a gap in the ids gets reported as a bug.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>One owner decides the whole outcome</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: One owner decides the whole outcome
+    accDescr: Both repositories use the same transaction. A flush sends SQL but does not commit it; the Unit of Work commits both writes on success or rolls both back on failure.
+    autonumber
+    participant U as Use case / UoW
+    participant R as Repositories
+    participant D as PostgreSQL
+    U->>D: BEGIN
+    U->>R: Add user
+    R->>D: INSERT + flush
+    U->>R: Add order
+    R->>D: INSERT + flush
+    alt All writes succeed
+      U->>D: COMMIT
+    else Any write fails
+      U->>D: ROLLBACK
+    end
+```
+
+</div>
+<p class="bdr-diagram__caption">Both repositories use the same transaction. A flush sends SQL but does not commit it; the Unit of Work commits both writes on success or rolls both back on failure.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Read-only means read-only
 
 The second thing the pattern gives you is a block that promises it will not write:

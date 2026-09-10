@@ -74,6 +74,45 @@ async def create_invoice(event: InboxEvent, repo: InboxEventRepository) -> None:
 
 `repo.session` — именно транзакция строки inbox. Runner вставляет строку, запускает обработчик, фиксирует оба изменения, затем смещение брокера. Если обработчик выбрасывает исключение, строка откатывается вместе с его изменениями, и брокер доставляет сообщение снова. Повтор начинает с чистого состояния, как и должен.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Повтор сообщения не обязан повторять эффект</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Повтор сообщения не обязан повторять эффект
+    accDescr: Отметка inbox и бизнес-запись фиксируются одной транзакцией БД. При повторной доставке бизнес-запись пропускается; подтверждение Kafka идёт после коммита.
+ participant K as Kafka
+ participant C as Консьюмер
+ participant D as PostgreSQL
+ K->>C: Доставить сообщение
+ C->>D: BEGIN + inbox claim
+ alt Новое сообщение
+ C->>D: Записать бизнес-результат
+ else Дубликат
+ Note over C,D: Пропустить действие
+ end
+ C->>D: COMMIT
+ C->>K: Зафиксировать смещение
+```
+
+</div>
+<p class="bdr-diagram__caption">Отметка inbox и бизнес-запись фиксируются одной транзакцией БД. При повторной доставке бизнес-запись пропускается; подтверждение Kafka идёт после коммита.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Граница HTTP {#the-http-edge}
 
 Есть ещё одно окно до всей этой цепочки: клиент, отправивший заказ, получил таймаут и повторил запрос. Два заказа, два события outbox, два счёта — всё обработано правильно, но всё продублировано. Outbox и inbox этого не распознают: для них это разные заказы. Дедупликация нужна на входе по клиентскому ключу идемпотентности; этому посвящена [статья об идемпотентности](2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md). Три точки дедупликации — по одной на каждую границу запроса.

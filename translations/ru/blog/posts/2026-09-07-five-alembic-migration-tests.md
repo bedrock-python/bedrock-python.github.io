@@ -190,6 +190,38 @@ name outside convention Check constraint 'amount_positive' on table 'orders' doe
 
 Первые два сообщения выдаёт БД. В CI это неудачная проверка PR. В production первое означает откат, после которого нельзя обновиться снова, второе — откат, остановившийся на полпути.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Каждая проверка задаёт свой вопрос</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Каждая проверка задаёт свой вопрос
+    accDescr: Успешный переход к head проверяет лишь один путь миграции. Откат, сравнение с моделями и имена ограничений проверяют другие свойства истории.
+ H["История миграций"] --> U["Обновить до head"]
+ H --> B["Откатить до base"]
+ H --> S["Шаг назад и вперёд"]
+ H --> D["Сравнить схему с моделями"]
+ H --> N["Проверить имена ограничений"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Успешный переход к head проверяет лишь один путь миграции. Откат, сравнение с моделями и имена ограничений проверяют другие свойства истории.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Чему меня научила проверка имён {#the-thing-the-naming-test-taught-me}
 
 Посмотрите на сообщение об опечатке: миграция удаляла `positive_amount`, а БД жаловалась на `chk_orders_positive_amount`. Alembic применил соглашение к переданному имени. Если шаблон типа ограничения в metadata содержит `%(constraint_name)s`, аргумент `op.create_check_constraint` — не окончательное имя, а подставляемый фрагмент. `amount_positive` превращается в ожидаемое `chk_orders_amount_positive`. Но первая версия моей чистой истории передавала `"chk_orders_amount_positive"` и создавала `chk_orders_chk_orders_amount_positive`. Все тесты проходили: префикс был верным.

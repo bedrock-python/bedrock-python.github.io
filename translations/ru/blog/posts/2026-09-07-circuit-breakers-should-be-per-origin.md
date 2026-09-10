@@ -87,6 +87,38 @@ logical calls counted (clientwright)   calls ok=10 refused by breaker=0  attempt
 
 Порог — три, интервал восстановления — полсекунды. Три сбоя, один отказ с точным временем до проверки, затем первый вызов после паузы становится пробным. Он обнаруживает восстановление сервиса и замыкает цепь для следующего вызова. Отказ содержит время до следующей проверки: вызывающая сторона понимает, как долго обслуживать запросы из кеша.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Один origin — одно решение о восстановлении</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+    accTitle: Один origin — одно решение о восстановлении
+    accDescr: У каждого origin свой автомат состояний. Только пробный запрос решает, возобновлять ли трафик; отмена пробы освобождает слот, не объявляя успех или сбой.
+    direction TB
+    state "Closed: запросы проходят" as Closed
+    state "Open: быстрый отказ" as Open
+    state "Half-open: пробный запрос" as HalfOpen
+    [*] --> Closed
+    Closed --> Open: Порог ошибок достигнут
+    Open --> HalfOpen: Время ожидания истекло
+    HalfOpen --> Closed: Проба успешна
+    HalfOpen --> Open: Проба неуспешна
+```
+
+</div>
+<p class="bdr-diagram__caption">У каждого origin свой автомат состояний. Только пробный запрос решает, возобновлять ли трафик; отмена пробы освобождает слот, не объявляя успех или сбой.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Конфигурация {#the-configuration}
 
 ```python

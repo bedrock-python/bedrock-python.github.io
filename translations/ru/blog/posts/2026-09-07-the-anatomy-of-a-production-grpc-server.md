@@ -79,6 +79,44 @@ except grpc.RpcError:   # never matches a deliberate abort
 
 В эксперименте оба abort попали в `except Exception`. Фильтр только по `RpcError` их не исключил.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Сначала записать исходную ошибку, затем преобразовать её</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Сначала записать исходную ошибку, затем преобразовать её
+    accDescr: Запрос проходит обработчик исключений, затем репортёр. Ошибка идёт обратно: репортёр фиксирует исходное исключение, отфильтровывает намеренные abort, а обработчик формирует безопасный статус gRPC.
+    participant C as Клиент
+    participant M as Обработчик ошибок
+    participant R as Репортёр
+    participant H as Хендлер
+    C->>M: RPC
+    M->>R: Вызвать хендлер
+    R->>H: Вызвать хендлер
+    H-->>R: RuntimeError
+    Note over R: Записать исходную, игнорировать AbortError
+    R-->>M: RuntimeError
+    M-->>C: INTERNAL / Internal server error
+```
+
+</div>
+<p class="bdr-diagram__caption">Запрос проходит обработчик исключений, затем репортёр. Ошибка идёт обратно: репортёр фиксирует исходное исключение, отфильтровывает намеренные abort, а обработчик формирует безопасный статус gRPC.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Размер сообщений {#message-size}
 
 Стандартный предел приёма gRPC — четыре мебибайта, библиотека его сохраняет. Запрос на пять получает:

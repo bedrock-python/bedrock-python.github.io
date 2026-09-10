@@ -190,6 +190,38 @@ name outside convention Check constraint 'amount_positive' on table 'orders' doe
 
 The first two are the database talking. In CI, that is a failed check on a pull request. In production, the first one is a rollback that cannot roll forward again and the second is a rollback that stops halfway.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Each check asks a different question</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Each check asks a different question
+    accDescr: Reaching head proves only one migration path. Rollback, model comparison and constraint names test separate properties of the history.
+ H["Migration history"] --> U["Upgrade to head"]
+ H --> B["Downgrade to base"]
+ H --> S["Step back and forward"]
+ H --> D["Compare schema with models"]
+ H --> N["Check constraint names"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Reaching head proves only one migration path. Rollback, model comparison and constraint names test separate properties of the history.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The thing the naming test taught me
 
 Look again at the typo message: the migration dropped `positive_amount`, and the database complained about `chk_orders_positive_amount`. Alembic applied the naming convention to the name I passed in. When the metadata's convention for a constraint type contains `%(constraint_name)s`, the name you give `op.create_check_constraint` is not the name of the constraint; it is the token the template fills in. `amount_positive` becomes `chk_orders_amount_positive`, which is what you want, and it also means the first version of my clean history, which passed `"chk_orders_amount_positive"` as the name, had created a constraint called `chk_orders_chk_orders_amount_positive`. It passed every test, because the prefix was right.

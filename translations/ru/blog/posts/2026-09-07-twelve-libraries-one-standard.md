@@ -64,6 +64,39 @@ Required test coverage of 90% reached. Total coverage: 100.00%
 
 Новая библиотека зелёная до первой собственной строки. Эта строка сразу пишется под теми же Ruff, mypy и структурой тестов, что у остальных. Шаблон служит спецификацией репозитория, а не только исходной точкой.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Общие стандарты, независимые релизы</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Общие стандарты, независимые релизы
+    accDescr: Шаблон задаёт структуру проекта и проверки качества. Каждый репозиторий сохраняет собственную реализацию, версию и график публикаций.
+    T["Шаблон Copier: структура + стандарты CI"] --> A["Библиотека A"]
+    T --> B["Библиотека B"]
+    T --> C["Библиотека C"]
+    A --> R1["A: тесты → свой релиз"]
+    B --> R2["B: тесты → свой релиз"]
+    C --> R3["C: тесты → свой релиз"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Шаблон задаёт структуру проекта и проверки качества. Каждый репозиторий сохраняет собственную реализацию, версию и график публикаций.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Скрипт {#the-script}
 
 Шаблон пишет файлы, но не настройки GitHub вне репозитория. Они расходятся сильнее всего: страницу настроек никто не ревьюит. Поэтому `setup_repo.py` принимает `org/repo` и последовательно приводит их к стандарту:

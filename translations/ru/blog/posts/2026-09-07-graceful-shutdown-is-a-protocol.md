@@ -72,6 +72,34 @@ terminationGracePeriodSeconds  >  задержка + время завершен
 
 Если ошибиться, kubelet отправит `SIGKILL` посреди третьего шага, и запрос, ради которого этот шаг существует, всё равно погибнет.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Готовность меняется раньше закрытия порта</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Готовность меняется раньше закрытия порта
+    accDescr: Дайте изменениям маршрутизации распространиться до закрытия порта, затем завершите запросы и освободите ресурсы. Все фазы должны укладываться в бюджет завершения pod.
+ S["SIGTERM"] --> R["readiness = false"] --> D["Принимать запросы, пока обновляется маршрутизация"] --> L["Прекратить приём новых запросов"] --> F["Завершить принятые запросы"] --> C["Закрыть пулы и клиенты"] --> E["Выйти"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Дайте изменениям маршрутизации распространиться до закрытия порта, затем завершите запросы и освободите ресурсы. Все фазы должны укладываться в бюджет завершения pod.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## То же измерение с протоколом {#the-same-measurement-with-the-protocol}
 
 Servicewright выполняет именно эту последовательность: при событии остановки `serve()` возвращает управление, пока сервер ещё принимает запросы; Host переводит readiness в false, ждёт `drain_delay_seconds`, затем выполняет drain точек входа в обратном порядке, останавливает их и очищает ресурсы с ограничением `cleanup_timeout_seconds`. Определение сервиса — два маршрута FastAPI и три числа:

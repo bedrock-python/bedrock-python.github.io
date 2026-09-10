@@ -126,11 +126,13 @@ def article_topics(title: str, tags: list[str]) -> list[str]:
 
 
 def reading_minutes(body: str) -> int:
-    code_blocks = re.findall(r"^(`{3,}|~{3,})[^\n]*\n(.*?)^\1\s*$", body, flags=re.MULTILINE | re.DOTALL)
+    code_blocks = re.findall(r"^(`{3,}|~{3,})([^\n]*)\n(.*?)^\1\s*$", body, flags=re.MULTILINE | re.DOTALL)
     prose = re.sub(r"^(`{3,}|~{3,})[^\n]*\n.*?^\1\s*$", "", body, flags=re.MULTILINE | re.DOTALL)
     prose_words = len(re.findall(r"\b[\w'-]+\b", plain_text(prose)))
-    code_words = sum(len(re.findall(r"\b\w+\b", code)) for _, code in code_blocks)
+    code_words = sum(len(re.findall(r"\b\w+\b", code)) for _, language, code in code_blocks
+                     if language.strip() != "mermaid")
     # Code contributes to reading time without counting punctuation as prose.
+    # Diagram source is rendered visually; its visible caption is counted above.
     return max(1, math.ceil((prose_words + code_words * 0.5) / 220))
 
 

@@ -74,6 +74,45 @@ async def create_invoice(event: InboxEvent, repo: InboxEventRepository) -> None:
 
 That `repo.session` is the inbox row's transaction. The runner inserts the row, runs the handler, commits both, then commits the broker offset. If the handler raises, the row rolls back with it and the broker redelivers, which is a retry that starts from nothing, as a retry should.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>A duplicate message need not repeat the effect</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: A duplicate message need not repeat the effect
+    accDescr: The inbox claim and the business write commit in one database transaction. A duplicate claim skips the business write; Kafka acknowledgement follows the commit.
+ participant K as Kafka
+ participant C as Consumer
+ participant D as PostgreSQL
+ K->>C: Deliver message
+ C->>D: BEGIN + inbox claim
+ alt New message
+ C->>D: Write business effect
+ else Duplicate
+ Note over C,D: Skip the effect
+ end
+ C->>D: COMMIT
+ C->>K: Commit offset
+```
+
+</div>
+<p class="bdr-diagram__caption">The inbox claim and the business write commit in one database transaction. A duplicate claim skips the business write; Kafka acknowledgement follows the commit.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The HTTP edge
 
 There is one more window, before any of this: the client that sent the order in the first place timed out and sent it again. Two orders, two outbox events, two invoices, all of them correct and all of them duplicates. The outbox and the inbox cannot see this one, because from where they stand these are two different orders. The dedup here belongs at the edge, keyed by the client's idempotency key, and it is the subject of [the idempotency post](2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md). Three points of deduplication, one per boundary a request crosses.

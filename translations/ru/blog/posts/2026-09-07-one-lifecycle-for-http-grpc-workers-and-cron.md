@@ -42,6 +42,41 @@ run_sync(Service(spec, entrypoints=ENTRYPOINTS[role]), Settings())
 
 В эксперименте три точки входа: FastAPI с одним маршрутом, задача APScheduler каждые полсекунды и фоновый цикл вместо consumer. Все используют один пул через контейнер; роль определяет, какие точки запустит процесс.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Разные точки входа, один владелец ресурсов</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Разные точки входа, один владелец ресурсов
+    accDescr: Host владеет подготовкой и очисткой. Роль выбирает точки входа, а их клиенты и пулы следуют одному жизненному циклу приложения.
+ S["AppSpec"] --> H["Host"]
+ H --> R["Общие пулы и клиенты"]
+ H --> A["HTTP / gRPC"]
+ H --> J["Планировщик"]
+ H --> W["Воркер"]
+ A -.-> R
+ J -.-> R
+ W -.-> R
+```
+
+</div>
+<p class="bdr-diagram__caption">Host владеет подготовкой и очисткой. Роль выбирает точки входа, а их клиенты и пулы следуют одному жизненному циклу приложения.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Один процесс {#one-process}
 
 Сервис запущен с ролью `all`, получает работу секунду, затем `SIGTERM`:

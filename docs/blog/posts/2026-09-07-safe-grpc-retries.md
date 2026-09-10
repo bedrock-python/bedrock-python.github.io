@@ -77,6 +77,39 @@ Row five is the fix for row four: a whitelist. `idempotent_methods` names the me
 
 That is the design decision behind the policy: the code decides whether the *transport* thinks a retry is safe; the method decides whether the *business* does. A retry needs both.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>A retry needs three permissions</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: A retry needs three permissions
+    accDescr: A retryable status alone is insufficient: the method must be safe to repeat, and the attempt plus backoff must fit the remaining deadline and attempt limit.
+    A{"Retryable code?"} -->|"Yes"| B{"Idempotent method?"}
+    A -->|"No"| S["Return the failure"]
+    B -->|"Yes"| C{"Budget left?"}
+    B -->|"No"| S
+    C -->|"Yes"| R["Backoff, then retry"]
+    C -->|"No"| S
+```
+
+</div>
+<p class="bdr-diagram__caption">A retryable status alone is insufficient: the method must be safe to repeat, and the attempt plus backoff must fit the remaining deadline and attempt limit.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The deadline is for the call, not the attempt
 
 The second most common line in a gRPC client config is a timeout, and the second most common bug is that the two lines multiply. Three attempts of a ten-second timeout is thirty seconds, unless something says otherwise.

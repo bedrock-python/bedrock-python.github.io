@@ -101,6 +101,36 @@ tags:
 
 Отдельная задача архивации перед задачей очистки оставляет гонку, заметную под нагрузкой: очистка не знает, закончился ли экспорт. Когда архивация — часть удаления, вопрос исчезает.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Отсоединение и удаление — отдельные шаги</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Отсоединение и удаление — отдельные шаги
+    accDescr: Истёкшие партиции отсоединяются до удаления. До DROP должны пройти период ожидания и успешная архивация; ошибка архиватора должна сохранить отсоединённые данные.
+ E["Партиция подходит для очистки"] --> D["DETACH"] --> G["Период ожидания"] --> A["Архиватор"] --> Q{"Успешно?"}
+ Q -->|"Да"| X["DROP"]
+ Q -->|"Нет"| K["Сохранить данные; сообщить ошибку"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Истёкшие партиции отсоединяются до удаления. До DROP должны пройти период ожидания и успешная архивация; ошибка архиватора должна сохранить отсоединённые данные.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Как внешний ключ влияет на хранение {#what-a-foreign-key-does-to-retention}
 
 Третья партиция в том запуске не была отсоединена:

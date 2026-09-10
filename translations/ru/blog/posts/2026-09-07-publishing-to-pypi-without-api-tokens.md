@@ -55,6 +55,42 @@ CODECOV_TOKEN
 
 `uv publish` без переданных credentials использует доступный OIDC-механизм. При неверной настройке Trusted Publishing PyPI возвращает понятный отказ 403 с диагностикой ожидаемой идентичности.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Обменяйте проверенную идентичность на временный токен</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Обменяйте проверенную идентичность на временный токен
+    accDescr: PyPI сверяет идентичность workflow с настройками доверенного издателя. Задача получает временный токен вместо хранения постоянного секрета PyPI.
+ participant W as Задача релиза
+ participant G as GitHub OIDC
+ participant P as PyPI
+ W->>G: Запросить токен идентичности
+ G-->>W: Подписанный токен OIDC
+ W->>P: Обменять идентичность
+ Note over P: Проверить репозиторий / workflow / окружение
+ P-->>W: Временный токен публикации
+ W->>P: Загрузить дистрибутивы
+```
+
+</div>
+<p class="bdr-diagram__caption">PyPI сверяет идентичность workflow с настройками доверенного издателя. Задача получает временный токен вместо хранения постоянного секрета PyPI.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Окружение управляет допуском {#the-environment-is-the-gate}
 
 `environment: pypi` — не украшение. Окружение GitHub может требовать проверяющих, паузу и допустимую ветку; задача ждёт выполнения этих правил. К этому же имени привязана конфигурация PyPI. Для публикации должна совпасть вся доверенная идентичность, включая репозиторий и окружение.

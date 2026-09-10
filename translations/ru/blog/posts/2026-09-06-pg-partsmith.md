@@ -92,6 +92,37 @@ config = TablePartitionConfig(
 
 [План](https://bedrock-python.github.io/pg-partsmith/concepts/plan/) — ещё и документ: JSON с признаком `is_destructive` и самой строгой блокировкой каждой операции, а также `config_fingerprint` конфигурации таблицы. Если сохранить план во вторник и применить в четверг, когда кто-то уже изменил число сохраняемых партиций, выполнение будет отклонено с `PlanConfigMismatchError`. Повторный запуск для дерева, уже приведённого к нужному состоянию, не выполняет ни одного DDL-запроса. Это проверяет интеграционный тест, считающий запросы.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Сначала изучить состояние, затем выполнить план</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Сначала изучить состояние, затем выполнить план
+    accDescr: План описывает предполагаемые изменения. Обслуживание выполняет DDL отдельными шагами; общей атомарной транзакции для всех партиций нет.
+ C[("Каталог PostgreSQL")] --> I["Изучить партиции"]
+ P["Политика создания и хранения"] --> B["Построить план"]
+ I --> B
+ B --> M["Выполнить шаги DDL"] --> O["Сообщить результаты"]
+```
+
+</div>
+<p class="bdr-diagram__caption">План описывает предполагаемые изменения. Обслуживание выполняет DDL отдельными шагами; общей атомарной транзакции для всех партиций нет.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Удаление того, что вы не создавали {#dropping-something-you-did-not-make}
 
 Первый вопрос администратора БД к любому инструменту с DROP: «Это точно моё?» Ответ берётся из [каталога](https://bedrock-python.github.io/pg-partsmith/concepts/ownership/), без отдельной таблицы метаданных, которая может с ним рассинхронизироваться. Если библиотека не может установить принадлежность, ответ — нет.

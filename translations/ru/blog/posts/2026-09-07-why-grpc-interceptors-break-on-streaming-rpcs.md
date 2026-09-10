@@ -81,6 +81,48 @@ async def intercept_unary_stream(self, continuation, details, request):
 - **Невидимая ошибка.** Потребитель получил `UNAVAILABLE` посреди `async for`, но `except` вокруг `continuation` уже завершился в другом стеке. Счётчик остаётся нулевым.
 - **Потерянный контекст.** `finally` сбросил request id до первого элемента, и журналы обработки потока лишились корреляции именно там, где она особенно нужна.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Поток живёт дольше вызова, который его создал</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Поток живёт дольше вызова, который его создал
+    accDescr: Замер только создания итератора пропускает работу и последующие ошибки. Потоковый интерцептор должен сохранять контекст во время итерации и завершать его при успехе, ошибке или отмене.
+    participant C as Потребитель
+    participant I as Интерцептор
+    participant H as Хендлер / итератор
+    C->>I: Начать RPC
+    I->>H: Создать поток
+    H-->>I: Итератор, а не результаты
+    Note over I,H: Работа происходит при итерации
+    loop Для каждого элемента
+      I->>H: Запросить следующий элемент
+      H-->>I: Элемент
+      I-->>C: Элемент
+    end
+    H-->>I: Завершение / ошибка / отмена
+    Note over I: Завершить замер, трассировку и контекст
+    I-->>C: Итог операции
+```
+
+</div>
+<p class="bdr-diagram__caption">Замер только создания итератора пропускает работу и последующие ошибки. Потоковый интерцептор должен сохранять контекст во время итерации и завершать его при успехе, ошибке или отмене.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Ручное исправление {#doing-it-by-hand}
 
 Нужно обернуть возвращённый вызов и охватить итерацию, а не только создание:

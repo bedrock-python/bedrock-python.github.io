@@ -55,6 +55,42 @@ That is the whole list. There is no PyPI token in the repository, none in the `p
 
 `uv publish` with no credentials in sight looks for the OIDC token and uses it. The failure mode when Trusted Publishing is misconfigured is a clear 403 from PyPI naming what it expected, not a mysterious authentication error.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Exchange verified identity for a short-lived credential</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Exchange verified identity for a short-lived credential
+    accDescr: PyPI checks the workflow identity against its trusted publisher configuration. The job obtains a temporary credential instead of storing a long-lived PyPI secret.
+ participant W as Release job
+ participant G as GitHub OIDC
+ participant P as PyPI
+ W->>G: Request identity token
+ G-->>W: Signed OIDC token
+ W->>P: Exchange identity
+ Note over P: Verify repo / workflow / environment
+ P-->>W: Short-lived publish token
+ W->>P: Upload distributions
+```
+
+</div>
+<p class="bdr-diagram__caption">PyPI checks the workflow identity against its trusted publisher configuration. The job obtains a temporary credential instead of storing a long-lived PyPI secret.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The environment is the gate
 
 `environment: pypi` looks decorative and is not. A GitHub environment can carry required reviewers, a wait timer and a branch restriction, and the job cannot start until those pass. It is also the thing PyPI's configuration pins to, so a workflow that publishes from a fork's pull request — where the environment is not available — cannot get a token at all.

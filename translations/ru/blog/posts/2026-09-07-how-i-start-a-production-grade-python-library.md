@@ -106,6 +106,34 @@ ignore = ["TRY003", "ANN401", "RUF012", "S104", "ANN204", "N802", "PERF401", "SI
 
 Шаблон почти устраняет работу на втором и четвёртом шагах. Остальное и есть основная задача.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Подготовьте проверки до роста библиотеки</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Подготовьте проверки до роста библиотеки
+    accDescr: Шаблон даёт упаковку, CI и структуру документации. Тесты и реальный сервис-потребитель показывают, работает ли дизайн библиотеки на практике.
+ T["Copier"] --> G["Создать проект"] --> C["Запустить проверки качества"] --> U["Реализовать и проверить ядро"] --> D["Проверить в реальном сервисе"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Шаблон даёт упаковку, CI и структуру документации. Тесты и реальный сервис-потребитель показывают, работает ли дизайн библиотеки на практике.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Инструменты {#the-pieces}
 
 [python-library-template](https://github.com/bedrock-python/python-library-template) — шаблон copier и установочный скрипт, применяющий к новому репозиторию защиту ветки, обязательную проверку, dependabot и окружение релиза. Из него созданы все библиотеки серии, поэтому исправление конфигурации линтинга исправляет сразу двенадцать репозиториев после получения обновления.
