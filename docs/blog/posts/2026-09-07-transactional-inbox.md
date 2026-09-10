@@ -73,6 +73,46 @@ The first two rows lose the message. `AT_MOST_ONCE` commits the offset before it
 
 The last two rows handle it once. The handler ran twice, because the first run's exception rolled the whole transaction back, invoice and inbox row together, and left the offset uncommitted, so the fresh consumer got the message again and the second run wrote the one invoice that exists. That is the exactly-once *effect*: not that the handler ran once, but that its effect exists once, because the first run's effect was never committed. The default strategy, `EXACTLY_ONCE_INBOX`, is the last row; its difference from the row above it is how it treats the duplicate and the locked cases, which the runner handles for you and the plain at-least-once mode leaves to the handler.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>A failed handler must roll back the claim too</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: A failed handler must roll back the claim too
+    accDescr: The inbox claim and the business change share one database transaction. On failure both roll back, so redelivery may try again; acknowledge the message only after the successful commit.
+    participant K as Kafka
+    participant H as Handler
+    participant D as PostgreSQL
+    K->>H: Deliver event E
+    H->>D: BEGIN + claim E in inbox
+    Note over H,D: Business handler fails
+    H->>D: ROLLBACK
+    Note over K,H: Offset not committed: redelivery is possible
+    K->>H: Deliver event E
+    H->>D: BEGIN + claim E in inbox
+    H->>D: Apply business change
+    H->>D: COMMIT
+    H->>K: Commit offset
+```
+
+</div>
+<p class="bdr-diagram__caption">The inbox claim and the business change share one database transaction. On failure both roll back, so redelivery may try again; acknowledge the message only after the successful commit.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What the inbox does not do
 
 It does not make a side effect *outside* the database happen once. A handler that sends an email and then fails will send it again on the redelivery, because the email is not in the transaction. The inbox protects effects that share its database; anything else needs its own key, which is the idempotency-key argument from [the idempotency post](2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md) applied to a downstream call.

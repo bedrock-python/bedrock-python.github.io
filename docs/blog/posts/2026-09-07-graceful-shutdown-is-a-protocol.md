@@ -72,6 +72,34 @@ terminationGracePeriodSeconds  >  delay + drain grace + cleanup budget + slack
 
 Get it wrong and the kubelet sends `SIGKILL` in the middle of step three, and the in-flight request that step three exists to protect dies anyway.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Readiness changes before the listener closes</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Readiness changes before the listener closes
+    accDescr: Allow routing changes to propagate before closing the listener, then drain requests and release resources. All phases must fit the pod's termination budget.
+ S["SIGTERM"] --> R["readiness = false"] --> D["Keep serving during routing delay"] --> L["Stop accepting new requests"] --> F["Drain in-flight requests"] --> C["Close pools and clients"] --> E["Exit"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Allow routing changes to propagate before closing the listener, then drain requests and release resources. All phases must fit the pod&#x27;s termination budget.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The same measurement, with the protocol
 
 servicewright runs a service through exactly this sequence: `serve()` returns when the stop event fires while the server is still accepting, the Host flips readiness to false, waits `drain_delay_seconds`, then drains every entrypoint in reverse order, stops them, and runs cleanup within `cleanup_timeout_seconds`. The service definition is the two routes under a FastAPI entrypoint and three numbers:

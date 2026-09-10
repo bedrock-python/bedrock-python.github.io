@@ -81,6 +81,48 @@ Three separate failures in one interceptor, and all of them have the same cause:
 - **The error is invisible.** The stream failed mid-way, the caller got `UNAVAILABLE`, and the interceptor's `except` never ran, because the exception is raised inside the consumer's `async for`, in a different stack. The error counter says zero while the calls fail.
 - **The context is gone.** The `finally` reset the request id before the first item arrived, so every log line the consumer writes while processing the stream has no request id on it. The one place you would most want the correlation, a long-running stream, is the one place it is missing.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The stream outlives the call that created it</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: The stream outlives the call that created it
+    accDescr: Timing only iterator creation misses the work and later errors. A streaming interceptor must keep its context through iteration and finalize it on completion, error or cancellation.
+    participant C as Consumer
+    participant I as Interceptor
+    participant H as Handler / iterator
+    C->>I: Start RPC
+    I->>H: Create stream
+    H-->>I: Iterator, not results
+    Note over I,H: Work happens during iteration
+    loop For each item
+      I->>H: Request next item
+      H-->>I: Item
+      I-->>C: Item
+    end
+    H-->>I: Complete / raise / cancel
+    Note over I: Finalize timing, tracing and context
+    I-->>C: Final outcome
+```
+
+</div>
+<p class="bdr-diagram__caption">Timing only iterator creation misses the work and later errors. A streaming interceptor must keep its context through iteration and finalize it on completion, error or cancellation.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Doing it by hand
 
 The fix, written directly, is to wrap the returned call so that the interceptor's work spans the iteration rather than the setup:

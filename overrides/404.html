@@ -1,0 +1,7 @@
+{% extends "main.html" %}
+{% block content %}
+  {% set messages = config.extra.i18n.messages if config.extra.i18n else {} %}
+  <h1>404 — {{ messages['Page not found'] | default('Page not found') }}</h1>
+  <p>{{ messages['not_found_intro'] | default('Explore the articles or return to the homepage.') }}</p>
+  <p><a href="{{ 'blog/' | url }}">{{ messages['All articles'] | default('All articles') }}</a> · <a href="{{ '.' | url }}">{{ messages['Home'] | default('Home') }}</a></p>
+{% endblock %}

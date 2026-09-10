@@ -78,6 +78,40 @@ A health check should answer the question the caller is actually asking, and the
 
 The general form of this is worth keeping: **a check that never fails is not a check.** If a dependency probe has been green for a year, it is worth breaking the dependency in a lab and watching whether the probe notices. A full Redis with `noeviction` is one `docker run --maxmemory 1mb` away, and a read-only replica is one `--replicaof`. Both took about ten lines in the lab, and both would have gone unnoticed in production.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Test the operation your service depends on</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Test the operation your service depends on
+    accDescr: PING proves that Redis responds to PING. Readiness must reflect the required capability: a replica or a full primary can respond while rejecting writes.
+ P["PING"] --> Y{"Responds?"}
+ Y -->|"No"| F["Dependency unavailable"]
+ Y -->|"Yes"| W{"Service needs writes?"}
+ W -->|"Yes"| R["Probe write + read"]
+ W -->|"No"| G["Probe required read"]
+ R --> C["Decide readiness from capability"]
+ G --> C
+```
+
+</div>
+<p class="bdr-diagram__caption">PING proves that Redis responds to PING. Readiness must reflect the required capability: a replica or a full primary can respond while rejecting writes.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 The check is [redis-client-kit](https://bedrock-python.github.io/redis-client-kit/): one function for a sync client and one for async, both returning `True` or `False` and never raising, both deciding inside the socket timeout, and both taking an optional key that turns the ping into a ping plus a write. The rest of the kit is the client itself, built from a settings object with explicit socket timeouts and an explicit retry policy.

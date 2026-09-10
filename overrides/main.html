@@ -1,5 +1,39 @@
 {% extends "base.html" %}
 
+{# Stock alternate links point at language roots; emit actual page pairs instead. #}
+{% block site_meta %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="{{ page.meta.description if page and page.meta and page.meta.description else config.site_description }}">
+  <meta name="author" content="{{ page.meta.author if page and page.meta and page.meta.author else config.site_author }}">
+  {% if page and page.canonical_url %}<link rel="canonical" href="{{ page.canonical_url }}">{% endif %}
+  {% if page and page.previous_page %}<link rel="prev" href="{{ page.previous_page.url | url }}">{% endif %}
+  {% if page and page.next_page %}<link rel="next" href="{{ page.next_page.url | url }}">{% endif %}
+  {% if config.extra.i18n and page %}
+    {% set pairs = config.extra.i18n.pages[page.url] | default({}) %}
+    {% for language in pairs %}
+      {% set translation = pairs[language] %}
+      <link rel="alternate" href="{{ translation.canonical }}" hreflang="{{ language }}">
+      {% if language == config.extra.i18n.default %}<link rel="alternate" href="{{ translation.canonical }}" hreflang="x-default">{% endif %}
+    {% endfor %}
+  {% endif %}
+  <link rel="icon" href="{{ config.theme.favicon | url }}">
+  <meta name="generator" content="{{ generator }}">
+{% endblock %}
+
+{% block content %}
+  {% if config.extra.i18n %}
+    <script type="application/json" id="bdr-page-languages">{{ config.extra.i18n.pages[page.url] | default({}) | tojson }}</script>
+    {% if config.extra.i18n.partial and page and (page.url == 'blog/' or 'blog/category/' in page.url or page.url == 'blog/archive/') %}
+      <aside class="bdr-translation-note" aria-label="{{ config.extra.i18n.messages['English originals'] }}">
+        <p>{{ config.extra.i18n.messages['translation_progress'] }}</p>
+        <a href="{{ config.extra.i18n.original_blog }}" data-language-link lang="en" hreflang="en">{{ config.extra.i18n.messages['English originals'] }} →</a>
+      </aside>
+    {% endif %}
+  {% endif %}
+  {{ super() }}
+{% endblock %}
+
 {# Switch fonts loaded by base to Inter / JetBrains Mono via Google Fonts. #}
 {% block fonts %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +51,10 @@
 #}
 {% block extrahead %}
   {{ super() }}
+  {% if config.extra.i18n %}
+    <script type="application/json" id="bdr-messages">{{ config.extra.i18n.messages | tojson }}</script>
+    <meta property="og:locale" content="{{ config.extra.i18n.locale }}">
+  {% endif %}
   <link rel="icon" href="{{ 'assets/logo.svg' | url }}" type="image/svg+xml" sizes="any">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ 'assets/apple-touch-icon.png' | url }}">
   {% if page.meta and page.meta.title %}

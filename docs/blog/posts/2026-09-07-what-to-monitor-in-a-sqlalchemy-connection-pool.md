@@ -59,6 +59,47 @@ It is also the leading indicator. The wait rises before the timeouts do, because
 
 Watch it as a percentile rather than a mean. The mean in the healthy phase was fifty-three milliseconds because *every* caller waited; a pool with plenty of headroom shows a mean near zero and a p99 that spikes when a slow query holds a connection, and the p99 is the request that got hurt.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Waiting and holding measure different problems</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Waiting and holding measure different problems
+    accDescr: Checkout wait is latency before a request gets a connection. Held time begins after checkout and ends at check-in; long holds consume capacity and make other requests wait or time out.
+    participant R as Request
+    participant P as Connection pool
+    participant D as PostgreSQL
+    R->>P: Request connection
+    Note over R,P: Checkout wait
+    alt Connection becomes available
+      P-->>R: Checkout
+      Note over R,D: Held time until check-in
+      R->>D: SQL / transaction
+      D-->>R: Result
+      R->>P: Return connection
+    else Pool timeout expires first
+      P-->>R: TimeoutError
+    end
+```
+
+</div>
+<p class="bdr-diagram__caption">Checkout wait is latency before a request gets a connection. Held time begins after checkout and ends at check-in; long holds consume capacity and make other requests wait or time out.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Held time is the cause
 
 The other histogram is how long a caller kept the connection after it got one, and in this run it went from fifty-two milliseconds to a flat second, tracking the query time exactly. That is the cause of the wait, and having both numbers separately is what makes the incident readable in one graph:

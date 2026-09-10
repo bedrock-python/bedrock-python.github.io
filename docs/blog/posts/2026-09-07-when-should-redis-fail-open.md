@@ -68,6 +68,39 @@ Redis paused:  idempotent charge, new key (fails open: runs)  -> charge_id='ch_2
 
 With the store gone there is no way to know whether this key was seen before. The coordinator runs the action, which is the availability-over-exactly-once trade the [idempotency post](2026-09-07-idempotency-keys-the-part-everyone-gets-wrong.md) describes, and the measurement shows what it costs: two calls with the same key while the store was gone made two charges. For a cache invalidation or an email, that is fine. For a card charge it depends entirely on whether the provider deduplicates on its own key, which the good ones do and which is why the key is passed downstream; where it does not, the right decision is to fail closed on the operation, return a retryable error, and let the client try again when the store is back. That is a decision the coordinator cannot make, because it does not know what the action costs to repeat, so it counts and logs the storage error and leaves the raising to the caller who does.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Choose by the cost of repeating the operation</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Choose by the cost of repeating the operation
+    accDescr: Fail-open is a business decision after a bounded Redis failure. Bypassing a cache can be acceptable; bypassing deduplication for a charge can duplicate money movement, so the application must choose that policy explicitly.
+    R["Redis timeout / failure"] --> Q{"Role of Redis?"}
+    Q -->|"Optional cache"| C["Compute from source"]
+    Q -->|"Rate limiting"| L["Explicit bypass + metric"]
+    Q -->|"Idempotency"| I{"Safe to repeat?"}
+    I -->|"Yes"| O["Bypass if permitted"]
+    I -->|"No"| F["Refuse or defer the operation"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Fail-open is a business decision after a bounded Redis failure. Bypassing a cache can be acceptable; bypassing deduplication for a charge can duplicate money movement, so the application must choose that policy explicitly.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Health: what readiness should depend on
 
 ```text

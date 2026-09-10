@@ -180,6 +180,34 @@ The two steps with real risk are the key change and the swap, and both are short
 
 Rehearse it on a copy with the production row count. The numbers above scale with table size, and the one you most want to know before the day is how long `CREATE INDEX CONCURRENTLY` takes on your table.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Separate the structural switch from data movement</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Separate the structural switch from data movement
+    accDescr: The new composite key and foreign keys need explicit planning. The table swap is short; draining the old DEFAULT partition is a separate, batched operation.
+ K["Prepare composite key"] --> S["Swap parent; old table becomes DEFAULT"] --> P["Create time partitions"] --> D["Move rows in batches"] --> F["Restore composite foreign keys"] --> E["Detach empty DEFAULT"]
+```
+
+</div>
+<p class="bdr-diagram__caption">The new composite key and foreign keys need explicit planning. The table swap is short; draining the old DEFAULT partition is a separate, batched operation.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 The tick, the plan and the drain are [pg-partsmith](https://bedrock-python.github.io/pg-partsmith/): `partition_data` moves the DEFAULT partition's rows into the windows they belong to, in bounded batches, creating each partition as it goes and attaching it once its window is empty, under the lock that makes the last batch and the attach one operation. The DDL for the swap stays yours, because it is four statements you should read before running them on your own table.

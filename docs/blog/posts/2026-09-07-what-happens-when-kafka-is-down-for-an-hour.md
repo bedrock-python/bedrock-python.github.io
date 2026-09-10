@@ -72,6 +72,39 @@ When the broker comes back, one cycle drains the backlog:
 
 Twenty rows, twenty messages, in order, no requeue, nobody woken up.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The outage becomes a backlog</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: The outage becomes a backlog
+    accDescr: Database commits can continue while Kafka is unavailable. Recovery requires relay capacity above the incoming event rate; duplicates remain possible and the oldest pending event is a useful signal.
+    B["Business write + outbox commit"] --> O[("Pending outbox events")]
+    O --> W["Relay attempts delivery"]
+    W --> K{"Kafka available?"}
+    K -->|"No"| P["Keep pending; backlog grows"]
+    P -.->|"Backoff / next poll"| W
+    K -->|"Yes"| D["Publish, acknowledge, mark delivered"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Database commits can continue while Kafka is unavailable. Recovery requires relay capacity above the incoming event rate; duplicates remain possible and the oldest pending event is a useful signal.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What an hour actually costs you
 
 The outbox turns a lost-events problem into a backlog problem, and a backlog has arithmetic worth doing before the incident rather than during it.

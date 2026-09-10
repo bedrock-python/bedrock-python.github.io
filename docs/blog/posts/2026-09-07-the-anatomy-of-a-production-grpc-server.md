@@ -79,6 +79,44 @@ except grpc.RpcError:   # never matches a deliberate abort
 
 In the lab both aborts landed in the `except Exception` branch. If you filter on `RpcError`, you filter nothing.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Report the original error before mapping it</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: Report the original error before mapping it
+    accDescr: Requests enter the exception mapper before the reporter. Errors travel back in reverse order: the reporter captures the original exception, filters deliberate aborts, and the mapper produces a safe gRPC status.
+    participant C as Client
+    participant M as Exception mapper
+    participant R as Reporter
+    participant H as Handler
+    C->>M: RPC
+    M->>R: Call handler
+    R->>H: Call handler
+    H-->>R: RuntimeError
+    Note over R: Capture original, ignore AbortError
+    R-->>M: RuntimeError
+    M-->>C: INTERNAL / Internal server error
+```
+
+</div>
+<p class="bdr-diagram__caption">Requests enter the exception mapper before the reporter. Errors travel back in reverse order: the reporter captures the original exception, filters deliberate aborts, and the mapper produces a safe gRPC status.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Message size
 
 gRPC's default receive limit is four mebibytes, and the kit keeps it. A five-mebibyte request gets:

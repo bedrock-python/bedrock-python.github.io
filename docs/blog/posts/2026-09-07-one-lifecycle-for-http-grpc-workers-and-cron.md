@@ -42,6 +42,41 @@ run_sync(Service(spec, entrypoints=ENTRYPOINTS[role]), Settings())
 
 The lab's three entrypoints are a FastAPI server with one route, an APScheduler job that fires every half second, and a daemon loop that stands in for a consumer. All three use the same pool through the container, and the role decides which of them this process runs.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Different entrypoints, one resource owner</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Different entrypoints, one resource owner
+    accDescr: The Host owns setup and teardown. The role selects entrypoints, while their clients and pools follow the same application lifecycle.
+ S["AppSpec"] --> H["Host"]
+ H --> R["Shared pools and clients"]
+ H --> A["HTTP / gRPC"]
+ H --> J["Scheduler"]
+ H --> W["Worker"]
+ A -.-> R
+ J -.-> R
+ W -.-> R
+```
+
+</div>
+<p class="bdr-diagram__caption">The Host owns setup and teardown. The role selects entrypoints, while their clients and pools follow the same application lifecycle.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## One process
 
 The service started as `all`, driven for a second, then sent `SIGTERM`:

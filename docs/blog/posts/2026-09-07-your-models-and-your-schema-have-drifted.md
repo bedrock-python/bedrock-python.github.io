@@ -134,6 +134,39 @@ Six and seven exist because five has blind spots, and the blind spots are not ex
 
 They all need a real database. There is no version of this that works against SQLite while the service runs on PostgreSQL, because every drift above is a question about what PostgreSQL actually did with the DDL. A container per test session, a fresh schema per test, and the whole matrix above runs in a couple of minutes.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Compare what migrations built with what models declare</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Compare what migrations built with what models declare
+    accDescr: Autogenerate compares much of the schema but does not cover every contract. Enable server-default comparison deliberately and add explicit checks for constraints and enum values that it misses.
+    M["Run migrations from empty database"] --> D[("Actual PostgreSQL schema")]
+    D --> C["Autogenerate diff, including server defaults"]
+    O["ORM metadata"] --> C
+    C --> A["CI: assert every difference is intentional"]
+    D --> E["Explicit checks: CHECK constraints and enums"]
+    E --> A
+```
+
+</div>
+<p class="bdr-diagram__caption">Autogenerate compares much of the schema but does not cover every contract. Enable server-default comparison deliberately and add explicit checks for constraints and enum values that it misses.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 The seven are a base class in [alembic-gauntlet](https://bedrock-python.github.io/alembic-gauntlet/): inherit it, hand it your `MetaData`, and set `migration_diff_compare_server_default = True` if you want the fifth one to look at defaults. The container and the fresh-schema fixtures come with it. What it needs from you is an `env.py` that takes the connection and the schema it is given instead of building its own, which is the same contract [the migration testing post](2026-09-07-five-alembic-migration-tests.md) sets out.

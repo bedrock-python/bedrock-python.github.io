@@ -64,6 +64,39 @@ Required test coverage of 90% reached. Total coverage: 100.00%
 
 A new library is green before it has a single line of its own code, and the first line of its own code is written against the same Ruff, the same mypy and the same test layout as the other twelve. That is the whole trick: the template is not a starting point that repositories diverge from, it is the specification of what a repository is.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Shared standards, independent releases</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Shared standards, independent releases
+    accDescr: The template shares project structure and quality gates. Each repository still owns its implementation, release version and publication schedule.
+    T["Copier template: structure + CI standards"] --> A["Library A"]
+    T --> B["Library B"]
+    T --> C["Library C"]
+    A --> R1["A: tests → own release"]
+    B --> R2["B: tests → own release"]
+    C --> R3["C: tests → own release"]
+```
+
+</div>
+<p class="bdr-diagram__caption">The template shares project structure and quality gates. Each repository still owns its implementation, release version and publication schedule.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The script
 
 The template renders files. It cannot set the things GitHub keeps outside the repository, and those drift worst of all, because nobody reviews a settings page. So the second half of the standard is a script, `setup_repo.py`, that takes `org/repo` and makes the repository's settings match, step by step:

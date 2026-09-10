@@ -41,27 +41,39 @@ If the process restarts after the commit but before the Kafka send, downstream s
 
 The solution is to write the event into the *same database transaction* as the business data. A background worker then reads undelivered events and publishes them to Kafka, marking each one as delivered after a successful send.
 
-```
-┌─────────────────────────────────────────────┐
-│  Single Postgres transaction                │
-│                                             │
-│  INSERT INTO users ...                      │
-│  INSERT INTO outbox_events (UserCreated)    │
-│                                             │
-└─────────────────┬───────────────────────────┘
-                  │ COMMIT (atomic)
-                  ▼
-         ┌────────────────┐
-         │  Outbox Worker │  (polls outbox_events)
-         └───────┬────────┘
-                 │ kafka.produce()
-                 ▼
-         ┌────────────────┐
-         │  Kafka topic   │
-         └────────────────┘
+The business data and the event either commit together in Postgres or both roll back. After the commit, the worker retries delivery until Kafka acknowledges the message. Delivery is at least once: the same event can arrive more than once.
+
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The transaction ends before delivery starts</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: The transaction ends before delivery starts
+    accDescr: The business row and the outbox row commit together. Kafka delivery happens later; a crash after sending but before marking delivery can produce a duplicate.
+    T["PostgreSQL transaction: business row + outbox event"] -->|COMMIT| W["Outbox worker"]
+    W -->|publish| K[(Kafka)]
+    K -->|ack| M["Mark delivered in outbox"]
+    classDef focus stroke-width:3px;
+    class T focus;
 ```
 
-The event either makes it into both Postgres and Kafka, or neither. At-least-once delivery is guaranteed — the worker retries until Kafka acknowledges the message.
+</div>
+<p class="bdr-diagram__caption">The business row and the outbox row commit together. Kafka delivery happens later; a crash after sending but before marking delivery can produce a duplicate.</p>
+</figure>
+<!-- /diagram:concept -->
 
 ## Using omni-box
 

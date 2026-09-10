@@ -100,3 +100,37 @@ client = build("httpx", config)
 The four-line loop has one of those nine decisions in it, the attempt count, and it usually gets that one wrong too. This configuration is the default of [clientwright](https://bedrock-python.github.io/clientwright/guide/retries/), spelled out; the only line a service normally changes is the total, and the only thing a call site normally adds is the idempotency of a `POST` it has made safe to repeat.
 
 The point was the second table's first column. One request, or three requests that say charge.
+
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>A retry needs permission and time</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: A retry needs permission and time
+    accDescr: Retry only a safe, eligible operation. Honour Retry-After when present, otherwise use backoff with jitter; stop if the required wait and next attempt do not fit the deadline.
+    F["Safe, eligible retry"] --> H{"Retry-After?"}
+    H -->|"Yes"| A["Server delay"]
+    H -->|"No"| B["Backoff + jitter"]
+    A --> D{"Time and budget left?"}
+    B --> D
+    D -->|"Yes"| R["Retry"]
+    D -->|"No"| E["Stop"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Retry only a safe, eligible operation. Honour Retry-After when present, otherwise use backoff with jitter; stop if the required wait and next attempt do not fit the deadline.</p>
+</figure>
+<!-- /diagram:concept -->

@@ -3,6 +3,7 @@
   const registration = Symbol.for("bedrock.libraryDirectory");
   if (window[registration]) return;
   window[registration] = true;
+  const { t } = window.bedrockI18n;
   let currentRoot = null;
   let lifecycle = null;
   const normalize = (text) => text.normalize("NFKD").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
@@ -36,7 +37,7 @@
       groups.forEach((group) => { group.hidden = !group.querySelector("[data-library-package]:not([hidden])"); });
       clear.hidden = query.value.length === 0;
       status.hidden = tokens.length === 0;
-      const message = `${count} ${count === 1 ? "package" : "packages"} found`;
+      const message = t("{count} packages found", { count });
       if (status.textContent !== message) status.textContent = message;
       empty.hidden = count > 0;
     };
@@ -72,8 +73,8 @@
           await navigator.clipboard.writeText(control.dataset.copyCommand);
           if (signal.aborted || !root.isConnected) return;
           control.dataset.copied = "true";
-          control.title = "Copied";
-          copyStatus.textContent = `Copied: ${control.dataset.copyCommand}`;
+          control.title = t("Copied");
+          copyStatus.textContent = t("Copied: {command}", { command: control.dataset.copyCommand });
           const icon = control.querySelector("svg");
           if (icon) icon.setAttribute("hidden", "");
           if (!control.querySelector("[data-copy-check]")) {
@@ -85,7 +86,7 @@
           }
           const timer = setTimeout(() => {
             delete control.dataset.copied;
-            control.title = "Copy install command";
+            control.title = t("Copy install command");
             control.querySelector("[data-copy-check]")?.remove();
             if (icon) icon.removeAttribute("hidden");
             timers.delete(timer);
@@ -99,7 +100,7 @@
           const selection = window.getSelection();
           selection.removeAllRanges();
           selection.addRange(range);
-          copyStatus.textContent = "Select and copy the highlighted install command.";
+          copyStatus.textContent = t("copy_fallback");
         }
       }
     }, { signal });

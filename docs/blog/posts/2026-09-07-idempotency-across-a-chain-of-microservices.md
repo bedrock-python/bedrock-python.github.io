@@ -62,6 +62,45 @@ Two details that make it work:
 
 **It has to survive the retry loop.** The client generates the key before the first attempt and reuses it for every retry of that request. If your HTTP client generates keys, it must do it outside its own retry, which is the same mistake as the previous section, one level down.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>One operation key survives every retry</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: One operation key survives every retry
+    accDescr: A retry must reuse the original operation identity at every hop. Each service still needs its own scope and a policy for an operation already in flight.
+ participant C as Caller
+ participant G as Gateway
+ participant O as Orders
+ participant P as Payments
+ C->>G: Request, key K
+ G->>O: Request, key K
+ O->>P: Request, key K
+ P--xO: Reply lost after charge
+ O->>P: Retry, same key K
+ P-->>O: Saved result
+ O-->>G: Saved result
+ G-->>C: Saved result
+```
+
+</div>
+<p class="bdr-diagram__caption">A retry must reuse the original operation identity at every hop. Each service still needs its own scope and a policy for an operation already in flight.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The line that says the work is not finished
 
 Look at the middle column: **the caller got no answer.** One charge, correctly, and the user is still staring at a spinner.

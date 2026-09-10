@@ -1,0 +1,81 @@
+/* Shared diagram palette. These variables also reach Zensical's SVG shadow roots. */
+.bdr-diagram, .bdr-diagram-dialog {
+  --md-mermaid-font-family: var(--md-text-font-family);
+  --md-mermaid-node-bg-color: var(--bdr-surface-2);
+  --md-mermaid-node-fg-color: var(--bdr-accent);
+  --md-mermaid-label-bg-color: var(--bdr-surface);
+  --md-mermaid-label-fg-color: var(--bdr-ink);
+  --md-mermaid-edge-color: var(--bdr-ink-2);
+  --md-mermaid-sequence-actor-bg-color: var(--bdr-surface-2);
+  --md-mermaid-sequence-actor-fg-color: var(--bdr-ink);
+  --md-mermaid-sequence-actor-border-color: var(--bdr-accent);
+  --md-mermaid-sequence-actor-line-color: var(--bdr-border-2);
+  --md-mermaid-sequence-note-bg-color: var(--bdr-surface-2);
+  --md-mermaid-sequence-note-fg-color: var(--bdr-ink);
+  --md-mermaid-sequence-note-border-color: var(--bdr-border-2);
+  --md-mermaid-sequence-message-fg-color: var(--bdr-ink);
+  --md-mermaid-sequence-message-line-color: var(--bdr-ink-2);
+  --md-mermaid-sequence-label-bg-color: var(--bdr-surface-2);
+  --md-mermaid-sequence-label-fg-color: var(--bdr-ink);
+  --md-mermaid-sequence-loop-fg-color: var(--bdr-ink-2);
+  --md-mermaid-sequence-loop-border-color: var(--bdr-accent);
+  --md-mermaid-sequence-number-bg-color: var(--bdr-surface);
+  --md-mermaid-sequence-number-fg-color: var(--bdr-ink);
+}
+.md-typeset figure.bdr-diagram {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 1.75rem 0;
+  padding: 0;
+  border: 1px solid var(--bdr-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bdr-surface);
+  text-align: start;
+}
+.md-typeset .bdr-diagram figcaption {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 16px;
+  max-width: none;
+  margin: 0;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--bdr-border);
+  font-style: normal;
+  text-align: start;
+}
+.bdr-diagram__eyebrow { grid-column: 1; color: var(--bdr-accent); font: 500 10px var(--md-code-font); letter-spacing: 1.1px; text-transform: uppercase; }
+.bdr-diagram figcaption strong { grid-column: 1; color: var(--bdr-ink); font-size: 16px; font-weight: 600; line-height: 1.4; }
+.bdr-diagram__expand { grid-column: 2; grid-row: 1 / 3; }
+.bdr-diagram__expand, .bdr-diagram-dialog button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--bdr-border-2); border-radius: 7px; background: var(--bdr-surface); color: var(--bdr-ink-2); font: 500 12px var(--md-text-font); cursor: pointer; }
+.bdr-diagram__expand:hover, .bdr-diagram-dialog button:hover { border-color: var(--bdr-accent); color: var(--bdr-accent); }
+.bdr-diagram__expand[hidden] { display: none; }
+.bdr-diagram__viewport { width: 100%; max-width: 100%; padding: 24px; overflow: auto; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--bdr-border-2) transparent; }
+.bdr-diagram__viewport > .mermaid { width: max-content; min-width: 0; margin: 0 auto; line-height: normal; text-align: start; }
+.bdr-diagram__viewport > pre.mermaid { text-align: start; font-size: 12px; }
+.md-typeset .bdr-diagram__caption { margin: 0; padding: 15px 22px 18px; border-top: 1px solid var(--bdr-border); color: var(--bdr-ink-2); font-size: 13px; line-height: 1.65; }
+.bdr-diagram__hint { display: block; margin-top: 8px; color: var(--bdr-ink-3); font-size: 11px; }
+.bdr-diagram__hint[hidden] { display: none; }
+.bdr-diagram__viewport:focus-visible, .bdr-diagram__expand:focus-visible, .bdr-diagram-dialog button:focus-visible { outline: 2px solid var(--bdr-accent); outline-offset: -3px; }
+.bdr-diagram-dialog { width: min(1400px, calc(100vw - 32px)); max-width: calc(100vw - 32px); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--bdr-border-2); border-radius: 12px; background: var(--bdr-surface); color: var(--bdr-ink); box-shadow: 0 24px 100px #0005; }
+.bdr-diagram-dialog::backdrop { background: #111a; backdrop-filter: blur(4px); }
+.bdr-diagram-dialog__header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--bdr-border); }
+.bdr-diagram-dialog__header strong { font-size: 16px; font-weight: 600; }
+.bdr-diagram-dialog__body { overflow: auto; max-height: calc(100dvh - 130px); }
+body:has(.bdr-diagram-dialog[open]) { overflow: hidden; }
+@media (max-width: 600px) {
+  .md-typeset .bdr-diagram figcaption { padding: 14px 16px; gap: 5px 10px; }
+  .bdr-diagram figcaption strong { font-size: 14px; }
+  .bdr-diagram__expand { padding: 8px; font-size: 11px; }
+  .bdr-diagram__viewport { padding: 18px 12px; }
+  .md-typeset .bdr-diagram__caption { padding: 13px 16px 16px; }
+}
+@media print {
+  .bdr-diagram__expand, .bdr-diagram__hint { display: none; }
+  .bdr-diagram__viewport { overflow: visible; }
+  .bdr-diagram__viewport > .mermaid { min-width: 0; }
+  .md-typeset figure.bdr-diagram { break-inside: avoid; }
+}

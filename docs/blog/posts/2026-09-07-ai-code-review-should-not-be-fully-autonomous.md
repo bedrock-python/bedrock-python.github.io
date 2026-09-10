@@ -53,6 +53,36 @@ brief  →  dispatch  →  polish  →  post
 
 There is no webhook receiver, no scheduler and no CI mode in the tool, and that is listed in its own documentation under what it does not do. A review starts because a person clicked. That constraint is the design.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Two human decisions around automated work</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Two human decisions around automated work
+    accDescr: People supply repository context before analysis and approve findings before publication. Automated review produces evidence for a decision.
+ H["Reviewer defines scope and constraints"] --> B["brief"] --> D["dispatch"] --> P["polish"] --> A{"Reviewer approves findings?"}
+ A -->|"Yes"| O["post"]
+ A -->|"Needs revision"| P
+```
+
+</div>
+<p class="bdr-diagram__caption">People supply repository context before analysis and approve findings before publication. Automated review produces evidence for a decision.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## What the person adds
 
 It is tempting to read the polish stage as a safety valve, a place to catch the model's mistakes. It is more than that. The person in the loop supplies the two things the model structurally cannot.

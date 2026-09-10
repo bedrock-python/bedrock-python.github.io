@@ -46,6 +46,36 @@ Brief → Dispatch → Polish → Post
 
 **Post** — you review the final comment list interactively and approve which ones to post. Nothing goes to your MR without your sign-off.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Where the reviewer stays in control</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Where the reviewer stays in control
+    accDescr: The model gathers and refines findings. A person chooses the brief and approves what is posted to the merge request.
+ B["Brief"] --> D["Dispatch reviewers"] --> P["Polish findings"] --> A{"Approved?"}
+ A -->|"Yes"| R["Post comments"]
+ A -->|"Revise"| P
+```
+
+</div>
+<p class="bdr-diagram__caption">The model gathers and refines findings. A person chooses the brief and approves what is posted to the merge request.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Preset-based review modes
 
 Different reviews need different lenses. mr-review ships with four presets:

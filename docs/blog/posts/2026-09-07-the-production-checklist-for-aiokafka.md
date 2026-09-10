@@ -148,6 +148,37 @@ Two seconds is the timeout doing its job, and it is also two seconds of a readin
 9. Topics created deliberately, idempotently, and safe to re-run.
 10. A health check with its own timeout, plus lag as the real signal.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Four parts of a production Kafka integration</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart LR
+    accTitle: Four parts of a production Kafka integration
+    accDescr: Producer durability, consumer processing, topic configuration and lifecycle checks are separate decisions. Acknowledging a send does not atomically commit a database write or a consumer offset.
+    K["Kafka integration"] --> P["Producer: acks, idempotence, delivery errors"]
+    K --> C["Consumer: process before offset commit"]
+    K --> T["Topics: partitions, replicas, retention"]
+    K --> L["Lifecycle: health, draining, close"]
+```
+
+</div>
+<p class="bdr-diagram__caption">Producer durability, consumer processing, topic configuration and lifecycle checks are separate decisions. Acknowledging a send does not atomically commit a database write or a consumer offset.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 Everything above is aiokafka's own behaviour; what [aiokafka-foundation-kit](https://bedrock-python.github.io/aiokafka-foundation-kit/) adds is the settings object those knobs live in, the lifecycle that starts and stops the client, idempotent topic creation and a health probe. It deliberately does not wrap the client: once the lifecycle yields, you are holding an `AIOKafkaProducer` or an `AIOKafkaConsumer`, and every send, poll and commit above is aiokafka's API, which is why this checklist is about aiokafka and not about a wrapper.

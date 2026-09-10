@@ -66,6 +66,36 @@ All five are *registered* with no HTTP library installed, because the registry i
     build('httpx') -> ImportError: httpx support requires clientwright[httpx]; install it.
 ```
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Optional integrations depend on the core</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart BT
+    accTitle: Optional integrations depend on the core
+    accDescr: The core imports neither frameworks nor optional adapters. Extras add integrations around its contracts; a package whose purpose is SQLAlchemy integration can still depend on SQLAlchemy directly.
+    A["Optional transport adapter"] -->|"Imports"| C["Core: contracts, state, policies"]
+    B["Optional framework integration"] -->|"Imports"| C
+    O["Optional observability integration"] -->|"Imports"| C
+```
+
+</div>
+<p class="bdr-diagram__caption">The core imports neither frameworks nor optional adapters. Extras add integrations around its contracts; a package whose purpose is SQLAlchemy integration can still depend on SQLAlchemy directly.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The message is the feature
 
 An optional dependency is a feature with a failure mode, and the failure mode is a message. There are three shapes in the lab, and the difference between them is the difference between a two-minute problem and a twenty-minute one:

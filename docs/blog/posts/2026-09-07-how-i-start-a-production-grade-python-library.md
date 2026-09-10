@@ -106,6 +106,34 @@ Running the new rule set against four existing libraries found no naive datetime
 
 Steps two and four are the ones the template makes free. The rest is the work.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Build the gate before growing the library</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Build the gate before growing the library
+    accDescr: The template supplies packaging, CI and documentation structure. Tests and a real consuming service establish whether the library's design actually works.
+ T["Copier"] --> G["Generated project"] --> C["Run quality checks"] --> U["Implement and test the core"] --> D["Try it in a real service"]
+```
+
+</div>
+<p class="bdr-diagram__caption">The template supplies packaging, CI and documentation structure. Tests and a real consuming service establish whether the library&#x27;s design actually works.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 [python-library-template](https://github.com/bedrock-python/python-library-template) is a copier template plus a setup script that applies the repository settings — branch protection, the required check, dependabot, the release environment — to a fresh repository. Every library referenced in this series was generated from it, which is also why a fix to its linting configuration is a fix to twelve repositories at once, once they take the update.

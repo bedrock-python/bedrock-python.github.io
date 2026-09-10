@@ -116,6 +116,38 @@ Plus the one that is not in the client: an idempotency key on anything that chan
 
 `retry=3` is item two, with items one, three and four missing, and item five assumed.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Retries sit inside a bounded logical call</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Retries sit inside a bounded logical call
+    accDescr: A deadline bounds total time; a budget bounds extra work; a breaker rejects calls to an unhealthy origin. Each mechanism limits a different part of the failure.
+ D["Start deadline budget"] --> B{"Breaker admits call?"}
+ B -->|"No"| F["Fail fast"]
+ B -->|"Yes"| A["One HTTP attempt"] --> S{"Safe retry, budget and time left?"}
+ S -->|"Yes"| W["Backoff + jitter within deadline"] --> A
+ S -->|"No"| R["Return final outcome"]
+```
+
+</div>
+<p class="bdr-diagram__caption">A deadline bounds total time; a budget bounds extra work; a breaker rejects calls to an unhealthy origin. Each mechanism limits a different part of the failure.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 All four are configuration on one client in [clientwright](https://bedrock-python.github.io/clientwright/): `TimeoutConfig` for the deadline, `RetryConfig` with `max_attempts`, retryable statuses and `budget_ratio`, and `CircuitBreakerConfig` keyed by origin. The deadline that travels between services is [deadline-budget](https://bedrock-python.github.io/deadline-budget/), and the key that makes a retried write safe is [idempotency-kit](https://bedrock-python.github.io/idempotency-kit/).

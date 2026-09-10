@@ -96,6 +96,39 @@ The mitigation is the same as for any startup-time validation: it fails in the f
 
 **Either way**, turn broker-side auto-creation off in production, keep the declaration in code even if a person applies it, and check the shape at startup rather than assuming it. The check is what catches the topic somebody created by hand last year with one partition.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Creation and validation are separate steps</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Creation and validation are separate steps
+    accDescr: ensure_topics_async creates a missing topic but does not reconcile an existing one. Checking the actual shape is an explicit application responsibility; shared topics can be provisioned externally.
+    A{"Own the topic?"} -->|"Yes"| B["Create if missing"]
+    A -->|"No"| C["Read actual configuration"]
+    B --> C
+    C --> D{"Matches contract?"}
+    D -->|"Yes"| E["Start service"]
+    D -->|"No"| F["Defer startup; fix mismatch"]
+```
+
+</div>
+<p class="bdr-diagram__caption">ensure_topics_async creates a missing topic but does not reconcile an existing one. Checking the actual shape is an explicit application responsibility; shared topics can be provisioned externally.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 The creation above is [aiokafka-foundation-kit](https://bedrock-python.github.io/aiokafka-foundation-kit/): a `TopicConfig` per topic, `ensure_topics_async` that creates each one and treats an existing topic as success, and a producer lifecycle that can run it before the producer starts — behind two separate arguments, so that "I have topics" and "create them" stay different statements. It never reshapes an existing topic, for the reason in the fourth section.

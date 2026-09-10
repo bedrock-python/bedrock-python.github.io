@@ -40,6 +40,44 @@ client A ran SET search_path TO leaked; client B sees search_path = 'leaked'
 
 Client B never set anything. It is now reading and writing in a schema it has never heard of, and the bug will reproduce on exactly the requests that happen to land on that server connection. `SET LOCAL` inside a transaction dies with the transaction and is safe; a bare `SET` through a transaction pooler is a bug with a random blast radius.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>A server connection belongs to one transaction</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  sequence:
+    useMaxWidth: false
+    wrap: true
+    width: 140
+    actorMargin: 36
+    mirrorActors: false
+---
+sequenceDiagram
+    accTitle: A server connection belongs to one transaction
+    accDescr: After COMMIT, PgBouncer may assign another server connection. Session-level state from the previous transaction is not a reliable contract for the next one.
+ participant S as SQLAlchemy
+ participant P as PgBouncer
+ participant D as PostgreSQL
+ S->>P: BEGIN + query
+ P->>D: Use server connection A
+ S->>P: COMMIT
+ P->>D: COMMIT
+ Note over P,D: Connection A returns to the pool
+ S->>P: BEGIN + query
+ P->>D: May use server connection B
+ Note over S,D: Do not depend on earlier session SET
+```
+
+</div>
+<p class="bdr-diagram__caption">After COMMIT, PgBouncer may assign another server connection. Session-level state from the previous transaction is not a reliable contract for the next one.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The prepared statement error, and when it stopped happening
 
 The error every asyncpg-under-PgBouncer thread on the internet is about looks like this:

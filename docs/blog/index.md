@@ -103,7 +103,7 @@ hide:
         <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Circuit breakers should be per origin, not per client</h3>
         <p class="bdr-entry__description">A circuit breaker is the simplest reliability pattern to explain and the easiest to key wrong.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -127,7 +127,7 @@ hide:
         <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">Graceful Kafka consumer shutdown in Kubernetes</h3>
         <p class="bdr-entry__description">A Kafka consumer under Kubernetes is redeployed several times a day, and every redeploy sends it SIGTERM in the middle of a batch.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -151,7 +151,7 @@ hide:
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
         <h3 class="bdr-entry__title">gRPC channels should not be pooled by address alone</h3>
         <p class="bdr-entry__description">A gRPC channel is expensive to open and cheap to keep, so every service that talks to more than one gRPC backend grows a channel pool, and the first pool is always a dictionary…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -271,7 +271,7 @@ hide:
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">PgBouncer transaction mode and async SQLAlchemy: the production setup nobody documents enough</h3>
         <p class="bdr-entry__description">Your SQLAlchemy configuration works perfectly against PostgreSQL, and then someone puts PgBouncer in front of the database in transaction mode, which is the only mode that solves…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>8 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>9 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -283,7 +283,7 @@ hide:
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">Publishing to PyPI without API tokens: Trusted Publishing end to end</h3>
         <p class="bdr-entry__description">A PyPI API token in a repository secret is a password with no expiry, no scope beyond the project it was minted for, and no way to tell who used it.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -295,7 +295,7 @@ hide:
         <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Redis health checks: PING is not the whole story</h3>
         <p class="bdr-entry__description">A health check that answers True for a server that cannot take a write is worse than no health check, because something acts on it.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -451,7 +451,7 @@ hide:
         <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Transport-independent errors: one domain error, HTTP and gRPC responses</h3>
         <p class="bdr-entry__description">A service that speaks HTTP to the outside and gRPC to its neighbours has two answers for every failure, and the two drift.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -547,7 +547,7 @@ hide:
         <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
         <h3 class="bdr-entry__title">When should Redis fail open?</h3>
         <p class="bdr-entry__description">Redis is down. It is your cache, your rate limiter and the store behind your idempotency keys, and every request that arrives now has to decide what to do without it.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -559,7 +559,7 @@ hide:
         <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Why application lifecycle should not belong to FastAPI</h3>
         <p class="bdr-entry__description">FastAPI&#x27;s lifespan is a good API. It is an async context manager: whatever you set up before the yield is the startup, whatever you do after it is the shutdown, and it runs…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>5 min read</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

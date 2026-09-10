@@ -15,9 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
-      - run: uv sync --no-dev --group docs
-      - run: uv run --no-dev --group docs python scripts/build_blog_catalog.py
-      - run: uv run zensical build --clean
+      - run: uv sync --locked --no-dev --group docs
+      - run: uv run --no-dev --group docs python -m unittest discover -s tests
+      - run: uv run --no-dev --group docs python scripts/build_blog_catalog.py --check
+      - run: uv run --no-dev --group docs python scripts/build_site.py
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site

@@ -115,6 +115,39 @@ The DI container is where the last piece goes. The unit of work is a dependency 
 
 The rule of thumb I use when reviewing: **if a function's signature contains a session and its body does not open a transaction, that session should not be there.** Either the function is a repository, in which case give it the session at construction, or it is a use case, in which case give it the unit of work.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>One owner, one transaction, several repositories</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: One owner, one transaction, several repositories
+    accDescr: The use case owns commit and rollback. Repositories use the same transaction session sequentially; parallel tasks need separate sessions and separate transaction boundaries.
+    F["Application-scoped session factory"] --> U["Use case / Unit of Work"]
+    U --> T["One AsyncSession per transaction"]
+    T --> A["OrderRepository"]
+    T --> B["OutboxRepository"]
+    A --> D[("One PostgreSQL transaction")]
+    B --> D
+```
+
+</div>
+<p class="bdr-diagram__caption">The use case owns commit and rollback. Repositories use the same transaction session sequentially; parallel tasks need separate sessions and separate transaction boundaries.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## The pieces
 
 [sqlalchemy-foundation-kit](https://bedrock-python.github.io/sqlalchemy-foundation-kit/) is the arrangement above with the sharp edges labelled: a session manager that owns the engine and the pool, a unit of work whose `transaction()` commits on success and rolls back on failure, `savepoint()` for the part that is allowed to fail, a read block that starts no transaction, and dishka providers so the container hands the use case a unit of work instead of the handler hunting for a session. The mechanics of the pattern itself are in [the Unit of Work post](2026-09-07-unit-of-work-in-sqlalchemy-2.md); this one is about who is allowed to hold the thing.

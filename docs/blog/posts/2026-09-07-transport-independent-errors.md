@@ -79,6 +79,37 @@ The transport translates kinds. The HTTP layer knows kind-to-status and how to r
 
 What is left over is the interesting part: the two decisions that are neither domain nor transport. *Is this detail public?* is a domain judgement about the message, so it lives on the error class. *What is the default when nobody decided?* is a policy, and it has to be "mask it", enforced by a catch-all at the outermost layer of every transport — because the thing you did not think about is precisely the thing that will leak.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>One domain error, two transport representations</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: One domain error, two transport representations
+    accDescr: The domain owns the error kind and safe public details. Transport adapters choose HTTP or gRPC representation; unexpected internal details stay in server logs.
+    D["Domain error: kind + public details"] --> H["HTTP adapter"]
+    D --> G["gRPC adapter"]
+    H --> R["HTTP status + problem response"]
+    G --> S["gRPC status + safe details"]
+```
+
+</div>
+<p class="bdr-diagram__caption">The domain owns the error kind and safe public details. Transport adapters choose HTTP or gRPC representation; unexpected internal details stay in server logs.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Testing it once
 
 The property to test is not "the HTTP layer returns 404". It is that the two transports agree:

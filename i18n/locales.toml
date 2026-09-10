@@ -1,0 +1,13 @@
+default = "en"
+
+[languages.en]
+name = "English"
+prefix = ""
+source = "docs"
+locale = "en_US"
+
+[languages.ru]
+name = "Русский"
+prefix = "ru"
+source = "translations/ru"
+locale = "ru_RU"

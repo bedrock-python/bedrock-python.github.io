@@ -71,6 +71,39 @@ aiohttp  status=200  origin saw 3 requests  attempt records=3
 
 Same retries, same outcome, same record shape; the two labels that differ say which library and where the engine sat. A dashboard built on this survives a library migration, and a library migration is a one-word change in a config file, because the policy did not move.
 
+<!-- diagram:concept -->
+<figure class="bdr-diagram" markdown="1">
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Keep the native client; attach policy underneath</strong></figcaption>
+<div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
+
+```mermaid
+---
+config:
+  theme: default
+  look: classic
+  flowchart:
+    useMaxWidth: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
+---
+flowchart TD
+    accTitle: Keep the native client; attach policy underneath
+    accDescr: The policy engine uses each library's extension point. Callers keep the native client type and its API; adapter capability checks expose settings the chosen library cannot honor.
+    P["Shared policy: deadlines, retries, breaker, telemetry"] --> H["httpx transport"]
+    P --> A["aiohttp middleware"]
+    P --> R["requests adapter"]
+    H --> HC["httpx.AsyncClient"]
+    A --> AC["aiohttp.ClientSession"]
+    R --> RC["requests.Session"]
+```
+
+</div>
+<p class="bdr-diagram__caption">The policy engine uses each library&#x27;s extension point. Callers keep the native client type and its API; adapter capability checks expose settings the chosen library cannot honor.</p>
+</figure>
+<!-- /diagram:concept -->
+
 ## Capability honesty
 
 The strongest argument for a wrapper is uniformity: one API, same behaviour everywhere. It is also the argument that turns out to be false, because the libraries underneath are not uniform. requests cannot cancel a blocked attempt, so a per-attempt ceiling means nothing to it. aiohttp has no write timeout. A wrapper that offers `timeout_attempt=0.5` on top of requests is offering a setting it cannot honour, and it will honour it by ignoring it, silently, until the day a blocked upload runs for an hour under a config that says half a second.

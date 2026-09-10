@@ -65,7 +65,7 @@ const initMobileSearchClose = () => {
   button.type = "button";
   button.className = "bdr-mobile-search-close";
   button.dataset.bdrSearchClose = "";
-  button.textContent = "Close search";
+  button.textContent = window.bedrockI18n.t("Close search");
   button.hidden = true;
   button.addEventListener("click", () => {
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
