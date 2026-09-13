@@ -85,13 +85,13 @@ hide:
       <div class="bdr-active-filters" data-blog-active hidden></div>
       <div class="bdr-results" id="blog-results" data-blog-results>
 <!-- catalog:articles:start -->
-  <article class="bdr-entry" data-article-id="2026-09-07-ai-code-review-should-not-be-fully-autonomous">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
+  <article class="bdr-entry" data-article-id="2026-09-13-ai-code-review-should-not-be-fully-autonomous">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
-        <h3 class="bdr-entry__title">AI code review should not be fully autonomous</h3>
-        <p class="bdr-entry__description">The obvious way to build an AI code reviewer is a webhook: a merge request opens, a model reads the diff, the comments appear.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
+        <h3 class="bdr-entry__title">Why AI code review needs human oversight</h3>
+        <p class="bdr-entry__description">AI helped me find bugs in my own merge requests. The problems began when I started automating reviews of colleagues&#x27; code: useful findings arrived alongside incorrect suggestions…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -644,18 +644,6 @@ hide:
         <h3 class="bdr-entry__title">Welcome to the Bedrock Python Blog</h3>
         <p class="bdr-entry__description">This is the home of the Bedrock Python ecosystem — what it is, why it exists, and the thinking behind it.</p>
         <div class="bdr-entry__meta"><time datetime="2026-05-30">May 30, 2026</time><span>·</span><span>2 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-05-28-introducing-mr-review">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-05-28-introducing-mr-review/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
-        <h3 class="bdr-entry__title">Introducing mr-review: AI-powered merge request reviews</h3>
-        <p class="bdr-entry__description">Code review is one of the highest-leverage activities in a software team, and also one of the most inconsistent. Reviewers get tired, context-switch mid-review, miss things.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-05-28">May 28, 2026</time><span>·</span><span>2 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

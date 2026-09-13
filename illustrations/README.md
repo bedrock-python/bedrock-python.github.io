@@ -66,7 +66,7 @@ export OPENAI_API_KEY=...
 uv run generate_images.py --dry-run                  # what would be sent, no API calls
 uv run generate_images.py --only 2026-05-30-welcome  # one post
 uv run generate_images.py --only '*kafka*' --variants 3
-uv run generate_images.py                            # all 49
+uv run generate_images.py                            # all article prompts
 ```
 
 Output lands in `images/` as `<post-slug>.png`, beside a `<post-slug>.json` sidecar holding the

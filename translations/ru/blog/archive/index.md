@@ -4,6 +4,7 @@
 
 ## 2026
 
+- **2026-09-13** — [Почему ревью с ИИ нужно контролировать](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-09-07** — [Circuit breaker должен быть отдельным для каждого origin, а не клиента](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md)
 - **2026-09-07** — [PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации](../posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy.md)
 - **2026-09-07** — [Retry-After, backoff и jitter: что делает HTTP-клиент в продакшене](../posts/2026-09-07-retry-after-backoff-and-jitter.md)
@@ -33,7 +34,6 @@
 - **2026-09-07** — [Политика хранения партиций — это не DROP TABLE](../posts/2026-09-07-partition-retention-is-not-drop-table.md)
 - **2026-09-07** — [Почему жизненный цикл приложения не должен принадлежать FastAPI](../posts/2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi.md)
 - **2026-09-07** — [Почему перехватчики gRPC ломаются на потоковых RPC](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md)
-- **2026-09-07** — [Почему ревью кода с ИИ не должно быть полностью автономным](../posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-09-07** — [Почему я перестал писать обёртки над HTTP-клиентами](../posts/2026-09-07-why-i-stopped-wrapping-http-clients.md)
 - **2026-09-07** — [Проверка здоровья Redis: одного PING недостаточно](../posts/2026-09-07-redis-health-checks-ping-is-not-the-whole-story.md)
 - **2026-09-07** — [Проверки aiokafka перед выходом в продакшен](../posts/2026-09-07-the-production-checklist-for-aiokafka.md)
@@ -51,5 +51,4 @@
 - **2026-09-06** — [Таймаут — не дедлайн: как теряется бюджет времени в микросервисах](../posts/2026-09-06-timeouts-are-not-deadlines.md)
 - **2026-09-06** — [Управление партициями PostgreSQL: от одного сбоя к другому](../posts/2026-09-06-pg-partsmith.md)
 - **2026-05-30** — [Добро пожаловать в блог Bedrock Python](../posts/2026-05-30-welcome.md)
-- **2026-05-28** — [Знакомьтесь: mr-review — проверка merge request с помощью ИИ](../posts/2026-05-28-introducing-mr-review.md)
 - **2026-05-15** — [Паттерн Transactional Outbox на Python: omni-box](../posts/2026-05-15-transactional-outbox-with-omni-box.md)

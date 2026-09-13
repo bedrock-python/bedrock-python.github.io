@@ -466,7 +466,7 @@ The failure modes of autonomous bots: noise, confident nonsense, reviewer
 fatigue, and the maintainer who stops reading. The pipeline brief, review,
 human polish, post, and what the polish step actually changes, with real
 examples of comments that were dropped. Closes on mr-review. Drafted 2026-09-07:
-`docs/blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
+`docs/blog/posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
 pipeline from the tool's documentation; real dropped-comment examples need a review session and are the maintainer's to add).
 
 ### 24. What happens when Kafka is down for an hour?

@@ -103,7 +103,7 @@ and templates from `overrides/`; generated copies are not committed.
 ## Translations
 
 English is the source language and keeps the existing URLs. Russian uses `/ru/`.
-The Russian edition covers all 99 source pages: 49 articles, 39 lab READMEs,
+The Russian edition covers all 98 source pages: 48 articles, 39 lab READMEs,
 and the main pages, archive, and categories. Article links open the corresponding
 Russian lab documentation; runnable examples and their output retain the original
 code and identifiers. Both editions have their own complete search catalog.

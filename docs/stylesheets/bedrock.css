@@ -813,10 +813,6 @@ body, .md-typeset {
 .bdr-post__hero[data-bdr-post="2026-05-15-transactional-outbox-with-omni-box"] {
   background-image: url("../assets/blog/2026-05-15-transactional-outbox-with-omni-box.webp");
 }
-.bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual,
-.bdr-post__hero[data-bdr-post="2026-05-28-introducing-mr-review"] {
-  background-image: url("../assets/blog/2026-05-28-introducing-mr-review.webp");
-}
 .bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual,
 .bdr-post__hero[data-bdr-post="2026-05-30-welcome"] {
   background-image: url("../assets/blog/2026-05-30-welcome.webp");
@@ -829,9 +825,9 @@ body, .md-typeset {
 .bdr-post__hero[data-bdr-post="2026-09-06-timeouts-are-not-deadlines"] {
   background-image: url("../assets/blog/2026-09-06-timeouts-are-not-deadlines.webp");
 }
-.bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
-.bdr-post__hero[data-bdr-post="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] {
-  background-image: url("../assets/blog/2026-09-07-ai-code-review-should-not-be-fully-autonomous.webp");
+.bdr-card[href*="2026-09-13-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-09-13-ai-code-review-should-not-be-fully-autonomous"] {
+  background-image: url("../assets/blog/2026-09-13-ai-code-review-should-not-be-fully-autonomous.webp");
 }
 .bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual,
 .bdr-post__hero[data-bdr-post="2026-09-07-circuit-breakers-should-be-per-origin"] {
@@ -1010,10 +1006,6 @@ body, .md-typeset {
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-15-transactional-outbox-with-omni-box"] {
   background-image: url("../assets/blog/2026-05-15-transactional-outbox-with-omni-box-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-05-28-introducing-mr-review"] .bdr-card__visual,
-[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-28-introducing-mr-review"] {
-  background-image: url("../assets/blog/2026-05-28-introducing-mr-review-dark.webp");
-}
 [data-md-color-scheme="slate"] .bdr-card[href*="2026-05-30-welcome"] .bdr-card__visual,
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-05-30-welcome"] {
   background-image: url("../assets/blog/2026-05-30-welcome-dark.webp");
@@ -1026,9 +1018,9 @@ body, .md-typeset {
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-06-timeouts-are-not-deadlines"] {
   background-image: url("../assets/blog/2026-09-06-timeouts-are-not-deadlines-dark.webp");
 }
-[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
-[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-ai-code-review-should-not-be-fully-autonomous"] {
-  background-image: url("../assets/blog/2026-09-07-ai-code-review-should-not-be-fully-autonomous-dark.webp");
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-09-13-ai-code-review-should-not-be-fully-autonomous"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-13-ai-code-review-should-not-be-fully-autonomous"] {
+  background-image: url("../assets/blog/2026-09-13-ai-code-review-should-not-be-fully-autonomous-dark.webp");
 }
 [data-md-color-scheme="slate"] .bdr-card[href*="2026-09-07-circuit-breakers-should-be-per-origin"] .bdr-card__visual,
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-09-07-circuit-breakers-should-be-per-origin"] {

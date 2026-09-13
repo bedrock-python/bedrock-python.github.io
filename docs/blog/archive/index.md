@@ -4,7 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
-- **2026-09-07** — [AI code review should not be fully autonomous](../posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md)
+- **2026-09-13** — [Why AI code review needs human oversight](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-09-07** — [Circuit breakers should be per origin, not per client](../posts/2026-09-07-circuit-breakers-should-be-per-origin.md)
 - **2026-09-07** — [Exactly-once is a lie; exactly-once effects are not](../posts/2026-09-07-exactly-once-effects.md)
 - **2026-09-07** — [Graceful Kafka consumer shutdown in Kubernetes](../posts/2026-09-07-graceful-kafka-consumer-shutdown.md)
@@ -51,5 +51,4 @@ Every post in the Bedrock Python blog, grouped by year.
 - **2026-09-06** — [Managing PostgreSQL partitions, one failure at a time](../posts/2026-09-06-pg-partsmith.md)
 - **2026-09-06** — [Timeouts are not deadlines: how latency budgets break across microservices](../posts/2026-09-06-timeouts-are-not-deadlines.md)
 - **2026-05-30** — [Welcome to the Bedrock Python Blog](../posts/2026-05-30-welcome.md)
-- **2026-05-28** — [Introducing mr-review: AI-powered merge request reviews](../posts/2026-05-28-introducing-mr-review.md)
 - **2026-05-15** — [The Transactional Outbox pattern in Python: omni-box](../posts/2026-05-15-transactional-outbox-with-omni-box.md)

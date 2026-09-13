@@ -85,6 +85,18 @@ hide:
       <div class="bdr-active-filters" data-blog-active hidden></div>
       <div class="bdr-results" id="blog-results" data-blog-results>
 <!-- catalog:articles:start -->
+  <article class="bdr-entry" data-article-id="2026-09-13-ai-code-review-should-not-be-fully-autonomous">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Инструменты</div>
+        <h3 class="bdr-entry__title">Почему ревью с ИИ нужно контролировать</h3>
+        <p class="bdr-entry__description">ИИ помог мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными замечаниями…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
   <article class="bdr-entry" data-article-id="2026-09-07-circuit-breakers-should-be-per-origin">
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-circuit-breakers-should-be-per-origin/">
       <div class="bdr-entry__body">
@@ -433,18 +445,6 @@ hide:
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
     </a>
   </article>
-  <article class="bdr-entry" data-article-id="2026-09-07-ai-code-review-should-not-be-fully-autonomous">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Инструменты</div>
-        <h3 class="bdr-entry__title">Почему ревью кода с ИИ не должно быть полностью автономным</h3>
-        <p class="bdr-entry__description">Самый очевидный способ сделать ИИ-ревьюера — webhook: появляется merge request, модель читает diff, публикуются комментарии.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
   <article class="bdr-entry" data-article-id="2026-09-07-why-i-stopped-wrapping-http-clients">
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-why-i-stopped-wrapping-http-clients/">
       <div class="bdr-entry__body">
@@ -644,18 +644,6 @@ hide:
         <h3 class="bdr-entry__title">Добро пожаловать в блог Bedrock Python</h3>
         <p class="bdr-entry__description">Здесь мы рассказываем об экосистеме Bedrock Python: что это такое, зачем она существует и какие идеи за ней стоят.</p>
         <div class="bdr-entry__meta"><time datetime="2026-05-30">30 мая 2026</time><span>·</span><span>2 мин на чтение</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-05-28-introducing-mr-review">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-05-28-introducing-mr-review/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Инструменты</div>
-        <h3 class="bdr-entry__title">Знакомьтесь: mr-review — проверка merge request с помощью ИИ</h3>
-        <p class="bdr-entry__description">Ревью кода — одна из самых полезных практик в разработке, но её качество сильно колеблется. Ревьюеры устают, переключаются между задачами прямо во время проверки и что-то упускают.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-05-28">28 мая 2026</time><span>·</span><span>2 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

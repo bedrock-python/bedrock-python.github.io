@@ -125,6 +125,13 @@ hide:
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
+<a class="bdr-card" href="blog/posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Инструменты</div>
+  <h3 class="bdr-card__title">Почему ревью с ИИ нужно контролировать</h3>
+  <p class="bdr-card__lede">ИИ помог мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными замечаниями…</p>
+  <div class="bdr-card__meta">2026-09-13</div>
+</a>
 <a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Архитектура</div>
@@ -137,13 +144,6 @@ hide:
   <div class="bdr-card__eyebrow">Руководства</div>
   <h3 class="bdr-card__title">PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации</h3>
   <p class="bdr-card__lede">Конфигурация SQLAlchemy прекрасно работает напрямую с PostgreSQL. Затем перед БД ставят PgBouncer в режиме транзакций, ради которого обычно и нужен пулер, и прежние предположения…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
-</a>
-<a class="bdr-card" href="blog/posts/2026-09-07-retry-after-backoff-and-jitter/">
-  <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Retry-After, backoff и jitter: что делает HTTP-клиент в продакшене</h3>
-  <p class="bdr-card__lede">Обычный цикл повторов — четыре строки: попытаться, поймать, подождать, повторить. Рабочая политика HTTP-клиента требует примерно восьми решений, которые этот цикл молча принимает…</p>
   <div class="bdr-card__meta">2026-09-07</div>
 </a>
 <!-- catalog:home:end -->

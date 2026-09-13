@@ -1,8 +1,8 @@
-# Introducing mr-review: AI-powered merge request reviews
+# AI code review should not be fully autonomous
 
-- **Post:** `docs/blog/posts/2026-05-28-introducing-mr-review.md`
+- **Post:** `docs/blog/posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md`
 - **Category:** Tools
-- **Idea:** A machine drafts remarks on a diff; a gate decides which of them get posted.
+- **Idea:** The model drafts, a person decides; nothing reaches the review unread.
 
 ## Prompt
 
@@ -12,7 +12,7 @@ Flat vector editorial illustration in the Bedrock Python house style. Isometric 
 Objects from this series' shared vocabulary appear here and must be drawn exactly as described:
 - a code plate: an upright flat plate ruled with short indented lines of varying length
 
-Subject: Two upright code plates standing side by side, their ruled lines matching except for a few that are offset between them. A slim lens plate hovers above at an isometric angle. Below, a row of marker chips descends toward a gate plate with one upright lever; two chips have passed its single slot onto a clean tray beyond, the rest are held in a heap on the near side. The lever is the terracotta object.
+Subject: On the left, a machine housing emitting a dense fan of small marker chips across an upright code plate. The fan converges on a narrow gate plate with one upright lever standing on it. Past the gate only three chips continue to a clean tray on the right, spaced far apart, while the rest crowd the near side. The lever is the terracotta object.
 
 No text, no letters, no numbers, no labels, no captions, no code, no UI screenshots, no logos, no brand names, no arrows with words. No people, no faces, no hands. No robots, gears, circuit boards, server racks with blinking lights, cloud shapes or other stock technology cliches. No neon, no dark background, no glossy spheres, no light orbs, no bokeh, no lens flare, no sparkles. No soft shading or gradient across a single face, and no white or near-white fill on any object.
 ```
