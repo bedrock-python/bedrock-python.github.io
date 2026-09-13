@@ -1,6 +1,6 @@
 # Lab: the five migration tests
 
-The code behind [the post](../../posts/2026-09-07-five-alembic-migration-tests.md): a four-revision
+The code behind [the post](../../posts/2026-09-13-testing-alembic-migrations-in-ci.md): a four-revision
 Alembic history for a small shop, five variants of it with one bug each, and three test suites run
 against every variant. Needs Docker; PostgreSQL 17 runs in a container started by the test session.
 

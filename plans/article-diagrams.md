@@ -13,10 +13,11 @@ Mermaid variables to Bedrock's warm surfaces, terracotta accent and text colors.
 Those variables inherit into the renderer's shadow roots, including inside the
 expanded dialog. There is no second Mermaid loader or custom SVG renderer.
 
-The first pass covers all 49 articles in English and Russian. Each diagram answers
-one question near the section that explains it. Existing runnable examples stay
-intact. The Outbox diagram replaces its old ASCII drawing and distinguishes the
-database commit from subsequent Kafka delivery.
+All 19 current articles have diagrams in English and Russian. Each diagram answers
+one question near the section that explains it. The September 2026 consolidation
+replaced overlapping articles and their diagrams while retaining the runnable
+labs. The Outbox diagram distinguishes the database commit from subsequent Kafka
+delivery.
 
 ## Authoring
 

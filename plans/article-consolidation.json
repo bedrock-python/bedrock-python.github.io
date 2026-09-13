@@ -1,0 +1,756 @@
+{
+  "date": "2026-09-13",
+  "groups": [
+    {
+      "group": "01",
+      "slug": "2026-09-13-production-http-grpc-clients",
+      "category": "Design",
+      "tags": [
+        "clientwright",
+        "grpc-client-kit",
+        "http",
+        "grpc",
+        "reliability"
+      ],
+      "cover": "2026-09-07-why-i-stopped-wrapping-http-clients",
+      "title_ru": "Как строить HTTP- и gRPC-клиенты для продакшена",
+      "sources": [
+        "2026-09-07-circuit-breakers-should-be-per-origin",
+        "2026-09-07-reliability-is-not-retry-3",
+        "2026-09-07-retries-can-make-an-outage-worse",
+        "2026-09-07-retry-after-backoff-and-jitter",
+        "2026-09-07-safe-grpc-retries",
+        "2026-09-07-grpc-channels-pooled-by-identity",
+        "2026-09-07-why-i-stopped-wrapping-http-clients"
+      ],
+      "title_en": "Building HTTP and gRPC clients for production",
+      "legacy_anchors": {
+        "2026-09-07-circuit-breakers-should-be-per-origin": [
+          "circuit-breakers-should-be-per-origin-not-per-client",
+          "measured-one-counter-three-upstreams",
+          "what-counts-as-a-failure",
+          "one-signal-per-logical-call",
+          "the-probe",
+          "the-configuration"
+        ],
+        "2026-09-07-reliability-is-not-retry-3": [
+          "reliability-is-not-retry3",
+          "why-retries-look-free",
+          "what-they-cost-when-it-matters",
+          "a-deadline-is-the-first-real-mechanism",
+          "a-retry-budget-removes-the-amplification",
+          "a-circuit-breaker-protects-the-next-wave-not-this-one",
+          "what-none-of-them-do",
+          "the-list",
+          "the-pieces"
+        ],
+        "2026-09-07-retries-can-make-an-outage-worse": [
+          "retries-can-make-an-outage-worse-designing-a-retry-budget",
+          "the-arithmetic",
+          "measured-one-hop",
+          "when-the-budget-is-invisible-and-when-it-hurts",
+          "measured-three-services-deep",
+          "where-retries-belong",
+          "the-policy"
+        ],
+        "2026-09-07-retry-after-backoff-and-jitter": [
+          "retry-after-backoff-and-jitter-what-a-production-http-client-actually-does",
+          "honour-retry-after",
+          "jitter-or-the-herd",
+          "a-read-timeout-is-not-a-connection-error",
+          "what-is-retried-at-all",
+          "the-checklist"
+        ],
+        "2026-09-07-safe-grpc-retries": [
+          "safe-grpc-retries-which-status-codes-you-should-actually-retry",
+          "what-a-status-code-tells-you-about-the-work",
+          "measured-five-ways-to-fail-a-charge",
+          "the-deadline-is-for-the-call-not-the-attempt",
+          "the-breaker-counts-attempts",
+          "streams-are-not-calls",
+          "the-policy-written-down"
+        ],
+        "2026-09-07-grpc-channels-pooled-by-identity": [
+          "grpc-channels-should-not-be-pooled-by-address-alone",
+          "what-a-channel-is",
+          "measured-the-audit-client-that-retried",
+          "the-opposite-mistake-a-channel-per-call",
+          "options-are-identity-too",
+          "health-per-address",
+          "the-pool"
+        ],
+        "2026-09-07-why-i-stopped-wrapping-http-clients": [
+          "why-i-stopped-wrapping-http-clients",
+          "the-life-of-a-wrapper",
+          "what-the-wrapper-actually-owns",
+          "measured-the-price",
+          "capability-honesty",
+          "the-shape"
+        ]
+      },
+      "labs": [
+        "2026-09-07-circuit-breakers-per-origin",
+        "2026-09-07-grpc-channel-identity",
+        "2026-09-07-reliability-is-not-retry-3",
+        "2026-09-07-retry-after-backoff-jitter",
+        "2026-09-07-retry-budget",
+        "2026-09-07-safe-grpc-retries",
+        "2026-09-07-why-i-stopped-wrapping-http-clients"
+      ]
+    },
+    {
+      "group": "03",
+      "slug": "2026-09-13-python-service-lifecycle",
+      "category": "Design",
+      "tags": [
+        "servicewright",
+        "kubernetes",
+        "lifecycle"
+      ],
+      "cover": "2026-09-07-graceful-shutdown-is-a-protocol",
+      "title_ru": "Жизненный цикл Python-сервиса: запуск, health checks и остановка",
+      "sources": [
+        "2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi",
+        "2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron",
+        "2026-09-07-warmup-readiness-and-liveness-are-three-different-things",
+        "2026-09-07-graceful-shutdown-is-a-protocol"
+      ],
+      "title_en": "The Python service lifecycle: startup, health checks and shutdown",
+      "legacy_anchors": {
+        "2026-09-07-why-application-lifecycle-should-not-belong-to-fastapi": [
+          "why-application-lifecycle-should-not-belong-to-fastapi",
+          "the-api-as-usually-written",
+          "the-worker-as-usually-written",
+          "the-framework-is-an-entrypoint",
+          "what-fastapis-lifespan-is-still-for"
+        ],
+        "2026-09-07-one-lifecycle-for-http-grpc-workers-and-cron": [
+          "one-lifecycle-for-http-grpc-workers-and-cron-jobs",
+          "host-and-entrypoints",
+          "one-process",
+          "two-processes",
+          "what-the-entrypoints-look-like",
+          "the-one-thing-to-get-right"
+        ],
+        "2026-09-07-warmup-readiness-and-liveness-are-three-different-things": [
+          "warmup-readiness-and-liveness-are-three-different-things",
+          "the-whole-life-of-a-pod-in-six-transitions",
+          "warmup-is-not-readiness-and-neither-is-it-liveness",
+          "liveness-is-about-the-process-not-the-dependencies",
+          "readiness-has-to-go-false-before-the-pod-stops-serving",
+          "the-three-in-one-table",
+          "the-pieces"
+        ],
+        "2026-09-07-graceful-shutdown-is-a-protocol": [
+          "graceful-shutdown-in-kubernetes-is-a-protocol-not-a-signal-handler",
+          "what-kubernetes-actually-does",
+          "the-measurement",
+          "the-protocol",
+          "the-same-measurement-with-the-protocol",
+          "sizing-the-numbers",
+          "not-only-http",
+          "what-changed-in-the-code"
+        ]
+      },
+      "labs": [
+        "2026-09-07-graceful-shutdown",
+        "2026-09-07-lifecycle-not-fastapi",
+        "2026-09-07-one-lifecycle",
+        "2026-09-07-warmup-readiness-liveness"
+      ]
+    },
+    {
+      "group": "04",
+      "slug": "2026-09-13-sqlalchemy-sessions-and-transactions",
+      "category": "Design",
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "sqlalchemy",
+        "postgresql"
+      ],
+      "cover": "2026-09-07-unit-of-work-in-sqlalchemy-2",
+      "title_ru": "Сессии и транзакции в SQLAlchemy: кто владеет commit",
+      "sources": [
+        "2026-09-07-unit-of-work-in-sqlalchemy-2",
+        "2026-09-07-stop-passing-asyncsession-everywhere"
+      ],
+      "title_en": "SQLAlchemy sessions and transactions: who owns commit",
+      "legacy_anchors": {
+        "2026-09-07-unit-of-work-in-sqlalchemy-2": [
+          "the-unit-of-work-pattern-in-sqlalchemy-2",
+          "before-repositories-that-commit",
+          "after-the-use-case-owns-the-boundary",
+          "read-only-means-read-only",
+          "savepoints-one-failed-step-not-one-failed-transaction",
+          "the-use-case-under-test",
+          "who-owns-the-transaction"
+        ],
+        "2026-09-07-stop-passing-asyncsession-everywhere": [
+          "stop-passing-asyncsession-everywhere",
+          "what-the-parameter-is-hiding",
+          "what-the-same-session-is-worth",
+          "what-it-costs-the-pool",
+          "one-session-one-task",
+          "what-leaves-the-block",
+          "what-it-looks-like-when-the-session-has-an-owner",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-stop-passing-asyncsession-everywhere",
+        "2026-09-07-unit-of-work-sqlalchemy-2"
+      ]
+    },
+    {
+      "group": "05",
+      "slug": "2026-09-13-sqlalchemy-pgbouncer-pools",
+      "category": "Tutorials",
+      "tags": [
+        "sqlalchemy-foundation-kit",
+        "pgbouncer",
+        "postgresql",
+        "observability"
+      ],
+      "cover": "2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy",
+      "title_ru": "SQLAlchemy и PgBouncer: настройка и диагностика пула соединений",
+      "sources": [
+        "2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy",
+        "2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool"
+      ],
+      "title_en": "SQLAlchemy and PgBouncer: configuring and diagnosing connection pools",
+      "legacy_anchors": {
+        "2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy": [
+          "pgbouncer-transaction-mode-and-async-sqlalchemy-the-production-setup-nobody-documents-enough",
+          "what-transaction-mode-takes-away",
+          "the-prepared-statement-error-and-when-it-stopped-happening",
+          "the-setting-that-actually-breaks-the-connection",
+          "pool-sizing-when-there-is-a-pool-in-front-of-your-pool",
+          "what-to-monitor",
+          "closing-pools-during-a-rollout",
+          "the-configuration"
+        ],
+        "2026-09-07-what-to-monitor-in-a-sqlalchemy-connection-pool": [
+          "what-to-monitor-in-a-sqlalchemy-connection-pool",
+          "the-run",
+          "saturation-is-not-an-incident",
+          "the-wait-is-the-requests-latency",
+          "held-time-is-the-cause",
+          "the-timeout-counter-is-your-error-budget",
+          "throughput-and-what-it-tells-you-about-capacity",
+          "the-six-to-graph",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-pgbouncer-async-sqlalchemy",
+        "2026-09-07-sqlalchemy-pool-metrics"
+      ]
+    },
+    {
+      "group": "06",
+      "slug": "2026-09-13-testing-alembic-migrations-in-ci",
+      "category": "Tutorials",
+      "tags": [
+        "alembic-gauntlet",
+        "alembic",
+        "postgresql",
+        "testing",
+        "ci"
+      ],
+      "cover": "2026-09-07-five-alembic-migration-tests",
+      "title_ru": "Как проверять миграции Alembic в CI",
+      "sources": [
+        "2026-09-07-five-alembic-migration-tests",
+        "2026-09-07-testing-migrations-with-testcontainers",
+        "2026-09-07-your-models-and-your-schema-have-drifted"
+      ],
+      "title_en": "Testing Alembic migrations in CI",
+      "legacy_anchors": {
+        "2026-09-07-five-alembic-migration-tests": [
+          "the-five-migration-tests-every-python-project-should-run-in-ci",
+          "the-test-most-pipelines-have",
+          "five-bugs-one-file-each",
+          "five-tests-by-hand",
+          "what-each-test-caught",
+          "the-thing-the-naming-test-taught-me",
+          "running-it-in-ci",
+          "the-contract-with-envpy",
+          "the-five-tests-as-one-import"
+        ],
+        "2026-09-07-testing-migrations-with-testcontainers": [
+          "testing-database-migrations-with-testcontainers-up-down-and-up-again",
+          "step-1-a-database-that-exists-only-for-the-test-session",
+          "step-2-pytest-configuration",
+          "step-3-the-contract-with-envpy",
+          "step-4-the-test-file",
+          "step-5-ci",
+          "what-it-costs"
+        ],
+        "2026-09-07-your-models-and-your-schema-have-drifted": [
+          "your-models-and-your-schema-have-drifted-would-ci-notice",
+          "where-drift-comes-from",
+          "the-six-drifts",
+          "the-check-that-catches-half-of-them",
+          "the-one-it-will-not-look-at-unless-you-ask",
+          "the-two-it-will-never-look-at",
+          "what-to-run-in-ci",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-five-alembic-migration-tests"
+      ]
+    },
+    {
+      "group": "07",
+      "slug": "2026-09-13-postgresql-partition-maintenance",
+      "category": "Design",
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning"
+      ],
+      "cover": "2026-09-06-pg-partsmith",
+      "title_ru": "Обслуживание партиций PostgreSQL: создание, архивирование и удаление",
+      "sources": [
+        "2026-09-06-pg-partsmith",
+        "2026-09-07-partition-retention-is-not-drop-table",
+        "2026-09-07-migrating-from-pg-partman"
+      ],
+      "title_en": "PostgreSQL partition maintenance: creation, archiving and deletion",
+      "legacy_anchors": {
+        "2026-09-06-pg-partsmith": [
+          "managing-postgresql-partitions-one-failure-at-a-time",
+          "not-knowing-what-maintenance-will-do",
+          "dropping-something-you-did-not-make",
+          "two-replicas-tick-at-once",
+          "the-team-with-no-python-in-it",
+          "the-archiver-has-to-run-before-the-drop",
+          "wiring-it-with-an-assistant-in-the-loop",
+          "where-to-read-more"
+        ],
+        "2026-09-07-partition-retention-is-not-drop-table": [
+          "partition-retention-is-not-drop-table",
+          "the-job-everybody-writes",
+          "print-the-plan-first",
+          "detach-and-drop-are-two-steps",
+          "the-archive-runs-before-the-drop-and-may-refuse-it",
+          "what-a-foreign-key-does-to-retention",
+          "the-checklist-for-a-retention-job",
+          "the-pieces"
+        ],
+        "2026-09-07-migrating-from-pg-partman": [
+          "migrating-from-pg_partman-to-application-managed-partitions",
+          "what-pg_partman-built",
+          "the-configuration-is-the-migration",
+          "adoption-is-not-a-step",
+          "running-both-at-once",
+          "switching-pg_partman-off",
+          "what-you-give-up-and-what-you-get",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-migrating-from-pg-partman",
+        "2026-09-07-partition-retention"
+      ]
+    },
+    {
+      "group": "08",
+      "slug": "2026-09-13-partitioning-an-existing-postgresql-table",
+      "category": "Tutorials",
+      "tags": [
+        "pg-partsmith",
+        "postgresql",
+        "partitioning",
+        "uuid"
+      ],
+      "cover": "2026-09-07-how-to-partition-an-existing-postgresql-table",
+      "title_ru": "Как перевести таблицу PostgreSQL на партиционирование",
+      "sources": [
+        "2026-09-07-how-to-partition-an-existing-postgresql-table",
+        "2026-09-07-uuidv7-as-a-postgresql-partition-key"
+      ],
+      "title_en": "Partitioning an existing PostgreSQL table",
+      "legacy_anchors": {
+        "2026-09-07-how-to-partition-an-existing-postgresql-table": [
+          "how-to-partition-an-existing-postgresql-table-without-rewriting-your-application",
+          "step-1-the-primary-key-has-to-contain-the-partition-column",
+          "step-2-the-swap",
+          "step-3-the-first-maintenance-tick",
+          "step-4-the-drain",
+          "step-5-the-foreign-key-comes-back-composite",
+          "step-6-the-empty-default-and-the-sequence",
+          "the-result",
+          "the-order-and-where-the-risk-is",
+          "the-pieces"
+        ],
+        "2026-09-07-uuidv7-as-a-postgresql-partition-key": [
+          "uuidv7-as-a-postgresql-partition-key",
+          "one-column-in-the-primary-key",
+          "the-bounds-are-uuids",
+          "pruning-happens-on-the-id-not-on-the-timestamp",
+          "the-three-ids-that-do-not-fit",
+          "retention-has-the-same-edge",
+          "when-to-reach-for-it",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-partition-existing-table",
+        "2026-09-07-uuidv7-partition-key"
+      ]
+    },
+    {
+      "group": "09",
+      "slug": "2026-09-13-idempotency-in-apis-and-background-jobs",
+      "category": "Design",
+      "tags": [
+        "idempotency-kit",
+        "redis",
+        "idempotency"
+      ],
+      "cover": "2026-09-07-idempotency-keys-the-part-everyone-gets-wrong",
+      "title_ru": "Идемпотентность в API и фоновых задачах",
+      "sources": [
+        "2026-09-07-idempotency-keys-the-part-everyone-gets-wrong",
+        "2026-09-07-idempotency-across-a-chain-of-microservices",
+        "2026-09-07-idempotency-for-jobs-and-consumers"
+      ],
+      "title_en": "Idempotency in APIs and background jobs",
+      "legacy_anchors": {
+        "2026-09-07-idempotency-keys-the-part-everyone-gets-wrong": [
+          "idempotency-keys-the-part-everyone-gets-wrong",
+          "what-the-key-promises",
+          "measured-the-request-that-is-still-running",
+          "it-is-still-not-a-lock",
+          "the-key-is-not-the-request",
+          "failures-are-not-cached-and-neither-is-the-store",
+          "scope-and-lifetime",
+          "the-shape"
+        ],
+        "2026-09-07-idempotency-across-a-chain-of-microservices": [
+          "idempotency-across-a-chain-of-microservices",
+          "the-shape-of-the-problem",
+          "the-mistake-that-looks-like-a-fix",
+          "the-key-belongs-to-the-request-not-to-the-attempt",
+          "the-line-that-says-the-work-is-not-finished",
+          "when-there-is-no-key-to-propagate",
+          "what-to-standardise-across-the-chain",
+          "the-pieces"
+        ],
+        "2026-09-07-idempotency-for-jobs-and-consumers": [
+          "idempotency-for-background-jobs-and-kafka-consumers",
+          "the-crash-before-the-ack",
+          "two-workers-one-job",
+          "what-the-key-is-made-of",
+          "consumers-the-inbox-and-the-key-are-not-the-same-tool",
+          "lifetime"
+        ]
+      },
+      "labs": [
+        "2026-09-07-idempotency-across-a-chain",
+        "2026-09-07-idempotency-for-jobs-and-consumers",
+        "2026-09-07-idempotency-keys"
+      ]
+    },
+    {
+      "group": "10",
+      "slug": "2026-09-13-reliable-events-outbox-inbox-kafka",
+      "category": "Design",
+      "tags": [
+        "omni-box",
+        "kafka",
+        "outbox",
+        "inbox",
+        "postgresql"
+      ],
+      "cover": "2026-09-07-exactly-once-effects",
+      "title_ru": "Надёжная доставка событий: Outbox, Inbox и сбои Kafka",
+      "sources": [
+        "2026-05-15-transactional-outbox-with-omni-box",
+        "2026-09-07-exactly-once-effects",
+        "2026-09-07-transactional-inbox",
+        "2026-09-07-what-happens-when-kafka-is-down-for-an-hour"
+      ],
+      "title_en": "Reliable event delivery with Outbox, Inbox and Kafka",
+      "legacy_anchors": {
+        "2026-05-15-transactional-outbox-with-omni-box": [
+          "the-transactional-outbox-pattern-in-python-omni-box",
+          "the-dual-write-problem",
+          "the-outbox-pattern",
+          "using-omni-box",
+          "the-inbox-side",
+          "why-a-library"
+        ],
+        "2026-09-07-exactly-once-effects": [
+          "exactly-once-is-a-lie-exactly-once-effects-are-not",
+          "messages-versus-effects",
+          "every-window-measured",
+          "the-outbox-closes-the-producer-side",
+          "the-inbox-closes-the-consumer-side",
+          "the-http-edge",
+          "the-whole-path",
+          "why-the-library-must-not-own-the-transaction",
+          "what-it-looks-like"
+        ],
+        "2026-09-07-transactional-inbox": [
+          "transactional-inbox-the-other-half-of-the-outbox-pattern",
+          "the-consumers-two-problems",
+          "the-inbox-row",
+          "measured-the-handler-fails-halfway",
+          "what-the-inbox-does-not-do",
+          "the-pair"
+        ],
+        "2026-09-07-what-happens-when-kafka-is-down-for-an-hour": [
+          "what-happens-when-kafka-is-down-for-an-hour",
+          "publishing-from-the-request-path",
+          "the-outbox-during-the-outage",
+          "what-an-hour-actually-costs-you",
+          "what-it-does-not-solve",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-exactly-once-effects",
+        "2026-09-07-transactional-inbox",
+        "2026-09-07-when-kafka-is-down"
+      ]
+    },
+    {
+      "group": "11",
+      "slug": "2026-09-13-kafka-in-python-services",
+      "category": "Tutorials",
+      "tags": [
+        "aiokafka-foundation-kit",
+        "aiokafka",
+        "kafka"
+      ],
+      "cover": "2026-09-07-the-production-checklist-for-aiokafka",
+      "title_ru": "Kafka в Python-сервисе: producer, consumer и эксплуатация",
+      "sources": [
+        "2026-09-07-the-production-checklist-for-aiokafka",
+        "2026-09-07-should-your-application-create-kafka-topics-on-startup",
+        "2026-09-07-graceful-kafka-consumer-shutdown"
+      ],
+      "title_en": "Kafka in a Python service: producers, consumers and operations",
+      "legacy_anchors": {
+        "2026-09-07-the-production-checklist-for-aiokafka": [
+          "the-production-checklist-for-aiokafka",
+          "the-producer",
+          "the-consumer",
+          "topics-and-health",
+          "the-list-short",
+          "the-pieces"
+        ],
+        "2026-09-07-should-your-application-create-kafka-topics-on-startup": [
+          "should-your-application-create-kafka-topics-on-startup",
+          "what-the-broker-does-for-you",
+          "what-the-application-does",
+          "the-shape-is-decided-once-forever",
+          "three-replicas-start-at-the-same-time",
+          "a-shape-the-cluster-cannot-give-you",
+          "so-should-it",
+          "the-pieces"
+        ],
+        "2026-09-07-graceful-kafka-consumer-shutdown": [
+          "graceful-kafka-consumer-shutdown-in-kubernetes",
+          "what-the-group-does-when-a-member-disappears",
+          "measured-the-consumer-that-exits",
+          "the-protocol",
+          "the-numbers-to-set",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-aiokafka-checklist",
+        "2026-09-07-kafka-consumer-shutdown",
+        "2026-09-07-topics-on-startup"
+      ]
+    },
+    {
+      "group": "12",
+      "slug": "2026-09-13-redis-failures-and-health-checks",
+      "category": "Design",
+      "tags": [
+        "redis-client-kit",
+        "redis",
+        "reliability"
+      ],
+      "cover": "2026-09-07-when-should-redis-fail-open",
+      "title_ru": "Redis недоступен: health checks и поведение сервиса",
+      "sources": [
+        "2026-09-07-when-should-redis-fail-open",
+        "2026-09-07-redis-health-checks-ping-is-not-the-whole-story"
+      ],
+      "title_en": "Redis failures: health checks and service behavior",
+      "legacy_anchors": {
+        "2026-09-07-when-should-redis-fail-open": [
+          "when-should-redis-fail-open",
+          "before-deciding-anything-how-long-does-it-take-to-know",
+          "the-cache-open-always",
+          "the-rate-limiter-open-and-say-so",
+          "the-idempotency-store-it-depends-on-what-repeating-costs",
+          "health-what-readiness-should-depend-on",
+          "and-then-it-comes-back",
+          "the-shape"
+        ],
+        "2026-09-07-redis-health-checks-ping-is-not-the-whole-story": [
+          "redis-health-checks-ping-is-not-the-whole-story",
+          "what-ping-answers",
+          "liveness-and-readiness-are-different-questions",
+          "what-it-costs-and-what-it-does-not-answer",
+          "the-rule",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-redis-health-checks",
+        "2026-09-07-when-should-redis-fail-open"
+      ]
+    },
+    {
+      "group": "13",
+      "slug": "2026-09-13-production-python-grpc-server",
+      "category": "Design",
+      "tags": [
+        "grpc-server-kit",
+        "grpc",
+        "servicewright"
+      ],
+      "cover": "2026-09-07-the-anatomy-of-a-production-grpc-server",
+      "title_ru": "Как подготовить Python gRPC-сервер к продакшену",
+      "sources": [
+        "2026-09-07-the-anatomy-of-a-production-grpc-server",
+        "2026-09-07-mapping-python-exceptions-to-grpc-status-codes",
+        "2026-09-07-transport-independent-errors"
+      ],
+      "title_en": "Preparing a Python gRPC server for production",
+      "legacy_anchors": {
+        "2026-09-07-the-anatomy-of-a-production-grpc-server": [
+          "the-anatomy-of-a-production-python-grpc-server",
+          "the-handler-that-raises",
+          "where-the-reporting-interceptor-goes",
+          "message-size",
+          "shutdown",
+          "health",
+          "tls-and-the-file-permissions",
+          "reflection-and-the-rest-of-the-list",
+          "the-order",
+          "the-pieces"
+        ],
+        "2026-09-07-mapping-python-exceptions-to-grpc-status-codes": [
+          "mapping-python-exceptions-to-grpc-status-codes-without-leaking-internals",
+          "what-happens-with-no-map-at-all",
+          "the-default-map",
+          "the-map-is-a-client-contract-not-a-formatting-decision",
+          "details-the-two-tier-rule",
+          "what-belongs-where",
+          "the-pieces"
+        ],
+        "2026-09-07-transport-independent-errors": [
+          "transport-independent-errors-one-domain-error-http-and-grpc-responses",
+          "the-domain-raises-and-does-not-format",
+          "the-same-seven-calls-two-transports",
+          "what-each-layer-is-allowed-to-know",
+          "testing-it-once",
+          "what-this-does-not-solve",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-production-grpc-server",
+        "2026-09-07-python-exceptions-to-grpc-status-codes",
+        "2026-09-07-transport-independent-errors"
+      ]
+    },
+    {
+      "group": "15",
+      "slug": "2026-09-13-python-library-from-template-to-release",
+      "category": "Tutorials",
+      "tags": [
+        "python-library-template",
+        "python",
+        "ci",
+        "pypi"
+      ],
+      "cover": "2026-09-07-how-i-start-a-production-grade-python-library",
+      "title_ru": "Python-библиотека от шаблона до релиза",
+      "sources": [
+        "2026-09-07-how-i-start-a-production-grade-python-library",
+        "2026-09-07-twelve-libraries-one-standard",
+        "2026-09-07-publishing-to-pypi-without-api-tokens"
+      ],
+      "title_en": "A Python library from template to release",
+      "legacy_anchors": {
+        "2026-09-07-how-i-start-a-production-grade-python-library": [
+          "how-i-start-a-production-grade-python-library-in-2026",
+          "one-command",
+          "what-is-in-the-forty-one",
+          "the-gate-has-to-run-what-it-claims",
+          "the-things-a-template-cannot-give-you",
+          "the-order-i-actually-work-in",
+          "the-pieces"
+        ],
+        "2026-09-07-twelve-libraries-one-standard": [
+          "twelve-libraries-one-engineering-standard-no-monorepo",
+          "what-one-standard-means-in-practice",
+          "the-template",
+          "the-script",
+          "releases-without-a-human-typing-a-version",
+          "the-three-things-i-got-wrong",
+          "why-not-a-monorepo"
+        ],
+        "2026-09-07-publishing-to-pypi-without-api-tokens": [
+          "publishing-to-pypi-without-api-tokens-trusted-publishing-end-to-end",
+          "what-replaces-the-token",
+          "the-environment-is-the-gate",
+          "from-a-merged-pull-request-to-a-tag",
+          "the-publish-trigger-and-why-it-is-a-workflow_run",
+          "the-day-something-goes-wrong",
+          "what-this-buys-concretely",
+          "the-pieces"
+        ]
+      },
+      "labs": [
+        "2026-09-07-twelve-libraries-one-standard"
+      ]
+    },
+    {
+      "group": "19",
+      "slug": "2026-09-13-why-bedrock-python-libraries",
+      "category": "Meta",
+      "tags": [
+        "bedrock-python",
+        "architecture",
+        "servicewright"
+      ],
+      "cover": "2026-09-07-what-every-microservice-reimplements",
+      "title_ru": "Зачем я выделяю инфраструктуру Python-сервисов в библиотеки",
+      "sources": [
+        "2026-09-07-what-every-microservice-reimplements",
+        "2026-05-30-welcome"
+      ],
+      "title_en": "Why I extract Python service infrastructure into libraries",
+      "legacy_anchors": {
+        "2026-09-07-what-every-microservice-reimplements": [
+          "what-every-production-python-microservice-reimplements",
+          "the-list",
+          "why-not-a-framework",
+          "a-hundred-lines",
+          "run",
+          "how-the-pieces-stay-apart"
+        ],
+        "2026-05-30-welcome": [
+          "welcome-to-the-bedrock-python-blog",
+          "why-this-exists",
+          "the-decision",
+          "what-to-expect-from-this-blog"
+        ]
+      },
+      "labs": [
+        "2026-09-07-what-every-microservice-reimplements"
+      ]
+    }
+  ]
+}

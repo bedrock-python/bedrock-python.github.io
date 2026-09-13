@@ -9,12 +9,12 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = {
-    "2026-05-15-transactional-outbox-with-omni-box",
-    "2026-09-07-circuit-breakers-should-be-per-origin",
-    "2026-09-07-unit-of-work-in-sqlalchemy-2",
-    "2026-09-07-when-should-redis-fail-open",
-    "2026-09-07-the-anatomy-of-a-production-grpc-server",
-    "2026-09-07-warmup-readiness-and-liveness-are-three-different-things",
+    "2026-09-13-reliable-events-outbox-inbox-kafka",
+    "2026-09-13-production-http-grpc-clients",
+    "2026-09-13-sqlalchemy-sessions-and-transactions",
+    "2026-09-13-redis-failures-and-health-checks",
+    "2026-09-13-production-python-grpc-server",
+    "2026-09-13-python-service-lifecycle",
 }
 
 
@@ -96,7 +96,7 @@ def main():
                 print(f"{args.browser}: {lang}/{post.stem}", flush=True)
 
         # Same-edition links should retain the document and reinitialize controls.
-        page.goto(args.base_url.rstrip("/") + "/ru/blog/posts/2026-09-07-safe-grpc-retries/")
+        page.goto(args.base_url.rstrip("/") + "/ru/blog/posts/2026-09-13-production-http-grpc-clients/")
         expect(page.locator(".bdr-diagram__expand")).to_be_visible(timeout=60000)
         original_url = page.url
         original_path = urlsplit(original_url).path
@@ -124,7 +124,7 @@ def main():
         fallback = browser.new_context()
         fallback.route("**/*mermaid*.js*", lambda route: route.abort())
         offline = fallback.new_page()
-        offline.goto(args.base_url.rstrip("/") + "/blog/posts/2026-05-15-transactional-outbox-with-omni-box/")
+        offline.goto(args.base_url.rstrip("/") + "/blog/posts/2026-09-13-reliable-events-outbox-inbox-kafka/")
         expect(offline.locator(".bdr-diagram__caption")).to_be_visible()
         expect(offline.locator(".bdr-diagram__expand")).to_be_hidden()
         fallback.close()

@@ -91,6 +91,15 @@ See [the diagram authoring guide](plans/article-diagrams.md) for the figure
 template, supported layouts, translation rules and browser checks. Run
 `make docs-catalog` after editing a diagram's caption, then `make docs-check`.
 
+## Consolidated articles
+
+[The consolidation manifest](plans/article-consolidation.json) records the new
+articles, their retired source URLs, retained section anchors and lab directories.
+Retired URLs use static HTML redirects in both source trees, preserving the
+language, query and fragment. They are excluded from indexing; catalogs and
+sitemaps contain the current Markdown articles. Keep the redirects and legacy
+anchor elements when editing a combined article so existing links remain usable.
+
 ## Deployment
 
 Any push to `master` triggers the [Docs workflow](.github/workflows/docs.yml) which builds with `zensical` and deploys to GitHub Pages automatically.
@@ -103,7 +112,7 @@ and templates from `overrides/`; generated copies are not committed.
 ## Translations
 
 English is the source language and keeps the existing URLs. Russian uses `/ru/`.
-The Russian edition covers all 98 source pages: 48 articles, 39 lab READMEs,
+The Russian edition covers all 69 source pages: 19 articles, 39 lab READMEs,
 and the main pages, archive, and categories. Article links open the corresponding
 Russian lab documentation; runnable examples and their output retain the original
 code and identifiers. Both editions have their own complete search catalog.
@@ -112,8 +121,8 @@ To translate a page, create its counterpart under `translations/ru/` using the
 same relative path as in `docs/`. For example:
 
 ```text
-docs/blog/posts/2026-05-30-welcome.md
-translations/ru/blog/posts/2026-05-30-welcome.md
+docs/blog/posts/2026-09-13-why-bedrock-python-libraries.md
+translations/ru/blog/posts/2026-09-13-why-bedrock-python-libraries.md
 ```
 
 Translate the title, prose, descriptions, and accessibility labels. Keep dates,

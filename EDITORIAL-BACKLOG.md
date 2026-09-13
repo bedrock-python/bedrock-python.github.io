@@ -1,5 +1,14 @@
 # Editorial plan: production Python engineering
 
+> Historical backlog. On 2026-09-13, the author approved consolidating the
+> active 48 articles into 19. The current mapping, retained labs and legacy
+> fragment identifiers are recorded in [article-consolidation.json](plans/article-consolidation.json).
+> The old topic breakdown and length targets below are superseded: write around
+> one complete reader task, remove repeated explanations, and keep full labs
+> separately. Lists and catalogs are generated with `scripts/build_blog_catalog.py`.
+> Editorial approval is tracked outside this repository; consolidation does not
+> imply that the author has approved the new text for publication.
+
 The blog is not about Bedrock packages. It is about production Python
 engineering, written by the people building Bedrock packages. Every post opens
 on a problem the reader already has and only near the end shows which library

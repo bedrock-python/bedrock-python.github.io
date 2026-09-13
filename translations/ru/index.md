@@ -125,26 +125,26 @@ hide:
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
-<a class="bdr-card" href="blog/posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
-  <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Инструменты</div>
-  <h3 class="bdr-card__title">Почему ревью с ИИ нужно контролировать</h3>
-  <p class="bdr-card__lede">ИИ помог мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными замечаниями…</p>
-  <div class="bdr-card__meta">2026-09-13</div>
-</a>
-<a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
-  <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Circuit breaker должен быть отдельным для каждого origin, а не клиента</h3>
-  <p class="bdr-card__lede">Circuit breaker проще всего объяснить и проще всего привязать не к тому ключу. Объяснение помещается в предложение: после достаточного числа сбоев ненадолго прекратить вызовы…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
-</a>
-<a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
+<a class="bdr-card" href="blog/posts/2026-09-13-kafka-in-python-services/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации</h3>
-  <p class="bdr-card__lede">Конфигурация SQLAlchemy прекрасно работает напрямую с PostgreSQL. Затем перед БД ставят PgBouncer в режиме транзакций, ради которого обычно и нужен пулер, и прежние предположения…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
+  <h3 class="bdr-card__title">Kafka в Python-сервисе: producer, consumer и эксплуатация</h3>
+  <p class="bdr-card__lede">Kafka-клиент должен вписываться в правила сервиса: кто владеет топиками, когда сообщение считается обработанным и что происходит при остановке.</p>
+  <div class="bdr-card__meta">2026-09-13</div>
+</a>
+<a class="bdr-card" href="blog/posts/2026-09-13-python-library-from-template-to-release/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Руководства</div>
+  <h3 class="bdr-card__title">Python-библиотека от шаблона до релиза</h3>
+  <p class="bdr-card__lede">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и выпуск на PyPI.</p>
+  <div class="bdr-card__meta">2026-09-13</div>
+</a>
+<a class="bdr-card" href="blog/posts/2026-09-13-redis-failures-and-health-checks/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Архитектура</div>
+  <h3 class="bdr-card__title">Redis недоступен: health checks и поведение сервиса</h3>
+  <p class="bdr-card__lede">Redis может обслуживать кэш, ограничивать частоту запросов и хранить ключи идемпотентности в одном сервисе. При его отказе этим операциям нужны разные правила.</p>
+  <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <!-- catalog:home:end -->
 </div>
