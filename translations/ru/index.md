@@ -128,22 +128,22 @@ hide:
 <a class="bdr-card" href="blog/posts/2026-09-13-kafka-in-python-services/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Kafka в Python-сервисе: producer, consumer и эксплуатация</h3>
-  <p class="bdr-card__lede">Kafka-клиент должен вписываться в правила сервиса: кто владеет топиками, когда сообщение считается обработанным и что происходит при остановке.</p>
+  <h3 class="bdr-card__title">Kafka в Python-сервисе: отправка, обработка сообщений и эксплуатация</h3>
+  <p class="bdr-card__lede">При подключении Kafka нужно определить, кто создаёт и настраивает топики, когда сообщение считается обработанным и что делать при остановке сервиса.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <a class="bdr-card" href="blog/posts/2026-09-13-python-library-from-template-to-release/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Руководства</div>
   <h3 class="bdr-card__title">Python-библиотека от шаблона до релиза</h3>
-  <p class="bdr-card__lede">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и выпуск на PyPI.</p>
+  <p class="bdr-card__lede">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и публикация на PyPI.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <a class="bdr-card" href="blog/posts/2026-09-13-redis-failures-and-health-checks/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Redis недоступен: health checks и поведение сервиса</h3>
-  <p class="bdr-card__lede">Redis может обслуживать кэш, ограничивать частоту запросов и хранить ключи идемпотентности в одном сервисе. При его отказе этим операциям нужны разные правила.</p>
+  <h3 class="bdr-card__title">Redis недоступен: проверки состояния и поведение сервиса</h3>
+  <p class="bdr-card__lede">В одном сервисе Redis может хранить кеш, ограничивать частоту запросов и защищать операции от повторов. При его отказе этим задачам нужны разные решения.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <!-- catalog:home:end -->

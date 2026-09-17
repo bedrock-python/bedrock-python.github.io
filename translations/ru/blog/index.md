@@ -89,8 +89,8 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-kafka-in-python-services/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Kafka и обмен сообщениями <span>·</span> Руководства</div>
-        <h3 class="bdr-entry__title">Kafka в Python-сервисе: producer, consumer и эксплуатация</h3>
-        <p class="bdr-entry__description">Kafka-клиент должен вписываться в правила сервиса: кто владеет топиками, когда сообщение считается обработанным и что происходит при остановке.</p>
+        <h3 class="bdr-entry__title">Kafka в Python-сервисе: отправка, обработка сообщений и эксплуатация</h3>
+        <p class="bdr-entry__description">При подключении Kafka нужно определить, кто создаёт и настраивает топики, когда сообщение считается обработанным и что делать при остановке сервиса.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -102,8 +102,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Python-библиотека от шаблона до релиза</h3>
-        <p class="bdr-entry__description">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и выпуск на PyPI.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <p class="bdr-entry__description">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и публикация на PyPI.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -113,8 +113,8 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-redis-failures-and-health-checks/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Redis и идемпотентность <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Redis недоступен: health checks и поведение сервиса</h3>
-        <p class="bdr-entry__description">Redis может обслуживать кэш, ограничивать частоту запросов и хранить ключи идемпотентности в одном сервисе. При его отказе этим операциям нужны разные правила.</p>
+        <h3 class="bdr-entry__title">Redis недоступен: проверки состояния и поведение сервиса</h3>
+        <p class="bdr-entry__description">В одном сервисе Redis может хранить кеш, ограничивать частоту запросов и защищать операции от повторов. При его отказе этим задачам нужны разные решения.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -126,7 +126,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">SQLAlchemy и PgBouncer: настройка и диагностика пула соединений</h3>
-        <p class="bdr-entry__description">Пул соединений полностью занят, но приложение отвечает быстро. После замедления БД тот же график показывает те же занятые соединения, а запросы уже завершаются по таймауту.</p>
+        <p class="bdr-entry__description">Все соединения в пуле заняты, но приложение отвечает быстро. Затем БД замедляется: график занятых соединений выглядит так же, а запросы уже завершаются по таймауту.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -137,8 +137,8 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-python-service-lifecycle/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Жизненный цикл сервиса <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Жизненный цикл Python-сервиса: запуск, health checks и остановка</h3>
-        <p class="bdr-entry__description">У HTTP API, Kafka consumer и фоновой задачи могут быть общие настройки, пул БД и внешние клиенты.</p>
+        <h3 class="bdr-entry__title">Жизненный цикл Python-сервиса: запуск, проверки состояния и остановка</h3>
+        <p class="bdr-entry__description">HTTP API, обработчик сообщений Kafka и фоновые задачи могут использовать общие настройки, пул БД и внешние клиенты.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -162,7 +162,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Redis и идемпотентность <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Идемпотентность в API и фоновых задачах</h3>
-        <p class="bdr-entry__description">Клиент отправил запрос, не получил ответ и повторил его. Worker завершил задачу, но упал перед подтверждением.</p>
+        <p class="bdr-entry__description">Клиент отправил запрос, не получил ответ и повторил попытку. Воркер выполнил задачу, но упал до подтверждения.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -174,7 +174,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Как перевести таблицу PostgreSQL на партиционирование</h3>
-        <p class="bdr-entry__description">Перевод существующей таблицы на партиционирование меняет больше, чем способ хранения строк.</p>
+        <p class="bdr-entry__description">При переводе существующей таблицы на партиционирование меняется не только хранение строк. Нужно учесть уникальность, внешние ключи, планы запросов и запись данных во время…</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -185,9 +185,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-production-python-grpc-server/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Как подготовить Python gRPC-сервер к продакшену</h3>
-        <p class="bdr-entry__description">Зарегистрировать servicer и открыть порт достаточно для первого gRPC-вызова. Для эксплуатации нужно определить поведение сервера вокруг обработчика: какие ошибки увидит клиент…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <h3 class="bdr-entry__title">Как подготовить gRPC-сервер на Python к продакшену</h3>
+        <p class="bdr-entry__description">Для первого gRPC-вызова достаточно зарегистрировать обработчики сервиса и открыть порт. Перед запуском в продакшене нужно определить и остальное поведение: какие ошибки увидит…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -198,7 +198,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Как проверять миграции Alembic в CI</h3>
-        <p class="bdr-entry__description">Успешный alembic upgrade head проверяет только один путь: применение истории к выбранному исходному состоянию.</p>
+        <p class="bdr-entry__description">Успешный alembic upgrade head показывает, что миграции применяются к выбранному начальному состоянию БД.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -210,7 +210,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP и отказоустойчивость <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Как строить HTTP- и gRPC-клиенты для продакшена</h3>
-        <p class="bdr-entry__description">Клиент внешнего сервиса должен ограничивать стоимость неудачного вызова: время ожидания, число попыток и нагрузку на зависимость. Эти решения связаны.</p>
+        <p class="bdr-entry__description">Клиент внешнего сервиса должен ограничивать время ожидания, число повторов и нагрузку на этот сервис при сбое.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -222,7 +222,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Kafka и обмен сообщениями <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Надёжная доставка событий: Outbox, Inbox и сбои Kafka</h3>
-        <p class="bdr-entry__description">Сервис сохранил заказ в PostgreSQL и должен сообщить о нём через Kafka. Между commit и отправкой события процесс может упасть.</p>
+        <p class="bdr-entry__description">Сервис сохранил заказ в PostgreSQL и должен отправить событие об этом в Kafka. Между commit и отправкой процесс может упасть.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -234,7 +234,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Обслуживание партиций PostgreSQL: создание, архивирование и удаление</h3>
-        <p class="bdr-entry__description">Создать следующую партицию сравнительно просто. Эксплуатационная сложность появляется вокруг неё: кто отвечает за расписание, какие таблицы можно удалять, что делать при сбое…</p>
+        <p class="bdr-entry__description">Создать следующую партицию сравнительно просто. Сложнее организовать обслуживание: кто запускает его по расписанию, какие таблицы разрешено удалять, что делать при ошибке…</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -246,7 +246,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Инструменты</div>
         <h3 class="bdr-entry__title">Почему ревью с ИИ нужно контролировать</h3>
-        <p class="bdr-entry__description">ИИ помог мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными замечаниями…</p>
+        <p class="bdr-entry__description">ИИ помогал мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными…</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -257,8 +257,8 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-sqlalchemy-sessions-and-transactions/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Сессии и транзакции в SQLAlchemy: кто владеет commit</h3>
-        <p class="bdr-entry__description">Заказ и событие о его создании должны появиться вместе. Если каждый репозиторий самостоятельно вызывает commit(), ошибка записи события оставляет заказ без события.</p>
+        <h3 class="bdr-entry__title">Сессии и транзакции в SQLAlchemy: кто отвечает за commit</h3>
+        <p class="bdr-entry__description">Заказ и событие о его создании должны сохраняться вместе. Если каждый репозиторий самостоятельно вызывает commit(), ошибка при записи события оставит заказ без события.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -270,7 +270,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Об экосистеме</div>
         <h3 class="bdr-entry__title">Мы начали писать документацию для ИИ-агентов</h3>
-        <p class="bdr-entry__description">В 2024 году я писал документацию для разработчиков. В какой-то момент 2026-го заметил, что значительная часть читателей — не люди.</p>
+        <p class="bdr-entry__description">В 2024 году я писал документацию для разработчиков. В какой-то момент 2026-го заметил, что значительная часть читателей — ИИ-ассистенты.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -282,7 +282,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Почему перехватчики gRPC ломаются на потоковых RPC</h3>
-        <p class="bdr-entry__description">Перехватчик, измеряющий вызов, считающий ошибки и связывающий request id, занимает двадцать строк и работает.</p>
+        <p class="bdr-entry__description">Перехватчик, который измеряет длительность вызова, считает ошибки и добавляет идентификатор запроса в контекст, занимает двадцать строк и работает.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -294,8 +294,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Ядро без зависимостей: зачем инфраструктурным библиотекам необязательные зависимости</h3>
-        <p class="bdr-entry__description">Инфраструктурная библиотека попадает во многие сервисы вместе со всеми своими зависимостями. Обычно об этом рассуждают отвлечённо.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+        <p class="bdr-entry__description">Инфраструктурную библиотеку подключают ко многим сервисам, и каждый из них получает все её зависимости.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -306,7 +306,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP и отказоустойчивость <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Таймаут — не дедлайн: как теряется бюджет времени в микросервисах</h3>
-        <p class="bdr-entry__description">Представим сервис Orders: он получает остатки по HTTP, затем резервирует товар и списывает оплату через gRPC.</p>
+        <p class="bdr-entry__description">Представим сервис Orders: он получает остатки по HTTP, затем резервирует товар и проводит оплату через gRPC.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-06">6 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
