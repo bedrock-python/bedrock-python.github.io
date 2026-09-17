@@ -383,7 +383,7 @@
     {
       "id": "2026-09-06-timeouts-are-not-deadlines",
       "title": "Timeouts are not deadlines: how latency budgets break across microservices",
-      "description": "Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config.",
+      "description": "Imagine an Orders service: it reads stock over HTTP, then reserves items and charges a card over gRPC.",
       "url": "posts/2026-09-06-timeouts-are-not-deadlines/",
       "date": "2026-09-06",
       "categories": [
@@ -403,8 +403,8 @@
         "reliability",
         "grpc"
       ],
-      "minutes": 10,
-      "search": "Timeouts are not deadlines: how latency budgets break across microservices Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config. deadline-budget clientwright grpc-client-kit timeouts deadlines httpx grpc microservices Design HTTP & resilience gRPC A timeout limits an operation Retries multiply it Across a hop, the timeout becomes a lie Where the deadline lives The safety margin What changed in the code"
+      "minutes": 8,
+      "search": "Timeouts are not deadlines: how latency budgets break across microservices Imagine an Orders service: it reads stock over HTTP, then reserves items and charges a card over gRPC. deadline-budget clientwright grpc-client-kit timeouts deadlines httpx grpc microservices Design HTTP & resilience gRPC One HTTP response takes longer than its timeout Retries spend the same budget Orders calls Inventory, then Billing Pass the incoming deadline to outgoing RPCs Carry the budget over HTTP too Leave time for the next step Conclusion"
     }
   ],
   "language": "en",

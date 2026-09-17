@@ -19,145 +19,213 @@ tags:
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-06-timeouts-are-not-deadlines" role="img" aria-label="A shared budget shrinks along a chain; identical per-hop timeouts do not" markdown="0"></div>
 
-Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config. That is not a bug in any HTTP client. The number in the config is a timeout, the number the SLO talks about is a deadline, and the two only look alike. This post measures the gap three times: on one HTTP call, on one HTTP call with retries, and across a chain of three gRPC services where a card gets charged a full second after the customer saw an error. Then the fix, which is arithmetic, and the three places the arithmetic has to live.
+Imagine an Orders service: it reads stock over HTTP, then reserves items and charges a card over gRPC. We will give the request two seconds and follow that budget through slow responses, retries, and downstream calls.
 
 <!-- more -->
 
-Every number below was measured on one laptop, with the servers on loopback, using the scripts in [the post's lab directory](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-06-timeouts-are-not-deadlines). Package versions: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, grpc-client-kit 0.1.0, Python 3.13.
+The [lab](../lab/2026-09-06-timeouts-are-not-deadlines/README.md) contains runnable loopback servers. Examples use Python 3.13, httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, and grpc-client-kit 0.1.0. Timings below are approximate; startup and scheduling add overhead.
 
-## A timeout limits an operation
+## One HTTP response takes longer than its timeout { #a-timeout-limits-an-operation }
 
-Here is a server that answers immediately and then takes four seconds to finish. It sends the status line and headers at once, then one byte of body every half second, eight times:
+First, Orders downloads a stock report. Inventory sends headers immediately, then eight bytes at half-second intervals. This handler models that response:
 
 ```python
+import asyncio
+
+
 async def drip(reader, writer):
     await reader.readuntil(b"\r\n\r\n")
     writer.write(b"HTTP/1.1 200 OK\r\nContent-Length: 8\r\n\r\n")
-    for _ in range(8):
-        await asyncio.sleep(0.5)
-        writer.write(b"x")
-        await writer.drain()
-    writer.close()
+    await writer.drain()
+    try:
+        for _ in range(8):
+            await asyncio.sleep(0.5)
+            writer.write(b"x")
+            await writer.drain()
+    except ConnectionResetError:
+        pass  # The client may stop reading before the body is complete.
+    finally:
+        writer.close()
 ```
 
-And here is a client that has been told it may wait one second:
+Orders requests the report with HTTPX:
 
 ```python
-async with httpx.AsyncClient(timeout=1.0) as client:
-    response = await client.get(url)
+import httpx
+
+
+async def get_report(url):
+    async with httpx.AsyncClient(timeout=1.0) as client:
+        return await client.get(url)
 ```
 
-| Call | Result | Took |
-|---|---|---|
-| httpx, `timeout=1.0`, body drips | `200`, 8 bytes | 4.06 s |
-| httpx, `timeout=1.0`, headers stall for 4 s | `ReadTimeout` | 1.01 s |
+The call succeeds after roughly four seconds. In HTTPX, `timeout=1.0` sets connect, read, write, and pool limits. The [read limit](https://www.python-httpx.org/advanced/timeouts/) bounds the wait for the next chunk, so a byte every 0.5 seconds keeps it satisfied. If Inventory sends nothing, the same client raises `ReadTimeout` after roughly one second.
 
-The first row is the whole post in miniature. `timeout=1.0` in httpx is four numbers, one each for connect, read, write and acquiring a pooled connection, and the read timeout is the longest the client will wait *between two chunks of data*. Every chunk here arrives inside half a second, so the clock resets eight times and never fires. The second row shows the same number doing its job: a server that says nothing for four seconds is caught at one. Same config, same client, a factor of four between the two, and neither is wrong. The timeout is behaving exactly as documented. It measures patience, not time.
-
-A deadline is a point on the clock. In the standard library it is one line:
+To limit the entire download, put the deadline outside `get()`. Python 3.11+ provides `asyncio.timeout()`:
 
 ```python
-async with asyncio.timeout(1.0):
-    response = await client.get(url)
+async def get_report_with_deadline(url):
+    async with httpx.AsyncClient(timeout=1.0) as client:
+        async with asyncio.timeout(1.0):
+            return await client.get(url)
 ```
 
-| Call | Result | Took |
-|---|---|---|
-| httpx inside `asyncio.timeout(1.0)`, body drips | `TimeoutError` | 1.00 s |
+Now the slow body produces `TimeoutError` after roughly one second. This covers the buffered `get()`, including its body. With `client.stream()`, keep body iteration inside the timeout block too. An HTTPX read timeout limits one wait; a deadline limits the whole operation. [Asyncio timeouts](https://docs.python.org/3/library/asyncio-task.html#timeouts) use cooperative cancellation: blocking the event loop or suppressing cancellation can delay enforcement.
 
-Same dripping server, cancelled at one second because the clock is outside the call and nothing inside the call can reset it. That is the entire difference between the two words. Everything else in this post is what happens when the difference is ignored at a larger scale.
+## Retries spend the same budget { #retries-multiply-it }
 
-## Retries multiply it
-
-Every codebase has this loop somewhere, usually written on the day a downstream service first flaked:
+Now Inventory accepts connections but does not answer. Orders retries this read-only GET up to three times:
 
 ```python
-async with httpx.AsyncClient(timeout=1.0) as client:
+async def get_stock(client, url):
     for attempt in range(3):
         try:
-            return await client.get(url)
+            return await client.get(url, timeout=1.0)
         except httpx.TimeoutException:
-            continue
+            if attempt == 2:
+                raise
 ```
 
-Against a server that accepts the connection and never answers, it behaves like this:
+Each attempt can spend a second waiting for data: about three seconds in total, before other overhead. The final `raise` matters; without it, exhausting the loop would return `None`. Wrap the loop once to give all attempts one second between them:
 
-| Policy | Result | Took | Requests that reached the server |
-|---|---|---|---|
-| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.22 s | 3 |
+```python
+async def get_stock_with_deadline(client, url):
+    async with asyncio.timeout(1.0):
+        return await get_stock(client, url)
+```
 
-The author of that loop believed the call was bounded at one second. The caller of the function waited three. The server, which was already in trouble, received three requests where it used to receive one. Multiply that by every hop that has the same loop and you have the retry storm that turns a slow dependency into an outage, but that is a separate post.
-
-The fix is not a smaller number. It is one clock for the whole logical call, with the attempts, the backoff sleeps and any redirects all spent out of it. That is how [clientwright](https://bedrock-python.github.io/clientwright/) spells a timeout, and it is the reason `TimeoutConfig` has a field called `total`:
+If many clients need this policy, [clientwright](https://bedrock-python.github.io/clientwright/) adds retries and a total deadline while returning an `httpx.AsyncClient`. Here Orders allows three attempts, but bounds their combined duration, including backoff, with `total`:
 
 ```python
 from clientwright import ClientConfig, RetryConfig, TimeoutConfig, build
 
-config = ClientConfig(
-    service_name="orders",
-    timeout=TimeoutConfig(total=1.0),
-    retry=RetryConfig(max_attempts=3),
-)
-client = build("httpx", config)         # a real httpx.AsyncClient, not a wrapper
-response = await client.get(url)
+
+async def get_stock_with_clientwright(url):
+    config = ClientConfig(
+        service_name="orders",
+        timeout=TimeoutConfig(total=1.0),
+        retry=RetryConfig(max_attempts=3, initial_backoff=0.01),
+    )
+    async with build("httpx", config) as client:
+        return await client.get(url)
 ```
 
-| Policy | Result | Took | Requests that reached the server |
+Against the silent server, the lab produces:
+
+| Policy | Result | Approximate wait | Requests received |
 |---|---|---|---|
-| loop of 3, `timeout=1.0` each | `ReadTimeout` | 3.22 s | 3 |
-| `total=1.0`, 3 attempts allowed | `DeadlineExceededError` | 1.00 s | 1 |
-| `total=3.0`, `read=1.0`, 3 attempts allowed | `DeadlineExceededError` | 3.00 s | 3 |
+| Manual loop, `timeout=1.0` per attempt | `ReadTimeout` | 3 s + overhead | 3 |
+| clientwright, `total=1.0` | `HttpxDeadlineExceededError` | 1 s | 1 |
+| clientwright, `total=3.0, read=1.0` | `HttpxDeadlineExceededError` | 3 s | 3 |
 
-The second row is what the loop's author thought they had written: one second, then an answer, whatever the retry policy says. The third row is the same three attempts as the loop, but now the three seconds is a number you chose, written in the config, and the retry policy fits inside it. The difference between rows one and three is not the behaviour. It is who decided the total: you, or the multiplication.
+`HttpxDeadlineExceededError` also inherits from `clientwright.DeadlineExceededError` and `httpx.TimeoutException`. Three allowed attempts are a ceiling; the total budget decides whether another can start. The short functions create clients for clarity; a service normally reuses them across requests.
 
-The total is a wall clock over the whole call, body included. The dripping server from the first section, the one that defeated `timeout=1.0` by sending a byte every half second, gets the same answer from `total=1.0` as from `asyncio.timeout`:
+## Orders calls Inventory, then Billing { #across-a-hop-the-timeout-becomes-a-lie }
 
-| Call | Result | Took |
-|---|---|---|
-| clientwright `total=1.0`, body drips | `DeadlineExceededError` | 1.00 s |
+Move on to checkout. Gateway gives Orders two seconds. Orders first reserves stock in Inventory, then asks Billing to charge the card. Each operation takes 1.5 seconds in the lab. The examples use byte messages and a small stub to avoid generated protobuf files:
 
-That is the difference between a timeout that belongs to the client and a deadline that belongs to the call.
+```python
+import grpc
+import grpc.aio
 
-## Across a hop, the timeout becomes a lie
 
-Now three services. A gateway calls Orders and gives it two seconds. Orders calls Inventory to reserve stock, then Billing to charge the card, in that order. Each of those takes a second and a half, and each of them is a commit: once started, it completes, because that is what a database write or a payment API does whether or not anyone is still listening. Orders' gRPC clients are configured the way most are, with a per-call timeout of five seconds.
+class LeafStub:
+    def __init__(self, channel):
+        self.call = channel.unary_unary("/lab.Leaf/Do")
 
-Here is what each service saw, timed from the moment the gateway made its call. The deadline column is what the server read from its own request context, so nothing here is an assertion about the client's internals:
 
-```text
-fresh 5 s timeout on every call
+async def submit_from_gateway(target):
+    async with grpc.aio.insecure_channel(target) as channel:
+        submit = channel.unary_unary("/lab.Orders/Do")
+        return await submit(b"order", timeout=2.0)
 
-  0.00 s  gateway    calls orders, timeout 2.0 s
-  0.00 s  orders     deadline seen 2.00 s
-  0.00 s  inventory  deadline seen 5.00 s
-  1.50 s  inventory  reserve completed
-  1.51 s  billing    deadline seen 5.00 s
-  2.02 s  gateway    DEADLINE_EXCEEDED
-  2.02 s  orders     cancelled
-  2.02 s  billing    caller gone, but the charge is already running
-  3.01 s  billing    charge completed
+
+async def submit_with_fresh_timeouts(inventory, billing):
+    await inventory.call(b"reserve", timeout=5.0)
+    await billing.call(b"charge", timeout=5.0)
 ```
 
-Read the Billing lines. It was called at 1.51 s and told it had five seconds. The request that was paying for it had 0.49 s left. Billing did what it was told and finished the charge at 3.01 s, a second after the customer saw an error, and the customer did what customers do with an error on a payment page. The five-second timeout was true about Orders' config and false about the request, and Billing had no way to tell the difference.
+Unlike an HTTPX read timeout, gRPC's `timeout` sets a deadline for the RPC. The problem here is that Orders gives **each outgoing RPC a fresh five seconds**, regardless of the incoming deadline.
 
-The same chain, with one change: Orders takes the deadline it was given and carries it into every call it makes.
+| Time | Event with fresh timeouts |
+|---|---|
+| 0.0 s | Gateway calls Orders with 2 s; Inventory receives 5 s |
+| 1.5 s | Stock reserved; Billing receives a fresh 5 s |
+| 2.0 s | Gateway gets `DEADLINE_EXCEEDED`; handlers are cancelled |
+| 3.0 s | The simulated charge finishes |
 
-```text
-the gateway's 2 s carried down the chain
+The lab uses `asyncio.shield()` to model payment work that continues after handler cancellation. This is an explicit simulation, not a claim that every database write ignores cancellation. Cancelling a handler cannot guarantee that an external payment was undone.
 
-  0.00 s  gateway    calls orders, timeout 2.0 s
-  0.00 s  orders     deadline seen 2.00 s
-  0.00 s  inventory  deadline seen 2.00 s
-  1.50 s  inventory  reserve completed
-  1.51 s  billing    deadline seen 0.49 s
-  1.51 s  billing    refuses: 1.5 s of work does not fit in 0.49 s
-  1.51 s  orders     DEADLINE_EXCEEDED
-  1.51 s  gateway    DEADLINE_EXCEEDED
+## Pass the incoming deadline to outgoing RPCs { #where-the-deadline-lives }
+
+Orders can read the incoming time limit with [`context.time_remaining()`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.ServicerContext.time_remaining). To share it between calls, [deadline-budget](https://bedrock-python.github.io/deadline-budget/) provides a budget measured with a monotonic clock. [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/) connects that budget to outgoing RPCs through interceptors. Both parts are wired below:
+
+```python
+from deadline_budget import BudgetContext
+from grpc_client_kit import (
+    ChannelPool,
+    DeadlineBudgetConfig,
+    GrpcClient,
+    GrpcClientConfig,
+    TimeoutConfig as GrpcTimeoutConfig,
+    build_interceptors,
+    use_budget as use_grpc_budget,
+)
+
+
+class Orders:
+    def __init__(self, pool: ChannelPool, inventory: str, billing: str):
+        chain = build_interceptors(
+            timeout=GrpcTimeoutConfig(default=5.0),
+            deadline_budget=DeadlineBudgetConfig(),
+        )
+        self.inventory = GrpcClient(
+            LeafStub, GrpcClientConfig(target=inventory, insecure=True),
+            pool, interceptors=chain,
+        )
+        self.billing = GrpcClient(
+            LeafStub, GrpcClientConfig(target=billing, insecure=True),
+            pool, interceptors=chain,
+        )
+
+    async def handle(self, request, context):
+        left = context.time_remaining()
+        total = 2.0 if left is None else min(left, 2.0)
+        if total <= 0:
+            await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "no time left")
+        budget = BudgetContext.create(total_seconds=total, min_timeout=0.0)
+
+        try:
+            with use_grpc_budget(budget):
+                async with self.inventory as inventory:
+                    await inventory.call(b"reserve")
+                async with self.billing as billing:
+                    await billing.call(b"charge")
+        except grpc.aio.AioRpcError as error:
+            await context.abort(error.code(), "downstream failed")
+        return b"ok"
 ```
 
-The request still fails. It fails half a second sooner, nobody is charged, and the reason is on the wire: Billing was told the truth, that it had 0.49 s, and a service that knows its charge takes 1.5 s can refuse before it starts. A fresh timeout tells the callee how patient the caller's configuration is. A deadline tells it how much time the request actually has. Only one of those is information the callee can act on.
+The service owns `ChannelPool` for its lifetime and registers `Orders.handle` as `/lab.Orders/Do`; the lab includes that startup code. `None` means no incoming deadline, so Orders applies its own two-second limit. Zero means time has run out and must not become a new budget. Setting `min_timeout=0.0` avoids rounding a small remainder up to the library's default 0.1-second floor.
 
-Two things about that log are worth saying plainly. grpc.aio does cancel the server-side handler when the caller's deadline passes, and the log shows it doing so at 2.02 s in the first run. What it cannot cancel is a charge that has already been sent, which is why the fix has to happen before the call, not after. And the safety margin between 1.51 s and 2.00 s in the second run is not luck: Orders answered with time to spare because the refusal cost nothing.
+Inventory now receives about two seconds; Billing receives about half a second. Billing can reject work before starting it if the remaining time is insufficient. Its lab handler checks:
+
+```python
+async def require_time(context, seconds):
+    left = context.time_remaining()
+    if left is not None and left < seconds:
+        await context.abort(
+            grpc.StatusCode.DEADLINE_EXCEEDED, "cannot finish in time"
+        )
+
+
+async def billing_handler(request, context):
+    await require_time(context, 1.5)
+    await asyncio.sleep(1.5)  # Simulated payment; no real money moves.
+    return b"ok"
+```
+
+In this deterministic example, the request fails at about 1.5 seconds and Billing never starts the charge. A real service needs a conservative admission estimate; it cannot know the exact completion time. Inventory has already reserved stock, so releasing that reservation is still a separate business concern. Deadlines neither roll back completed work nor make payment retries safe.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
@@ -196,86 +264,82 @@ sequenceDiagram
 </figure>
 <!-- /diagram:concept -->
 
-## Where the deadline lives
+## Carry the budget over HTTP too { #carry-the-budget-over-http-too }
 
-The rule that makes the second log possible is simple to state. The deadline is created once, where the request enters the system. At every hop, the callee reads what arrived and rebuilds its own budget from it. Each outgoing call is issued with the smaller of what the client is configured for and what the request has left.
-
-For gRPC, the deadline as it crossed the wire is `context.time_remaining()`. This is Orders' handler from the second run:
+Return to the HTTP version of Inventory. It returns `503` on the first read and succeeds on retry. Orders then spends half a second on local work and reads again. We want every attempt to carry the current remainder. HTTP has no standard equivalent of the gRPC deadline; here the two services agree on an `X-Deadline-Ms` header containing remaining milliseconds.
 
 ```python
-from deadline_budget import BudgetContext
-from grpc_client_kit import DeadlineBudgetConfig, TimeoutConfig, build_interceptors, use_budget
+from clientwright import AdapterDeps
+from clientwright.contrib.deadline import AmbientDeadlineSource, use_budget as use_http_budget
 
-chain = build_interceptors(
-    timeout=TimeoutConfig(default=5.0),       # the client's own ceiling per call
-    deadline_budget=DeadlineBudgetConfig(),   # trimmed to what the request has left
-)
 
-class Orders:
-    async def Submit(self, request, context):
-        left = context.time_remaining()       # None when the caller sent no deadline
-        budget = BudgetContext.create(total_seconds=left) if left else None
-        with use_budget(budget):
-            await self.inventory.Reserve(request)
-            await self.billing.Charge(request)
+async def read_inventory_twice(url):
+    config = ClientConfig(
+        service_name="orders",
+        timeout=TimeoutConfig(total=10.0),
+        retry=RetryConfig(max_attempts=3, initial_backoff=0.3, jitter=0.0),
+        deadline_header="X-Deadline-Ms",
+    )
+    deps = AdapterDeps(deadline_source=AmbientDeadlineSource())
+    async with build("httpx", config, deps) as client:
+        budget = BudgetContext.create(total_seconds=2.0)
+        with use_http_budget(budget):
+            first = await client.get(url)
+            await asyncio.sleep(0.5)  # Simulated local work.
+            second = await client.get(url)
+        return first, second
 ```
 
-The budget's clock starts on the line that creates it, and every call made inside the `with` block asks it how much is left before dialing. Inventory was issued with 2.00 s, not 5, because two is smaller. Billing was issued with 0.49 s because that is what remained after Inventory. A budget can only tighten a call, never loosen one: I also ran a 50-second budget against the same 5-second configuration, and the server saw 5.00 s.
+The server sees three requests: the first attempt, its retry, and the second logical call. Header values decrease: roughly 2000 ms, then less after the backoff, then less again after local work. The configured ten seconds cannot extend the two-second request budget.
 
-HTTP has no deadline in the protocol, so the number rides in a header. The client stamps what is left of the budget, in whole milliseconds, before each attempt:
+On receipt, Inventory must parse the header and create its own budget; clientwright does not install server middleware. This helper applies a local two-second ceiling and keeps 0.2 seconds for completion:
 
 ```python
-from clientwright import AdapterDeps, ClientConfig, RetryConfig, TimeoutConfig, build
-from clientwright.contrib.deadline import AmbientDeadlineSource, use_budget
-
-config = ClientConfig(
-    service_name="orders",
-    timeout=TimeoutConfig(total=10.0),        # the client's own opinion
-    retry=RetryConfig(max_attempts=3, initial_backoff=0.3),
-    deadline_header="X-Deadline-Ms",
-)
-client = build("httpx", config, AdapterDeps(deadline_source=AmbientDeadlineSource()))
-
-with use_budget(BudgetContext.create(total_seconds=2.0)):
-    await client.get(inventory_url)           # first attempt gets a 503, the retry succeeds
-    await do_our_own_work()                   # half a second
-    await client.get(inventory_url)
+def budget_from_header(value: str | None) -> BudgetContext:
+    total = 2.0 if value is None else min(int(value) / 1000, 2.0)
+    if total <= 0.2:
+        raise TimeoutError("not enough time after the completion margin")
+    return BudgetContext.create(
+        total_seconds=total, safety_margin=0.2, min_timeout=0.0
+    )
 ```
 
-The inventory service logged the header on each of the three requests it received:
+The HTTP handler maps a malformed integer (`ValueError`) to `400`, an exhausted budget (`TimeoutError`) to its deadline error response, and installs a valid budget with `use_http_budget()`. Only accept this header from callers allowed to set internal budgets. A relative value does not subtract transit time: rebuilding 500 ms after 50 ms in transit can give the receiver 50 ms more than the caller has left. A margin reduces that discrepancy, but is not an exact distributed deadline. The caller must still enforce its own limit.
 
-```text
-attempt 1: X-Deadline-Ms: 1999
-attempt 2: X-Deadline-Ms: 1687
-attempt 3: X-Deadline-Ms: 1179
-```
-
-The config says ten seconds. Nobody downstream ever hears that number. The first attempt carries the full budget, the retry carries the budget minus the backoff, and the second call carries what our own work left. On the receiving side the first line of the handler is the same move as the gRPC one: read the header, build a budget from it.
+`use_http_budget()` and `use_grpc_budget()` refer to different context variables. If a handler makes both HTTP and gRPC calls, install the same object in both:
 
 ```python
-budget = DeadlineBudget(total_seconds=int(headers["X-Deadline-Ms"]) / 1000, safety_margin=0.2)
+async def call_both(http_client, url, grpc_stub, budget):
+    with use_http_budget(budget), use_grpc_budget(budget):
+        await http_client.get(url)
+        return await grpc_stub.call(b"reserve")
 ```
 
-Notice what does not travel: the budget object. It holds a reading of a monotonic clock whose zero point means nothing in another process. Only the number crosses, and the callee's budget starts after transit, so it is always a little shorter than what the caller had. That is the safe direction to be wrong in.
+## Leave time for the next step { #the-safety-margin }
 
-## The safety margin
-
-The arithmetic has one more term, and it is the one that separates a request that fails cleanly from one that fails at the worst possible moment. The last hop has to stop early enough to roll back its transaction and serialise an error response. If it is granted every remaining millisecond, it will be mid-rollback when its own caller gives up.
-
-The whole of the budget calculation is this:
+Suppose Orders needs 0.2 seconds to finish its response and wants Inventory to leave 0.5 seconds for Billing. With native gRPC stubs, it can allocate the time explicitly using `DeadlineBudget`:
 
 ```python
-remaining = (total_seconds - safety_margin) - elapsed
-available = max(remaining - reserve_for_next, min_timeout)
-return min(available, cap)
+from deadline_budget import DeadlineBudget
+
+
+async def submit_with_reserve(inventory, billing):
+    budget = DeadlineBudget(
+        total_seconds=2.0, safety_margin=0.2, min_timeout=0.0
+    )
+    timeout = budget.timeout_for(cap=5.0, reserve_for_next=0.5)
+    if timeout <= 0:
+        raise TimeoutError("no time for inventory after reserving billing time")
+    await inventory.call(b"reserve", timeout=timeout)
+    await billing.call(b"charge", timeout=budget.timeout_for(cap=5.0))
 ```
 
-`safety_margin` is what the service keeps for itself at the end. `reserve_for_next` is what one call leaves for the call after it. `min_timeout` is a floor, because a three-millisecond timeout is not a timeout, it is a guaranteed failure that still costs a round trip. The floor means the last call can be granted slightly more than the budget has, which is what the margin pays for. Every one of those is a number you decide, and none of them exist in a config that has only `timeout=5.0`.
+Inventory gets at most about 1.3 seconds: `2.0 - 0.2 - 0.5`. If it finishes in one second, Billing gets about 0.8 seconds. For this variant to succeed, both operations must actually fit those limits; the earlier 1.5-second Inventory simulation would time out. `DeadlineBudget` only calculates durations; the gRPC call enforces them. Its default `min_timeout=0.1` can exceed a small positive remainder, which is why this example sets zero and rejects a zero allocation. A completion margin reserves time; it does not guarantee cleanup will finish within it.
 
-## What changed in the code
+## Conclusion { #what-changed-in-the-code }
 
-Before, Orders had five timeouts in five places, each true about the client it belonged to and none of them true about the request. After, it has one number, created where the request enters, that every client reads before it dials. That is the only structural change, and it is the one that let Billing refuse.
+We worked through a slow HTTP response, retries, and a chain of service calls. Each scenario needed the same rule: set one budget for the request and spend it across every step, including backoff and local work.
 
-The arithmetic lives in [deadline-budget](https://bedrock-python.github.io/deadline-budget/), which does exactly that and nothing else: no timers, no tasks, no context variable, no transport, no dependencies. It takes a total and tells you, at each call, how many seconds that call may have. The two clients that read it are [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/), whose interceptor trims every outgoing RPC to the budget, and [clientwright](https://bedrock-python.github.io/clientwright/guide/deadline-budget/), whose engine does the same for httpx, aiohttp, requests and urllib3 while leaving you the native client. Both are optional extras on their side, and both accept any object with `remaining()` and `expired()` if you already track deadlines your own way.
+Use our libraries to apply this in your services: [deadline-budget](https://bedrock-python.github.io/deadline-budget/) tracks the remaining time and allocates it between calls; [clientwright](https://bedrock-python.github.io/clientwright/) applies that budget to HTTP calls and retries while keeping your familiar client interface. For gRPC, [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/) connects the budget to outgoing RPCs.
 
-The point was never the libraries. It was the log where Billing says "0.49 s, no".
+Start with the [lab](../lab/2026-09-06-timeouts-are-not-deadlines/README.md): change the delays, observe where the budget runs out, then apply the same setup to your own request chain.

@@ -19,145 +19,213 @@ tags:
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-06-timeouts-are-not-deadlines" role="img" aria-label="Общий бюджет уменьшается вдоль цепочки вызовов, а одинаковые таймауты на каждом шаге — нет" markdown="0"></div>
 
-Во всех сервисах, которые я запускал, на каждом исходящем вызове стоял таймаут. И каждый из этих сервисов всё равно умудрялся отвечать дольше любого числа в конфигурации. Это не ошибка HTTP-клиента. Число в настройках — таймаут, число в SLO — дедлайн, и похожи они только на первый взгляд. В этой статье я трижды измеряю разницу: на одном HTTP-вызове, на вызове с повторами и на цепочке из трёх gRPC-сервисов, где деньги списываются через целую секунду после того, как клиент увидел ошибку. Затем — исправление, которое сводится к арифметике, и три места, где эта арифметика должна работать.
+Представим сервис Orders: он получает остатки по HTTP, затем резервирует товар и списывает оплату через gRPC. Выделим запросу две секунды и проследим, куда уходит это время при медленном ответе, повторах и вызовах других сервисов.
 
 <!-- more -->
 
-Все числа ниже измерены на одном ноутбуке с серверами на loopback-интерфейсе. Скрипты находятся в [лаборатории статьи](../lab/2026-09-06-timeouts-are-not-deadlines/README.md). Версии пакетов: httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2, grpc-client-kit 0.1.0, Python 3.13.
+В [лаборатории](../lab/2026-09-06-timeouts-are-not-deadlines/README.md) лежат запускаемые примеры с локальными серверами. Используем Python 3.13, httpx 0.28.1, grpcio 1.83.1, deadline-budget 0.1.3, clientwright 0.2.2 и grpc-client-kit 0.1.0. Время ниже приблизительное: запуск клиента и планирование задач добавляют задержки.
 
-## Таймаут ограничивает операцию { #a-timeout-limits-an-operation }
+## Один HTTP-ответ длится дольше таймаута { #a-timeout-limits-an-operation }
 
-Вот сервер, который отвечает немедленно, но заканчивает ответ только через четыре секунды. Он сразу отправляет строку статуса и заголовки, а затем восемь раз передаёт по одному байту тела с интервалом в полсекунды:
+Для начала Orders скачивает отчёт об остатках. Inventory сразу отправляет заголовки, затем восемь байт с интервалом в полсекунды. Такой ответ моделирует обработчик:
 
 ```python
+import asyncio
+
+
 async def drip(reader, writer):
     await reader.readuntil(b"\r\n\r\n")
     writer.write(b"HTTP/1.1 200 OK\r\nContent-Length: 8\r\n\r\n")
-    for _ in range(8):
-        await asyncio.sleep(0.5)
-        writer.write(b"x")
-        await writer.drain()
-    writer.close()
+    await writer.drain()
+    try:
+        for _ in range(8):
+            await asyncio.sleep(0.5)
+            writer.write(b"x")
+            await writer.drain()
+    except ConnectionResetError:
+        pass  # The client may stop reading before the body is complete.
+    finally:
+        writer.close()
 ```
 
-А вот клиент, которому разрешили ждать одну секунду:
+Orders запрашивает отчёт через HTTPX:
 
 ```python
-async with httpx.AsyncClient(timeout=1.0) as client:
-    response = await client.get(url)
+import httpx
+
+
+async def get_report(url):
+    async with httpx.AsyncClient(timeout=1.0) as client:
+        return await client.get(url)
 ```
 
-| Вызов | Результат | Время |
-|---|---|---|
-| httpx, `timeout=1.0`, тело приходит по частям | `200`, 8 байт | 4,06 с |
-| httpx, `timeout=1.0`, заголовки задерживаются на 4 с | `ReadTimeout` | 1,01 с |
+Вызов успешно завершается примерно через четыре секунды. В HTTPX `timeout=1.0` задаёт ограничения на подключение, чтение, запись и ожидание соединения из пула. [Таймаут чтения](https://www.python-httpx.org/advanced/timeouts/) ограничивает ожидание следующей порции данных, поэтому байт каждые 0,5 секунды не даёт ему сработать. Если Inventory молчит, тот же клиент получает `ReadTimeout` примерно через секунду.
 
-В первой строке — вся статья в миниатюре. `timeout=1.0` в httpx задаёт четыре ограничения: на подключение, чтение, запись и получение соединения из пула. Таймаут чтения определяет, сколько клиент готов ждать *между двумя порциями данных*. Здесь каждая порция приходит за полсекунды, поэтому отсчёт восемь раз начинается заново и ни разу не истекает. Вторая строка показывает, как то же число выполняет свою задачу: сервер, который молчит четыре секунды, останавливают через одну. Те же настройки, тот же клиент, четырёхкратная разница — и оба результата корректны. Таймаут работает именно так, как описано в документации. Он измеряет терпение, а не полное время выполнения.
-
-Дедлайн — конкретный момент на часах. В стандартной библиотеке для этого достаточно одной строки:
+Чтобы ограничить всю загрузку, поставим дедлайн снаружи `get()`. В Python 3.11+ для этого есть `asyncio.timeout()`:
 
 ```python
-async with asyncio.timeout(1.0):
-    response = await client.get(url)
+async def get_report_with_deadline(url):
+    async with httpx.AsyncClient(timeout=1.0) as client:
+        async with asyncio.timeout(1.0):
+            return await client.get(url)
 ```
 
-| Вызов | Результат | Время |
-|---|---|---|
-| httpx внутри `asyncio.timeout(1.0)`, тело приходит по частям | `TimeoutError` | 1,00 с |
+Теперь медленное тело ответа приводит к `TimeoutError` примерно через секунду. Ограничение охватывает буферизованный `get()`, включая чтение тела. При использовании `client.stream()` цикл чтения тоже должен находиться внутри блока таймаута. Таймаут чтения HTTPX ограничивает одно ожидание; дедлайн — всю операцию. [Таймауты asyncio](https://docs.python.org/3/library/asyncio-task.html#timeouts) работают через кооперативную отмену: блокировка event loop или подавление отмены могут задержать их срабатывание.
 
-Тот же сервер, медленно передающий тело ответа, но вызов отменяется через секунду: часы находятся снаружи, и ничто внутри вызова не может запустить их заново. В этом и состоит разница между двумя понятиями. Дальше мы увидим, что происходит, если игнорировать её в более крупной системе.
+## Повторы расходуют тот же бюджет { #retries-multiply-it }
 
-## Повторы умножают время { #retries-multiply-it }
-
-Почти в любой кодовой базе найдётся такой цикл. Обычно его пишут в тот день, когда зависимый сервис впервые начинает сбоить:
+Теперь Inventory принимает соединения, но не отвечает. Orders делает до трёх попыток GET-запроса, который только читает данные:
 
 ```python
-async with httpx.AsyncClient(timeout=1.0) as client:
+async def get_stock(client, url):
     for attempt in range(3):
         try:
-            return await client.get(url)
+            return await client.get(url, timeout=1.0)
         except httpx.TimeoutException:
-            continue
+            if attempt == 2:
+                raise
 ```
 
-Если сервер принимает соединение, но не отвечает, получается следующее:
+Каждая попытка может потратить секунду на ожидание данных: суммарно около трёх секунд без прочих задержек. Последний `raise` нужен: без него после всех неудач функция вернула бы `None`. Обернём весь цикл один раз, чтобы выделить всем попыткам общую секунду:
 
-| Политика | Результат | Время | Запросов дошло до сервера |
-|---|---|---|---|
-| 3 попытки с `timeout=1.0` каждая | `ReadTimeout` | 3,22 с | 3 |
+```python
+async def get_stock_with_deadline(client, url):
+    async with asyncio.timeout(1.0):
+        return await get_stock(client, url)
+```
 
-Автор цикла считал, что ограничил вызов одной секундой. Вызывающий код ждал три. Сервер, которому и так было тяжело, получил три запроса вместо одного. Умножьте это на каждый переход с таким же циклом — и получите шквал повторов, который превращает медленную зависимость в аварию. Но это тема отдельной статьи.
-
-Исправление — не уменьшить число. Нужны одни часы на весь логический вызов: все попытки, паузы между ними и перенаправления расходуют общий бюджет. Именно так [clientwright](https://bedrock-python.github.io/clientwright/) понимает ограничение времени. Поэтому у `TimeoutConfig` есть поле `total`:
+Когда такая политика нужна многим клиентам, [clientwright](https://bedrock-python.github.io/clientwright/) добавляет повторы и общий дедлайн, сохраняя интерфейс `httpx.AsyncClient`. Здесь Orders разрешает три попытки, но ограничивает их суммарное время вместе с паузами через `total`:
 
 ```python
 from clientwright import ClientConfig, RetryConfig, TimeoutConfig, build
 
-config = ClientConfig(
-    service_name="orders",
-    timeout=TimeoutConfig(total=1.0),
-    retry=RetryConfig(max_attempts=3),
-)
-client = build("httpx", config)         # a real httpx.AsyncClient, not a wrapper
-response = await client.get(url)
+
+async def get_stock_with_clientwright(url):
+    config = ClientConfig(
+        service_name="orders",
+        timeout=TimeoutConfig(total=1.0),
+        retry=RetryConfig(max_attempts=3, initial_backoff=0.01),
+    )
+    async with build("httpx", config) as client:
+        return await client.get(url)
 ```
 
-| Политика | Результат | Время | Запросов дошло до сервера |
+На молчащем сервере лаборатория даёт такой результат:
+
+| Политика | Результат | Примерное ожидание | Получено запросов |
 |---|---|---|---|
-| 3 попытки с `timeout=1.0` каждая | `ReadTimeout` | 3,22 с | 3 |
-| `total=1.0`, разрешены 3 попытки | `DeadlineExceededError` | 1,00 с | 1 |
-| `total=3.0`, `read=1.0`, разрешены 3 попытки | `DeadlineExceededError` | 3,00 с | 3 |
+| Ручной цикл, `timeout=1.0` на попытку | `ReadTimeout` | 3 с + накладные расходы | 3 |
+| clientwright, `total=1.0` | `HttpxDeadlineExceededError` | 1 с | 1 |
+| clientwright, `total=3.0, read=1.0` | `HttpxDeadlineExceededError` | 3 с | 3 |
 
-Вторая строка — то, что автор исходного цикла, по его мнению, и написал: секунда, затем результат, независимо от политики повторов. В третьей строке те же три попытки, но теперь три секунды — выбранное вами число в конфигурации, внутри которого должна уместиться политика повторов. Разница между первой и третьей строками не в поведении, а в том, кто определил суммарное время: вы или умножение.
+`HttpxDeadlineExceededError` также наследуется от `clientwright.DeadlineExceededError` и `httpx.TimeoutException`. Три попытки — верхний предел; общий бюджет определяет, получится ли начать следующую. Короткие функции создают клиентов для наглядности; в сервисе их обычно переиспользуют между запросами.
 
-`total` отсчитывает полное время вызова, включая тело ответа. Сервер из первого раздела, который обходил `timeout=1.0`, отправляя по байту каждые полсекунды, получает от `total=1.0` тот же ответ, что и от `asyncio.timeout`:
+## Orders вызывает Inventory, затем Billing { #across-a-hop-the-timeout-becomes-a-lie }
 
-| Вызов | Результат | Время |
-|---|---|---|
-| clientwright `total=1.0`, тело приходит по частям | `DeadlineExceededError` | 1,00 с |
+Перейдём к оформлению заказа. Gateway выделяет Orders две секунды. Orders сначала резервирует товар в Inventory, затем просит Billing списать оплату. В лаборатории каждая операция занимает 1,5 секунды. Используем байтовые сообщения и маленький stub, чтобы обойтись без сгенерированных protobuf-файлов:
 
-Так выглядит разница между таймаутом, который принадлежит клиенту, и дедлайном, который принадлежит вызову.
+```python
+import grpc
+import grpc.aio
 
-## При переходе между сервисами таймаут начинает врать { #across-a-hop-the-timeout-becomes-a-lie }
 
-Теперь возьмём три сервиса. Шлюз вызывает Orders и даёт ему две секунды. Orders сначала вызывает Inventory, чтобы зарезервировать товар, затем Billing, чтобы списать деньги. Каждая операция занимает полторы секунды и фиксирует изменение: начавшись, она завершается. Так может вести себя запись в базу или платёжный API, даже если вызывающая сторона уже перестала ждать. gRPC-клиенты Orders настроены привычным образом: пять секунд на каждый вызов.
+class LeafStub:
+    def __init__(self, channel):
+        self.call = channel.unary_unary("/lab.Leaf/Do")
 
-Вот что увидели сервисы, если считать время с момента вызова на шлюзе. Оставшееся время каждый сервер прочитал из контекста собственного запроса, поэтому здесь нет предположений о внутреннем устройстве клиента:
 
-```text
-fresh 5 s timeout on every call
+async def submit_from_gateway(target):
+    async with grpc.aio.insecure_channel(target) as channel:
+        submit = channel.unary_unary("/lab.Orders/Do")
+        return await submit(b"order", timeout=2.0)
 
-  0.00 s  gateway    calls orders, timeout 2.0 s
-  0.00 s  orders     deadline seen 2.00 s
-  0.00 s  inventory  deadline seen 5.00 s
-  1.50 s  inventory  reserve completed
-  1.51 s  billing    deadline seen 5.00 s
-  2.02 s  gateway    DEADLINE_EXCEEDED
-  2.02 s  orders     cancelled
-  2.02 s  billing    caller gone, but the charge is already running
-  3.01 s  billing    charge completed
+
+async def submit_with_fresh_timeouts(inventory, billing):
+    await inventory.call(b"reserve", timeout=5.0)
+    await billing.call(b"charge", timeout=5.0)
 ```
 
-Посмотрите на строки Billing. Его вызвали на отметке 1,51 с и сообщили, что у него есть пять секунд. У запроса, ради которого он работал, оставалось 0,49 с. Billing выполнил поручение и завершил списание на отметке 3,01 с — через секунду после того, как покупатель увидел ошибку. А покупатель сделал то, что покупатели обычно делают после ошибки на странице оплаты. Пятисекундный таймаут честно описывал конфигурацию Orders, но неверно описывал запрос. Billing никак не мог узнать об этой разнице.
+В отличие от таймаута чтения HTTPX, параметр `timeout` в gRPC задаёт дедлайн всего RPC. Ошибка здесь в том, что Orders выдаёт **каждому исходящему RPC новые пять секунд**, независимо от входящего дедлайна.
 
-Та же цепочка с одним изменением: Orders берёт полученный дедлайн и переносит его во все свои вызовы.
+| Время | Событие при новых таймаутах |
+|---|---|
+| 0,0 с | Gateway вызывает Orders с лимитом 2 с; Inventory получает 5 с |
+| 1,5 с | Товар зарезервирован; Billing получает новые 5 с |
+| 2,0 с | Gateway получает `DEADLINE_EXCEEDED`; обработчики отменяются |
+| 3,0 с | Имитация списания завершается |
 
-```text
-the gateway's 2 s carried down the chain
+В лаборатории `asyncio.shield()` моделирует оплату, которая продолжается после отмены обработчика. Это явное допущение примера, а не утверждение, что любая запись в БД игнорирует отмену. Отмена обработчика не гарантирует, что внешний платёж был отменён.
 
-  0.00 s  gateway    calls orders, timeout 2.0 s
-  0.00 s  orders     deadline seen 2.00 s
-  0.00 s  inventory  deadline seen 2.00 s
-  1.50 s  inventory  reserve completed
-  1.51 s  billing    deadline seen 0.49 s
-  1.51 s  billing    refuses: 1.5 s of work does not fit in 0.49 s
-  1.51 s  orders     DEADLINE_EXCEEDED
-  1.51 s  gateway    DEADLINE_EXCEEDED
+## Передаём входящий дедлайн в исходящие RPC { #where-the-deadline-lives }
+
+Orders получает остаток входящего лимита через [`context.time_remaining()`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.ServicerContext.time_remaining). Для учёта времени между вызовами [deadline-budget](https://bedrock-python.github.io/deadline-budget/) предоставляет бюджет на монотонных часах. [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/) подключает этот бюджет к исходящим RPC через перехватчики. Ниже показано подключение обеих частей:
+
+```python
+from deadline_budget import BudgetContext
+from grpc_client_kit import (
+    ChannelPool,
+    DeadlineBudgetConfig,
+    GrpcClient,
+    GrpcClientConfig,
+    TimeoutConfig as GrpcTimeoutConfig,
+    build_interceptors,
+    use_budget as use_grpc_budget,
+)
+
+
+class Orders:
+    def __init__(self, pool: ChannelPool, inventory: str, billing: str):
+        chain = build_interceptors(
+            timeout=GrpcTimeoutConfig(default=5.0),
+            deadline_budget=DeadlineBudgetConfig(),
+        )
+        self.inventory = GrpcClient(
+            LeafStub, GrpcClientConfig(target=inventory, insecure=True),
+            pool, interceptors=chain,
+        )
+        self.billing = GrpcClient(
+            LeafStub, GrpcClientConfig(target=billing, insecure=True),
+            pool, interceptors=chain,
+        )
+
+    async def handle(self, request, context):
+        left = context.time_remaining()
+        total = 2.0 if left is None else min(left, 2.0)
+        if total <= 0:
+            await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "no time left")
+        budget = BudgetContext.create(total_seconds=total, min_timeout=0.0)
+
+        try:
+            with use_grpc_budget(budget):
+                async with self.inventory as inventory:
+                    await inventory.call(b"reserve")
+                async with self.billing as billing:
+                    await billing.call(b"charge")
+        except grpc.aio.AioRpcError as error:
+            await context.abort(error.code(), "downstream failed")
+        return b"ok"
 ```
 
-Запрос по-прежнему завершается ошибкой, но на полсекунды раньше и без списания денег. Причина передана по сети: Billing узнал правду — осталось 0,49 с. Сервис, который знает, что списание занимает 1,5 с, может отказаться до начала операции. Новый таймаут на каждом шаге сообщает, насколько терпелива конфигурация вызывающего клиента. Дедлайн сообщает, сколько времени действительно осталось у запроса. Только второе позволяет вызываемому сервису принять осмысленное решение.
+Сервис держит `ChannelPool` в течение своего жизненного цикла и регистрирует `Orders.handle` как `/lab.Orders/Do`; код запуска есть в лаборатории. `None` означает отсутствие входящего дедлайна, поэтому Orders применяет собственный лимит в две секунды. Ноль означает, что время закончилось, и не должен превращаться в новый бюджет. `min_timeout=0.0` не позволяет округлить маленький остаток вверх до стандартного для библиотеки минимума в 0,1 секунды.
 
-В этом логе нужно пояснить две вещи. grpc.aio действительно отменяет серверный обработчик, когда истекает дедлайн вызывающей стороны: в первом запуске это видно на отметке 2,02 с. Но он не может отменить уже отправленную платёжную операцию. Именно поэтому решение нужно принимать до вызова. И запас между 1,51 с и 2,00 с во втором запуске — не везение: Orders успел ответить, потому что отказ не потребовал длительной работы.
+Теперь Inventory получает примерно две секунды, а Billing — около половины секунды. Billing может отказаться до начала работы, если времени недостаточно. Его обработчик в лаборатории проверяет:
+
+```python
+async def require_time(context, seconds):
+    left = context.time_remaining()
+    if left is not None and left < seconds:
+        await context.abort(
+            grpc.StatusCode.DEADLINE_EXCEEDED, "cannot finish in time"
+        )
+
+
+async def billing_handler(request, context):
+    await require_time(context, 1.5)
+    await asyncio.sleep(1.5)  # Simulated payment; no real money moves.
+    return b"ok"
+```
+
+В этом примере с фиксированной длительностью запрос завершается ошибкой примерно через 1,5 секунды, а Billing не начинает списание. Реальному сервису нужна консервативная оценка для допуска операции: точное время завершения заранее неизвестно. Inventory уже зарезервировал товар, поэтому освобождение резерва остаётся отдельной бизнес-задачей. Дедлайн не откатывает завершённую работу и не делает повторы оплаты безопасными.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
@@ -196,86 +264,82 @@ sequenceDiagram
 </figure>
 <!-- /diagram:concept -->
 
-## Где живёт дедлайн { #where-the-deadline-lives }
+## Передаём бюджет и по HTTP { #carry-the-budget-over-http-too }
 
-Правило, благодаря которому получился второй лог, формулируется просто. Дедлайн создаётся один раз — в точке входа запроса в систему. На каждом переходе сервис читает переданное значение и восстанавливает из него свой бюджет. Каждый исходящий вызов получает меньшее из двух ограничений: настроенного у клиента и оставшегося у запроса.
-
-В gRPC переданный по сети дедлайн доступен через `context.time_remaining()`. Вот обработчик Orders из второго запуска:
+Вернёмся к HTTP-версии Inventory. На первое чтение он отвечает `503`, на повтор — успешно. Затем Orders тратит полсекунды на свою работу и читает данные ещё раз. Каждая попытка должна передавать текущий остаток. В HTTP нет стандартного аналога gRPC-дедлайна; здесь сервисы договариваются о заголовке `X-Deadline-Ms` с остатком в миллисекундах.
 
 ```python
-from deadline_budget import BudgetContext
-from grpc_client_kit import DeadlineBudgetConfig, TimeoutConfig, build_interceptors, use_budget
+from clientwright import AdapterDeps
+from clientwright.contrib.deadline import AmbientDeadlineSource, use_budget as use_http_budget
 
-chain = build_interceptors(
-    timeout=TimeoutConfig(default=5.0),       # the client's own ceiling per call
-    deadline_budget=DeadlineBudgetConfig(),   # trimmed to what the request has left
-)
 
-class Orders:
-    async def Submit(self, request, context):
-        left = context.time_remaining()       # None when the caller sent no deadline
-        budget = BudgetContext.create(total_seconds=left) if left else None
-        with use_budget(budget):
-            await self.inventory.Reserve(request)
-            await self.billing.Charge(request)
+async def read_inventory_twice(url):
+    config = ClientConfig(
+        service_name="orders",
+        timeout=TimeoutConfig(total=10.0),
+        retry=RetryConfig(max_attempts=3, initial_backoff=0.3, jitter=0.0),
+        deadline_header="X-Deadline-Ms",
+    )
+    deps = AdapterDeps(deadline_source=AmbientDeadlineSource())
+    async with build("httpx", config, deps) as client:
+        budget = BudgetContext.create(total_seconds=2.0)
+        with use_http_budget(budget):
+            first = await client.get(url)
+            await asyncio.sleep(0.5)  # Simulated local work.
+            second = await client.get(url)
+        return first, second
 ```
 
-Отсчёт бюджета начинается в строке его создания. Перед каждым вызовом внутри блока `with` клиент узнаёт, сколько осталось. Inventory получил 2,00 с вместо пяти, потому что два меньше пяти. Billing получил 0,49 с — столько осталось после Inventory. Бюджет может только ужесточить ограничение вызова, но не ослабить его: я также проверил бюджет в 50 секунд с той же пятисекундной конфигурацией, и сервер увидел 5,00 с.
+Сервер получает три запроса: первую попытку, её повтор и второй логический вызов. Заголовок уменьшается: сначала около 2000 мс, затем меньше после паузы, затем ещё меньше после локальной работы. Десять секунд в конфигурации не увеличивают двухсекундный бюджет запроса.
 
-В HTTP нет встроенного дедлайна, поэтому значение передаётся в заголовке. Перед каждой попыткой клиент записывает остаток бюджета в целых миллисекундах:
+При получении Inventory должен разобрать заголовок и создать собственный бюджет: clientwright не устанавливает серверный middleware. Этот помощник применяет локальный предел в две секунды и оставляет 0,2 секунды на завершение:
 
 ```python
-from clientwright import AdapterDeps, ClientConfig, RetryConfig, TimeoutConfig, build
-from clientwright.contrib.deadline import AmbientDeadlineSource, use_budget
-
-config = ClientConfig(
-    service_name="orders",
-    timeout=TimeoutConfig(total=10.0),        # the client's own opinion
-    retry=RetryConfig(max_attempts=3, initial_backoff=0.3),
-    deadline_header="X-Deadline-Ms",
-)
-client = build("httpx", config, AdapterDeps(deadline_source=AmbientDeadlineSource()))
-
-with use_budget(BudgetContext.create(total_seconds=2.0)):
-    await client.get(inventory_url)           # first attempt gets a 503, the retry succeeds
-    await do_our_own_work()                   # half a second
-    await client.get(inventory_url)
+def budget_from_header(value: str | None) -> BudgetContext:
+    total = 2.0 if value is None else min(int(value) / 1000, 2.0)
+    if total <= 0.2:
+        raise TimeoutError("not enough time after the completion margin")
+    return BudgetContext.create(
+        total_seconds=total, safety_margin=0.2, min_timeout=0.0
+    )
 ```
 
-Сервис Inventory записал заголовок каждого из трёх полученных запросов:
+HTTP-обработчик превращает некорректное целое число (`ValueError`) в `400`, исчерпанный бюджет (`TimeoutError`) — в ответ об истечении дедлайна, а корректный бюджет устанавливает через `use_http_budget()`. Принимать этот заголовок следует от вызывающих сервисов, которым разрешено задавать внутренний бюджет. Относительное значение не вычитает время доставки: если 500 мс дошли за 50 мс, получатель может получить на 50 мс больше, чем осталось у отправителя. Запас уменьшает расхождение, но не обеспечивает точного распределённого дедлайна. Вызывающая сторона по-прежнему должна ограничивать собственное ожидание.
 
-```text
-attempt 1: X-Deadline-Ms: 1999
-attempt 2: X-Deadline-Ms: 1687
-attempt 3: X-Deadline-Ms: 1179
-```
-
-В конфигурации стоят десять секунд. Ни один следующий сервис этого числа не видит. Первая попытка несёт весь бюджет, повтор — бюджет за вычетом паузы, второй вызов — то, что осталось после нашей собственной работы. На принимающей стороне первая строка обработчика делает то же, что и в gRPC: читает заголовок и создаёт из него бюджет.
+`use_http_budget()` и `use_grpc_budget()` работают с разными контекстными переменными. Если обработчик делает HTTP- и gRPC-вызовы, установите один объект в обоих контекстах:
 
 ```python
-budget = DeadlineBudget(total_seconds=int(headers["X-Deadline-Ms"]) / 1000, safety_margin=0.2)
+async def call_both(http_client, url, grpc_stub, budget):
+    with use_http_budget(budget), use_grpc_budget(budget):
+        await http_client.get(url)
+        return await grpc_stub.call(b"reserve")
 ```
 
-Обратите внимание: сам объект бюджета по сети не передаётся. В нём хранится показание монотонных часов, чья точка отсчёта ничего не значит в другом процессе. Передаётся только число; после доставки вызываемый сервис начинает собственный отсчёт. Точность такого подхода ограничена временем передачи, поэтому при выборе запаса нужно учитывать и сетевую задержку.
+## Оставляем время следующему шагу { #the-safety-margin }
 
-## Запас на завершение { #the-safety-margin }
-
-В арифметике есть ещё одно слагаемое. Именно оно отделяет запрос, который завершается ошибкой корректно, от запроса, который ломается в самый неподходящий момент. Последний сервис должен остановиться достаточно рано, чтобы откатить транзакцию и сериализовать ответ с ошибкой. Если отдать ему все оставшиеся миллисекунды, его вызывающая сторона перестанет ждать посреди отката.
-
-Весь расчёт бюджета выглядит так:
+Допустим, Orders нужны 0,2 секунды на завершение ответа, а после Inventory хочется оставить 0,5 секунды для Billing. С обычными gRPC-stub можно распределить время явно через `DeadlineBudget`:
 
 ```python
-remaining = (total_seconds - safety_margin) - elapsed
-available = max(remaining - reserve_for_next, min_timeout)
-return min(available, cap)
+from deadline_budget import DeadlineBudget
+
+
+async def submit_with_reserve(inventory, billing):
+    budget = DeadlineBudget(
+        total_seconds=2.0, safety_margin=0.2, min_timeout=0.0
+    )
+    timeout = budget.timeout_for(cap=5.0, reserve_for_next=0.5)
+    if timeout <= 0:
+        raise TimeoutError("no time for inventory after reserving billing time")
+    await inventory.call(b"reserve", timeout=timeout)
+    await billing.call(b"charge", timeout=budget.timeout_for(cap=5.0))
 ```
 
-`safety_margin` — время, которое сервис оставляет себе на завершение. `reserve_for_next` — запас, который один вызов оставляет следующему. `min_timeout` — нижний порог: таймаут в три миллисекунды может оказаться практически гарантированной ошибкой, на которую всё равно уйдёт сетевой обмен. Из-за нижнего порога последний вызов иногда получает чуть больше времени, чем осталось в бюджете; этот перерасход покрывает запас. Все эти числа выбираете вы. В конфигурации с единственным `timeout=5.0` ни одного из них нет.
+Inventory получает максимум около 1,3 секунды: `2.0 - 0.2 - 0.5`. Если он завершится за секунду, Billing достанется около 0,8 секунды. Для успеха обе операции должны укладываться в эти лимиты: предыдущая имитация Inventory на 1,5 секунды завершилась бы по таймауту. `DeadlineBudget` только рассчитывает длительности; ограничение применяет gRPC-вызов. Стандартный `min_timeout=0.1` может превысить маленький положительный остаток, поэтому здесь установлен ноль и проверяется нулевое выделение времени. Запас оставляет время на завершение, но не гарантирует, что очистка успеет закончиться.
 
-## Что изменилось в коде { #what-changed-in-the-code }
+## Заключение { #what-changed-in-the-code }
 
-Раньше у Orders было пять таймаутов в пяти местах. Каждый правильно описывал своего клиента, но ни один — запрос целиком. Теперь есть одно число, созданное в точке входа запроса, которое каждый клиент читает перед вызовом. Это единственное структурное изменение. Именно оно позволило Billing отказаться.
+Мы разобрали медленный HTTP-ответ, повторные попытки и цепочку вызовов между сервисами. Во всех сценариях понадобилось одно правило: выделить запросу общий бюджет и расходовать его на каждом шаге, включая паузы между попытками и локальную работу.
 
-Арифметика находится в [deadline-budget](https://bedrock-python.github.io/deadline-budget/). Библиотека занимается только ею: без таймеров, задач, контекстных переменных, транспорта и зависимостей. Она принимает общий бюджет и для каждого вызова сообщает, сколько секунд тот может занять. Этот бюджет читают два клиента: [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/), чей перехватчик ограничивает каждый исходящий RPC, и [clientwright](https://bedrock-python.github.io/clientwright/guide/deadline-budget/), чей движок делает то же для httpx, aiohttp, requests и urllib3, сохраняя привычный нативный клиент. В обоих случаях интеграция подключается опционально. Если у вас уже есть собственный учёт дедлайнов, подойдёт любой объект с методами `remaining()` и `expired()`.
+Используйте наши библиотеки, чтобы применить это в своих сервисах: [deadline-budget](https://bedrock-python.github.io/deadline-budget/) считает остаток времени и помогает распределить его между вызовами, а [clientwright](https://bedrock-python.github.io/clientwright/) применяет этот бюджет к HTTP-запросам и повторам, сохраняя привычный интерфейс клиента. Для gRPC тот же бюджет подключается к исходящим RPC через [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/guide/deadlines/).
 
-Смысл никогда не был в библиотеках. Смысл — в строке лога, где Billing говорит: «0,49 с — нет».
+Начните с [лаборатории](../lab/2026-09-06-timeouts-are-not-deadlines/README.md): измените задержки, посмотрите, где заканчивается бюджет, и перенесите такую настройку в свою цепочку запросов.

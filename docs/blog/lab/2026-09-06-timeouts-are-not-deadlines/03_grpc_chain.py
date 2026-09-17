@@ -33,7 +33,8 @@ class Leaf:
             await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "cannot finish in time")
         work = asyncio.ensure_future(self.commit(request))
         try:
-            await asyncio.shield(work)  # a commit or a card charge: once started, it completes
+            # Model external work that survives handler cancellation.
+            await asyncio.shield(work)
         except asyncio.CancelledError:
             stamp(self.name, f"caller gone, but the {request.decode()} is already running")
             raise
@@ -56,7 +57,12 @@ class Orders:
     async def handle(self, request: bytes, context: grpc.aio.ServicerContext) -> bytes:
         left = context.time_remaining()
         stamp("orders", f"deadline seen {show(left)}")
-        budget = BudgetContext.create(total_seconds=left) if (self.propagate and left) else None
+        budget = None
+        if self.propagate:
+            total = GATEWAY_TIMEOUT if left is None else min(left, GATEWAY_TIMEOUT)
+            if total <= 0:
+                await context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "no time left")
+            budget = BudgetContext.create(total_seconds=total, min_timeout=0.0)
         try:
             with use_budget(budget):
                 async with self.inventory as inventory:

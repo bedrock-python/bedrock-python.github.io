@@ -306,8 +306,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Timeouts are not deadlines: how latency budgets break across microservices</h3>
-        <p class="bdr-entry__description">Every service I have run had a timeout on every outgoing call, and every one of them still managed to take longer than any number in its config.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>10 min read</span></div>
+        <p class="bdr-entry__description">Imagine an Orders service: it reads stock over HTTP, then reserves items and charges a card over gRPC.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

@@ -306,8 +306,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP и отказоустойчивость <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Таймаут — не дедлайн: как теряется бюджет времени в микросервисах</h3>
-        <p class="bdr-entry__description">Во всех сервисах, которые я запускал, на каждом исходящем вызове стоял таймаут. И каждый из этих сервисов всё равно умудрялся отвечать дольше любого числа в конфигурации.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-06">6 сент. 2026</time><span>·</span><span>9 мин на чтение</span></div>
+        <p class="bdr-entry__description">Представим сервис Orders: он получает остатки по HTTP, затем резервирует товар и списывает оплату через gRPC.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-06">6 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
