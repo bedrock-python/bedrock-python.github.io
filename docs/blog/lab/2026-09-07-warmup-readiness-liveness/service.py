@@ -1,104 +1,70 @@
-"""One service with a slow warmup, a readiness check on Redis, and a route that needs neither."""
-
-from __future__ import annotations
-
+"""Add mandatory Redis readiness to the reports service. Redis represents its job state store."""
 import asyncio
-import contextlib
-import os
+from contextlib import asynccontextmanager
+from pathlib import Path
 import sys
-import time
-from dataclasses import dataclass
-from typing import Any
 
-from fastapi import APIRouter
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '2026-09-07-one-lifecycle'))
+from one_lifecycle import Container, StoreWarmer, make_spec, router
 from redis.asyncio import Redis
-from servicewright import AppSpec, AsyncWarmer, HealthRegistry, Service, run_sync
+from servicewright import AsyncWarmer, Service
 from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig
 
-WARMUP_SECONDS = float(os.getenv("WARMUP_SECONDS", "3"))
-REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
-PORT = int(sys.argv[1])
 
-router = APIRouter()
-started = time.time()
+# snippet:redis_check
+from redis.exceptions import RedisError
+from servicewright import HealthRegistry
 
 
-@router.get("/cached")
-async def cached() -> dict[str, float]:
-    """A route the warm cache serves; it never touches Redis."""
-    return {"served_at": time.time() - started}
-
-
-@dataclass(frozen=True)
-class Settings:
-    logging: object | None = None
-    metrics: object | None = None
-    tracing: object | None = None
-    error_tracking: object | None = None
-
-    def get_app_version(self) -> str:
-        return "1.0.0"
-
-
-class Scope:
-    async def get(self, dependency_key: Any) -> Any:
-        raise KeyError(dependency_key)
-
-
-class Container:
-    def __init__(self) -> None:
-        self.redis = Redis.from_url(REDIS_URL, socket_timeout=0.5, socket_connect_timeout=0.5)
-
-    @contextlib.asynccontextmanager
-    async def app_scope(self):
-        yield Scope()
-
-    @contextlib.asynccontextmanager
-    async def unit_scope(self, context=None):
-        yield Scope()
-
-
-class CacheWarmer(AsyncWarmer):
-    """Priming the in-process cache: this is what readiness is waiting for."""
-
-    async def warmup(self) -> None:
-        print(f"warmup started at {time.time() - started:.2f} s", flush=True)
-        await asyncio.sleep(WARMUP_SECONDS)
-        print(f"warmup finished at {time.time() - started:.2f} s", flush=True)
-
-
-container = Container()
-
-
-class RedisReachable:
-    """A readiness check: an object with `check()`, answering True or False, never raising."""
+class RedisReady:
+    def __init__(self, redis):
+        self.redis = redis
 
     async def check(self) -> bool:
         try:
-            return bool(await container.redis.ping())
-        except Exception:  # noqa: BLE001 - a health check answers, it does not raise
+            async with asyncio.timeout(0.25):
+                return bool(await self.redis.ping())
+        except (RedisError, TimeoutError):
             return False
 
 
-health = HealthRegistry()
-health.add_check("redis", RedisReachable())
+def redis_health(redis):
+    health = HealthRegistry()
+    health.add_check('job-state', RedisReady(redis))
+    return health
+# /snippet:redis_check
 
-spec = AppSpec(
-    service_name="probe-lab",
-    create_container=lambda settings: container,
-    health=health,
-    warmers=[CacheWarmer()],
-    drain_delay_seconds=float(os.getenv("DRAIN_DELAY", "2")),
-    drain_grace_seconds=10.0,
-    cleanup_timeout_seconds=5.0,
-)
-service = Service(
-    spec,
-    entrypoints=[FastApiEntrypoint(config=HttpConfig(host="127.0.0.1", port=PORT), routers=(router,))],
-)
 
-if __name__ == "__main__":
-    import logging
+class RedisWarmer(AsyncWarmer):
+    def __init__(self, redis):
+        super().__init__()
+        self.redis = redis
 
-    logging.basicConfig(level=logging.WARNING)
-    run_sync(service, Settings())
+    async def warmup(self):
+        async with asyncio.timeout(1):
+            await self.redis.ping()
+
+
+class RedisContainer(Container):
+    def __init__(self, url, store):
+        super().__init__(store)
+        self.redis = Redis.from_url(url, socket_timeout=0.2, socket_connect_timeout=0.2)
+        self.closed = False
+
+    @asynccontextmanager
+    async def app_scope(self):
+        try:
+            async with self.redis:
+                async with super().app_scope() as scope:
+                    yield scope
+        finally:
+            self.closed = True
+
+
+def build_health_service(url, store):
+    container = RedisContainer(url, store)
+    spec = make_spec(container)
+    spec.health = redis_health(container.redis)
+    spec.warmers = [StoreWarmer(store), RedisWarmer(container.redis)]
+    api = FastApiEntrypoint(config=HttpConfig(host='127.0.0.1', port=0), routers=(router,))
+    return Service(spec, entrypoints=[api]), api, container

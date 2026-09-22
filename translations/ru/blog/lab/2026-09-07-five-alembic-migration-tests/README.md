@@ -1,30 +1,58 @@
 # Практикум: пять тестов миграций {#lab-the-five-migration-tests}
 
-Код к [статье](../../posts/2026-09-13-testing-alembic-migrations-in-ci.md): история Alembic из четырёх ревизий для небольшого магазина, пять её вариантов с одной ошибкой в каждом и три набора тестов для каждого варианта. Нужен Docker; тестовая сессия сама запускает контейнер PostgreSQL 17.
+Историческое название сохранено. Сейчас в практикуме **20 тестов, одна исправная история миграций и 13 вариантов с ошибками** для магазина с пользователями и заказами. В каждом сломанном варианте изменён один файл ревизии; ошибка описана в `BUG.txt`.
+
+Нужны Docker и `uv`. Выполните команды из каталога практикума:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "alembic-gauntlet[asyncio,testcontainers]==0.3.0" asyncpg
-.venv/bin/python -m pytest -q                       # the clean history: 11 passed
-VARIANT=drift .venv/bin/python -m pytest -q         # one buggy history
-.venv/bin/python run_matrix.py                      # every suite against every history
-VARIANTS=clean,drift,drift_server_default,drift_check_missing,drift_enum_value,drift_index_missing,drift_extra_column \
-  .venv/bin/python run_matrix.py                    # the drift matrix
+uv run --no-project --python 3.13 --with-requirements requirements.txt python -m pytest -q
+uv run --no-project --python 3.13 --with-requirements requirements.txt python run_matrix.py
 ```
 
-| Путь | Назначение |
-|---|---|
-| `shop/models.py` | ORM-модели: две таблицы, одно перечисление, соглашение об именовании |
-| `migrations/env.py` | Контракт `env.py`: переданные извне соединение и схема, `SET LOCAL search_path` |
-| `migrations/versions/clean/` | Четыре ревизии в том виде, в котором их создал бы autogenerate |
-| `migrations/versions/<bug>/` | Те же ревизии с изменением одного файла; в `BUG.txt` указано, какого именно и что изменилось |
-| `tests/test_plain_ci.py` | Типичная проверка в CI: `upgrade head` на пустой базе |
-| `tests/test_by_hand.py` | Пять проверок через API Alembic; вспомогательный код — в `tests/helpers.py` |
-| `tests/test_gauntlet.py` | Те же пять проверок, унаследованных от `alembic_gauntlet.MigrationTestBase`, плюс проверки check-ограничений и перечислений; сравнение серверных значений по умолчанию включено |
-| `run_matrix.py` | Запуск набора тестов для каждого варианта и вывод матрицы результатов |
-| `migrations/versions/drift_*/` | Шесть видов расхождений схемы для статьи: тип столбца, серверное значение по умолчанию, отсутствующий индекс, лишний столбец, отсутствующее check-ограничение и изменённое перечисление |
-| `tests/test_drift_extras.py` | Три дополнительные проверки, написанные вручную до их появления в базовом классе |
+Первая команда должна показать `20 passed`. Скрипт `run_matrix.py` перебирает все истории и требует, чтобы каждую намеренную ошибку обнаружил нужный тест. Неожиданный успех, пропущенные тесты, ошибки инфраструктуры или ошибка в исправной истории приводят к неуспешному завершению скрипта. Для `two_heads` запускаются две проверки head и обычный upgrade: остальным тестам нужна однозначная последняя ревизия. Для всех других историй выполняется полный набор.
 
-Переменная окружения `VARIANT` выбирает каталог `migrations/versions/<variant>` через параметр Alembic `version_locations`; по умолчанию используется `clean`.
+Чтобы проверить только новые случаи с поведением CHECK и потерей данных вместе с исправным вариантом:
+
+```bash
+uv run --no-project --python 3.13 --with-requirements requirements.txt python run_matrix.py --variants clean,drift_check_expression,data_loss
+```
+
+Используется образ PostgreSQL `postgres:17-alpine`. Обычный запуск pytest поднимает один контейнер на тестовую сессию; скрипт перебора вариантов — один контейнер для всех дочерних процессов. Каждый тест работает в собственной схеме, которая удаляется после проверки. Контейнер удаляется при выходе. Через `MIGRATION_TEST_URL` можно передать существующую **временную тестовую БД**. Переменная `VARIANT` выбирает историю; по умолчанию это `clean`.
+
+В `requirements.txt` закреплены alembic-gauntlet 0.3.0, Alembic 1.20.0, SQLAlchemy 2.0.54, asyncpg 0.31.0, pytest 9.1.1, pytest-asyncio 1.4.0 и testcontainers 4.15.0. В `pytest.ini` включён asyncio auto mode. После установки alembic-gauntlet его плагин pytest регистрирует фикстуру `migration_engine`.
+
+| Файл | Назначение |
+|---|---|
+| `shop/models.py` | Пользователи, заказы, значения enum и соглашение об именовании |
+| `tests/conftest.py` | Фикстура контейнера/БД и выбор истории миграций |
+| `migrations/env.py` | Принимает соединение и схему от теста; при самостоятельном запуске создаёт engine и фиксирует транзакцию миграций |
+| `tests/test_plain_ci.py` | Один раз применяет `head` к пустой схеме |
+| `tests/test_by_hand.py` | Пять проверок через API Alembic, включая повторное применение каждой ревизии |
+| `tests/test_gauntlet.py` | Семь унаследованных проверок с включённым сравнением серверных значений по умолчанию |
+| `tests/test_drift_extras.py` | Ручные проверки default, имён CHECK и значений enum |
+| `tests/test_business_rules.py` | Запрещает суммы `0` и `-1`; проверяет сохранность оплаченного заказа и его пользователя при переходе с `0003` на `0004` |
+| `tests/test_environment.py` | Запускает самостоятельный путь `env.py` в отдельном процессе; новым соединением проверяет сохранённую ревизию и таблицы |
+| `ci-example.yml` | Шаблон GitHub Actions; для подключения скопируйте в `.github/workflows/` и укажите каталог тестов своего проекта |
+
+Исправная история создаёт пользователей, затем заказы и их enum, добавляет CHECK положительной суммы и после этого — `users.is_active` с серверным default `true`.
+
+| Вариант | Какая ошибка обнаруживается |
+|---|---|
+| `enum_leftover` | Повторное применение после отката падает: enum остался в БД |
+| `wrong_name_in_downgrade` | Откат пытается удалить несуществующий CHECK |
+| `two_heads` | Обе проверки head и `upgrade head` завершаются ошибкой |
+| `bad_name` | Имя нарушает соглашение об именовании |
+| `drift`, `drift_type`, `drift_server_default` | Сравнение схемы находит неверный nullable, тип или default |
+| `drift_index_missing`, `drift_extra_column` | В схеме нет индекса или есть лишняя колонка |
+| `drift_check_missing` | Явная проверка имён CHECK находит отсутствующее ограничение |
+| `drift_enum_value` | Значения enum расходятся |
+| `drift_check_expression` | Имена совпадают, но проверка нулевой суммы падает |
+| `data_loss` | Схема совпадает, но сохранённый заказ исчезает |
+
+Для последних двух вариантов скрипт также проверяет, что все семь унаследованных тестов gauntlet проходят. Эти случаи показывают, зачем нужны тесты правил конкретного приложения. Ручной проход по истории проверяет повторное применение последней ревизии; проверка шагов из gauntlet 0.3.0 заканчивается её откатом.
+
+В Alembic 1.20 есть необязательный плагин autogenerate для имён CHECK; здесь он выключен. Ни такое сравнение имён, ни аналогичная проверка gauntlet не доказывают равнозначность условий. Практикум проверяет корректность на небольшом наборе данных, не измеряя длительность блокировок и скорость миграции рабочей БД.
+
+[Читать статью](../../posts/2026-09-13-testing-alembic-migrations-in-ci.md).
 
 [Исходный код практикума на GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-five-alembic-migration-tests).

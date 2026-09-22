@@ -1,14 +1,15 @@
-# Lab: gRPC channels should not be pooled by address alone
+# Lab: Reuse and isolation of gRPC channels {#lab-grpc-channels-should-not-be-pooled-by-address-alone}
 
-One script with an in-process `grpc.aio` server that counts the attempts it receives.
+Orders and audit call one inventory address. The server observes three attempts from orders and one from audit, showing that audit did not inherit orders' retry chain.
+
+Using public `ChannelPool.get_channel()`, the lab checks that a stable interceptor chain reuses the same channel while another chain, rebuilt interceptors and changed channel options get separate channels. After the pool scope exits, acquired channels report `SHUTDOWN` through the public gRPC state API. No private entry table is read.
+
+Keep the neighbouring [gRPC retries lab](../2026-09-07-safe-grpc-retries/README.md): its stub, server and application setup are reused here. No Docker is needed.
+
+Run from `docs/blog/lab/2026-09-07-grpc-channel-identity` in the repository checkout. Dependencies are pinned in `requirements.txt`.
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "grpc-client-kit==0.1.0"
-.venv/bin/python identity_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python identity_lab.py
 ```
 
-Three scenes: two clients with different interceptor chains sharing one address, under a pool
-keyed by address and under one keyed by identity; a chain rebuilt per request and the channels it
-mints; and two keepalive configurations for the same address. The channel count reads the pool's
-private entry table, which is what the lab is measuring.
+[Lab source on GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-grpc-channel-identity).

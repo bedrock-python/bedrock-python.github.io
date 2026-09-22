@@ -1,94 +1,142 @@
-"""The inbox side: what each ack strategy does when the handler fails, and what a redelivery does afterwards."""
+"""Real Kafka offsets, PostgreSQL rollback, and the limits of Inbox deduplication."""
 
 import asyncio
-import uuid
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+import json
+from pathlib import Path
+import sys
+from uuid import uuid4
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
-from sqlalchemy import Column, Integer, String, Table, func, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
-from testcontainers.kafka import KafkaContainer
-from testcontainers.postgres import PostgresContainer
+from sqlalchemy import delete
 
-from omni_box import AckStrategy, InboxConsumerRunner, InboxEvent, InboxEventRepository
-from omni_box.core.protocols.transaction import InboxTransactionProviderProtocol
-from omni_box.infra.brokers.kafka import KafkaEventConsumer
-from omni_box.infra.storage.postgres import InboxEventDBBase, PostgresInboxRepository
-
-
-class Base(DeclarativeBase):
-    pass
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-exactly-once-effects"))
+import event_flow as flow
+from lab_support import (
+    ProcessCrash, committed_offset, count, create_topics, database, infrastructure,
+    invoice_count, process,
+)
+from models import InboxEventDB
 
 
-class InboxEventDB(Base, InboxEventDBBase):
-    pass
+async def send_order(producer, topic, order_id, event_id=None):
+    headers = [("event_type", b"order.created")]
+    if event_id is not None:
+        headers.append(("event_id", str(event_id).encode()))
+    await producer.send_and_wait(
+        topic, value=json.dumps({"order_id": str(order_id)}).encode(), headers=headers,
+    )
 
 
-invoices = Table("invoices", Base.metadata, Column("id", Integer, primary_key=True), Column("order_id", String), Column("group", String))
+async def main(db_url, bootstrap):
+    await create_topics(bootstrap, "inbox.rollback", "inbox.ack", "inbox.no-id")
+    async with database(db_url) as sessions:
+        async with AIOKafkaProducer(bootstrap_servers=bootstrap) as producer:
+            first_order, next_order = uuid4(), uuid4()
+            await send_order(producer, "inbox.rollback", first_order, uuid4())
+            await send_order(producer, "inbox.rollback", next_order, uuid4())
 
+            async def fail_after_insert(event, repo):
+                await flow.create_invoice(event, repo)
+                raise ProcessCrash("after invoice INSERT, before database commit")
 
-async def main(db_url: str, bootstrap: str) -> None:
-    engine = create_async_engine(db_url)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-
-    class TxProvider(InboxTransactionProviderProtocol):
-        @asynccontextmanager
-        async def transaction(self) -> AsyncIterator[InboxEventRepository]:
-            async with session_factory() as session, session.begin():
-                yield PostgresInboxRepository(session, model_class=InboxEventDB)
-
-    producer = AIOKafkaProducer(bootstrap_servers=bootstrap)
-    await producer.start()
-
-    async def consumer_for(topic: str, group: str) -> KafkaEventConsumer:
-        return KafkaEventConsumer(AIOKafkaConsumer(topic, bootstrap_servers=bootstrap, group_id=group, auto_offset_reset="earliest", enable_auto_commit=False))
-
-    async def invoices_for(group: str) -> int:
-        async with session_factory() as s:
-            return (await s.execute(select(func.count()).select_from(invoices).where(invoices.c.group == group))).scalar_one()
-
-    strategies = {
-        "AT_MOST_ONCE": dict(ack_strategy=AckStrategy.AT_MOST_ONCE),
-        "AT_LEAST_ONCE, commit ON_PERSIST": dict(ack_strategy=AckStrategy.AT_LEAST_ONCE),
-        "AT_LEAST_ONCE, commit ON_SUCCESS": dict(ack_strategy=AckStrategy.AT_LEAST_ONCE, commit_offset_policy="on_success"),
-        "EXACTLY_ONCE_INBOX (default)": dict(ack_strategy=AckStrategy.EXACTLY_ONCE_INBOX),
-    }
-    print("--- one message, a handler that fails on its first run; then a fresh consumer of the same group ---")
-    for label, kwargs in strategies.items():
-        group = f"billing-{uuid.uuid4().hex[:6]}"
-        topic = f"orders.{group}"
-        message_id = str(uuid.uuid4())
-        await producer.send_and_wait(topic, key=b"o1", value=b'{"order_id": "o1"}', headers=[("message_id", message_id.encode()), ("event_type", b"order.created")])
-        runs = 0
-
-        async def create_invoice(event: InboxEvent, repo: InboxEventRepository, _group=group) -> None:
-            nonlocal runs
-            runs += 1
-            await repo.session.execute(invoices.insert().values(order_id=event.payload["order_id"], group=_group))
-            if runs == 1:
-                raise RuntimeError("billing provider timed out")   # after the write, in the same transaction
-
-        outcomes = []
-        for attempt in (1, 2):
-            runner = InboxConsumerRunner(consumer=await consumer_for(topic, group), transaction_provider=TxProvider(), handler=create_invoice,
-                                         worker_id="billing-1", consumer_group=group, **kwargs)
-            await runner.start()
+            group = "billing-rollback"
+            runner = flow.billing_runner(
+                sessions, bootstrap, topic="inbox.rollback", group=group,
+                handler=fail_after_insert,
+            )
             try:
-                try:
-                    r = await asyncio.wait_for(runner.process_one(), timeout=8.0)
-                    outcomes.append(f"processed={r.processed} duplicate={r.duplicate} committed={r.committed}")
-                except asyncio.TimeoutError:
-                    outcomes.append("nothing delivered")
-            finally:
-                await runner.stop()
-        print(f"  {label:<36} first: {outcomes[0]:<48} second consumer: {outcomes[1]:<48} handler ran={runs} invoices={await invoices_for(group)}")
-    await producer.stop()
-    await engine.dispose()
+                async with asyncio.timeout(30):
+                    await flow.run_billing(runner)
+            except RuntimeError as error:
+                assert "Retry message" in str(error), error
+            else:
+                raise AssertionError("The worker must stop on an uncommitted result")
+            assert await invoice_count(sessions, first_order) == 0
+            assert await invoice_count(sessions, next_order) == 0
+            assert await count(sessions, InboxEventDB) == 0
+            assert await committed_offset(bootstrap, "inbox.rollback", group) is None
+            print("PASS handler failure: invoices=0, inbox=0, offset uncommitted; worker stopped")
+
+            results = await process(flow.billing_runner(
+                sessions, bootstrap, topic="inbox.rollback", group=group,
+            ), 2)
+            assert all(result.processed and result.committed for result in results)
+            assert await invoice_count(sessions, first_order) == 1
+            assert await invoice_count(sessions, next_order) == 1
+            assert await committed_offset(bootstrap, "inbox.rollback", group) == 2
+            print("PASS restart: failed record retried before the next record, invoices=2")
+
+            order_id, event_id = uuid4(), uuid4()
+            topic, group = "inbox.ack", "billing-ack"
+            await send_order(producer, topic, order_id, event_id)
+
+            class FailOffsetCommit(AIOKafkaConsumer):
+                async def commit(self, offsets=None):
+                    # This runs at the real adapter's acknowledgement boundary.
+                    assert await invoice_count(sessions, order_id) == 1
+                    assert await count(
+                        sessions, InboxEventDB, InboxEventDB.consumer_group == group,
+                        InboxEventDB.status == "completed",
+                    ) == 1
+                    raise ProcessCrash("database committed, Kafka offset not committed")
+
+            runner = flow.InboxConsumerRunner(
+                consumer=flow.KafkaEventConsumer(FailOffsetCommit(
+                    topic, bootstrap_servers=bootstrap, group_id=group,
+                    auto_offset_reset="earliest", enable_auto_commit=False,
+                )),
+                transaction_provider=flow.InboxTransaction(sessions),
+                handler=flow.create_invoice, worker_id="billing-1", consumer_group=group,
+                ack_strategy=flow.AckStrategy.EXACTLY_ONCE_INBOX,
+                exactly_once_commit_on_failed=False,
+            )
+            try:
+                await process(runner)
+            except ProcessCrash:
+                pass
+            else:
+                raise AssertionError("Injected offset failure was not reached")
+            assert await committed_offset(bootstrap, topic, group) is None
+            replay, = await process(flow.billing_runner(
+                sessions, bootstrap, topic=topic, group=group,
+            ))
+            assert replay.duplicate and replay.committed and not replay.processed, replay
+            assert await invoice_count(sessions, order_id) == 1
+            assert await committed_offset(bootstrap, topic, group) == 1
+            print("PASS failure after DB commit: replay=duplicate, invoices=1, offset=1")
+
+            independent, = await process(flow.billing_runner(
+                sessions, bootstrap, topic=topic, group="another-recipient",
+            ))
+            assert independent.processed and not independent.duplicate, independent
+            assert await invoice_count(sessions, order_id) == 2
+            print("PASS another consumer group: separate Inbox identity, handler runs again")
+
+            async with sessions.begin() as session:
+                await session.execute(delete(InboxEventDB).where(
+                    InboxEventDB.consumer_group == group,
+                    InboxEventDB.message_id == str(event_id),
+                ))
+            await send_order(producer, topic, order_id, event_id)
+            after_cleanup, = await process(flow.billing_runner(
+                sessions, bootstrap, topic=topic, group=group,
+            ))
+            assert after_cleanup.processed and not after_cleanup.duplicate, after_cleanup
+            assert await invoice_count(sessions, order_id) == 3
+            print("PASS Inbox cleanup + replay: old event executes again")
+
+            order_id = uuid4()
+            await send_order(producer, "inbox.no-id", order_id)
+            await send_order(producer, "inbox.no-id", order_id)
+            copies = await process(flow.billing_runner(
+                sessions, bootstrap, topic="inbox.no-id", group="billing-no-id",
+            ), 2)
+            assert all(result.processed and not result.duplicate for result in copies)
+            assert copies[0].message_id != copies[1].message_id
+            assert await invoice_count(sessions, order_id) == 2
+            print("PASS missing event_id: different Kafka offsets are different Inbox messages")
 
 
-with PostgresContainer("postgres:17-alpine") as pg, KafkaContainer() as kafka:
-    asyncio.run(main(pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1), kafka.get_bootstrap_server()))
+if __name__ == "__main__":
+    with infrastructure() as (db_url, bootstrap, _):
+        asyncio.run(main(db_url, bootstrap))

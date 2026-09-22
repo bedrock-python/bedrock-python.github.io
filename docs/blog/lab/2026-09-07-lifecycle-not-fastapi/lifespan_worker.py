@@ -1,37 +1,35 @@
-"""The worker for the same service. There is no FastAPI here, so there is no lifespan: the plumbing is written again."""
-
+"""The worker duplicates the application's resource and warmup wiring."""
 import asyncio
-import signal
-import time
+from pathlib import Path
+import sys
 
-T0 = time.perf_counter()
-
-
-def log(text: str) -> None:
-    print(f"{time.perf_counter() - T0:6.2f} s  {text}", flush=True)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '2026-09-07-one-lifecycle'))
+from report_store import ReportStore, open_store
 
 
-class Pool:  # copied from the API, or imported and wired by hand
-    async def use(self, who: str) -> None:
-        log(f"{who} used the pool")
-
-
-async def main() -> None:
-    stop = asyncio.Event()
-    loop = asyncio.get_running_loop()
-    loop.add_signal_handler(signal.SIGTERM, stop.set)     # the API got this from uvicorn
-    log("pool opened")                                    # the API got this from the lifespan
-    pool = Pool()
-    try:
+async def worker(store, stop):
+    async with open_store(store):
+        await store.ping()
         while not stop.is_set():
-            await pool.use("worker loop")
+            async with asyncio.timeout(1):
+                await store.report('worker')
             try:
-                await asyncio.wait_for(stop.wait(), timeout=0.4)
+                await asyncio.wait_for(stop.wait(), timeout=0.5)
             except TimeoutError:
                 pass
-        log("worker loop saw the stop event")
+
+
+async def demo():
+    stop = asyncio.Event()
+    store = ReportStore()
+    task = asyncio.create_task(worker(store, stop))
+    try:
+        await asyncio.wait_for(store.started.wait(), timeout=2)
     finally:
-        log("pool closed")                                # and this
+        stop.set()
+        await asyncio.wait_for(task, timeout=3)
+    print(store.events)
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(demo())

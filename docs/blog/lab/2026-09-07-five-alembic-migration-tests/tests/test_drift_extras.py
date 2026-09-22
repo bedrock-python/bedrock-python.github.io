@@ -1,4 +1,4 @@
-"""Three drifts autogenerate does not report, and the checks that do."""
+"""Defaults and constraints need explicit checks in this configuration."""
 
 from alembic import command
 from alembic.autogenerate import compare_metadata
@@ -27,7 +27,7 @@ async def test_server_defaults_match(migration_engine: AsyncEngine, alembic_conf
 
 
 async def test_check_constraints_match(migration_engine: AsyncEngine, alembic_config: Config) -> None:
-    """Autogenerate never compares CHECK constraints; reflect them and compare by name."""
+    """Compare CHECK names explicitly; Alembic's optional name plugin is not enabled here."""
 
     def offenders(conn: Connection) -> list[str]:
         insp = inspect(conn)

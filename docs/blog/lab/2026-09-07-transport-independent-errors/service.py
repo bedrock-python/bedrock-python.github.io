@@ -1,101 +1,12 @@
-"""One use case, five domain errors, two transports in one process.
-
-The use case raises `ServiceError` subclasses and knows nothing about HTTP or gRPC. The HTTP
-entrypoint renders them as RFC 9457 problem documents; the gRPC entrypoint maps them to status
-codes. Neither handler catches anything.
-"""
-
-from __future__ import annotations
-
-import contextlib
-import sys
+"""One application use case, two real transports, one servicewright lifecycle."""
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any
+from pathlib import Path
+import sys
 
-import grpc
-from fastapi import APIRouter
-from servicewright import AppSpec, ErrorKind, Service, ServiceError, run_sync
-from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig
-from servicewright.adapters.grpc import GrpcConfig, GrpcEntrypoint
-
-HTTP_PORT = int(sys.argv[1])
-GRPC_PORT = int(sys.argv[2])
-SERVICE = "lab.Orders"
-
-
-# --- the domain: errors that name what happened, not what the transport should answer ---------
-
-
-class OrderNotFoundError(ServiceError):
-    kind = ErrorKind.NOT_FOUND
-
-
-class OrderAlreadyPaidError(ServiceError):
-    kind = ErrorKind.CONFLICT
-
-
-class NotYourOrderError(ServiceError):
-    kind = ErrorKind.FORBIDDEN
-
-
-class PaymentProviderDownError(ServiceError):
-    kind = ErrorKind.UNAVAILABLE
-
-
-class LedgerCorruptedError(ServiceError):
-    """Real, and none of the caller's business: public=False masks it at every transport."""
-
-    kind = ErrorKind.INTERNAL
-    public = False
-
-
-async def pay_order(case: str) -> dict[str, str]:
-    """The use case. It raises; it never formats a response."""
-    if case == "missing":
-        raise OrderNotFoundError("no order with id 42", params={"order_id": "42"})
-    if case == "paid":
-        raise OrderAlreadyPaidError("order 42 was paid at 09:12")
-    if case == "forbidden":
-        raise NotYourOrderError("order 42 belongs to another customer")
-    if case == "provider":
-        raise PaymentProviderDownError("the payment provider did not answer in 2 s")
-    if case == "ledger":
-        raise LedgerCorruptedError("ledger row 8891 has a negative balance; dsn=postgres://user:pw@db/ledger")
-    if case == "unexpected":
-        raise RuntimeError("dividing by the number of retries, which is zero")
-    return {"status": "paid"}
-
-
-# --- the HTTP front ---------------------------------------------------------------------------
-
-router = APIRouter()
-
-
-@router.post("/orders/{case}/pay")
-async def pay(case: str) -> dict[str, str]:
-    return await pay_order(case)
-
-
-# --- the gRPC front ---------------------------------------------------------------------------
-
-
-class OrdersServicer:
-    async def Pay(self, request: bytes, context: grpc.aio.ServicerContext) -> bytes:  # noqa: N802
-        result = await pay_order(request.decode())
-        return result["status"].encode()
-
-
-def register_servicer(server: Any, ctx: Any = None) -> None:
-    server.add_generic_rpc_handlers(
-        (
-            grpc.method_handlers_generic_handler(
-                SERVICE, {"Pay": grpc.unary_unary_rpc_method_handler(OrdersServicer().Pay)}
-            ),
-        )
-    )
-
-
-# --- the service ------------------------------------------------------------------------------
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-production-grpc-server"))
+from grpc_flow import SERVICE, register_invoice_service
+from invoice_domain import get_invoice
 
 
 @dataclass(frozen=True)
@@ -105,39 +16,54 @@ class Settings:
     tracing: object | None = None
     error_tracking: object | None = None
 
-    def get_app_version(self) -> str:
+    def get_app_version(self):
         return "1.0.0"
 
 
 class Scope:
-    async def get(self, dependency_key: Any) -> Any:
-        raise KeyError(dependency_key)
+    async def get(self, key):
+        raise KeyError(key)
 
 
 class Container:
-    @contextlib.asynccontextmanager
-    async def app_scope(self):
-        yield Scope()
+    def __init__(self, store):
+        self.store = store
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
+    async def app_scope(self):
+        try:
+            yield Scope()
+        finally:
+            await self.store.close()
+
+    @asynccontextmanager
     async def unit_scope(self, context=None):
         yield Scope()
 
 
-spec = AppSpec(service_name="errors-lab", create_container=lambda settings: Container())
-service = Service(
-    spec,
-    entrypoints=[
-        FastApiEntrypoint(config=HttpConfig(host="127.0.0.1", port=HTTP_PORT), routers=(router,)),
-        GrpcEntrypoint(
-            config=GrpcConfig(host="127.0.0.1", port=GRPC_PORT),
-            servicers=register_servicer,
-        ),
-    ],
-)
+# snippet:entrypoints
+from fastapi import APIRouter
+from servicewright import AppSpec, Service
+from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig
+from servicewright.adapters.grpc import GrpcConfig, GrpcEntrypoint
 
-if __name__ == "__main__":
-    import logging
 
-    logging.basicConfig(level=logging.WARNING)
-    run_sync(service, Settings())
+def build_service(store):
+    router = APIRouter()
+
+    @router.get("/orders/{order_id}/invoice")
+    async def invoice(order_id: str):
+        return await get_invoice(store, order_id, buyer_id="buyer-7")
+
+    http = FastApiEntrypoint(
+        config=HttpConfig(host="127.0.0.1", port=0), routers=(router,),
+    )
+    grpc_entry = GrpcEntrypoint(
+        config=GrpcConfig(host="127.0.0.1", port=0, grace_period=1),
+        servicers=lambda server, ctx: register_invoice_service(server, store),
+    )
+    spec = AppSpec(
+        service_name="invoices", create_container=lambda settings: Container(store),
+    )
+    return Service(spec, entrypoints=[http, grpc_entry]), http, grpc_entry
+# /snippet:entrypoints

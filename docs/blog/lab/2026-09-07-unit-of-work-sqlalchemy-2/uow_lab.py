@@ -1,197 +1,155 @@
-"""Who owns the transaction: repositories that commit for themselves, against a unit of work that commits once."""
+"""Verify the article's transaction boundaries on a real PostgreSQL database."""
 
 import asyncio
-import time
+from importlib.metadata import version
 
-from sqlalchemy import CheckConstraint, ForeignKey, Integer, String, func, select, text
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from testcontainers.postgres import PostgresContainer
+from sqlalchemy import func, select, text
+from sqlalchemy.exc import DBAPIError, IntegrityError
+from testcontainers.community.postgres import PostgresContainer
 
-from sqlalchemy_foundation_kit import AsyncSessionManager, AsyncSQLAlchemyUnitOfWork, AsyncSQLAlchemyUowTransaction
-
-
-class Base(DeclarativeBase):
-    pass
+from models import Base, NewsletterSubscription, Order, OrderEvent
+import order_flow as flow
 
 
-class User(Base):
-    __tablename__ = "users"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    email: Mapped[str] = mapped_column(String, unique=True)
+async def counts(sessions):
+    async with sessions() as session:
+        return tuple([
+            await session.scalar(select(func.count()).select_from(model))
+            for model in (Order, OrderEvent, NewsletterSubscription)
+        ])
 
 
-class Order(Base):
-    __tablename__ = "orders"
-    __table_args__ = (CheckConstraint("amount > 0", name="chk_orders_amount_positive"),)
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    amount: Mapped[int] = mapped_column(Integer)
+async def reset(sessions):
+    async with sessions.begin() as session:
+        await session.execute(text(
+            "TRUNCATE order_events, orders, newsletter_subscriptions RESTART IDENTITY"
+        ))
 
 
-# --- the shape most codebases start with: every repository commits its own work ---
-
-
-class SelfCommittingUserRepo:
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def add(self, email: str) -> User:
-        user = User(email=email)
-        self.session.add(user)
-        await self.session.commit()          # "so the id is there"
-        return user
-
-
-class SelfCommittingOrderRepo:
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def add(self, user_id: int, amount: int) -> Order:
-        order = Order(user_id=user_id, amount=amount)
-        self.session.add(order)
-        await self.session.commit()
-        return order
-
-
-# --- the unit of work: repositories write, the use case owns the transaction ---
-
-
-class UserRepo:
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def add(self, email: str) -> User:
-        user = User(email=email)
-        self.session.add(user)
-        await self.session.flush()           # the id is there; nothing is committed
-        return user
-
-
-class OrderRepo:
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
-    async def add(self, user_id: int, amount: int) -> Order:
-        order = Order(user_id=user_id, amount=amount)
-        self.session.add(order)
-        await self.session.flush()
-        return order
-
-
-class Transaction(AsyncSQLAlchemyUowTransaction):
-    @property
-    def users(self) -> UserRepo:
-        return UserRepo(self.session)
-
-    @property
-    def orders(self) -> OrderRepo:
-        return OrderRepo(self.session)
-
-
-class PlaceOrder:
-    """The use case. It owns the boundary; it never sees a session."""
-
-    def __init__(self, uow: AsyncSQLAlchemyUnitOfWork[Transaction]) -> None:
-        self.uow = uow
-
-    async def execute(self, email: str, amount: int) -> int:
-        async with self.uow.transaction() as tx:   # commits on exit, rolls back on exception
-            user = await tx.users.add(email)
-            order = await tx.orders.add(user.id, amount)
-            return order.id
-
-
-async def counts(manager: AsyncSessionManager) -> str:
-    async with manager.get_session() as s:
-        users = (await s.execute(select(func.count()).select_from(User))).scalar_one()
-        orders = (await s.execute(select(func.count()).select_from(Order))).scalar_one()
-    return f"users={users} orders={orders}"
-
-
-async def reset(manager: AsyncSessionManager) -> None:
-    async with manager.get_transaction() as s:
-        await s.execute(text("TRUNCATE orders, users RESTART IDENTITY"))
-
-
-async def main(url: str) -> None:
-    manager = AsyncSessionManager(url, poolclass="async_adapted_queue")
-    async with manager.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    print("--- a use case that fails on its second write (amount must be positive) ---")
-    async with manager.get_session() as session:
-        try:
-            user = await SelfCommittingUserRepo(session).add("a@example.com")
-            await SelfCommittingOrderRepo(session).add(user.id, amount=-5)
-        except IntegrityError:
-            await session.rollback()
-    print(f"  repositories commit for themselves -> {await counts(manager)}   (a user with no order: half a use case)")
-    await reset(manager)
-
-    uow = AsyncSQLAlchemyUnitOfWork(manager.session_maker, transaction_factory=Transaction)
+async def expect_error(kind, command, sqlstate=None):
     try:
-        await PlaceOrder(uow).execute("a@example.com", amount=-5)
-    except IntegrityError:
-        pass
-    print(f"  the use case owns the transaction  -> {await counts(manager)}   (nothing happened)")
+        await command
+    except kind as error:
+        if sqlstate is not None:
+            assert error.orig.sqlstate == sqlstate, error
+        return
+    raise AssertionError(f"Expected {kind.__name__}")
 
-    print("\n--- the same use case, succeeding ---")
-    order_id = await PlaceOrder(uow).execute("a@example.com", amount=10)
-    print(f"  order {order_id} -> {await counts(manager)}   (one commit, both rows)")
 
-    print("\n--- a write inside a read-only block ---")
-    async with uow.query() as qx:
-        await qx.users.add("sneaky@example.com")
-    print(f"  after uow.query() -> {await counts(manager)}   (the write was discarded)")
+async def main(url):
+    engine, sessions = flow.open_database(url)
+    uow = flow.make_uow(sessions)
+    try:
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+            print("PostgreSQL", await connection.scalar(text("SHOW server_version")))
+        print(", ".join(f"{name} {version(name)}" for name in (
+            "sqlalchemy-foundation-kit", "SQLAlchemy", "asyncpg",
+        )))
 
-    print("\n--- a savepoint: one failed step, the rest of the transaction survives ---")
-    async with uow.transaction() as tx:
-        user = await tx.users.add("b@example.com")
+        await expect_error(
+            IntegrityError,
+            flow.place_order_broken(sessions, "sku-1", event_kind=""),
+            "23514",
+        )
+        assert await counts(sessions) == (1, 0, 0)
+        print("two commits + rejected event: orders=1, events=0")
+        await reset(sessions)
+
+        await expect_error(
+            IntegrityError,
+            flow.place_order_native(sessions, "sku-1", event_kind=""),
+            "23514",
+        )
+        assert await counts(sessions) == (0, 0, 0)
+        print("sessions.begin() + rejected event: orders=0, events=0")
+
+        await flow.verify_rollback(uow, sessions)
+        print("uow.transaction() + rejected event: orders=0, events=0")
+
+        # A generated ID after flush is not evidence that the row has committed.
+        async with uow.transaction() as tx:
+            order = await tx.orders.add("sku-flushed")
+            assert order.id is not None
+            assert await counts(sessions) == (0, 0, 0)
+            await tx.events.add(order.id)
+        assert await counts(sessions) == (1, 1, 0)
+        print("flush: ID available, observer sees no row; commit: both rows visible")
+        await reset(sessions)
+
+        for create in (
+            lambda: flow.place_order_native(sessions, "sku-native"),
+            lambda: flow.place_order(uow, "sku-kit", delivery_cents=250),
+        ):
+            result = await create()
+            dto = await flow.read_order(uow, result["order_id"])
+            assert dto["order_id"] == result["order_id"]
+        assert await counts(sessions) == (2, 2, 0)
+        print("successful native and kit contexts: one order and event per operation")
+
+        first = await flow.place_order_with_subscription(uow, "sku-1", "buyer@example.org")
+        second = await flow.place_order_with_subscription(uow, "sku-2", "buyer@example.org")
+        assert first != second
+        assert await counts(sessions) == (4, 4, 1)
+        print("duplicate optional subscription: two orders committed, one subscription")
+
+        # A different integrity error must escape, rolling back mandatory writes too.
+        await expect_error(
+            IntegrityError,
+            flow.place_order_with_subscription(uow, "sku-invalid", ""),
+            "23514",
+        )
+        assert await counts(sessions) == (4, 4, 1)
+        print("unexpected subscription error: whole operation rolled back")
+
+        async with uow.query() as tx:
+            await tx.orders.add("discarded")
+        assert await counts(sessions) == (4, 4, 1)
+        # query() does not enforce READ ONLY: a caller can explicitly commit a write.
+        async with uow.query() as tx:
+            await tx.orders.add("explicitly-committed")
+            await tx.session.commit()
+        assert await counts(sessions) == (5, 4, 1)
+        print("query(): uncommitted INSERT discarded, explicit commit remains possible")
+
         try:
-            async with tx.savepoint():
-                await tx.orders.add(user.id, amount=-1)
-        except IntegrityError:
-            pass
-        await tx.orders.add(user.id, amount=20)   # would fail without the savepoint: the transaction would be aborted
-    print(f"  -> {await counts(manager)}   (the bad order rolled back, the good one and the user committed)")
+            async with uow.query() as tx:
+                await tx.session.execute(text("SET TRANSACTION READ ONLY"))
+                await tx.orders.add("forbidden")
+        except DBAPIError as error:
+            assert error.orig.sqlstate == "25006"
+        else:
+            raise AssertionError("PostgreSQL should reject the INSERT")
+        assert await counts(sessions) == (5, 4, 1)
+        print("SET TRANSACTION READ ONLY: INSERT rejected by PostgreSQL (25006)")
+        await reset(sessions)
 
-    print("\n--- the use case under test, with no database ---")
+        # Cancel before commit, after the order INSERT has reached PostgreSQL.
+        inserted, release = asyncio.Event(), asyncio.Event()
 
-    class FakeTx:
-        def __init__(self) -> None:
-            self.users, self.orders = self, self
-            self.rows: list[tuple] = []
+        async def cancelled_order():
+            async with uow.transaction() as tx:
+                await tx.orders.add("cancelled")
+                inserted.set()
+                await release.wait()
+                await tx.events.add(1)
 
-        async def add(self, *args):
-            self.rows.append(args)
-            return type("Row", (), {"id": len(self.rows)})()
-
-    class FakeUow:
-        def __init__(self) -> None:
-            self.tx = FakeTx()
-            self.committed = 0
-
-        def transaction(self):
-            uow = self
-
-            class Block:
-                async def __aenter__(self_):
-                    return uow.tx
-
-                async def __aexit__(self_, exc_type, *_):
-                    uow.committed += exc_type is None
-                    return False
-
-            return Block()
-
-    fake = FakeUow()
-    started = time.perf_counter()
-    result = await PlaceOrder(fake).execute("t@example.com", amount=7)
-    print(f"  order {result}, rows written={fake.tx.rows}, commits={fake.committed}, {1000 * (time.perf_counter() - started):.1f} ms, no PostgreSQL")
-    await manager.aclose()
+        task = asyncio.create_task(cancelled_order())
+        try:
+            await asyncio.wait_for(inserted.wait(), 5)
+            task.cancel()
+            await expect_error(asyncio.CancelledError, task)
+        finally:
+            release.set()
+            await asyncio.gather(task, return_exceptions=True)
+        assert await counts(sessions) == (0, 0, 0)
+        assert engine.pool.checkedout() == 0
+        print("cancellation before commit: no rows, no checked-out connections")
+    finally:
+        await engine.dispose()
 
 
-with PostgresContainer("postgres:17-alpine") as pg:
-    asyncio.run(main(pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)))
+if __name__ == "__main__":
+    with PostgresContainer("postgres:17-alpine", driver="asyncpg") as postgres:
+        asyncio.run(main(postgres.get_connection_url()))
+    print("PASS: transaction scenarios")

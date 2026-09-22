@@ -1,14 +1,15 @@
-# Lab: circuit breakers should be per origin
+# Lab: Circuit breakers per origin {#lab-circuit-breakers-should-be-per-origin}
 
-One script, against three in-process origins.
+One HTTPX client calls two local HTTP origins: inventory and payments. Payments always returns 503. Three logical calls make nine attempts; the fourth call is refused without reaching the server. Inventory still returns 200.
+
+A separate case checks that 400 does not trip the breaker and that an allowed recovery probe closes it after success. `AdapterDeps(clock=ManualClock())` advances the recovery clock deterministically; requests still use actual localhost HTTP. This checks the `open → half_open → closed` transition, not the real duration of infrastructure recovery.
+
+The source and fixtures are in the neighbouring [HTTP clients lab](../2026-09-07-why-i-stopped-wrapping-http-clients/README.md); keep that directory. Assertions inspect public metrics and server counts, not private breaker state.
+
+Run from `docs/blog/lab/2026-09-07-circuit-breakers-per-origin` in the repository checkout. Dependencies are pinned in `requirements.txt`.
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "clientwright[httpx]==0.2.2"
-.venv/bin/python breakers_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python breakers_lab.py
 ```
 
-Four scenes: one client talking to three upstreams of which one is down, with a hand-rolled breaker
-keyed on the client and with a breaker keyed on the origin; which responses trip a breaker; a
-breaker that counts attempts against one that counts logical calls, under retries; and the
-half-open probe after the recovery timeout.
+[Lab source on GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-circuit-breakers-per-origin).

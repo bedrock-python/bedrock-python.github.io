@@ -102,8 +102,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Building HTTP and gRPC clients for production</h3>
-        <p class="bdr-entry__description">A client for an external service needs to bound the cost of failure: waiting time, attempts and load on the dependency. These decisions interact.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <p class="bdr-entry__description">Imagine an orders service with two HTTP dependencies. Inventory returns the available quantity of a product; payments charges the order. A failed inventory read may be repeated.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -114,8 +114,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Idempotency in APIs and background jobs</h3>
-        <p class="bdr-entry__description">A client sends a request, loses the response and retries. A worker finishes a job but crashes before acknowledging it.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine an orders service. A buyer pays 1,999 kopecks, the charge succeeds, but the HTTP connection closes before the response arrives. The client retries.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -125,9 +125,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-kafka-in-python-services/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
-        <h3 class="bdr-entry__title">Kafka in a Python service: producers, consumers and operations</h3>
-        <p class="bdr-entry__description">A Kafka client must fit the service&#x27;s rules: who owns topics, when a message counts as processed and what happens during shutdown. Library defaults do not answer those questions.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <h3 class="bdr-entry__title">Kafka in Python: publishing, processing and stopping safely</h3>
+        <p class="bdr-entry__description">Imagine a delivery service that publishes parcel statuses to Kafka. A tracking service reads them and updates the customer&#x27;s order page.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -162,8 +162,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Preparing a Python gRPC server for production</h3>
-        <p class="bdr-entry__description">Registering a servicer and opening a port is enough for the first gRPC call. Operating that server requires decisions around the handler: which errors clients receive, when the…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <p class="bdr-entry__description">Imagine an orders service with a GetInvoice method: a buyer requests an invoice for a paid order. It works locally.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -174,8 +174,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Redis failures: health checks and service behavior</h3>
-        <p class="bdr-entry__description">Redis may serve as a cache, a rate limiter and an idempotency store within the same service. Those uses need different failure policies.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <p class="bdr-entry__description">Imagine an online shop with three operations: looking up a price, signing in and paying for an order.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -186,8 +186,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Reliable event delivery with Outbox, Inbox and Kafka</h3>
-        <p class="bdr-entry__description">A service saves an order in PostgreSQL and needs to publish it through Kafka. The process can fail between commit and publication.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine an online shop with two services. The order service saves a purchase in PostgreSQL and publishes order.created to Kafka.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -198,8 +198,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">SQLAlchemy and PgBouncer: configuring and diagnosing connection pools</h3>
-        <p class="bdr-entry__description">A connection pool is full while the application responds quickly. After the database slows down, the same utilization graph remains full, but requests now time out.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine an orders service: GET /orders/42 reads an order from PostgreSQL and asks a shipping service for a delivery quote.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -210,8 +210,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
         <h3 class="bdr-entry__title">SQLAlchemy sessions and transactions: who owns commit</h3>
-        <p class="bdr-entry__description">An order and its creation event need to appear together. If each repository calls commit() independently, failure to record the event leaves an order without an event.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine an order service that saves an order and a created event so other services can learn about the purchase. If recording the event fails, the order must roll back too.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -222,8 +222,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">Testing Alembic migrations in CI</h3>
-        <p class="bdr-entry__description">A successful alembic upgrade head checks one path: applying history to the chosen starting state.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine a shop with users and orders. A new release adds users.is_active; earlier migrations created the order status enum and a rule that an order amount must be positive.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -234,8 +234,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
         <h3 class="bdr-entry__title">The Python service lifecycle: startup, health checks and shutdown</h3>
-        <p class="bdr-entry__description">An HTTP API, Kafka consumer and background job may share settings, a database pool and outbound clients.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine a reports service. GET /reports builds a report on demand; a worker periodically builds the same report in the background. Both need a database connection.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

@@ -1,119 +1,113 @@
-"""PostgreSQL behind PgBouncer in transaction mode: what breaks for asyncpg, and what does not."""
-
+"""Real PgBouncer checks: prepared statements, commits/rollbacks, and transaction-local state."""
 import asyncio
-import collections
-import sys
-import time
 
-from pydantic import SecretStr
+import asyncpg
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.postgres import PostgresContainer
-
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy_foundation_kit import create_async_session_manager
-from sqlalchemy_foundation_kit.contrib.settings import BasePostgresConfig, ConnectionSettings, PoolSettings
+from sqlalchemy_foundation_kit.contrib.settings import QuerySettings
 
-CLIENTS = 20          # concurrent application connections
-QUERIES = 20          # distinct statements per client, so caches fill
-DEFAULT_POOL_SIZE = 5 # server connections PgBouncer keeps per user/database
-
-
-def start_pgbouncer(network, *, extra_env: dict[str, str] | None = None) -> DockerContainer:
-    env = {
-        "DB_HOST": "db", "DB_PORT": "5432", "DB_USER": "test", "DB_PASSWORD": "test", "DB_NAME": "test",
-        "POOL_MODE": "transaction", "AUTH_TYPE": "scram-sha-256",
-        "DEFAULT_POOL_SIZE": str(DEFAULT_POOL_SIZE), "MAX_CLIENT_CONN": "200",
-        **(extra_env or {}),
-    }
-    bouncer = DockerContainer("edoburu/pgbouncer:latest").with_exposed_ports(5432).with_network(network)
-    for k, v in env.items():
-        bouncer = bouncer.with_env(k, v)
-    bouncer.start()
-    wait_for_logs(bouncer, "process up", timeout=30)
-    return bouncer
+from lab_support import DatabaseLab, seed
+from pool_flow import effective_settings, get_order, slow_query_with_limit
 
 
-def url_for(bouncer) -> str:
-    return f"postgresql+asyncpg://test:test@{bouncer.get_container_host_ip()}:{bouncer.get_exposed_port(5432)}/test"
-
-
-first_error: dict[str, str] = {}
-
-
-async def hammer(engine, label: str) -> None:
-    """CLIENTS connections each run QUERIES distinct statements, twice, through the pool."""
-    errors: collections.Counter[str] = collections.Counter()
-    ok = 0
-
-    async def client(n: int) -> None:
-        nonlocal ok
-        for round_ in range(2):
-            for i in range(QUERIES):
-                try:
-                    async with engine.connect() as conn:
-                        await conn.execute(text(f"SELECT {i} + {n * 0} AS v"))  # distinct text per i
-                    ok += 1
-                except Exception as error:  # noqa: BLE001
-                    errors[type(error).__name__] += 1
-                    first_error.setdefault(label, str(error).splitlines()[0][:160])
-
-    started = time.perf_counter()
-    await asyncio.gather(*(client(n) for n in range(CLIENTS)))
-    took = time.perf_counter() - started
-    print(f"  {label:<58} ok={ok:<4} errors={dict(errors) or 'none'}  ({took:.1f}s)")
-    if label in first_error:
-        print(f"      first error: {first_error[label]}")
-
-
-async def session_state_leak(url: str) -> None:
-    engine = create_async_engine(url, poolclass=__import__("sqlalchemy.pool", fromlist=["NullPool"]).NullPool,
-                                 connect_args={"statement_cache_size": 0})
-    async with engine.connect() as a:
-        await a.execute(text("SET search_path TO leaked"))     # plain SET, no transaction around it
-        await a.commit()
-    async with engine.connect() as b:                           # a different client connection
-        seen = (await b.execute(text("SHOW search_path"))).scalar()
-    print(f"  client A ran SET search_path TO leaked; client B sees search_path = {seen!r}")
-    await engine.dispose()
-
-
-async def scenarios(direct_url: str, bouncer_url: str, bouncer_ps0_url: str, bouncer_ignore_url: str) -> None:
-    print("--- plain SQLAlchemy + asyncpg, driver defaults (statement cache on) ---")
-    for label, url in (("direct to PostgreSQL", direct_url),
-                       ("PgBouncer transaction mode, defaults (max_prepared_statements=200)", bouncer_url),
-                       ("PgBouncer transaction mode, max_prepared_statements=0 (pre-1.22 default)", bouncer_ps0_url)):
-        engine = create_async_engine(url, pool_size=10, max_overflow=10)
-        await hammer(engine, label)
-        await engine.dispose()
-
-    print("\n--- sqlalchemy-foundation-kit, its pgbouncer-safe settings ---")
-    for label, url in (("PgBouncer transaction mode, defaults", bouncer_url),
-                       ("PgBouncer with ignore_startup_parameters=jit,search_path", bouncer_ignore_url)):
-        host, port = url.split("@")[1].split("/")[0].split(":")
-        config = BasePostgresConfig(
-            connection=ConnectionSettings(host=host, port=int(port), user="test", password=SecretStr("test"), database="test"),
-            pool=PoolSettings(size=10, max_overflow=10),
-            application_name="pgbouncer-lab",
-            use_orjson_serialization=False,
-        )
-        manager = create_async_session_manager(config)
-        await hammer(manager.engine, label)
-        await manager.aclose()
-
-    print("\n--- session state through PgBouncer, transaction mode, one server connection ---")
-    await session_state_leak(bouncer_url)
-
-
-with Network() as network:
-    with PostgresContainer("postgres:17-alpine", username="test", password="test", dbname="test").with_network(network).with_network_aliases("db") as pg:
-        direct = pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)
-        b1 = start_pgbouncer(network)
-        b2 = start_pgbouncer(network, extra_env={"MAX_PREPARED_STATEMENTS": "0"})
-        b3 = start_pgbouncer(network, extra_env={"IGNORE_STARTUP_PARAMETERS": "jit,search_path"})
+async def workload(config, label):
+    config = config.model_copy(update={"pool": config.pool.model_copy(update={"timeout": 3})})
+    async with create_async_session_manager(config) as manager:
+        async def worker(number):
+            for repeat in range(2):
+                for query in range(5):
+                    async with manager.get_transaction() as session:
+                        value = (await session.execute(
+                            text(f"SELECT CAST(:value AS integer) + {query}"),
+                            {"value": number},
+                        )).scalar_one()
+                        assert value == number + query
+        async with asyncio.TaskGroup() as group:
+            for number in range(4):
+                group.create_task(worker(number))
+        assert await get_order(manager, 42) == {"id": 42, "total": 1999}
         try:
-            asyncio.run(scenarios(direct, url_for(b1), url_for(b2), url_for(b3)))
-        finally:
-            b1.stop(); b2.stop(); b3.stop()
+            async with manager.get_transaction() as session:
+                await session.execute(text("INSERT INTO orders VALUES (99, 500)"))
+                raise RuntimeError("Roll back this order")
+        except RuntimeError:
+            pass
+        async with manager.get_transaction() as session:
+            assert (await session.execute(text("SELECT count(*) FROM orders WHERE id = 99"))).scalar_one() == 0
+        assert (await effective_settings(manager))["search_path"] == "app"
+    print(f"PASS {label}: 40 parameterized statements, lookup, rollback and schema")
+
+
+async def prepared_switch(bouncer, tracked):
+    a = await asyncpg.connect(bouncer.dsn, statement_cache_size=0)
+    b = await asyncpg.connect(bouncer.dsn, statement_cache_size=0)
+    try:
+        async with a.transaction():
+            first_pid = await a.fetchval("SELECT pg_backend_pid()")
+            prepared = await a.prepare("SELECT $1::integer", name="order_lookup")
+            assert await prepared.fetchval(42) == 42
+        async with b.transaction():
+            # With LIFO reuse, B takes the server A just released and keeps it busy.
+            assert await b.fetchval("SELECT pg_backend_pid()") == first_pid
+            try:
+                async with a.transaction():
+                    next_pid = await a.fetchval("SELECT pg_backend_pid()")
+                    assert next_pid != first_pid
+                    value = await prepared.fetchval(42)
+            except asyncpg.InvalidSQLStatementNameError as error:
+                assert not tracked and error.sqlstate == "26000"
+            else:
+                assert tracked and value == 42
+    finally:
+        await a.close()
+        await b.close()
+    print(f"PASS backend changed: tracked={tracked}, result={'42' if tracked else 'SQLSTATE 26000'}")
+
+
+async def settings_and_timeout(bouncer):
+    async with create_async_session_manager(bouncer.config()) as manager:
+        before = await effective_settings(manager)
+        assert before["search_path"] == "app"
+        assert before["application_name"] == "orders-api"
+        try:
+            await slow_query_with_limit(manager)
+        except DBAPIError as error:
+            assert error.orig.sqlstate == "57014", error
+        else:
+            raise AssertionError("PostgreSQL should cancel pg_sleep under statement_timeout")
+        assert await get_order(manager, 42) == {"id": 42, "total": 1999}
+        async with manager.get_transaction() as session:
+            assert (await session.execute(text("SHOW statement_timeout"))).scalar_one() == "0"
+    raw = await asyncpg.connect(bouncer.dsn, statement_cache_size=0)
+    try:
+        async with raw.transaction():
+            assert await raw.fetchval("SHOW search_path") != "app"
+    finally:
+        await raw.close()
+    print("PASS SET LOCAL: schema does not leak; query cancellation rolls back; next transaction works")
+
+
+async def main(lab, tracked, untracked):
+    async with asyncio.timeout(45):
+        async with create_async_session_manager(lab.direct_config()) as manager:
+            await seed(manager)
+        await workload(lab.direct_config(), "PostgreSQL directly, caches=100")
+        await workload(tracked.config(), "PgBouncer tracking=200, caches=100")
+        await prepared_switch(tracked, True)
+        await prepared_switch(untracked, False)
+        conservative = untracked.config().model_copy(update={
+            "query": QuerySettings(statement_cache_size=0, prepared_statement_cache_size=0),
+        })
+        await workload(conservative, "PgBouncer tracking=0, kit unique names and caches=0")
+        await settings_and_timeout(tracked)
+
+
+if __name__ == "__main__":
+    with DatabaseLab() as lab:
+        tracked = lab.bouncer()
+        untracked = lab.bouncer(max_prepared_statements=0)
+        assert tracked.admin("SHOW VERSION")[0]["version"] == "PgBouncer 1.25.2"
+        config = {row["key"]: row["value"] for row in tracked.admin("SHOW CONFIG")}
+        assert config["pool_mode"] == "transaction" and config["max_prepared_statements"] == "200"
+        asyncio.run(main(lab, tracked, untracked))

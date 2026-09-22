@@ -1,19 +1,7 @@
-"""The same two routes for every server: a quick request and a slow one."""
+"""Reuse the exact reports route and instrumented store from the shared lifecycle lab."""
+from pathlib import Path
+import sys
 
-import asyncio
-
-from fastapi import APIRouter
-
-router = APIRouter()
-
-
-@router.get("/work")
-async def work() -> dict[str, str]:
-    await asyncio.sleep(0.02)
-    return {"status": "ok"}
-
-
-@router.get("/slow")
-async def slow() -> dict[str, str]:
-    await asyncio.sleep(2.0)  # a report, an export, a payment: in flight when the signal lands
-    return {"status": "done"}
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '2026-09-07-one-lifecycle'))
+from one_lifecycle import Container, Settings, build_service, router
+from report_store import ReportStore, open_store

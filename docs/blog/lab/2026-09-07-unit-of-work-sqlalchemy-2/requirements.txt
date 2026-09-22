@@ -1,0 +1,4 @@
+sqlalchemy-foundation-kit==0.4.0
+SQLAlchemy[asyncio]==2.0.54
+asyncpg==0.31.0
+testcontainers[postgres]==4.15.0

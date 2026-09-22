@@ -1,23 +1,8 @@
-"""One AppSpec, three kinds of work. ROLE decides which entrypoints this process runs: all, api or worker."""
-
-import asyncio
-import contextlib
-import os
+"""One application lifecycle for an HTTP report and a periodic report worker."""
 import sys
-import time
 from dataclasses import dataclass
 
-from apscheduler.triggers.interval import IntervalTrigger
-from fastapi import APIRouter
-from servicewright import AppSpec, DaemonEntrypoint, Service, run_sync
-from servicewright.adapters.apscheduler4 import ScheduledJob, SchedulerEntrypoint
-from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig, UnitScopeDep
-
-T0 = time.perf_counter()
-
-
-def log(text: str) -> None:
-    print(f"{time.perf_counter() - T0:6.2f} s  {text}", flush=True)
+from servicewright import run_sync
 
 
 @dataclass(frozen=True)
@@ -28,111 +13,120 @@ class Settings:
     error_tracking: object | None = None
 
     def get_app_version(self) -> str:
-        return "1.0.0"
+        return '1.0.0'
 
 
-class Pool:  # stands in for the database pool every entrypoint shares
-    def __init__(self) -> None:
-        self.uses = 0
-        log("pool opened")
-
-    async def use(self, who: str) -> None:
-        self.uses += 1
-        log(f"{who} used the pool (use #{self.uses})")
-
-    async def close(self) -> None:
-        log("pool closed")
+# snippet:resources
+from contextlib import asynccontextmanager
+from report_store import ReportStore, open_store
 
 
 class Scope:
-    def __init__(self, pool: Pool) -> None:
-        self.pool = pool
+    def __init__(self, store):
+        self.store = store
 
     async def get(self, key):
-        return getattr(self, key)
+        if key is ReportStore:
+            return self.store
+        raise KeyError(key)
 
 
 class Container:
-    def __init__(self) -> None:
-        self.pool = Pool()
+    def __init__(self, store):
+        self.store = store
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
     async def app_scope(self):
-        try:
-            yield Scope(self.pool)
-        finally:
-            await self.pool.close()
+        async with open_store(self.store):
+            yield Scope(self.store)
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
     async def unit_scope(self, context=None):
-        yield Scope(self.pool)
+        yield Scope(self.store)
+# /snippet:resources
 
 
-class Traced:  # the same four calls the Host makes on every entrypoint, with a line each
-    def __init__(self, inner, name: str) -> None:
-        self._inner, self.name = inner, name
-        self.kind, self.essential = inner.kind, inner.essential
+# snippet:warmer
+import asyncio
+from servicewright import AsyncWarmer
 
-    async def bind(self, ctx) -> None:
-        log(f"bind    {self.name}")
-        await self._inner.bind(ctx)
 
-    async def serve(self, *, stop) -> None:
-        log(f"serve   {self.name}")
-        await self._inner.serve(stop=stop)
-        log(f"serve   {self.name} returned (still accepting)")
+class StoreWarmer(AsyncWarmer):
+    def __init__(self, store):
+        super().__init__()
+        self.store = store
 
-    async def drain(self, grace: float) -> None:
-        log(f"drain   {self.name}")
-        await self._inner.drain(grace)
+    async def warmup(self):
+        async with asyncio.timeout(2):
+            await self.store.ping()
+# /snippet:warmer
 
-    async def stop(self) -> None:
-        log(f"stop    {self.name}")
-        await self._inner.stop()
 
+# snippet:http
+from fastapi import APIRouter
+from servicewright.adapters.fastapi import UnitScopeDep
 
 router = APIRouter()
 
 
-@router.get("/work")
-async def work(unit: UnitScopeDep) -> dict[str, str]:
-    await (await unit.get("pool")).use("http request")
-    return {"status": "ok"}
+@router.get('/reports')
+async def report(unit: UnitScopeDep) -> dict[str, int]:
+    store = await unit.get(ReportStore)
+    return await store.report('http')
+# /snippet:http
 
 
-async def nightly_report(scope) -> None:  # a cron job, every 0.5 s here so it shows
-    await (await scope.get("pool")).use("scheduled job")
-
-
-async def consume(scope, stop: asyncio.Event) -> None:  # a worker loop: a consumer, a poller
-    pool = await scope.get("pool")
+# snippet:worker
+async def periodic_report(scope, stop: asyncio.Event):
+    store = await scope.get(ReportStore)
     while not stop.is_set():
-        await pool.use("worker loop")
-        with contextlib.suppress(TimeoutError):
-            await asyncio.wait_for(stop.wait(), timeout=0.4)
-    log("worker loop saw the stop event and finished its batch")
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=0.5)
+            return
+        except TimeoutError:
+            pass
+        if stop.is_set():
+            return
+        async with asyncio.timeout(1):
+            await store.report('worker')
+# /snippet:worker
 
 
-api = Traced(FastApiEntrypoint(config=HttpConfig(host="127.0.0.1", port=int(os.environ.get("PORT", "8000"))), routers=(router,)), "http")
-cron = Traced(SchedulerEntrypoint(jobs=[ScheduledJob(id="report", func=nightly_report, trigger=IntervalTrigger(seconds=0.5))]), "scheduler")
-worker = Traced(DaemonEntrypoint(consume), "daemon")
-
-ENTRYPOINTS = {"all": [api, cron, worker], "api": [api], "worker": [cron, worker]}
-
-spec = AppSpec(service_name="orders", create_container=lambda settings: Container(), drain_delay_seconds=0.3, drain_grace_seconds=5.0)
-async def announce_ready() -> None:
-    log("ready = true, post_start hook")
+# snippet:spec
+from servicewright import AppSpec
 
 
-async def flush_before_close() -> None:
-    log("pre_shutdown hook, app scope still open")
+def make_spec(container):
+    return AppSpec(
+        service_name='reports',
+        create_container=lambda settings: container,
+        warmers=[StoreWarmer(container.store)],
+        drain_delay_seconds=0.5,
+        drain_grace_seconds=3,
+        cleanup_timeout_seconds=2,
+    )
+# /snippet:spec
 
 
-spec.lifecycle.add_post_start_hook(announce_ready)
-spec.lifecycle.add_pre_shutdown_hook(flush_before_close)
+# snippet:roles
+from servicewright import DaemonEntrypoint, Service
+from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig
 
-if __name__ == "__main__":
-    role = sys.argv[1] if len(sys.argv) > 1 else "all"
-    log(f"starting as role={role}")
-    run_sync(Service(spec, entrypoints=ENTRYPOINTS[role]), Settings())
-    log("run_sync returned")
+
+def build_service(role, *, port=8080, store=None):
+    container = Container(store if store is not None else ReportStore())
+    api = FastApiEntrypoint(
+        config=HttpConfig(host='127.0.0.1', port=port, graceful_timeout=1),
+        routers=(router,),
+    )
+    worker = DaemonEntrypoint(periodic_report)
+    roles = {'api': [api], 'worker': [worker], 'all': [api, worker]}
+    service = Service(make_spec(container), entrypoints=roles[role])
+    return service, api, container
+# /snippet:roles
+
+
+if __name__ == '__main__':
+    role = sys.argv[1] if len(sys.argv) > 1 else 'all'
+    service, _, _ = build_service(role)
+    run_sync(service, Settings())

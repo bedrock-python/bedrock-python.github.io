@@ -1,86 +1,101 @@
-"""PING is not the whole story: three Redis servers that answer PONG, and what a write probe says."""
+"""Verify PING, write capability, application policy and recovery on real Redis."""
 
 import asyncio
-import time
+from contextlib import ExitStack
+import logging
+from pathlib import Path
+import sys
 
-from redis.asyncio import Redis
 from redis.exceptions import ReadOnlyError, ResponseError
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
-from redis_client_kit import check_async_redis_health, create_async_redis_client
-from redis_client_kit.settings import BaseRedisSettings, RedisConnectionSettings, RedisPoolSettings
-
-
-def start_redis(network, alias: str, *args: str) -> DockerContainer:
-    c = DockerContainer("redis:7-alpine").with_exposed_ports(6379).with_network(network).with_network_aliases(alias).with_command(f"redis-server {' '.join(args)}")
-    c.start()
-    wait_for_logs(c, "Ready to accept connections", timeout=30)
-    return c
+# Reuse exactly the functions printed in the article.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "2026-09-07-when-should-redis-fail-open"))
+from shop import make_redis, redis_health, product_price, allow_login, pay_order, ServiceUnavailable
+from fail_open_lab import Catalog, PaymentProvider, expect_error, wait_ready
 
 
-def client_for(c: DockerContainer) -> Redis:
-    return create_async_redis_client(BaseRedisSettings(key_prefix="shop", connection=RedisConnectionSettings(host=c.get_container_host_ip(), port=int(c.get_exposed_port(6379))),
-                                                       pool=RedisPoolSettings(socket_timeout=0.5, socket_connect_timeout=0.5)))
+def start_redis(stack, network, alias, *args):
+    container = (
+        DockerContainer("redis:7-alpine")
+        .with_exposed_ports(6379)
+        .with_network(network)
+        .with_network_aliases(alias)
+        .with_command("redis-server " + " ".join(args))
+        .waiting_for(LogMessageWaitStrategy("Ready to accept connections"))
+    )
+    stack.callback(container.stop)
+    container.start()
+    return container
 
 
-async def probe(label: str, redis: Redis) -> None:
-    started = time.perf_counter()
-    ping = await check_async_redis_health(redis)                            # the default: PING
-    ping_ms = (time.perf_counter() - started) * 1000
-    started = time.perf_counter()
-    write = await check_async_redis_health(redis, write_key="shop:health")  # opt-in: PING, then SET
-    write_ms = (time.perf_counter() - started) * 1000
+def client_for(container):
+    return make_redis(container.get_container_host_ip(), int(container.get_exposed_port(6379)))
+
+
+async def probe(label, redis, expected_ping, expected_write):
+    ping = await redis_health(redis)
+    write = await redis_health(redis, require_write=True)
+    assert (ping, write) == (expected_ping, expected_write), (label, ping, write)
+    print(f"{label}: PING={ping}, PING+SET={write}")
+
+
+async def rejected_writes(redis, error_type):
+    await expect_error(error_type, redis.set("shop:direct-write", "1", ex=5))
+    catalog, provider = Catalog(), PaymentProvider()
+    assert await product_price(redis, catalog.load_price, "uncached-sku") == "9.99"
+    assert catalog.reads == 1
+    await expect_error(ServiceUnavailable, allow_login(redis, "alice"))
+    await expect_error(ServiceUnavailable, pay_order(redis, provider.charge, "order-1", 999))
+    assert not provider.charges
+
+
+async def main(primary, full, replica):
+    healthy, stuffed, rep = [client_for(container) for container in (primary, full, replica)]
     try:
-        await redis.set("shop:health-probe", "1", ex=5)
-        value = await redis.get("shop:health-probe")
-        raw = "ok" if value == b"1" else f"read back {value!r}"
-    except (ResponseError, ReadOnlyError) as error:
-        raw = f"{type(error).__name__}: {str(error)[:52]}"
-    print(f"  {label:<42} PING health={ping!s:<6} ({ping_ms:6.1f} ms)   "
-          f"write_key health={write!s:<6} ({write_ms:6.1f} ms)   a plain SET: {raw}")
+        for client in (healthy, stuffed, rep):
+            await wait_ready(client)
+        print("Redis", (await healthy.info("server"))["redis_version"])
+        await probe("primary", healthy, True, True)
+        assert await healthy.get("shop:health:write") == "1"
+        assert 0 < await healthy.ttl("shop:health:write") <= 60
 
+        # Set maxmemory below current usage: deterministic OOM without a fill loop.
+        used = int((await stuffed.info("memory"))["used_memory"])
+        await stuffed.config_set("maxmemory", max(1, used // 2))
+        await probe("noeviction, memory limit reached", stuffed, True, False)
+        await rejected_writes(stuffed, ResponseError)
+        await stuffed.config_set("maxmemory", 0)
+        await probe("memory limit removed, same client", stuffed, True, True)
 
-async def main(primary, full, replica) -> None:
-    healthy = client_for(primary)
-    print("--- a healthy primary ---")
-    await probe("primary", healthy)
+        # Wait for replication instead of relying on a fixed sleep.
+        async with asyncio.timeout(15):
+            while (await rep.info("replication"))["master_link_status"] != "up":
+                await asyncio.sleep(0.1)
+        await probe("read-only replica", rep, True, False)
+        await rejected_writes(rep, ReadOnlyError)
 
-    print("\n--- a primary at maxmemory with noeviction ---")
-    stuffed = client_for(full)
-    try:
-        for i in range(2000):
-            await stuffed.set(f"fill:{i}", "x" * 4096)
-    except ResponseError:
-        pass                                              # it is full now
-    await probe("maxmemory 1mb, noeviction, full", stuffed)
-
-    print("\n--- a read-only replica ---")
-    rep = client_for(replica)
-    await asyncio.sleep(1.0)
-    await probe("replica of the primary", rep)
-
-    print("\n--- the primary, paused ---")
-    primary.get_wrapped_container().pause()
-    started = time.perf_counter()
-    ping = await check_async_redis_health(healthy)
-    ping_ms = (time.perf_counter() - started) * 1000
-    started = time.perf_counter()
-    write = await check_async_redis_health(healthy, write_key="shop:health")
-    print(f"  {'paused primary':<42} PING health={ping!s:<6} ({ping_ms:6.1f} ms)   "
-          f"write_key health={write!s:<6} ({(time.perf_counter() - started) * 1000:6.1f} ms)")
-    primary.get_wrapped_container().unpause()
-    for c in (healthy, stuffed, rep):
-        await c.aclose()
-
-
-with Network() as net:
-    primary = start_redis(net, "primary")
-    full = start_redis(net, "full", "--maxmemory", "1mb", "--maxmemory-policy", "noeviction")
-    replica = start_redis(net, "replica", "--replicaof", "primary", "6379")
-    try:
-        asyncio.run(main(primary, full, replica))
+        wrapped = primary.get_wrapped_container()
+        wrapped.pause()
+        try:
+            await probe("paused primary", healthy, False, False)
+        finally:
+            wrapped.unpause()
+        await probe("resumed primary, same client", healthy, True, True)
+        print("write refusals: catalog falls back, login/payment stop, no charge")
     finally:
-        for c in (replica, full, primary):
-            c.stop()
+        for client in (healthy, stuffed, rep):
+            await client.aclose()
+
+
+if __name__ == "__main__":
+    logging.disable(logging.CRITICAL)
+    with ExitStack() as stack:
+        network = stack.enter_context(Network())
+        primary = start_redis(stack, network, "primary", "--save", '""', "--appendonly", "no")
+        full = start_redis(stack, network, "full", "--maxmemory-policy", "noeviction")
+        replica = start_redis(stack, network, "replica", "--replicaof", "primary", "6379")
+        asyncio.run(main(primary, full, replica))
+    print("PASS: Redis health scenarios")

@@ -1,13 +1,41 @@
 # Практикум: Unit of Work в SQLAlchemy 2 {#lab-the-unit-of-work-in-sqlalchemy-2}
 
-Один скрипт с PostgreSQL 17 в контейнере.
+Запускаемый код из [статьи](../../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md).
+Нужен работающий Docker. Скрипт создаёт и удаляет собственный контейнер PostgreSQL;
+существующие базы не используются. Выполните команду из
+`docs/blog/lab/2026-09-07-unit-of-work-sqlalchemy-2` в клоне репозитория:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "sqlalchemy-foundation-kit==0.3.0" asyncpg "testcontainers[postgres]"
-.venv/bin/python uow_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt uow_lab.py
 ```
 
-Пять сценариев: ошибка при второй записи, когда репозитории коммитят самостоятельно и когда используется Unit of Work; успешное выполнение того же сценария; запись внутри блока чтения; savepoint вокруг одного сбойного шага; модульный тест прикладного сценария без базы данных.
+В `requirements.txt` закреплены sqlalchemy-foundation-kit 0.4.0,
+SQLAlchemy 2.0.54, asyncpg 0.31.0 и testcontainers 4.15.0.
+Используется образ `postgres:17-alpine`; скрипт выводит версию сервера
+(17.11 в проверенном запуске). Драйвер asyncpg указан явно.
+
+В `models.py` определены заказы, их события и необязательные подписки на рассылку.
+`order_flow.py` содержит десять фрагментов Python из обеих версий статьи.
+`uow_lab.py` проверяет их на настоящем PostgreSQL, без моков репозиториев.
+
+Проверяются следующие результаты:
+
+- два commit оставляют заказ без отклонённого события;
+- общая транзакция SQLAlchemy и Unit of Work библиотеки откатывают обе записи;
+- после flush идентификатор уже получен, но другая сессия ещё не видит строку;
+- успешный commit сохраняет данные, словарь результата доступен после закрытия сессии;
+- повтор необязательной подписки откатывается до savepoint;
+- другое нарушение ограничения подписки откатывает всю операцию;
+- `query()` отбрасывает запись без commit, но позволяет выполнить commit явно;
+- PostgreSQL отклоняет INSERT после `SET TRANSACTION READ ONLY`;
+- отмена до commit откатывает строки и возвращает соединения в пул.
+
+Проверка `query()` намеренно фиксирует отдельный заказ, чтобы показать отсутствие
+запрета записи. Это диагностический пример, а не реализация оформления заказа.
+Между независимыми сценариями таблицы очищаются. Строка
+`PASS: transaction scenarios` выводится только после успешных проверок.
+
+Время удержания соединений и оставшиеся примеры ожидания внешнего API и параллельной работы
+проверяются в [практикуме про сессии](../2026-09-07-stop-passing-asyncsession-everywhere/README.md).
 
 [Исходный код практикума на GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-unit-of-work-sqlalchemy-2).

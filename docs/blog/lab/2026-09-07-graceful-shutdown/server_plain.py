@@ -1,20 +1,27 @@
-"""FastAPI under uvicorn, the way most services ship: uvicorn's own SIGTERM handling."""
-
+"""An HTTP-only alternative: FastAPI lifespan owns the resource, Uvicorn drains requests."""
+from contextlib import asynccontextmanager
 import sys
-
 import uvicorn
 from fastapi import FastAPI
-
-from routes import router
-
-app = FastAPI()
-app.include_router(router)
+from routes import ReportStore, open_store
 
 
-@app.get("/readyz")
-async def readyz() -> dict[str, str]:
-    return {"status": "ready"}
+def build_app(store):
+    @asynccontextmanager
+    async def lifespan(app):
+        async with open_store(store):
+            await store.ping()
+            yield
+
+    app = FastAPI(lifespan=lifespan)
+
+    @app.get('/reports')
+    async def report():
+        return await store.report('http')
+
+    return app
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=int(sys.argv[1]), log_level="warning")
+if __name__ == '__main__':
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    uvicorn.run(build_app(ReportStore()), host='127.0.0.1', port=port)

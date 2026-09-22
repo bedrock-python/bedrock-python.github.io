@@ -7,7 +7,7 @@ Every post in the Bedrock Python blog, grouped by year.
 - **2026-09-13** — [A Python library from template to release](../posts/2026-09-13-python-library-from-template-to-release.md)
 - **2026-09-13** — [Building HTTP and gRPC clients for production](../posts/2026-09-13-production-http-grpc-clients.md)
 - **2026-09-13** — [Idempotency in APIs and background jobs](../posts/2026-09-13-idempotency-in-apis-and-background-jobs.md)
-- **2026-09-13** — [Kafka in a Python service: producers, consumers and operations](../posts/2026-09-13-kafka-in-python-services.md)
+- **2026-09-13** — [Kafka in Python: publishing, processing and stopping safely](../posts/2026-09-13-kafka-in-python-services.md)
 - **2026-09-13** — [Partitioning an existing PostgreSQL table](../posts/2026-09-13-partitioning-an-existing-postgresql-table.md)
 - **2026-09-13** — [PostgreSQL partition maintenance: creation, archiving and deletion](../posts/2026-09-13-postgresql-partition-maintenance.md)
 - **2026-09-13** — [Preparing a Python gRPC server for production](../posts/2026-09-13-production-python-grpc-server.md)

@@ -1,109 +1,78 @@
-"""What happens to an outbox when Kafka is gone for a while, and what happens when it comes back."""
+"""Pause a real Kafka broker, retain pending events, then drain the backlog."""
 
 import asyncio
-import time
-import uuid
+from pathlib import Path
+import sys
+from uuid import uuid4
 
-from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
-from testcontainers.kafka import KafkaContainer
-from testcontainers.postgres import PostgresContainer
+from sqlalchemy import select, text
 
-from omni_box import OmniBoxDomainService, OutboxPublisher
-from omni_box.core.converters import EnvelopeEventConverter
-from omni_box.infra.brokers.kafka import KafkaEventPublisher
-from omni_box.infra.storage.postgres import OutboxEventDBBase, PostgresOutboxRepository
-
-EVENTS = 20
-TOPIC = "orders.events"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-exactly-once-effects"))
+import event_flow as flow
+from lab_support import count, create_topics, database, infrastructure, records
+from models import Order, OutboxEventDB
 
 
-class Base(DeclarativeBase):
-    pass
+BACKLOG_SQL = """
+SELECT status, count(*) AS events, max(attempts_made) AS attempts
+FROM outbox_events
+WHERE status <> 'completed'
+GROUP BY status;
+""".strip()
 
 
-class OutboxEventDB(Base, OutboxEventDBBase):
-    pass
+async def main(db_url, bootstrap, kafka):
+    await create_topics(bootstrap, "orders.created")
+    async with database(db_url) as sessions:
+        async with flow.kafka_publisher(bootstrap) as broker:
+            # Publish once so that topic metadata and the producer connection are ready.
+            warmup_id = await flow.place_order(sessions, uuid4())
+            sent = await flow.relay_once(sessions, broker)
+            assert sent.processed_event_ids == [warmup_id]
+
+            container = kafka.get_wrapped_container()
+            await asyncio.to_thread(container.pause)
+            try:
+                event_ids = {await flow.place_order(sessions, uuid4()) for _ in range(3)}
+                assert await count(sessions, Order) == 4
+                for cycle in range(3):
+                    result = await flow.relay_once(sessions, broker)
+                    assert not result.processed_event_ids, result
+                    async with sessions() as session:
+                        rows = (await session.execute(text(BACKLOG_SQL))).all()
+                    assert rows == [("pending", 3, 0)], rows
+                    print(f"PASS paused cycle {cycle + 1}: orders=4, pending=3, attempts=0")
+                    await asyncio.sleep(1.1)
+            finally:
+                # Unpause before the producer's shutdown waits for outstanding sends.
+                await asyncio.to_thread(container.unpause)
+
+            async with asyncio.timeout(45):
+                while True:
+                    await flow.relay_once(sessions, broker)
+                    pending = await count(
+                        sessions, OutboxEventDB, OutboxEventDB.status != "completed",
+                    )
+                    if pending == 0:
+                        break
+                    await asyncio.sleep(1)
+
+            async with sessions() as session:
+                rows = (await session.execute(select(
+                    OutboxEventDB.id, OutboxEventDB.status, OutboxEventDB.attempts_made,
+                ))).all()
+            assert len(rows) == 4
+            assert all(row.status == "completed" and row.attempts_made == 0 for row in rows)
+            # A timed-out send may still reach Kafka. Assert no missing event IDs,
+            # not an exact record count; Inbox handles any repeated publication.
+            published_ids = {
+                dict(record.headers)["event_id"].decode()
+                for record in await records(bootstrap, "orders.created")
+            }
+            assert published_ids == {str(event_id) for event_id in event_ids | {warmup_id}}
+            print("PASS recovery: all 4 event IDs delivered, pending=0, attempts=0")
 
 
-async def statuses(session_factory) -> dict:
-    async with session_factory() as s:
-        rows = (await s.execute(text("SELECT status, attempts_made, count(*) FROM outbox_events GROUP BY 1, 2 ORDER BY 1, 2"))).all()
-    return {f"{status}/attempts={attempts}": n for status, attempts, n in rows}
-
-
-async def on_topic(bootstrap: str) -> str:
-    consumer = AIOKafkaConsumer(TOPIC, bootstrap_servers=bootstrap, group_id=f"audit-{uuid.uuid4().hex[:6]}", auto_offset_reset="earliest", enable_auto_commit=False)
-    await consumer.start()
-    try:
-        batches = await consumer.getmany(timeout_ms=3000)
-        records = [r for batch in batches.values() for r in batch]
-        direct = [r for r in records if b'"direct"' in r.value]
-        return f"{len(records)} ({len(direct)} of them from the request path)"
-    finally:
-        await consumer.stop()
-
-
-async def main(db_url: str, bootstrap: str, kafka_wrapped) -> None:
-    engine = create_async_engine(db_url)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    domain = OmniBoxDomainService(max_attempts=6)   # the default budget
-    async with session_factory() as session, session.begin():
-        repo = PostgresOutboxRepository(session, model_class=OutboxEventDB)
-        for i in range(EVENTS):
-            order_id = uuid.uuid4()
-            await repo.create(domain.create_outbox_event(aggregate_type="order", aggregate_id=order_id, event_type="order.created",
-                                                         topic=TOPIC, partition_key=str(order_id), payload={"n": i}))
-    print(f"--- {EVENTS} events in the outbox, Kafka reachable ---")
-    producer = AIOKafkaProducer(bootstrap_servers=bootstrap, request_timeout_ms=2000)  # fail in seconds, not the 40 s default
-    await producer.start()
-    broker = KafkaEventPublisher(producer=producer, converter=EnvelopeEventConverter(), max_infra_retries=1)
-
-    async def relay_cycle(batch_size: int = 100) -> None:
-        async with session_factory() as session, session.begin():
-            await OutboxPublisher(PostgresOutboxRepository(session, model_class=OutboxEventDB), broker, publish_timeout=5.0).publish_batch(worker_id="relay-1", batch_size=batch_size)
-
-    # A service publishing from the request path has a producer already connected.
-    direct = AIOKafkaProducer(bootstrap_servers=bootstrap, request_timeout_ms=2000)
-    await direct.start()
-    await direct.send_and_wait(TOPIC, value=b'{"warmup": true}')
-    kafka_wrapped.pause()
-
-    print("\n--- three events published straight from the request path, while Kafka is gone ---")
-    for i in range(3):
-        started = time.perf_counter()
-        try:
-            await asyncio.wait_for(direct.send_and_wait(TOPIC, value=b'{"direct": %d}' % i), timeout=10)
-            outcome = "sent"
-        except Exception as error:
-            outcome = f"{type(error).__name__}: {str(error)[:60]}"
-        print(f"  request {i + 1}: {outcome} after {time.perf_counter() - started:.1f} s")
-    await direct.stop()
-
-    print("\n--- Kafka paused; the relay keeps ticking every cycle ---")
-    t0 = time.perf_counter()
-    for cycle in range(1, 8):
-        await relay_cycle()
-        print(f"  cycle {cycle} at {time.perf_counter() - t0:5.1f} s: {await statuses(session_factory)}")
-    kafka_wrapped.unpause()
-    await asyncio.sleep(1.0)
-    print("\n--- Kafka is back ---")
-    await relay_cycle()
-    print(f"  next relay cycle: {await statuses(session_factory)}; messages on the topic: {await on_topic(bootstrap)}")
-    async with session_factory() as session, session.begin():
-        repo = PostgresOutboxRepository(session, model_class=OutboxEventDB)
-        failed = (await session.execute(text("SELECT id FROM outbox_events WHERE status = 'failed'"))).scalars().all()
-        for event_id in failed:
-            await repo.requeue_failed(event_id)
-    await relay_cycle()
-    print(f"  after requeue_failed on every failed row and one more cycle: {await statuses(session_factory)}; messages on the topic: {await on_topic(bootstrap)}")
-    await producer.stop()
-    await engine.dispose()
-
-
-with PostgresContainer("postgres:17-alpine") as pg, KafkaContainer() as kafka:
-    asyncio.run(main(pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1), kafka.get_bootstrap_server(), kafka.get_wrapped_container()))
+if __name__ == "__main__":
+    with infrastructure() as (db_url, bootstrap, kafka):
+        asyncio.run(main(db_url, bootstrap, kafka))

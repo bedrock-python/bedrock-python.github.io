@@ -1,0 +1,7 @@
+alembic-gauntlet[asyncio,testcontainers]==0.3.0
+alembic==1.20.0
+SQLAlchemy[asyncio]==2.0.54
+asyncpg==0.31.0
+pytest==9.1.1
+pytest-asyncio==1.4.0
+testcontainers[postgres]==4.15.0

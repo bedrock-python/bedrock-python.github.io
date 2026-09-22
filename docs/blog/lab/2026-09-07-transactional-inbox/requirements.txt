@@ -1,0 +1,1 @@
+-r ../2026-09-07-exactly-once-effects/requirements.txt

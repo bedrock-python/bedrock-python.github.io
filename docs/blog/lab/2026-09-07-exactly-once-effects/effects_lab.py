@@ -1,154 +1,99 @@
-"""Every failure window between a database commit and a Kafka publish, and what closes each one."""
+"""Prove the producer failure windows and deduplicate two real Kafka records."""
 
 import asyncio
-import uuid
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from uuid import uuid4
 
-from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
-from sqlalchemy import Column, String, Table, func, select, text
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
-from testcontainers.kafka import KafkaContainer
-from testcontainers.postgres import PostgresContainer
+from aiokafka import AIOKafkaProducer
+from sqlalchemy import select
 
-from omni_box import InboxConsumerRunner, InboxEvent, InboxEventRepository, OmniBoxDomainService, OutboxPublisher
-from omni_box.core.converters import EnvelopeEventConverter
-from omni_box.core.protocols.transaction import InboxTransactionProviderProtocol
-from omni_box.infra.brokers.kafka import KafkaEventConsumer, KafkaEventPublisher
-from omni_box.infra.storage.postgres import InboxEventDBBase, OutboxEventDBBase, PostgresInboxRepository, PostgresOutboxRepository
+import event_flow as flow
+from lab_support import (
+    ProcessCrash, count, create_topics, database, infrastructure, invoice_count,
+    process, records,
+)
+from models import InboxEventDB, Order, OutboxEventDB
 
 
-class Base(DeclarativeBase):
-    pass
+async def main(db_url, bootstrap):
+    await create_topics(bootstrap, "orders.commit-first", "orders.publish-first", "orders.created")
+    async with database(db_url) as sessions:
+        async with AIOKafkaProducer(bootstrap_servers=bootstrap) as producer:
+            order_id = uuid4()
+            async with sessions.begin() as session:
+                session.add(Order(id=order_id))
+            try:
+                raise ProcessCrash("after order commit, before publish")
+                # The send is never reached.
+            except ProcessCrash:
+                pass
+            assert await count(sessions, Order, Order.id == order_id) == 1
+            assert await records(bootstrap, "orders.commit-first") == []
+            print("PASS commit before publish: orders=1, Kafka records=0")
 
-
-class OutboxEventDB(Base, OutboxEventDBBase):
-    pass
-
-
-class InboxEventDB(Base, InboxEventDBBase):
-    pass
-
-
-orders = Table("orders", Base.metadata, Column("id", String, primary_key=True), Column("scene", String))
-invoices = Table("invoices", Base.metadata, Column("order_id", String, primary_key=True))
-
-
-class ProcessCrash(Exception):
-    """The worker died here."""
-
-
-async def count_messages(bootstrap: str, topic: str) -> int:
-    consumer = AIOKafkaConsumer(topic, bootstrap_servers=bootstrap, group_id=f"audit-{uuid.uuid4().hex[:6]}",
-                                auto_offset_reset="earliest", enable_auto_commit=False)
-    await consumer.start()
-    try:
-        batches = await consumer.getmany(timeout_ms=3000)
-        return sum(len(records) for records in batches.values())
-    finally:
-        await consumer.stop()
-
-
-async def count_rows(session_factory, table, scene: str | None = None) -> int:
-    async with session_factory() as session:
-        query = select(func.count()).select_from(table)
-        if scene is not None:
-            query = query.where(table.c.scene == scene)
-        return (await session.execute(query)).scalar_one()
-
-
-async def main(db_url: str, bootstrap: str) -> None:
-    engine = create_async_engine(db_url)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    producer = AIOKafkaProducer(bootstrap_servers=bootstrap)
-    await producer.start()
-    domain = OmniBoxDomainService()
-
-    print("--- dual write, the two orders ---")
-    # 1. commit, then publish; the process dies between the two
-    order_id = str(uuid.uuid4())
-    async with session_factory() as session, session.begin():
-        await session.execute(orders.insert().values(id=order_id, scene="commit-then-publish"))
-    try:
-        raise ProcessCrash()  # ...before producer.send_and_wait("orders.commit-then-publish", ...)
-    except ProcessCrash:
-        pass
-    print(f"  commit, then publish, crash between:  orders={await count_rows(session_factory, orders, 'commit-then-publish')} "
-          f"messages={await count_messages(bootstrap, 'orders.commit-then-publish')}")
-
-    # 2. publish, then commit; the commit fails
-    order_id = str(uuid.uuid4())
-    await producer.send_and_wait("orders.publish-then-commit", key=order_id.encode(), value=b'{"event":"order.created"}')
-    try:
-        async with session_factory() as session, session.begin():
-            await session.execute(orders.insert().values(id=order_id, scene="publish-then-commit"))
-            raise ProcessCrash()  # the transaction rolls back
-    except ProcessCrash:
-        pass
-    print(f"  publish, then commit, commit fails:   orders={await count_rows(session_factory, orders, 'publish-then-commit')} "
-          f"messages={await count_messages(bootstrap, 'orders.publish-then-commit')}")
-
-    print("\n--- outbox: the row and the event commit together; the relay publishes at least once ---")
-    order_id = str(uuid.uuid4())
-    async with session_factory() as session, session.begin():
-        await session.execute(orders.insert().values(id=order_id, scene="outbox"))
-        await PostgresOutboxRepository(session, model_class=OutboxEventDB).create(
-            domain.create_outbox_event(
-                aggregate_type="order", aggregate_id=uuid.UUID(order_id), event_type="order.created",
-                topic="orders.outbox", partition_key=order_id, payload={"order_id": order_id},
-                idempotency_key=f"order.created:{order_id}",
+            order_id = uuid4()
+            await producer.send_and_wait(
+                "orders.publish-first", value=b'{"event_type":"order.created"}',
             )
-        )
-    broker = KafkaEventPublisher(producer=producer, converter=EnvelopeEventConverter())
+            try:
+                async with sessions.begin() as session:
+                    session.add(Order(id=order_id))
+                    await session.flush()
+                    raise ProcessCrash("publish succeeded, order transaction failed")
+            except ProcessCrash:
+                pass
+            assert await count(sessions, Order, Order.id == order_id) == 0
+            assert len(await records(bootstrap, "orders.publish-first")) == 1
+            print("PASS publish before commit: orders=0, Kafka records=1")
 
-    async def relay_cycle(crash_after_send: bool) -> None:
-        async with session_factory() as session, session.begin():
-            repo = PostgresOutboxRepository(session, model_class=OutboxEventDB)
-            result = await OutboxPublisher(repo, broker).publish_batch(worker_id="relay-1", batch_size=100)
-            if crash_after_send and result.processed_event_ids:
-                raise ProcessCrash()  # sent to Kafka, died before the commit that marks the row completed
+        order_id = uuid4()
+        try:
+            async with sessions.begin() as session:
+                await flow.record_order(session, order_id)
+                raise ProcessCrash("before order + outbox commit")
+        except ProcessCrash:
+            pass
+        assert await count(sessions, Order, Order.id == order_id) == 0
+        assert await count(sessions, OutboxEventDB) == 0
+        print("PASS shared transaction rollback: orders=0, outbox=0")
 
-    try:
-        await relay_cycle(crash_after_send=True)
-    except ProcessCrash:
-        pass
-    async with session_factory() as session:
-        status = (await session.execute(text("SELECT status, attempts_made FROM outbox_events"))).all()
-    print(f"  relay cycle 1, crash after the send:  outbox rows {status}  messages={await count_messages(bootstrap, 'orders.outbox')}")
-    await relay_cycle(crash_after_send=False)
-    async with session_factory() as session:
-        status = (await session.execute(text("SELECT status, attempts_made FROM outbox_events"))).all()
-    print(f"  relay cycle 2, normal:                outbox rows {status}  messages={await count_messages(bootstrap, 'orders.outbox')}")
+        event_id = await flow.place_order(sessions, order_id)
+        assert await count(sessions, Order, Order.id == order_id) == 1
+        assert await count(sessions, OutboxEventDB) == 1
 
-    print("\n--- inbox: both copies arrive; the invoice is written once ---")
+        async with flow.kafka_publisher(bootstrap) as broker:
+            try:
+                async with sessions.begin() as session:
+                    result = await flow.relay_batch(session, broker)
+                    assert result.processed_event_ids == [event_id]
+                    raise ProcessCrash("Kafka acknowledged, outbox commit did not happen")
+            except ProcessCrash:
+                pass
+            async with sessions() as session:
+                status = await session.scalar(select(OutboxEventDB.status))
+            assert status == "pending", status
+            assert len(await records(bootstrap, "orders.created")) == 1
 
-    class InboxTxProvider(InboxTransactionProviderProtocol):
-        @asynccontextmanager
-        async def transaction(self) -> AsyncIterator[InboxEventRepository]:
-            async with session_factory() as session, session.begin():
-                yield PostgresInboxRepository(session, model_class=InboxEventDB)
+            result = await flow.relay_once(sessions, broker)
+            assert result.processed_event_ids == [event_id]
 
-    async def create_invoice(event: InboxEvent, repo: InboxEventRepository) -> None:
-        await repo.session.execute(invoices.insert().values(order_id=event.payload["order_id"]))  # same transaction as the inbox row
+        copies = await records(bootstrap, "orders.created")
+        assert len(copies) == 2, copies
+        assert {dict(record.headers)["event_id"] for record in copies} == {
+            str(event_id).encode()
+        }
+        assert len({record.offset for record in copies}) == 2
+        async with sessions() as session:
+            assert await session.scalar(select(OutboxEventDB.status)) == "completed"
+        print("PASS relay restart: Kafka records=2, distinct event_id=1, outbox=completed")
 
-    kafka_consumer = AIOKafkaConsumer("orders.outbox", bootstrap_servers=bootstrap, group_id="billing",
-                                      auto_offset_reset="earliest", enable_auto_commit=False)
-    runner = InboxConsumerRunner(consumer=KafkaEventConsumer(kafka_consumer), transaction_provider=InboxTxProvider(),
-                                 handler=create_invoice, worker_id="billing-1", consumer_group="billing")
-    await runner.start()
-    try:
-        for n in (1, 2):
-            r = await runner.process_one()
-            print(f"  delivery {n}: processed={r.processed} duplicate={r.duplicate} committed={r.committed}  "
-                  f"invoices={await count_rows(session_factory, invoices)}")
-    finally:
-        await runner.stop()
-    await producer.stop()
-    await engine.dispose()
+        first, second = await process(flow.billing_runner(sessions, bootstrap), 2)
+        assert first.processed and first.committed and not first.duplicate, first
+        assert second.duplicate and second.committed and not second.processed, second
+        assert await invoice_count(sessions, order_id) == 1
+        assert await count(sessions, InboxEventDB) == 1
+        print("PASS Inbox: deliveries=2, invoices=1, inbox rows=1")
 
 
-with PostgresContainer("postgres:17-alpine") as pg, KafkaContainer() as kafka:
-    asyncio.run(main(pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1), kafka.get_bootstrap_server()))
+if __name__ == "__main__":
+    with infrastructure() as (db_url, bootstrap, _):
+        asyncio.run(main(db_url, bootstrap))

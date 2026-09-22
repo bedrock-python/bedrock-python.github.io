@@ -4,7 +4,7 @@
 
 ## 2026
 
-- **2026-09-13** — [Kafka в Python-сервисе: отправка, обработка сообщений и эксплуатация](../posts/2026-09-13-kafka-in-python-services.md)
+- **2026-09-13** — [Kafka в Python: отправка, обработка и остановка сервиса](../posts/2026-09-13-kafka-in-python-services.md)
 - **2026-09-13** — [Python-библиотека от шаблона до релиза](../posts/2026-09-13-python-library-from-template-to-release.md)
 - **2026-09-13** — [Redis недоступен: проверки состояния и поведение сервиса](../posts/2026-09-13-redis-failures-and-health-checks.md)
 - **2026-09-13** — [SQLAlchemy и PgBouncer: настройка и диагностика пула соединений](../posts/2026-09-13-sqlalchemy-pgbouncer-pools.md)

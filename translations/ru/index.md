@@ -128,8 +128,8 @@ hide:
 <a class="bdr-card" href="blog/posts/2026-09-13-kafka-in-python-services/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Kafka в Python-сервисе: отправка, обработка сообщений и эксплуатация</h3>
-  <p class="bdr-card__lede">При подключении Kafka нужно определить, кто создаёт и настраивает топики, когда сообщение считается обработанным и что делать при остановке сервиса.</p>
+  <h3 class="bdr-card__title">Kafka в Python: отправка, обработка и остановка сервиса</h3>
+  <p class="bdr-card__lede">Представим сервис доставки, который отправляет статусы посылок в Kafka. Сервис отслеживания читает их и обновляет карточку заказа.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <a class="bdr-card" href="blog/posts/2026-09-13-python-library-from-template-to-release/">
@@ -143,7 +143,7 @@ hide:
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Архитектура</div>
   <h3 class="bdr-card__title">Redis недоступен: проверки состояния и поведение сервиса</h3>
-  <p class="bdr-card__lede">В одном сервисе Redis может хранить кеш, ограничивать частоту запросов и защищать операции от повторов. При его отказе этим задачам нужны разные решения.</p>
+  <p class="bdr-card__lede">Представим интернет-магазин с тремя операциями: просмотр цены, вход в аккаунт и оплата заказа.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <!-- catalog:home:end -->

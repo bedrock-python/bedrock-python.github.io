@@ -1,99 +1,161 @@
-"""Idempotency keys against a payment provider that counts its charges: the concurrent case, the reused key, the failed action, the store that is down."""
-
+"""Assert concurrency, replay, validation and failure boundaries against real Redis."""
 import asyncio
 import logging
-
-from pydantic import BaseModel
-from redis.asyncio import Redis
-from testcontainers.redis import RedisContainer
+import socket
+from uuid import uuid4
 
 from idempotency_kit import (
-    AsyncIdempotencyCoordinator,
-    IdempotencyDomainService,
-    IdempotencyInProgressError,
-    IdempotencyKeyReuseError,
-    PydanticResultAdapter,
-    fingerprint_of,
+    AsyncIdempotencyCoordinator, IdempotencyDomainService,
+    IdempotencyInProgressError, NoOpIdempotencyMetrics,
 )
 from idempotency_kit.infra.storage.redis.aio import RedisAsyncIdempotencyRepository
+from pydantic import ValidationError
+from redis.asyncio import Redis
+from redis.backoff import NoBackoff
+from redis.retry import Retry
 
-logging.disable(logging.CRITICAL)
-
-
-class Charge(BaseModel):
-    charge_id: str
-    amount: int
-
-
-class Provider:
-    def __init__(self) -> None:
-        self.charges: list[Charge] = []
-        self.fail_next = False
-
-    async def charge(self, amount: int) -> Charge:
-        await asyncio.sleep(0.3)  # the payment provider round trip
-        if self.fail_next:
-            self.fail_next = False
-            raise RuntimeError("provider timed out")
-        charge = Charge(charge_id=f"ch_{len(self.charges) + 1}", amount=amount)
-        self.charges.append(charge)
-        return charge
+from lab_support import BlockingProvider, Provider, payment, redis_client, run
+from payment_flow import charge_once, make_coordinator, replay_example
 
 
-adapter = PydanticResultAdapter(Charge)
+class Collisions(NoOpIdempotencyMetrics):
+    def __init__(self):
+        self.seen = asyncio.Event()
+
+    def record_collision(self, operation):
+        self.seen.set()
 
 
-def coordinator_for(redis: Redis, **kwargs) -> AsyncIdempotencyCoordinator:
-    return AsyncIdempotencyCoordinator(RedisAsyncIdempotencyRepository(redis), IdempotencyDomainService(), **kwargs)
+async def concurrency(redis, mode):
+    metrics = Collisions()
+    coordinator = AsyncIdempotencyCoordinator(
+        RedisAsyncIdempotencyRepository(redis), IdempotencyDomainService(),
+        in_flight=mode, metrics=metrics,
+    )
+    provider, request, key = BlockingProvider(), payment(), str(uuid4())
+    async with asyncio.TaskGroup() as tasks:
+        first = tasks.create_task(charge_once(coordinator, provider.charge, request, key))
+        await provider.started.wait()
+        if mode == "raise":
+            try:
+                await charge_once(coordinator, provider.charge, request, key)
+            except IdempotencyInProgressError:
+                pass
+            else:
+                raise AssertionError("The concurrent request must be refused")
+            second = None
+        else:
+            second = tasks.create_task(charge_once(coordinator, provider.charge, request, key))
+            await (provider.both_started if mode == "run" else metrics.seen).wait()
+        provider.release.set()
+    assert len(provider.effects) == (2 if mode == "run" else 1)
+    if mode == "wait":
+        assert first.result() == second.result()
+    print(f"PASS concurrent {mode}: effects={len(provider.effects)}")
 
 
-async def two_at_once(coordinator: AsyncIdempotencyCoordinator, provider: Provider, key: str, label: str) -> None:
-    provider.charges.clear()
-    first = asyncio.create_task(coordinator.coordinate("payment.charge", key, 3600, adapter, provider.charge, 1999))
-    await asyncio.sleep(0.05)  # the client timed out and retried while the first charge is still in flight
-    second = asyncio.create_task(coordinator.coordinate("payment.charge", key, 3600, adapter, provider.charge, 1999))
-    results = await asyncio.gather(first, second, return_exceptions=True)
-    shown = [r.charge_id if isinstance(r, Charge) else type(r).__name__ for r in results]
-    print(f"  {label:<40} responses={shown}  charges made={[c.charge_id for c in provider.charges]}")
+async def wait_until_absent(repository, operation, key):
+    async with asyncio.timeout(4):
+        while await repository.get(operation, key) is not None:
+            await asyncio.sleep(0.03)
 
 
-async def main(url: str) -> None:
-    redis = Redis.from_url(url)
-    provider = Provider()
-
-    print("--- two identical requests, 50 ms apart, same key ---")
-    await two_at_once(coordinator_for(redis, in_flight="run"), provider, "order-1", "in_flight='run' (a result cache)")
-    await two_at_once(coordinator_for(redis), provider, "order-2", "in_flight='wait' (the default)")
-    await two_at_once(coordinator_for(redis, in_flight="raise"), provider, "order-3", "in_flight='raise' (409 for the second)")
-
-    coordinator = coordinator_for(redis)
-    print("\n--- the same key, a different request ---")
-    provider.charges.clear()
-    await coordinator.coordinate("payment.charge", "order-4", 3600, adapter, provider.charge, 1999, idempotency_fingerprint=fingerprint_of(amount=1999))
-    replay = await coordinator.coordinate("payment.charge", "order-4", 3600, adapter, provider.charge, 1999, idempotency_fingerprint=fingerprint_of(amount=1999))
-    print(f"  same key, same amount     -> replayed {replay.charge_id}, charges made={len(provider.charges)}")
-    try:
-        await coordinator.coordinate("payment.charge", "order-4", 3600, adapter, provider.charge, 5, idempotency_fingerprint=fingerprint_of(amount=5))
-    except IdempotencyKeyReuseError as error:
-        print(f"  same key, amount 5        -> {type(error).__name__}, charges made={len(provider.charges)}")
-
-    print("\n--- the action fails: nothing is cached, the retry runs again ---")
-    provider.charges.clear()
-    provider.fail_next = True
-    try:
-        await coordinator.coordinate("payment.charge", "order-5", 3600, adapter, provider.charge, 1999)
-    except RuntimeError as error:
-        print(f"  first call  -> {error}")
-    again = await coordinator.coordinate("payment.charge", "order-5", 3600, adapter, provider.charge, 1999)
-    print(f"  second call -> {again.charge_id}, charges made={len(provider.charges)}")
-
-    print("\n--- the store is down ---")
-    provider.charges.clear()
-    down = coordinator_for(Redis.from_url("redis://127.0.0.1:1"))
-    result = await down.coordinate("payment.charge", "order-6", 3600, adapter, provider.charge, 1999)
-    print(f"  Redis unreachable -> the action ran anyway: {result.charge_id}, charges made={len(provider.charges)}  (availability over exactly-once, by design)")
-    await redis.aclose()
+async def expired_lease(redis):
+    repository = RedisAsyncIdempotencyRepository(redis)
+    coordinator = AsyncIdempotencyCoordinator(
+        repository, IdempotencyDomainService(),
+        in_flight="raise", in_flight_lease_seconds=1,
+    )
+    provider, request, key = BlockingProvider(), payment(), str(uuid4())
+    async with asyncio.TaskGroup() as tasks:
+        tasks.create_task(charge_once(coordinator, provider.charge, request, key))
+        await provider.started.wait()
+        await wait_until_absent(repository, f"payment.charge.{request.tenant_id.hex}", key)
+        tasks.create_task(charge_once(coordinator, provider.charge, request, key))
+        await provider.both_started.wait()
+        provider.release.set()
+    assert len(provider.effects) == 2
+    print("PASS expired lease: first action still alive, effects=2")
 
 
-with RedisContainer("redis:7-alpine") as container:
-    asyncio.run(main(f"redis://{container.get_container_host_ip()}:{container.get_exposed_port(6379)}"))
+async def after_effect(coordinator):
+    for protected in (False, True):
+        provider = Provider(deduplicate=protected, fail_after_effect=True)
+        request, key = payment(), str(uuid4())
+        try:
+            await charge_once(coordinator, provider.charge, request, key)
+        except ConnectionError:
+            pass
+        else:
+            raise AssertionError("Expected a lost provider response")
+        await charge_once(coordinator, provider.charge, request, key)
+        assert provider.calls == 2
+        assert len(provider.effects) == (1 if protected else 2)
+        print(f"PASS response lost inside action: provider_key={protected}, effects={len(provider.effects)}")
+
+
+async def store_down():
+    # Keep a port bound but not listening: deterministic connection refusal.
+    with socket.socket() as reserved:
+        reserved.bind(("127.0.0.1", 0))
+        async with Redis(
+            host="127.0.0.1", port=reserved.getsockname()[1],
+            socket_connect_timeout=0.2, socket_timeout=0.2,
+            retry=Retry(NoBackoff(), 0),
+        ) as redis:
+            provider, request, key = Provider(), payment(), str(uuid4())
+            coordinator = make_coordinator(redis)
+            await charge_once(coordinator, provider.charge, request, key)
+            await charge_once(coordinator, provider.charge, request, key)
+            assert len(provider.effects) == 2
+    print("PASS Redis unavailable: same key, effects=2 (fail open)")
+
+
+async def main(url):
+    async with redis_client(url) as redis:
+        for mode in ("run", "wait", "raise"):
+            await concurrency(redis, mode)
+        coordinator = make_coordinator(redis)
+        provider, request, key = Provider(), payment(), str(uuid4())
+        await replay_example(coordinator, provider.charge, request, key)
+        assert len(provider.effects) == 1
+        other = request.model_copy(update={"tenant_id": uuid4()})
+        await charge_once(coordinator, provider.charge, other, key)
+        assert len(provider.effects) == 2
+        for invalid in ("order:42", "", "x" * 256):
+            try:
+                await charge_once(coordinator, provider.charge, request, invalid)
+            except ValidationError:
+                pass
+            else:
+                raise AssertionError("Validate before entering the coordinator")
+        assert len(provider.effects) == 2
+        print("PASS replay, changed parameters, tenant scope, invalid keys")
+
+        provider, request = Provider(), payment()
+        await charge_once(coordinator, provider.charge, request, str(uuid4()))
+        await charge_once(coordinator, provider.charge, request, str(uuid4()))
+        assert len(provider.effects) == 2
+        print("PASS identical payload, two operation keys: effects=2")
+
+        await after_effect(coordinator)
+        await expired_lease(redis)
+
+        provider, request, key = Provider(), payment(), str(uuid4())
+        await charge_once(coordinator, provider.charge, request, key)
+        operation = f"payment.charge.{request.tenant_id.hex}"
+        repository = RedisAsyncIdempotencyRepository(redis)
+        record = await repository.get(operation, key)
+        assert 3590 < record.ttl_seconds <= 3600
+        # Accelerate expiry only for this disposable lab record.
+        await redis.pexpire(f"idempotency:{operation}:{key}", 50)
+        await wait_until_absent(repository, operation, key)
+        await charge_once(coordinator, provider.charge, request, key)
+        assert len(provider.effects) == 2
+        print("PASS completed TTL: 3600 seconds; late replay after expiry repeats the effect")
+    await store_down()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.CRITICAL)
+    run(main)

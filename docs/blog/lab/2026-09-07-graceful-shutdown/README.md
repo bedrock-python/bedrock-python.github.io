@@ -1,19 +1,20 @@
-# Lab: graceful shutdown is a protocol
+# Lab: finish accepted HTTP requests before closing resources {#lab-graceful-shutdown-is-a-protocol}
 
-The scripts behind the shutdown measurements: two servers with the same two routes, and a driver
-that plays Kubernetes against them.
+`driver.py` starts the shared reports service and sends real localhost HTTP requests. It tests two outcomes:
+
+- An accepted 0.8-second report returns 200 after readiness has changed to 503; its store closes afterwards.
+- A 30-second report exceeds Uvicorn's one-second graceful timeout, is cancelled and returns 500 before the response has started; cleanup follows cancellation. That response is the observed result for this route and pinned stack, not a general cancellation guarantee.
+
+`AppSpec.drain_grace_seconds=3` leaves time for the HTTP adapter to finish after Uvicorn's request deadline. These are separate limits. `cleanup_timeout_seconds` is per shutdown step; the application scope must also bound its own resource cleanup.
+
+`server_servicewright.py` and `server_plain.py` are manual entrypoints. The latter uses FastAPI lifespan and Uvicorn's own request draining, which is enough for many HTTP-only applications. The automated driver tests the servicewright path using `Service.run(..., stop=event)`; it does not send SIGTERM or simulate a Kubernetes rollout. Signal delivery and routing delay still need a deployment-level test.
+
+Keep the neighbouring [shared lifecycle lab](../2026-09-07-one-lifecycle/README.md), whose store and route are reused here. No Docker is needed.
+
+Run from `docs/blog/lab/2026-09-07-graceful-shutdown` in the repository checkout:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "servicewright[fastapi]" httpx
-.venv/bin/python driver.py server_plain.py
-.venv/bin/python driver.py server_servicewright.py                  # drain_delay_seconds=0
-DRAIN_DELAY=1.5 .venv/bin/python driver.py server_servicewright.py  # the protocol with its window
+uv run --no-project --python 3.13 --with-requirements requirements.txt python driver.py
 ```
 
-| Script | What it is |
-|---|---|
-| `routes.py` | `/work` (20 ms) and `/slow` (2 s), shared by both servers |
-| `server_plain.py` | FastAPI under `uvicorn.run`, uvicorn's own SIGTERM handling |
-| `server_servicewright.py` | the same routes under servicewright's lifecycle; `DRAIN_DELAY` sets `AppSpec.drain_delay_seconds` |
-| `driver.py` | starts a server, waits for readiness, starts one slow request, sends SIGTERM, keeps sending one request every 20 ms for `LAG` seconds (the endpoint propagation lag), polls readiness, and counts what came back |
+[Lab source on GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-graceful-shutdown).

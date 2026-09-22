@@ -1,17 +1,25 @@
 # Практикум: транзакционный режим PgBouncer и асинхронный SQLAlchemy {#lab-pgbouncer-transaction-mode-and-async-sqlalchemy}
 
-Скрипты запускают PostgreSQL 17 и PgBouncer 1.25 в контейнерах одной сети Docker.
+Сервис заказов читает `app.orders` через PgBouncer в режиме transaction pooling. Скрипты запускают временные контейнеры PostgreSQL и PgBouncer, проверяют результаты и удаляют контейнеры при выходе. Для запуска нужны Docker и `uv`.
+
+Выполните команды из каталога практикума:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "sqlalchemy-foundation-kit[settings]==0.3.0" asyncpg "testcontainers[postgres]"
-.venv/bin/python pgbouncer_lab.py
-.venv/bin/python jit_probe.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python pgbouncer_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python jit_probe.py
 ```
 
-| Скрипт | Что измеряет |
+| Скрипт | Что проверяет |
 |---|---|
-| `pgbouncer_lab.py` | Двадцать клиентов дважды выполняют по двадцать разных запросов: напрямую к PostgreSQL, через PgBouncer с текущими настройками по умолчанию, через PgBouncer с `max_prepared_statements=0` и с настройками sqlalchemy-foundation-kit. В статье также приведены результаты версии 0.2.1 до исправления. Затем значение обычного `SET`, выполненного через одно клиентское соединение, читается через другое |
-| `jit_probe.py` | Результаты `SHOW jit`, `SHOW search_path` и `SHOW application_name` через PgBouncer с `ignore_startup_parameters=jit,search_path` |
+| `pgbouncer_lab.py` | Четыре воркера выполняют 40 параметризованных запросов на конфигурацию: напрямую, через PgBouncer с отслеживанием и двумя включёнными кэшами, затем без отслеживания и кэшей, но с уникальными именами запросов от библиотеки. Также проверяются чтение заказа, rollback и область действия схемы |
+| `pgbouncer_lab.py`, принудительная смена backend | Подготовленный запрос продолжает работать после смены соединения с PostgreSQL при включённом отслеживании. Без него то же повторное выполнение завершается с SQLSTATE `26000` |
+| `pgbouncer_lab.py`, отмена запроса | `SET LOCAL statement_timeout='100ms'` отменяет `pg_sleep(1)` с SQLSTATE `57014`; после rollback обычные запросы проходят, а таймаут возвращается к исходному значению |
+| `jit_probe.py` | Неподдерживаемые стартовые параметры отклоняются. Игнорирование `jit` и `search_path` отбрасывает их значения; библиотека применяет `db_schema` внутри каждой транзакции |
+
+Каждая строка `PASS` появляется только после проверки результата. Используются `postgres:17-alpine` и образ с закреплённой версией `edoburu/pgbouncer:v1.25.2-p0`. Основной скрипт также проверяет версию, которую сообщает PgBouncer, и действующие настройки. В `requirements.txt` закреплены sqlalchemy-foundation-kit 0.4.0, SQLAlchemy 2.0.54, asyncpg 0.31.0 и остальные прямые зависимости Python.
+
+В `pool_flow.py` находится Python-код из статьи. Файл `pgbouncer-settings.ini` задаёт реальные настройки пула: два серверных соединения на пару «БД + пользователь», 50 клиентов и до 200 отслеживаемых подготовленных запросов на серверное соединение. `lab_support.py` добавляет адрес БД, временные тестовые учётные данные и сеть Docker. Метод `Bouncer.admin()` выполняет `SHOW POOLS`, `SHOW STATS` и другие административные команды через `psql` в контейнере, с необходимым simple-query protocol.
+
+При параллельном выполнении SQL локальный пул ждёт до трёх секунд: здесь проверяется совместимость, поэтому таймаут 200 мс из статьи намеренно увеличен. Сам таймаут и обе очереди проверяет отдельный [практикум по метрикам пула](../2026-09-07-sqlalchemy-pool-metrics/README.md). Эти скрипты проверяют поведение; они не измеряют предельную нагрузку и не задают готовую конфигурацию для продакшена.
 
 [Исходный код практикума на GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-pgbouncer-async-sqlalchemy).
