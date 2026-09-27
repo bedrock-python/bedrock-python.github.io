@@ -9,7 +9,7 @@ Every post in the Bedrock Python blog, grouped by year.
 - **2026-09-13** — [Idempotency in APIs and background jobs](../posts/2026-09-13-idempotency-in-apis-and-background-jobs.md)
 - **2026-09-13** — [Kafka in Python: publishing, processing and stopping safely](../posts/2026-09-13-kafka-in-python-services.md)
 - **2026-09-13** — [Partitioning an existing PostgreSQL table](../posts/2026-09-13-partitioning-an-existing-postgresql-table.md)
-- **2026-09-13** — [PostgreSQL partition maintenance: creation, archiving and deletion](../posts/2026-09-13-postgresql-partition-maintenance.md)
+- **2026-09-13** — [PostgreSQL partition maintenance: from a plan to a verified archive](../posts/2026-09-13-postgresql-partition-maintenance.md)
 - **2026-09-13** — [Preparing a Python gRPC server for production](../posts/2026-09-13-production-python-grpc-server.md)
 - **2026-09-13** — [Redis failures: health checks and service behavior](../posts/2026-09-13-redis-failures-and-health-checks.md)
 - **2026-09-13** — [Reliable event delivery with Outbox, Inbox and Kafka](../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md)

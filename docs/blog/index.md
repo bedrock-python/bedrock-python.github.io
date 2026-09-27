@@ -90,8 +90,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">A Python library from template to release</h3>
-        <p class="bdr-entry__description">Maintaining several Python libraries repeats more than code. Each repository needs packaging, tests, formatting rules, documentation and a path to PyPI.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <p class="bdr-entry__description">Imagine a reporting service and an export worker that both need the start and end of a UTC month. Each has its own helper, and one gets December wrong.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -138,8 +138,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">Partitioning an existing PostgreSQL table</h3>
-        <p class="bdr-entry__description">Partitioning an existing table changes more than row storage. It affects uniqueness, foreign keys, query plans and writes during the transition.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <p class="bdr-entry__description">Imagine an analytics service that stores events in events. Reports usually read one month, and operators add notes in event_notes.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -149,9 +149,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-postgresql-partition-maintenance/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">PostgreSQL partition maintenance: creation, archiving and deletion</h3>
-        <p class="bdr-entry__description">Creating the next partition is relatively straightforward. Operational complexity surrounds it: who owns the schedule, which tables may be deleted, what happens if archiving…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>3 min read</span></div>
+        <h3 class="bdr-entry__title">PostgreSQL partition maintenance: from a plan to a verified archive</h3>
+        <p class="bdr-entry__description">Imagine an analytics service with monthly events partitions. Reports need the current month and the previous two. Writers need another two months prepared ahead.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -282,7 +282,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Why gRPC interceptors break on streaming RPCs</h3>
-        <p class="bdr-entry__description">An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works.</p>
+        <p class="bdr-entry__description">Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>

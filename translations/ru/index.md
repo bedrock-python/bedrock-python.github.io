@@ -136,7 +136,7 @@ hide:
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Руководства</div>
   <h3 class="bdr-card__title">Python-библиотека от шаблона до релиза</h3>
-  <p class="bdr-card__lede">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и публикация на PyPI.</p>
+  <p class="bdr-card__lede">Представим сервис отчётов и воркер выгрузок. Оба вычисляют начало и конец месяца в UTC, но каждый своей функцией. В одной из них забыли про переход года.</p>
   <div class="bdr-card__meta">2026-09-13</div>
 </a>
 <a class="bdr-card" href="blog/posts/2026-09-13-redis-failures-and-health-checks/">

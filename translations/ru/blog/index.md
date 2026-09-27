@@ -102,8 +102,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Python-библиотека от шаблона до релиза</h3>
-        <p class="bdr-entry__description">При работе с несколькими Python-библиотеками повторяется не только код. В каждом репозитории нужны сборка, тесты, правила форматирования, документация и публикация на PyPI.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+        <p class="bdr-entry__description">Представим сервис отчётов и воркер выгрузок. Оба вычисляют начало и конец месяца в UTC, но каждый своей функцией. В одной из них забыли про переход года.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -174,8 +174,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Как перевести таблицу PostgreSQL на партиционирование</h3>
-        <p class="bdr-entry__description">При переводе существующей таблицы на партиционирование меняется не только хранение строк. Нужно учесть уникальность, внешние ключи, планы запросов и запись данных во время…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <p class="bdr-entry__description">Представим сервис аналитики, который хранит события в events. Отчёты обычно читают данные за месяц, а операторы оставляют заметки в event_notes.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>8 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -233,9 +233,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-postgresql-partition-maintenance/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">PostgreSQL и SQLAlchemy <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Обслуживание партиций PostgreSQL: создание, архивирование и удаление</h3>
-        <p class="bdr-entry__description">Создать следующую партицию сравнительно просто. Сложнее организовать обслуживание: кто запускает его по расписанию, какие таблицы разрешено удалять, что делать при ошибке…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <h3 class="bdr-entry__title">Обслуживание партиций PostgreSQL: от плана до проверенного архива</h3>
+        <p class="bdr-entry__description">Представим сервис аналитики с месячными партициями events. Отчёты используют текущий месяц и два предыдущих.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>8 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -282,8 +282,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Почему перехватчики gRPC ломаются на потоковых RPC</h3>
-        <p class="bdr-entry__description">Перехватчик, который измеряет длительность вызова, считает ошибки и добавляет идентификатор запроса в контекст, занимает двадцать строк и работает.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
+        <p class="bdr-entry__description">Представим воркер выгрузок, который получает строки от сервиса отчётов по gRPC. Загрузка занимает сотни миллисекунд, а перехватчик записывает почти ноль.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

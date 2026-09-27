@@ -1,0 +1,23 @@
+# Replace jobs.all-checks-passed in the generated ci.yml with this job.
+all-checks-passed:
+  name: All checks passed
+  if: always()
+  needs: [lint, test-unit, test-integration]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Require every declared job to succeed
+      env:
+        NEEDS_JSON: ${{ toJSON(needs) }}
+      shell: python
+      run: |
+        import json
+        import os
+        import sys
+
+        jobs = json.loads(os.environ["NEEDS_JSON"])
+        required = {"lint", "test-unit", "test-integration"}
+        valid = set(jobs) == required and all(
+            job["result"] == "success" for job in jobs.values()
+        )
+        print({name: job["result"] for name, job in jobs.items()})
+        sys.exit(0 if valid else 1)

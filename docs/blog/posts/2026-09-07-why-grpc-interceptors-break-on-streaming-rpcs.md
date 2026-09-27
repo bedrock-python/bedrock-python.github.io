@@ -12,78 +12,130 @@ tags:
   - asyncio
 ---
 
-# Why gRPC interceptors break on streaming RPCs
+# Why gRPC interceptors break on streaming RPCs {#why-grpc-interceptors-break-on-streaming-rpcs}
 
-<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs" role="img" aria-label="The wrapper closes before the stream has produced anything" markdown="0"></div>
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs" role="img" aria-label="A reporting stream keeps running after a timer around call creation has already stopped" markdown="0"></div>
 
-An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works. Then somebody adds a server-streaming method and the same twenty lines start lying: the latency histogram reports zero milliseconds for a call that took six hundred, the error counter stays at zero while the stream fails, and the request id is gone by the time the first item arrives. Nothing raises. The dashboards just quietly stop describing reality.
+Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero. When the server fails after two rows, the worker receives an error while the interceptor still reports success.
+
+We will reproduce both problems, fix the measurement and check what happens when the worker stops reading. The examples run against a real local gRPC server with `grpc-client-kit 0.4.0`, `grpcio 1.84.0` and Python `3.13`.
 
 <!-- more -->
 
-The numbers come from [the post's lab](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-grpc-interceptors-and-streams), an in-process gRPC server with all four RPC kinds. Versions: grpc-client-kit 0.1.2, grpcio 1.83.1, Python 3.13.
+## The reporting service we will call {#reporting-service}
 
-## The interceptor that is registered for one kind out of four
+Our service has four operations, one for each RPC shape. In a shape such as unary-stream, the first part describes the request and the second the response:
 
-Before the measuring problem there is a registration problem, and it is silent.
+| Method | RPC shape | What the worker does |
+|---|---|---|
+| `Get` | unary-unary | Fetch one report status |
+| `Stream` | unary-stream | Download report rows |
+| `Upload` | stream-unary | Send rows and receive a count |
+| `Chat` | stream-stream | Send rows and receive acknowledgements |
 
-`grpc.aio` has four client interceptor base classes, one per RPC kind. The obvious thing to write is one class that inherits all four and implements all four methods. Here is what the channel does with it:
-
-```text
-    one object inheriting all four ABCs, channel lists: unary_unary=1, unary_stream=0,
-                                                        stream_unary=0, stream_stream=0
-    unary_unary    intercept ran 1 time(s)
-    unary_stream   intercept ran 0 time(s)
-    stream_unary   intercept ran 0 time(s)
-    stream_stream  intercept ran 0 time(s)
-```
-
-The channel sorts interceptors into four lists with an `if`/`elif` chain, so an object that satisfies all four checks lands in the first list only. Your interceptor is registered for unary-unary and nothing else. No error, no warning; the other three methods you wrote are dead code.
-
-Four objects, one base class each, and the same four methods are registered where you expected:
-
-```text
-    four objects, one ABC each, channel lists: unary_unary=1, unary_stream=1,
-                                               stream_unary=1, stream_stream=1
-```
-
-This is worth knowing before anything else, because it means the streaming bugs below are usually *discovered* later than they are introduced: the interceptor was never running on streams in the first place.
-
-## What a unary interceptor measures on a stream
-
-Now the interceptor is registered properly. Here is the shape everyone writes, because it is the shape that is correct for unary calls:
+The lab uses byte messages and generic gRPC handlers to avoid a protobuf generation step. It still sends real RPCs over `127.0.0.1` on an automatically selected port. Here is the row generator behind `Stream`:
 
 ```python
-async def intercept_unary_stream(self, continuation, details, request):
-    token = REQUEST_ID.set("req-42")
-    started = time.perf_counter()
-    try:
+import asyncio
+
+import grpc
+
+GAP = 0.03
+ITEMS = [bytes([number]) for number in range(1, 6)]
+
+
+async def report_rows(request, context):
+    for number, row in enumerate(ITEMS, start=1):
+        if request == b"fail" and number == 3:
+            await context.abort(
+                grpc.StatusCode.UNAVAILABLE, "report generator failed at row 3"
+            )
+        if request != b"fast":
+            await asyncio.sleep(GAP)
+        yield row
+```
+
+A request containing `b"ok"` receives five rows. `b"fail"` receives two, then `UNAVAILABLE`. `b"fast"` removes the pauses for a later timing check. The service also sends trailing metadata `report-id: r-42`.
+
+## First, make sure the interceptor actually runs {#the-interceptor-that-is-registered-for-one-kind-out-of-four}
+
+Suppose we put all four methods into one interceptor:
+
+```python
+from collections import Counter
+
+import grpc
+import grpc.aio
+
+
+class EverythingInterceptor(
+    grpc.aio.UnaryUnaryClientInterceptor,
+    grpc.aio.UnaryStreamClientInterceptor,
+    grpc.aio.StreamUnaryClientInterceptor,
+    grpc.aio.StreamStreamClientInterceptor,
+):
+    def __init__(self):
+        self.calls = Counter()
+
+    async def intercept_unary_unary(self, continuation, details, request):
+        self.calls["unary_unary"] += 1
         return await continuation(details, request)
-    except grpc.aio.AioRpcError:
-        self.errors += 1
-        raise
-    finally:
-        self.measured_ms = (time.perf_counter() - started) * 1000
-        REQUEST_ID.reset(token)
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        self.calls["unary_stream"] += 1
+        return await continuation(details, request)
+
+    async def intercept_stream_unary(self, continuation, details, request):
+        self.calls["stream_unary"] += 1
+        return await continuation(details, request)
+
+    async def intercept_stream_stream(self, continuation, details, request):
+        self.calls["stream_stream"] += 1
+        return await continuation(details, request)
 ```
 
-Against a five-item stream sent 120 milliseconds apart, and then against the same stream failing at the third item:
+After calling each service method once, `calls` contains only `{"unary_unary": 1}`. In the tested grpcio version, the [channel constructor](https://grpc.github.io/grpc/python/_modules/grpc/aio/_channel.html) registers each object through an `if`/`elif` chain. The first matching base class wins.
 
-```text
-    unary-style wrapper, healthy stream: it measured 0 ms
-      the caller waited 609 ms for 5 items; request id during the stream: None
-    unary-style wrapper, failing stream: it counted 0 errors, measured 0 ms
-      the caller waited 245 ms, got 2 items and then UNAVAILABLE: report generator died at item 3
+Use one native interceptor object per RPC shape, or the four adapters supplied by `grpc-client-kit` below. Before comparing timings, the lab asserts that the measured interceptor was entered. An untouched counter is not evidence of a fast RPC.
+
+## Timing continuation measures setup {#what-a-unary-interceptor-measures-on-a-stream}
+
+This interceptor has only the streaming base class, so registration is correct. Its measurement is still wrong:
+
+```python
+import asyncio
+from time import perf_counter
+
+import grpc
+
+
+class SetupTimer(grpc.aio.UnaryStreamClientInterceptor):
+    def __init__(self):
+        self.entered = 0
+        self.errors = 0
+        self.seconds = None
+        self.finished = asyncio.Event()
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        self.entered += 1
+        started = perf_counter()
+        try:
+            return await continuation(details, request)
+        except grpc.aio.AioRpcError:
+            self.errors += 1
+            raise
+        finally:
+            self.seconds = perf_counter() - started
+            self.finished.set()
 ```
 
-Three separate failures in one interceptor, and all of them have the same cause: for a streaming response, `continuation` returns as soon as the *call object* exists. The RPC has not happened yet. It happens later, while the consumer iterates.
+The lab checks that `entered == 1` and `finished` is already set when the first row arrives. On the failing stream, the worker receives two rows and `UNAVAILABLE`, while `errors` remains zero.
 
-- **The duration is zero.** It measured how long gRPC took to construct a call object, and called that the latency of a 609-millisecond RPC. On a dashboard this is worse than no metric: it says the streaming endpoint is the fastest thing in the service.
-- **The error is invisible.** The stream failed mid-way, the caller got `UNAVAILABLE`, and the interceptor's `except` never ran, because the exception is raised inside the consumer's `async for`, in a different stack. The error counter says zero while the calls fail.
-- **The context is gone.** The `finally` reset the request id before the first item arrived, so every log line the consumer writes while processing the stream has no request id on it. The one place you would most want the correlation, a long-running stream, is the one place it is missing.
+[`continuation`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.UnaryStreamClientInterceptor) returns a call object. It does not wait for the response stream to finish. The network failure appears later, during `async for`. This distinction also matters for a native unary interceptor: receiving its call object is not the same as awaiting its response.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>The stream outlives the call that created it</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Creating a call does not complete the RPC</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -91,158 +143,214 @@ Three separate failures in one interceptor, and all of them have the same cause:
 config:
   theme: default
   look: classic
-  sequence:
+  flowchart:
     useMaxWidth: false
-    wrap: true
-    width: 140
-    actorMargin: 36
-    mirrorActors: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
 ---
-sequenceDiagram
-    accTitle: The stream outlives the call that created it
-    accDescr: Timing only iterator creation misses the work and later errors. A streaming interceptor must keep its context through iteration and finalize it on completion, error or cancellation.
-    participant C as Consumer
-    participant I as Interceptor
-    participant H as Handler / iterator
-    C->>I: Start RPC
-    I->>H: Create stream
-    H-->>I: Iterator, not results
-    Note over I,H: Work happens during iteration
-    loop For each item
-      I->>H: Request next item
-      H-->>I: Item
-      I-->>C: Item
-    end
-    H-->>I: Complete / raise / cancel
-    Note over I: Finalize timing, tracing and context
-    I-->>C: Final outcome
+flowchart TD
+    accTitle: Creating a call does not complete the RPC
+    accDescr: Wrapping continuation alone ends timing after call creation. The around_call interceptor observes the RPC outcome: success, failure or cancellation.
+    A["Call created"]
+    B["Read stream items"]
+    C["Success, failure, cancel"]
+    D["around_call finishes"]
+    E["Premature finally"]
+    A --> B --> C --> D
+    A -.-> E
 ```
 
 </div>
-<p class="bdr-diagram__caption">Timing only iterator creation misses the work and later errors. A streaming interceptor must keep its context through iteration and finalize it on completion, error or cancellation.</p>
+<p class="bdr-diagram__caption">Wrapping continuation alone ends timing after call creation. The around_call interceptor observes the RPC outcome: success, failure or cancellation.</p>
 </figure>
 <!-- /diagram:concept -->
 
-## Doing it by hand
+## Wrap iteration for the simple case {#doing-it-by-hand}
 
-The fix, written directly, is to wrap the returned call so that the interceptor's work spans the iteration rather than the setup:
-
-```python
-async def intercept_unary_stream(self, continuation, details, request):
-    started = time.perf_counter()
-    call = await continuation(details, request)
-
-    async def wrapped():
-        token = REQUEST_ID.set("req-42")
-        try:
-            async for item in call:
-                yield item
-        except grpc.aio.AioRpcError:
-            self.errors += 1
-            raise
-        finally:
-            self.measured_ms = (time.perf_counter() - started) * 1000
-            REQUEST_ID.reset(token)
-
-    return wrapped()
-```
-
-Same lab, same server:
-
-```text
-    stream-aware wrapper, healthy stream: it measured 608 ms
-      the caller waited 608 ms for 5 items; request id during the stream: 'req-42'
-    stream-aware wrapper, failing stream: it counted 1 errors, measured 244 ms
-```
-
-608 against 609, one error for one failure, and the request id is visible while the items arrive. That last one works because an async generator runs in its caller's context, so the `set` leaks into the consumer's context on purpose, and the `reset` happens when the generator finishes.
-
-This is the right idea and it is also where the hand-written version starts to accumulate obligations. The wrapper has to handle a consumer that abandons the stream half way, or the `finally` runs at garbage collection time, if ever. It has to not swallow `GeneratorExit`. It has to do something sensible when the underlying call is cancelled. And it has to be written four times, once per RPC kind, with the stream-unary case being different again: there the *request* is the iterator and the outcome arrives after the interceptor has returned.
-
-## The four kinds, one implementation
-
-What I want to write is the thing that reads like the unary version and behaves correctly for all four. That is what a logical interceptor is for: one `around_call` that yields exactly once, where the yield is the whole RPC.
+For a worker that fully reads the stream, put timing and error handling around iteration. This class uses the imports from the previous example:
 
 ```python
+class IterationTimer(grpc.aio.UnaryStreamClientInterceptor):
+    def __init__(self):
+        self.errors = 0
+        self.seconds = None
+        self.finished = asyncio.Event()
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        started = perf_counter()
+        call = await continuation(details, request)
+
+        async def rows():
+            try:
+                async for row in call:
+                    yield row
+            except grpc.aio.AioRpcError:
+                self.errors += 1
+                raise
+            finally:
+                self.seconds = perf_counter() - started
+                self.finished.set()
+
+        return rows()
+```
+
+Now the lab receives five rows on success, or two rows and one counted error on failure. `finished` remains unset at the first row and is set when iteration ends.
+
+The order matters: create the call **before** returning the generator. In this grpcio version, gRPC associates the returned iterator with that call, so `code()`, `details()` and `trailing_metadata()` remain available. The lab checks the status and `report-id` for this manual wrapper as well as the library version. Returning a generator does not by itself remove the call interface.
+
+This small wrapper only covers unary-stream calls read to completion or failure. Early exit needs an explicit cancellation policy, and streaming requests introduce another case: waiting for the final response inside the interceptor can block a caller that still needs to use `write()`.
+
+## One around_call for all four shapes {#the-four-kinds-one-implementation}
+
+Bedrock's [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) provides `AsyncAroundClientInterceptor` for this lifecycle. Its `around_call()` yields once: setup goes before the yield, outcome handling after it. The lab records results in a queue so that it can await completion instead of guessing a delay:
+
+```python
+from contextvars import ContextVar
+
+from grpc_client_kit.interceptors.base import AsyncAroundClientInterceptor, ClientCall
+
+REQUEST_ID = ContextVar("request_id", default=None)
+
+
 class Observability(AsyncAroundClientInterceptor):
+    def __init__(self):
+        self.finished = asyncio.Queue()
+
     async def around_call(self, call: ClientCall):
-        started = time.perf_counter()
+        started = perf_counter()
+        outcome = "OK"
         try:
-            yield                       # the whole RPC, response stream included
-        except grpc.aio.AioRpcError:
-            self.errors += 1
+            yield
+        except grpc.aio.AioRpcError as error:
+            outcome = error.code().name
+            raise
+        except asyncio.CancelledError:
+            outcome = "CANCELLED"
+            raise
+        except Exception:
+            outcome = "LOCAL_ERROR"
             raise
         finally:
-            self.measured[call.method] = (time.perf_counter() - started) * 1000
+            self.finished.put_nowait(
+                {
+                    "kind": call.rpc_type,
+                    "method": call.method,
+                    "outcome": outcome,
+                    "seconds": perf_counter() - started,
+                    "request_id": REQUEST_ID.get(),
+                }
+            )
 ```
 
-One class, expanded into the four channel entries the `if`/`elif` chain needs:
+This continues to use `asyncio`, `grpc` and `perf_counter` from the earlier examples. In a service, send these observations to your metrics or logging layer; the queue here is a test collector.
 
-```text
-    flatten_interceptors([one logical interceptor]) -> 4 channel entries
-    channel lists: unary_unary=1, unary_stream=1, stream_unary=1, stream_stream=1
-    unary_unary    around_call ran 1 time(s)
-    unary_stream   around_call ran 1 time(s)
-    stream_unary   around_call ran 1 time(s)
-    stream_stream  around_call ran 1 time(s)
-    measured /lab.Reports/Get       123 ms
-    measured /lab.Reports/Stream    608 ms
-    measured /lab.Reports/Chat      367 ms
-    measured /lab.Reports/Upload      1 ms
+The classes live in `observers.py`. This function in `consumer.py` connects one logical interceptor through `flatten_interceptors()` and downloads a report:
+
+```python
+from grpc_client_kit import flatten_interceptors
+
+from observers import Observability
+from report_service import STREAM
+
+
+async def download(target):
+    observer = Observability()
+    async with grpc.aio.insecure_channel(
+        target, interceptors=flatten_interceptors([observer])
+    ) as channel:
+        call = channel.unary_stream(STREAM)(b"ok", timeout=5)
+        rows = [row async for row in call]
+        record = await asyncio.wait_for(observer.finished.get(), timeout=5)
+        assert await call.code() == grpc.StatusCode.OK
+        assert dict(await call.trailing_metadata()) == {"report-id": "r-42"}
+        return rows, record
 ```
 
-Every kind runs once, and the streaming durations are the real ones: 608 milliseconds for the five-item stream, not zero. The mid-stream failure reaches the `except` as an ordinary `AioRpcError`:
+The lab calls this function and separately exercises all four RPC shapes. `flatten_interceptors([observer])` produces four adapters, and each RPC produces one outcome record. A failure after two rows reaches `around_call` as `AioRpcError`; local cancellation produces `CANCELLED`. A stream-unary call using `write()` followed by `done_writing()` also completes.
 
-```text
-    failing stream: around_call counted 1 errors, measured 246 ms
+**The metric follows the RPC lifecycle, not all application work on its results.** The library can finalize through the call's completion callback. In the fast-stream check, the consumer has received the fifth row but has not resumed the iterator to request EOF; `around_call` has already finished. Measure the worker's entire export operation separately if that includes validation, file writes or other processing. Consumer pacing can still affect RPC duration through stream consumption and flow control.
+
+## Keep interceptor context separate from caller context {#the-part-that-only-shows-up-on-streams}
+
+Suppose a layer temporarily sets a context variable while the RPC is active:
+
+```python
+class TokenScope(AsyncAroundClientInterceptor):
+    def __init__(self):
+        self.finished = asyncio.Queue()
+
+    async def around_call(self, call: ClientCall):
+        token = REQUEST_ID.set("interceptor-only")
+        try:
+            yield
+        finally:
+            inside = REQUEST_ID.get()
+            REQUEST_ID.reset(token)
+            self.finished.put_nowait((inside, REQUEST_ID.get()))
 ```
 
-And the caller still holds a real call afterwards. This is the check people forget when they hand-roll the wrapper, because returning a plain async generator can cost the caller `code()`, `details()` and `trailing_metadata()`:
+The probe runs this around all four RPC shapes. An inner observer sees `interceptor-only`; the caller keeps `caller-owned`; resetting the token succeeds. `grpc-client-kit` arranges a shared context for setup and teardown when those run in different tasks.
 
-```text
-    no interceptor               code()='OK'; details()=''; trailing_metadata()=Metadata(())
-    the kit's around interceptor code()='OK'; details()=''; trailing_metadata()=Metadata(())
+That does not inject the value into the task consuming the stream, and a `ContextVar` is not transmitted to the server. Set the request ID in the caller before creating the call if the caller's own logs need it. Cross-service propagation requires explicit gRPC metadata. Python's [context variable documentation](https://docs.python.org/3/library/contextvars.html#asyncio-support) describes task-local context handling.
+
+There is a separate failure to test: the metrics exporter itself raises during teardown.
+
+```python
+class RaisingTeardown(AsyncAroundClientInterceptor):
+    async def around_call(self, call: ClientCall):
+        try:
+            yield
+        finally:
+            raise RuntimeError("metrics exporter unavailable")
 ```
 
-## The part that only shows up on streams
+The probe checks that all four successful RPCs remain successful, a failing stream still raises `UNAVAILABLE`, and all five `RuntimeError` exceptions appear in the library logger. A bookkeeping failure after the yield does not replace the RPC result in these cases.
 
-There is one more asymmetry, and it is the reason this post exists as a design post rather than a tip.
+## Stop the RPC when the worker stops reading {#what-to-check-in-your-own-interceptors}
 
-For a unary call, the setup, the RPC and the teardown all happen in one coroutine, in one task, in one context. For a response stream they do not: the teardown runs whenever the stream ends, in whichever task drained it. So an interceptor that acquires something before the yield and releases it after — a `ContextVar` token, an OpenTelemetry context, a semaphore — is doing something subtler than it looks. A `ContextVar` token minted in one context cannot be reset in another; `contextvars` refuses it.
+For a preview, the worker needs only the first row. Here is the caller-side lifetime in `consumer.py`; it uses the same `REQUEST_ID` as the observers:
 
-The kit pins one context per call and runs both halves inside it, so the ordinary spelling works on every kind:
+```python
+from observers import REQUEST_ID
+from report_service import STREAM
 
-```text
---- an around_call that sets a ContextVar before the yield and resets it after
-    unary_unary    caller got the response
-    unary_stream   caller got the response
-    stream_unary   caller got the response
-    stream_stream  caller got the response
+
+async def first_row(channel, request=b"hold"):
+    token = REQUEST_ID.set("req-42")
+    call = None
+    try:
+        call = channel.unary_stream(STREAM)(request, timeout=5)
+        async for row in call:
+            assert REQUEST_ID.get() == "req-42"
+            return row
+    finally:
+        if call is not None:
+            call.cancel()
+        REQUEST_ID.reset(token)
 ```
 
-The second guarantee is about what happens when the teardown itself fails, which is not hypothetical: a metrics push, a log write, an exporter that is down.
+The special `b"hold"` request sends one row and keeps the server handler waiting. The lab verifies that this function cancels the call, stops the server handler, produces exactly one `CANCELLED` observation and restores the caller's context.
 
-```text
---- any teardown that raises, per RPC kind
-    unary_unary    caller got the response
-    unary_stream   caller got the response
-    stream_unary   caller got the response
-    stream_stream  caller got the response
+It also tries `break` without cancellation while retaining the call object: the RPC stays active and the observation is unfinished. Cancel explicitly in `finally`; leaving the loop is not a completion signal to the server. `cancel()` is synchronous and does nothing to an already finished call.
+
+## Run the examples {#labs}
+
+From the website repository root, with uv installed:
+
+```bash
+cd docs/blog/lab/2026-09-07-grpc-interceptors-and-streams
+uv run --no-project --python 3.13 --with-requirements requirements.txt python interceptors_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python probe.py
 ```
 
-Every kind: the response still arrives, and the teardown's exception is logged rather than delivered. An observability layer must not be able to turn a successful RPC into an error in the caller's hands, and it must not do it for two of four kinds and not the others.
+Both scripts assert outcomes and fail on a mismatch. They check registration, row counts, errors, status and trailing metadata, context isolation, cancellation and teardown logging. Durations are printed for comparison, not asserted as exact millisecond values. See the [lab README](../lab/2026-09-07-grpc-interceptors-and-streams/README.md) for the files and scope.
 
-## What to check in your own interceptors
+<div id="the-pieces" data-search-exclude></div>
 
-- **How many of the four kinds is it registered for?** One class inheriting all four ABCs is registered for one.
-- **Where does the duration stop?** If it stops when `continuation` returns, it measures nothing for a streaming response.
-- **Where would a mid-stream failure surface?** Not in the `try` around `continuation`.
-- **Does any context you set survive to the consumer?** And can the token be reset where you reset it?
-- **What does the caller hold afterwards?** If you wrapped the call in a generator, they may have lost `code()` and `trailing_metadata()`.
-- **What happens if the interceptor's own bookkeeping raises?** The caller should never find out.
+## What to take into your service {#conclusion}
 
-## The pieces
+We followed a report from call creation through reading, a mid-stream failure and early cancellation. The interceptor must run for the right RPC shape and observe its outcome; the caller must own the reading loop and cancellation. Those are separate responsibilities.
 
-The `around_call` seam is [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/), which also ships the layers most services would otherwise write against it: logging, tracing, metrics, timeouts, retries and a circuit breaker, in a fixed order, expanded into the four channel entries by `flatten_interceptors`. The two guarantees in the last section — a shared context across the yield, and a teardown that cannot change the outcome — landed in 0.1.2, because this lab is what found their absence.
-
-A zero-millisecond histogram on your fastest endpoint is not good news. It is an interceptor measuring the wrong thing.
+Use [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) when a shared logging, metrics or tracing layer needs to work across all four RPC shapes. `around_call` and `flatten_interceptors` provide that common implementation. Keep a consumer scenario like this lab alongside it, including partial reads and failure after the first item. For channel ownership, deadlines and retries, continue with [production HTTP and gRPC clients](2026-09-13-production-http-grpc-clients.md).

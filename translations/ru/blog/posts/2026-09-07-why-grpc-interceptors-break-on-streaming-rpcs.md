@@ -14,76 +14,128 @@ tags:
 
 # Почему перехватчики gRPC ломаются на потоковых RPC {#why-grpc-interceptors-break-on-streaming-rpcs}
 
-<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs" role="img" aria-label="Обёртка завершает работу до первого элемента потока" markdown="0"></div>
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs" role="img" aria-label="Поток отчёта продолжает работать, хотя таймер вокруг создания вызова уже остановлен" markdown="0"></div>
 
-Перехватчик, который измеряет длительность вызова, считает ошибки и добавляет идентификатор запроса в контекст, занимает двадцать строк и работает. Затем в сервисе появляется метод с потоковым ответом, и измерения становятся неверными: гистограмма показывает ноль миллисекунд вместо шестисот, ошибки не учитываются, а идентификатор запроса исчезает до получения первого элемента. Сам перехватчик не сообщает об ошибке — неверными оказываются метрики и логи.
+Представим воркер выгрузок, который получает строки от сервиса отчётов по gRPC. Загрузка занимает сотни миллисекунд, а перехватчик записывает почти ноль. Если сервер падает после двух строк, воркер получает ошибку, но перехватчик по-прежнему считает вызов успешным.
+
+Воспроизведём обе проблемы, исправим измерение и проверим, что происходит, когда воркер прекращает чтение. Примеры работают с настоящим локальным сервером gRPC: `grpc-client-kit 0.4.0`, `grpcio 1.84.0`, Python `3.13`.
 
 <!-- more -->
 
-Измерения получены в [лаборатории статьи](../lab/2026-09-07-grpc-interceptors-and-streams/README.md) на сервере с четырьмя видами RPC, запущенном в том же процессе. Версии: grpc-client-kit 0.1.2, grpcio 1.83.1, Python 3.13.
+## Какой сервис будем вызывать {#reporting-service}
 
-## Перехватчик зарегистрирован лишь для одного вида из четырёх {#the-interceptor-that-is-registered-for-one-kind-out-of-four}
+У нашего сервиса четыре операции — по одной на каждый вид RPC. В обозначении вида, например unary-stream, первая часть описывает запрос, вторая — ответ:
 
-Первая проблема возникает ещё при регистрации перехватчика, причём без ошибок и предупреждений.
+| Метод | Вид RPC | Что делает воркер |
+|---|---|---|
+| `Get` | unary-unary | Получает один статус отчёта |
+| `Stream` | unary-stream | Скачивает строки отчёта |
+| `Upload` | stream-unary | Отправляет строки и получает их количество |
+| `Chat` | stream-stream | Отправляет строки и получает подтверждения |
 
-В `grpc.aio` четыре базовых класса клиентских перехватчиков — по одному на каждый вид RPC. Кажется естественным создать класс, который наследуется от всех четырёх и реализует все четыре метода. Но канал обрабатывает его так:
-
-```text
-    one object inheriting all four ABCs, channel lists: unary_unary=1, unary_stream=0,
-                                                        stream_unary=0, stream_stream=0
-    unary_unary    intercept ran 1 time(s)
-    unary_stream   intercept ran 0 time(s)
-    stream_unary   intercept ran 0 time(s)
-    stream_stream  intercept ran 0 time(s)
-```
-
-Он раскладывает объекты в четыре списка цепочкой `if`/`elif`. Объект, подходящий под все проверки, попадает лишь в первый: unary-unary. Ошибок и предупреждений нет, остальные методы не вызываются.
-
-Чтобы зарегистрировать обработку всех четырёх видов RPC, нужны четыре объекта, каждый со своим базовым классом:
-
-```text
-    four objects, one ABC each, channel lists: unary_unary=1, unary_stream=1,
-                                               stream_unary=1, stream_stream=1
-```
-
-Поэтому ошибки потоковых перехватчиков легко пропустить: код может долго существовать, вообще не вызываясь для потоковых RPC.
-
-## Что измеряет обычный перехватчик в потоковом RPC {#what-a-unary-interceptor-measures-on-a-stream}
-
-Исправим регистрацию и возьмём обычную реализацию для unary-вызова — одного запроса с одним ответом:
+В практикуме используем байтовые сообщения и обычные обработчики gRPC без генерации protobuf-кода. Вызовы при этом настоящие: по `127.0.0.1` через автоматически выбранный порт. Вот генератор строк, который вызывается внутри `Stream`:
 
 ```python
-async def intercept_unary_stream(self, continuation, details, request):
-    token = REQUEST_ID.set("req-42")
-    started = time.perf_counter()
-    try:
+import asyncio
+
+import grpc
+
+GAP = 0.03
+ITEMS = [bytes([number]) for number in range(1, 6)]
+
+
+async def report_rows(request, context):
+    for number, row in enumerate(ITEMS, start=1):
+        if request == b"fail" and number == 3:
+            await context.abort(
+                grpc.StatusCode.UNAVAILABLE, "report generator failed at row 3"
+            )
+        if request != b"fast":
+            await asyncio.sleep(GAP)
+        yield row
+```
+
+На запрос `b"ok"` приходят пять строк. На `b"fail"` — две строки, затем `UNAVAILABLE`. Значение `b"fast"` убирает паузы для отдельной проверки длительности. Сервис также передаёт завершающие метаданные `report-id: r-42`.
+
+## Сначала убеждаемся, что перехватчик вызывается {#the-interceptor-that-is-registered-for-one-kind-out-of-four}
+
+Допустим, мы собрали все четыре метода в одном перехватчике:
+
+```python
+from collections import Counter
+
+import grpc
+import grpc.aio
+
+
+class EverythingInterceptor(
+    grpc.aio.UnaryUnaryClientInterceptor,
+    grpc.aio.UnaryStreamClientInterceptor,
+    grpc.aio.StreamUnaryClientInterceptor,
+    grpc.aio.StreamStreamClientInterceptor,
+):
+    def __init__(self):
+        self.calls = Counter()
+
+    async def intercept_unary_unary(self, continuation, details, request):
+        self.calls["unary_unary"] += 1
         return await continuation(details, request)
-    except grpc.aio.AioRpcError:
-        self.errors += 1
-        raise
-    finally:
-        self.measured_ms = (time.perf_counter() - started) * 1000
-        REQUEST_ID.reset(token)
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        self.calls["unary_stream"] += 1
+        return await continuation(details, request)
+
+    async def intercept_stream_unary(self, continuation, details, request):
+        self.calls["stream_unary"] += 1
+        return await continuation(details, request)
+
+    async def intercept_stream_stream(self, continuation, details, request):
+        self.calls["stream_stream"] += 1
+        return await continuation(details, request)
 ```
 
-Проверим поток из пяти элементов с интервалом 120 мс и такой же с ошибкой на третьем:
+Вызываем каждый метод сервиса по одному разу, но в `calls` получаем только `{"unary_unary": 1}`. В проверенной версии grpcio [конструктор канала](https://grpc.github.io/grpc/python/_modules/grpc/aio/_channel.html) регистрирует объект через цепочку `if`/`elif`: срабатывает первый подходящий базовый класс.
 
-```text
-    unary-style wrapper, healthy stream: it measured 0 ms
-      the caller waited 609 ms for 5 items; request id during the stream: None
-    unary-style wrapper, failing stream: it counted 0 errors, measured 0 ms
-      the caller waited 245 ms, got 2 items and then UNAVAILABLE: report generator died at item 3
+Нужен отдельный объект перехватчика для каждого вида RPC либо четыре адаптера из `grpc-client-kit`, которые подключим ниже. Перед сравнением длительности практикум проверяет, что измеряющий перехватчик действительно вызван. Нетронутый счётчик ещё не означает быстрый RPC.
+
+## Таймер вокруг continuation измеряет подготовку {#what-a-unary-interceptor-measures-on-a-stream}
+
+У этого перехватчика только один базовый класс — для потокового ответа. С регистрацией всё правильно, а с измерением по-прежнему нет:
+
+```python
+import asyncio
+from time import perf_counter
+
+import grpc
+
+
+class SetupTimer(grpc.aio.UnaryStreamClientInterceptor):
+    def __init__(self):
+        self.entered = 0
+        self.errors = 0
+        self.seconds = None
+        self.finished = asyncio.Event()
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        self.entered += 1
+        started = perf_counter()
+        try:
+            return await continuation(details, request)
+        except grpc.aio.AioRpcError:
+            self.errors += 1
+            raise
+        finally:
+            self.seconds = perf_counter() - started
+            self.finished.set()
 ```
 
-У трёх проблем одна причина: при потоковом ответе `continuation` возвращает управление, как только создан *объект вызова*. Чтение ответа происходит позже, когда вызывающий код перебирает элементы потока.
+Практикум проверяет: `entered == 1`, а к приходу первой строки событие `finished` уже установлено. При сбое воркер получает две строки и `UNAVAILABLE`, но `errors` остаётся равным нулю.
 
-- **Нулевая длительность.** Измерено только создание объекта вызова, хотя весь RPC занял 609 мс. На графике потоковый метод ошибочно выглядит самым быстрым.
-- **Невидимая ошибка.** Вызывающий код получил `UNAVAILABLE` внутри `async for`, когда блок `try` вокруг `continuation` уже завершился. Поэтому счётчик ошибок остался нулевым.
-- **Потерянный контекст.** Блок `finally` сбросил идентификатор запроса до получения первого элемента. Связать последующие записи в логах с этим запросом уже не получится.
+[`continuation`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.UnaryStreamClientInterceptor) возвращает объект вызова, не дожидаясь завершения потока. Сетевая ошибка появляется позже, внутри `async for`. Это различие важно и для обычного unary-перехватчика: получить объект вызова — ещё не значит дождаться его ответа.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Создание потока — только начало RPC</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Создать вызов — ещё не завершить RPC</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -91,158 +143,214 @@ async def intercept_unary_stream(self, continuation, details, request):
 config:
   theme: default
   look: classic
-  sequence:
+  flowchart:
     useMaxWidth: false
-    wrap: true
-    width: 140
-    actorMargin: 36
-    mirrorActors: false
+    wrappingWidth: 150
+    padding: 12
+    nodeSpacing: 24
+    rankSpacing: 32
 ---
-sequenceDiagram
-    accTitle: Создание потока — только начало RPC
-    accDescr: Измерять нужно весь поток, включая чтение элементов и ошибки. Перехватчик сохраняет контекст до конца чтения, затем освобождает ресурсы при успехе, ошибке или отмене.
-    participant C as Потребитель
-    participant I as Перехватчик
-    participant H as Обработчик / итератор
-    C->>I: Начать RPC
-    I->>H: Создать поток
-    H-->>I: Итератор, а не результаты
-    Note over I,H: Обработка идёт при чтении потока
-    loop Для каждого элемента
-      I->>H: Запросить следующий элемент
-      H-->>I: Элемент
-      I-->>C: Элемент
-    end
-    H-->>I: Завершение / ошибка / отмена
-    Note over I: Завершить замер, трассировку и контекст
-    I-->>C: Итог операции
+flowchart TD
+    accTitle: Создать вызов — ещё не завершить RPC
+    accDescr: Обёртка вокруг continuation завершает измерение после создания call. Перехватчик around_call получает итог RPC: успех, ошибку или отмену.
+    A["Создан call"]
+    B["Читаем элементы"]
+    C["Успех, ошибка, отмена"]
+    D["Завершается around_call"]
+    E["Слишком ранний finally"]
+    A --> B --> C --> D
+    A -.-> E
 ```
 
 </div>
-<p class="bdr-diagram__caption">Измерять нужно весь поток, включая чтение элементов и ошибки. Перехватчик сохраняет контекст до конца чтения, затем освобождает ресурсы при успехе, ошибке или отмене.</p>
+<p class="bdr-diagram__caption">Обёртка вокруг continuation завершает измерение после создания call. Перехватчик around_call получает итог RPC: успех, ошибку или отмену.</p>
 </figure>
 <!-- /diagram:concept -->
 
-## Ручное исправление {#doing-it-by-hand}
+## Оборачиваем чтение потока {#doing-it-by-hand}
 
-Нужна обёртка над объектом вызова, которая измеряет и обработку элементов потока:
-
-```python
-async def intercept_unary_stream(self, continuation, details, request):
-    started = time.perf_counter()
-    call = await continuation(details, request)
-
-    async def wrapped():
-        token = REQUEST_ID.set("req-42")
-        try:
-            async for item in call:
-                yield item
-        except grpc.aio.AioRpcError:
-            self.errors += 1
-            raise
-        finally:
-            self.measured_ms = (time.perf_counter() - started) * 1000
-            REQUEST_ID.reset(token)
-
-    return wrapped()
-```
-
-Тот же эксперимент и сервер:
-
-```text
-    stream-aware wrapper, healthy stream: it measured 608 ms
-      the caller waited 608 ms for 5 items; request id during the stream: 'req-42'
-    stream-aware wrapper, failing stream: it counted 1 errors, measured 244 ms
-```
-
-Теперь измерение даёт 608 мс при фактических 609 мс, счётчик фиксирует ошибку, а идентификатор запроса доступен при обработке элементов. Асинхронный генератор выполняется в контексте вызывающего кода, поэтому значение, установленное через `set`, видно и там. Вызов `reset` происходит при завершении генератора.
-
-Но у такой обёртки есть несколько важных случаев. Потребитель может прекратить чтение посередине — тогда `finally` рискует отложиться до сборки мусора. Нельзя подавлять `GeneratorExit`, нужно корректно обрабатывать отмену вызова. Кроме того, реализация нужна для всех четырёх видов RPC. У stream-unary своя особенность: итератором служит *запрос*, а окончательный результат становится известен после возврата из перехватчика.
-
-## Четыре вида, одна реализация {#the-four-kinds-one-implementation}
-
-Хотелось бы написать обработчик один раз и получить правильное поведение для всех четырёх видов RPC. Для этого в библиотеке есть логический перехватчик: метод `around_call` с одним `yield`, до которого выполняется подготовка, а после — обработка завершения RPC.
+Если воркер читает поток до конца, измерение и обработку ошибок можно перенести в цикл. Класс использует импорты из предыдущего примера:
 
 ```python
+class IterationTimer(grpc.aio.UnaryStreamClientInterceptor):
+    def __init__(self):
+        self.errors = 0
+        self.seconds = None
+        self.finished = asyncio.Event()
+
+    async def intercept_unary_stream(self, continuation, details, request):
+        started = perf_counter()
+        call = await continuation(details, request)
+
+        async def rows():
+            try:
+                async for row in call:
+                    yield row
+            except grpc.aio.AioRpcError:
+                self.errors += 1
+                raise
+            finally:
+                self.seconds = perf_counter() - started
+                self.finished.set()
+
+        return rows()
+```
+
+Теперь практикум получает пять строк при успехе либо две строки и одну учтённую ошибку при сбое. На первой строке событие `finished` ещё не установлено; оно появляется при завершении итерации.
+
+Важен порядок: объект вызова создаётся **до** возврата генератора. В этой версии grpcio gRPC связывает возвращённый итератор с вызовом, поэтому `code()`, `details()` и `trailing_metadata()` остаются доступны. Практикум проверяет статус и `report-id` и для ручной обёртки, и для библиотечной. Сам по себе возврат генератора не лишает потребителя интерфейса вызова.
+
+Эта небольшая обёртка покрывает только unary-stream, прочитанный до конца или до ошибки. Для досрочного выхода нужно определить, кто отменяет вызов. У потоковых запросов есть ещё один случай: ожидание окончательного ответа внутри перехватчика может заблокировать код, которому сначала нужно отправить данные через `write()`.
+
+## Один around_call для четырёх видов RPC {#the-four-kinds-one-implementation}
+
+В Bedrock [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) для этого есть `AsyncAroundClientInterceptor`. Его метод `around_call()` делает один `yield`: до него выполняется подготовка, после — обработка результата. В практикуме складываем результаты в очередь, чтобы явно дождаться завершения, а не подбирать задержку:
+
+```python
+from contextvars import ContextVar
+
+from grpc_client_kit.interceptors.base import AsyncAroundClientInterceptor, ClientCall
+
+REQUEST_ID = ContextVar("request_id", default=None)
+
+
 class Observability(AsyncAroundClientInterceptor):
+    def __init__(self):
+        self.finished = asyncio.Queue()
+
     async def around_call(self, call: ClientCall):
-        started = time.perf_counter()
+        started = perf_counter()
+        outcome = "OK"
         try:
-            yield                       # the whole RPC, response stream included
-        except grpc.aio.AioRpcError:
-            self.errors += 1
+            yield
+        except grpc.aio.AioRpcError as error:
+            outcome = error.code().name
+            raise
+        except asyncio.CancelledError:
+            outcome = "CANCELLED"
+            raise
+        except Exception:
+            outcome = "LOCAL_ERROR"
             raise
         finally:
-            self.measured[call.method] = (time.perf_counter() - started) * 1000
+            self.finished.put_nowait(
+                {
+                    "kind": call.rpc_type,
+                    "method": call.method,
+                    "outcome": outcome,
+                    "seconds": perf_counter() - started,
+                    "request_id": REQUEST_ID.get(),
+                }
+            )
 ```
 
-Один класс преобразуется в четыре перехватчика, которые канал сможет зарегистрировать через свой `if`/`elif`:
+Здесь по-прежнему используются `asyncio`, `grpc` и `perf_counter` из предыдущих примеров. В сервисе эти данные отправляются в метрики или логи; очередь нужна практикуму для проверки результата.
 
-```text
-    flatten_interceptors([one logical interceptor]) -> 4 channel entries
-    channel lists: unary_unary=1, unary_stream=1, stream_unary=1, stream_stream=1
-    unary_unary    around_call ran 1 time(s)
-    unary_stream   around_call ran 1 time(s)
-    stream_unary   around_call ran 1 time(s)
-    stream_stream  around_call ran 1 time(s)
-    measured /lab.Reports/Get       123 ms
-    measured /lab.Reports/Stream    608 ms
-    measured /lab.Reports/Chat      367 ms
-    measured /lab.Reports/Upload      1 ms
+Классы находятся в `observers.py`. Эта функция из `consumer.py` подключает один логический перехватчик через `flatten_interceptors()` и скачивает отчёт:
+
+```python
+from grpc_client_kit import flatten_interceptors
+
+from observers import Observability
+from report_service import STREAM
+
+
+async def download(target):
+    observer = Observability()
+    async with grpc.aio.insecure_channel(
+        target, interceptors=flatten_interceptors([observer])
+    ) as channel:
+        call = channel.unary_stream(STREAM)(b"ok", timeout=5)
+        rows = [row async for row in call]
+        record = await asyncio.wait_for(observer.finished.get(), timeout=5)
+        assert await call.code() == grpc.StatusCode.OK
+        assert dict(await call.trailing_metadata()) == {"report-id": "r-42"}
+        return rows, record
 ```
 
-Для каждого вида RPC обработчик вызывается один раз. Длительность потока измеряется целиком: 608 мс. Ошибка во время чтения попадает в `except` как обычный `AioRpcError`:
+Практикум вызывает эту функцию и отдельно проверяет все четыре вида RPC. Из `flatten_interceptors([observer])` получаются четыре адаптера; на каждый RPC приходится одна запись о результате. Ошибка после двух строк доходит до `around_call` как `AioRpcError`, локальная отмена даёт `CANCELLED`. Вызов stream-unary через `write()` и `done_writing()` тоже завершается.
 
-```text
-    failing stream: around_call counted 1 errors, measured 246 ms
+**Метрика описывает время RPC, а не всю обработку его результата приложением.** Библиотека может завершить перехватчик по уведомлению о завершении вызова. В проверке быстрого потока потребитель уже получил пятую строку, но ещё не продолжил итерацию до EOF; `around_call` к этому моменту завершился. Если выгрузка включает валидацию, запись файла и другую обработку, измеряйте всю операцию воркера отдельно. При этом темп чтения и управление потоком могут влиять на длительность самого RPC.
+
+## Разделяем контекст перехватчика и вызывающего кода {#the-part-that-only-shows-up-on-streams}
+
+Допустим, на время RPC один из слоёв устанавливает контекстную переменную:
+
+```python
+class TokenScope(AsyncAroundClientInterceptor):
+    def __init__(self):
+        self.finished = asyncio.Queue()
+
+    async def around_call(self, call: ClientCall):
+        token = REQUEST_ID.set("interceptor-only")
+        try:
+            yield
+        finally:
+            inside = REQUEST_ID.get()
+            REQUEST_ID.reset(token)
+            self.finished.put_nowait((inside, REQUEST_ID.get()))
 ```
 
-Вызывающий код при этом сохраняет доступ к интерфейсу объекта вызова. Обычный асинхронный генератор вместо такой обёртки лишил бы его методов `code()`, `details()` и `trailing_metadata()`:
+Проверяем это для всех четырёх видов RPC. Вложенный наблюдатель видит `interceptor-only`, вызывающий код сохраняет `caller-owned`, а сброс токена проходит успешно. `grpc-client-kit` обеспечивает общий контекст для подготовки и завершения, когда они выполняются в разных задачах.
 
-```text
-    no interceptor               code()='OK'; details()=''; trailing_metadata()=Metadata(())
-    the kit's around interceptor code()='OK'; details()=''; trailing_metadata()=Metadata(())
+Но это не переносит значение в задачу, которая читает поток, и не передаёт `ContextVar` на сервер. Если идентификатор нужен в логах потребителя, установите его там до создания вызова. Для передачи между сервисами нужны явные метаданные gRPC. Работа контекста задач описана в [документации Python](https://docs.python.org/3/library/contextvars.html#asyncio-support).
+
+Отдельно проверим сбой при завершении: отправка метрики сама выбрасывает исключение.
+
+```python
+class RaisingTeardown(AsyncAroundClientInterceptor):
+    async def around_call(self, call: ClientCall):
+        try:
+            yield
+        finally:
+            raise RuntimeError("metrics exporter unavailable")
 ```
 
-## В каком контексте завершается поток {#the-part-that-only-shows-up-on-streams}
+Практикум подтверждает: все четыре успешных RPC остаются успешными, сломанный поток по-прежнему возвращает `UNAVAILABLE`, а все пять исключений `RuntimeError` попадают в лог библиотеки. В этих случаях ошибка служебного кода после `yield` не подменяет результат RPC.
 
-У потоковых вызовов есть ещё одна особенность, которую нужно учесть в устройстве перехватчика.
+## Прекращаем RPC, когда воркер закончил чтение {#what-to-check-in-your-own-interceptors}
 
-В unary-вызове подготовка, сам RPC и освобождение ресурсов происходят в одной корутине, задаче и контексте. У потокового ответа завершающий код выполняется в той задаче, которая закончила чтение. Это важно, если до `yield` перехватчик устанавливает `ContextVar`, открывает контекст OpenTelemetry или захватывает семафор, а после — освобождает их. Например, токен `ContextVar`, полученный в одном контексте, нельзя сбросить в другом.
+Для предпросмотра воркеру нужна только первая строка. Вот код из `consumer.py`, который управляет временем жизни вызова. Он использует ту же переменную `REQUEST_ID`, что и перехватчики:
 
-Библиотека сохраняет отдельный контекст для каждого вызова и выполняет в нём код как до, так и после `yield`. Поэтому одна и та же реализация подходит для всех видов RPC:
+```python
+from observers import REQUEST_ID
+from report_service import STREAM
 
-```text
---- an around_call that sets a ContextVar before the yield and resets it after
-    unary_unary    caller got the response
-    unary_stream   caller got the response
-    stream_unary   caller got the response
-    stream_stream  caller got the response
+
+async def first_row(channel, request=b"hold"):
+    token = REQUEST_ID.set("req-42")
+    call = None
+    try:
+        call = channel.unary_stream(STREAM)(request, timeout=5)
+        async for row in call:
+            assert REQUEST_ID.get() == "req-42"
+            return row
+    finally:
+        if call is not None:
+            call.cancel()
+        REQUEST_ID.reset(token)
 ```
 
-Вторая гарантия касается ошибок при завершении перехватчика: например, если не удалось отправить метрику или записать лог.
+Специальный запрос `b"hold"` отдаёт одну строку и оставляет серверный обработчик ждать. Практикум проверяет, что функция отменяет вызов, останавливает обработчик на сервере, создаёт ровно одну запись `CANCELLED` и восстанавливает контекст потребителя.
 
-```text
---- any teardown that raises, per RPC kind
-    unary_unary    caller got the response
-    unary_stream   caller got the response
-    stream_unary   caller got the response
-    stream_stream  caller got the response
+Есть и обратная проверка: после `break` без отмены, при сохранённой ссылке на объект вызова, RPC остаётся активным, а запись о результате ещё не создана. Явно вызывайте `cancel()` в `finally`: выход из цикла не сообщает серверу о завершении. Метод `cancel()` синхронный; для уже завершённого вызова он ничего не меняет.
+
+## Запускаем примеры {#labs}
+
+Из корня репозитория сайта, с установленным uv:
+
+```bash
+cd docs/blog/lab/2026-09-07-grpc-interceptors-and-streams
+uv run --no-project --python 3.13 --with-requirements requirements.txt python interceptors_lab.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python probe.py
 ```
 
-Во всех четырёх случаях клиент получает успешный ответ, а ошибка завершающего кода записывается в лог. Сбой в отправке метрик или логировании не должен менять результат самого RPC.
+Оба скрипта проверяют результаты утверждениями и завершаются с ошибкой при несовпадении. Они проверяют регистрацию, число строк, ошибки, статус и завершающие метаданные, изоляцию контекста, отмену и логирование сбоев завершающего кода. Длительности печатаются для сравнения; точные миллисекунды не зашиты в проверки. Файлы и границы примера описаны в [README практикума](../lab/2026-09-07-grpc-interceptors-and-streams/README.md).
 
-## Что проверить в своих перехватчиках {#what-to-check-in-your-own-interceptors}
+<div id="the-pieces" data-search-exclude></div>
 
-- **Для каких видов RPC зарегистрирован перехватчик?** Один класс, наследующийся от четырёх базовых классов, в проверенной реализации попадает только в первый список.
-- **Где заканчивается измерение?** Возврат `continuation` не означает завершение потокового ответа.
-- **Где появится ошибка посреди потока?** Не в уже завершившемся `try` вокруг создания.
-- **Виден ли контекст потребителю и можно ли сбросить токен в месте очистки?**
-- **Что получает вызывающий код?** Если вернуть обычный генератор, методы `code()` и `trailing_metadata()` станут недоступны.
-- **Что произойдёт при ошибке в отправке метрик или логировании?** Она не должна менять результат RPC.
+## Что использовать в своём сервисе {#conclusion}
 
-## Как это реализовано в grpc-client-kit {#the-pieces}
+Мы проследили путь отчёта от создания вызова до чтения, ошибки посреди потока и досрочной отмены. Перехватчик должен запускаться для нужного вида RPC и видеть его результат. Вызывающий код должен управлять чтением и отменой.
 
-Метод `around_call` предоставляет [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/). В библиотеке уже есть перехватчики для логирования, трассировки, метрик, таймаутов, повторов и circuit breaker. Они выполняются в заданном порядке, а `flatten_interceptors` подготавливает их к регистрации для четырёх видов RPC. Общий контекст для кода до и после `yield` и защита результата RPC от ошибок завершающего кода появились в версии 0.1.2 — их необходимость показал этот эксперимент.
-
-Если потоковый метод показывает нулевую длительность, стоит проверить, действительно ли перехватчик измеряет весь вызов.
+Используйте [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit), если общий слой логирования, метрик или трассировки должен работать для всех четырёх видов RPC. `around_call` и `flatten_interceptors` позволяют написать его один раз. Проверяйте его на сценарии потребителя, как в этом практикуме: с частичным чтением и ошибкой после первого элемента. Владение каналами, дедлайны и повторы разобраны в статье [«HTTP- и gRPC-клиенты для продакшена»](2026-09-13-production-http-grpc-clients.md).

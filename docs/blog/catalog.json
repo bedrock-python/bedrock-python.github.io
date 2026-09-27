@@ -3,7 +3,7 @@
     {
       "id": "2026-09-13-python-library-from-template-to-release",
       "title": "A Python library from template to release",
-      "description": "Maintaining several Python libraries repeats more than code. Each repository needs packaging, tests, formatting rules, documentation and a path to PyPI.",
+      "description": "Imagine a reporting service and an export worker that both need the start and end of a UTC month. Each has its own helper, and one gets December wrong.",
       "url": "posts/2026-09-13-python-library-from-template-to-release/",
       "date": "2026-09-13",
       "categories": [
@@ -18,8 +18,8 @@
       "topics": [
         "engineering"
       ],
-      "minutes": 4,
-      "search": "A Python library from template to release Maintaining several Python libraries repeats more than code. Each repository needs packaging, tests, formatting rules, documentation and a path to PyPI. python-library-template python ci pypi Tutorials Python & tooling What belongs in the template Test what the configuration promises Repository settings belong to the process From a change to a verified artifact Publish without a long-lived token What the library author still owns Examples and labs"
+      "minutes": 8,
+      "search": "A Python library from template to release Imagine a reporting service and an export worker that both need the start and end of a UTC month. Each has its own helper, and one gets December wrong. python-library-template python ci pypi Tutorials Python & tooling Generate a project for the reporting library Add behavior that the service actually needs Make the required CI status mean what it says Prepare version 0.1.0 and build it Install the package as a consumer Connect the verified project to PyPI What we have at the end Reproduce the walkthrough"
     },
     {
       "id": "2026-09-13-production-http-grpc-clients",
@@ -87,7 +87,7 @@
     {
       "id": "2026-09-13-partitioning-an-existing-postgresql-table",
       "title": "Partitioning an existing PostgreSQL table",
-      "description": "Partitioning an existing table changes more than row storage. It affects uniqueness, foreign keys, query plans and writes during the transition.",
+      "description": "Imagine an analytics service that stores events in events. Reports usually read one month, and operators add notes in event_notes.",
       "url": "posts/2026-09-13-partitioning-an-existing-postgresql-table/",
       "date": "2026-09-13",
       "categories": [
@@ -102,13 +102,13 @@
       "topics": [
         "postgres"
       ],
-      "minutes": 3,
-      "search": "Partitioning an existing PostgreSQL table Partitioning an existing table changes more than row storage. It affects uniqueness, foreign keys, query plans and writes during the transition. pg-partsmith postgresql partitioning uuid Tutorials PostgreSQL & SQLAlchemy Choose the key from queries and constraints Design cutover separately Move data in bounded batches Verify more than row counts Examples and labs"
+      "minutes": 9,
+      "search": "Partitioning an existing PostgreSQL table Imagine an analytics service that stores events in events. Reports usually read one month, and operators add notes in event_notes. pg-partsmith postgresql partitioning uuid Tutorials PostgreSQL & SQLAlchemy Start with the table and its references Replace the parent in one transaction Move rows out of DEFAULT and inspect intermediate results Restore references before reopening the service When UUIDv7 can keep a single-column primary key Reproduce the migration What to take into your migration Examples and labs"
     },
     {
       "id": "2026-09-13-postgresql-partition-maintenance",
-      "title": "PostgreSQL partition maintenance: creation, archiving and deletion",
-      "description": "Creating the next partition is relatively straightforward. Operational complexity surrounds it: who owns the schedule, which tables may be deleted, what happens if archiving…",
+      "title": "PostgreSQL partition maintenance: from a plan to a verified archive",
+      "description": "Imagine an analytics service with monthly events partitions. Reports need the current month and the previous two. Writers need another two months prepared ahead.",
       "url": "posts/2026-09-13-postgresql-partition-maintenance/",
       "date": "2026-09-13",
       "categories": [
@@ -122,8 +122,8 @@
       "topics": [
         "postgres"
       ],
-      "minutes": 3,
-      "search": "PostgreSQL partition maintenance: creation, archiving and deletion Creating the next partition is relatively straightforward. Operational complexity surrounds it: who owns the schedule, which tables may be deleted, what happens if archiving… pg-partsmith postgresql partitioning Design PostgreSQL & SQLAlchemy Inspect before planning Separate retirement from deletion Assign one scheduling owner Hand over from pg_partman Make outcomes observable Examples and labs"
+      "minutes": 9,
+      "search": "PostgreSQL partition maintenance: from a plan to a verified archive Imagine an analytics service with monthly events partitions. Reports need the current month and the previous two. Writers need another two months prepared ahead. pg-partsmith postgresql partitioning Design PostgreSQL & SQLAlchemy Define the policy using actual months Understand which tables the library will manage Detach old ranges while preserving their data Archive the rows before permitting a drop Schedule a run and notice partial failures Hand maintenance over from pg_partman Reproduce the checks Bring the checks into your service Examples and labs"
     },
     {
       "id": "2026-09-13-production-python-grpc-server",
@@ -339,7 +339,7 @@
     {
       "id": "2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs",
       "title": "Why gRPC interceptors break on streaming RPCs",
-      "description": "An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works.",
+      "description": "Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero.",
       "url": "posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/",
       "date": "2026-09-07",
       "categories": [
@@ -356,7 +356,7 @@
         "grpc"
       ],
       "minutes": 7,
-      "search": "Why gRPC interceptors break on streaming RPCs An interceptor that times a call, counts its errors and binds a request id is twenty lines, and it works. grpc-client-kit grpc interceptors observability asyncio Design gRPC The interceptor that is registered for one kind out of four What a unary interceptor measures on a stream Doing it by hand The four kinds, one implementation The part that only shows up on streams What to check in your own interceptors The pieces"
+      "search": "Why gRPC interceptors break on streaming RPCs Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero. grpc-client-kit grpc interceptors observability asyncio Design gRPC The reporting service we will call First, make sure the interceptor actually runs Timing continuation measures setup Wrap iteration for the simple case One around_call for all four shapes Keep interceptor context separate from caller context Stop the RPC when the worker stops reading Run the examples What to take into your service"
     },
     {
       "id": "2026-09-07-zero-dependency-cores",

@@ -1,192 +1,128 @@
-"""Adopting a pg_partman-managed table, without recreating a single partition.
-
-The container runs PostgreSQL 17 with pg_partman installed. The lab lets pg_partman create and
-maintain a monthly table, reads its configuration out of `part_config`, maps it onto a
-pg-partsmith configuration, and then asks pg-partsmith what it sees: whether the partitions
-pg_partman made are recognised as its own, what its plan says while both are still configured,
-and what happens after pg_partman is switched off.
-"""
-
-from __future__ import annotations
-
+"""Verified handover from pg_partman 5.5.0, with no concurrent maintainers."""
 import asyncio
-from datetime import timedelta
-from importlib.metadata import version
+from datetime import datetime
+from pathlib import Path
+import sys
 
 import asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_for_logs
-
-from pg_partsmith import (
-    CreateAhead,
-    DropAfter,
-    KeepNewest,
-    LifecyclePolicy,
-    PartitionGranularity,
-    TablePartitionConfig,
-)
+from pg_partsmith import CreateAhead
 from pg_partsmith.aio import PartitionToolkit
+from sqlalchemy.ext.asyncio import create_async_engine
 
-IMAGE = "pg-partman-lab:17"
+from adoption_flow import adopted_config, unregister_partman
 
-
-def log(msg: str) -> None:
-    print(msg, flush=True)
-
-
-async def partitions(conn: asyncpg.Connection) -> list[tuple[str, str]]:
-    return [
-        (r["relname"], r["bound"])
-        for r in await conn.fetch(
-            """
-            SELECT c.relname, pg_get_expr(c.relpartbound, c.oid) AS bound
-            FROM pg_inherits h JOIN pg_class c ON c.oid = h.inhrelid
-            WHERE h.inhparent = 'public.events'::regclass ORDER BY c.relname
-            """
-        )
-    ]
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "2026-09-07-partition-retention"))
+from lab_support import database, relations
 
 
-async def main() -> None:
-    container = (
-        DockerContainer(IMAGE)
-        .with_env("POSTGRES_PASSWORD", "postgres")
-        .with_env("POSTGRES_DB", "lab")
-        .with_exposed_ports(5432)
-        .with_command("postgres -c shared_preload_libraries=pg_partman_bgw")
-    )
-    container.start()
+def month_at(current, offset):
+    year, month = divmod(current.year * 12 + current.month - 1 + offset, 12)
+    return datetime(year, month + 1, 1, tzinfo=current.tzinfo)
+
+
+async def children(connection):
+    return await connection.fetch("""
+        SELECT c.oid, c.relname, pg_get_expr(c.relpartbound, c.oid) AS bounds
+        FROM pg_inherits i JOIN pg_class c ON c.oid = i.inhrelid
+        WHERE i.inhparent = 'public.events'::regclass ORDER BY c.relname
+    """)
+
+
+async def main(engine_url, dsn):
+    connection = await asyncpg.connect(dsn)
+    engine = create_async_engine(engine_url)
+    toolkit = PartitionToolkit.from_engine(engine)
     try:
-        wait_for_logs(container, "database system is ready to accept connections", timeout=60)
-        await asyncio.sleep(2)
-        dsn = (
-            f"postgresql://postgres:postgres@{container.get_container_host_ip()}:"
-            f"{container.get_exposed_port(5432)}/lab"
-        )
-        conn = await asyncpg.connect(dsn)
-        log(f"pg-partsmith {version('pg-partsmith')}, "
-            f"PostgreSQL {await conn.fetchval('SHOW server_version')}")
-
-        log("--- 1. pg_partman creates and maintains the table")
-        await conn.execute("CREATE SCHEMA partman; CREATE EXTENSION pg_partman WITH SCHEMA partman;")
-        partman_version = await conn.fetchval(
-            "SELECT extversion FROM pg_extension WHERE extname = 'pg_partman'"
-        )
-        log(f"    pg_partman {partman_version}")
-        await conn.execute(
-            """
-            CREATE TABLE public.events (
-                id          BIGSERIAL,
-                created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-                payload     TEXT NOT NULL,
+        await connection.execute("CREATE SCHEMA partman; CREATE EXTENSION pg_partman WITH SCHEMA partman")
+        version = await connection.fetchval("SELECT extversion FROM pg_extension WHERE extname = 'pg_partman'")
+        assert version == "5.5.0", version
+        current = await connection.fetchval("SELECT date_trunc('month', CURRENT_TIMESTAMP)")
+        await connection.execute("""
+            CREATE TABLE events (
+                id bigint NOT NULL, created_at timestamptz NOT NULL, payload text NOT NULL,
                 PRIMARY KEY (id, created_at)
-            ) PARTITION BY RANGE (created_at);
-            """
-        )
-        await conn.execute(
-            """
-            SELECT partman.create_parent(
-                p_parent_table := 'public.events',
-                p_control := 'created_at',
-                p_interval := '1 month',
-                p_premake := 2
-            );
-            """
-        )
-        await conn.execute("UPDATE partman.part_config SET retention = '3 months', retention_keep_table = true "
-                           "WHERE parent_table = 'public.events'")
-        await conn.execute("SELECT partman.run_maintenance('public.events')")
-        for name, bound in await partitions(conn):
-            log(f"    {name:<24} {bound}")
-
-        log("--- 2. what pg_partman's configuration says")
-        row = await conn.fetchrow(
-            "SELECT control, partition_interval, premake, retention, retention_keep_table "
-            "FROM partman.part_config WHERE parent_table = 'public.events'"
-        )
-        for key in row.keys():
-            log(f"    {key:<22} {row[key]}")
-        log("    the same thing as a pg-partsmith configuration:")
-        log("      partition_column='created_at', granularity=MONTH,")
-        log("      creation=CreateAhead(count=premake + 1), retention=KeepNewest(count=3),")
-        log("      drop=DropNever() while retention_keep_table is true")
-
-        config = TablePartitionConfig(
-            schema="public",
-            table_name="events",
-            partition_column="created_at",
-            granularity=PartitionGranularity.MONTH,
-            lifecycle=LifecyclePolicy(
-                creation=CreateAhead(count=row["premake"] + 1),
-                retention=KeepNewest(count=3),
-                drop=DropAfter(grace=timedelta(days=7)),
-            ),
-        )
-
-        engine = create_async_engine(dsn.replace("postgresql://", "postgresql+asyncpg://"))
-        toolkit = PartitionToolkit.from_engine(engine)
-        try:
-            log("--- 3. what pg-partsmith sees in a tree it did not build")
-            tree = await toolkit.service.inspect(config)
-            children = tree.root.children if hasattr(tree.root, "children") else ()
-            log(f"    inspect: the root has {len(children)} children, "
-                f"{len(tree.orphans)} detached partition(s) known to the library")
-            plan = await toolkit.service.plan(config)
-            for line in plan.describe().splitlines():
-                log(f"    {line}")
-
-            log("--- 4. one tick of pg-partsmith on the same table")
-            result = await toolkit.maintainer.run_maintenance_safe(config)
-            log(f"    created={result.created_count} detached={result.detached_count} "
-                f"dropped={result.dropped_count} issues={len(result.issues)} error={result.error!r}")
-            for name, _ in await partitions(conn):
-                log(f"    {name}")
-
-            log("--- 5. and one more run of pg_partman, after pg-partsmith's tick")
-            await conn.execute("SELECT partman.run_maintenance('public.events')")
-            after = [name for name, _ in await partitions(conn)]
-            log(f"    {len(after)} partitions: {', '.join(after)}")
-
-            log("--- 6. pg_partman switched off, and a policy that differs from its own")
-            await conn.execute("DELETE FROM partman.part_config WHERE parent_table = 'public.events'")
-            wider = TablePartitionConfig(
-                schema="public",
-                table_name="events",
-                partition_column="created_at",
-                granularity=PartitionGranularity.MONTH,
-                lifecycle=LifecyclePolicy(
-                    creation=CreateAhead(count=4),      # one month further ahead than pg_partman built
-                    retention=KeepNewest(count=2),      # one month less history than pg_partman kept
-                    drop=DropAfter(grace=timedelta(days=7)),
-                ),
+            ) PARTITION BY RANGE (created_at)
+        """)
+        await connection.fetchval("""
+            SELECT partman.create_partition(
+                p_parent_table := 'public.events', p_control := 'created_at',
+                p_interval := '1 month', p_premake := 2, p_start_partition := $1
             )
-            plan = await toolkit.service.plan(wider)
-            for line in plan.describe().splitlines():
-                log(f"    {line}")
-            result = await toolkit.maintainer.run_maintenance_safe(wider)
-            log(f"    created={result.created_count} detached={result.detached_count} "
-                f"dropped={result.dropped_count} issues={len(result.issues)}")
-            for issue in result.issues:
-                log(f"    issue: {issue.step} {issue.partition_name}: {str(issue.error)[:100]}")
-            for name, _ in await partitions(conn):
-                log(f"    {name}")
-            detached = await conn.fetch(
-                """
-                SELECT c.relname, obj_description(c.oid, 'pg_class') AS marker
-                FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-                WHERE n.nspname = 'public' AND c.relkind = 'r' AND c.relname LIKE 'events\\_p%'
-                  AND NOT EXISTS (SELECT 1 FROM pg_inherits h WHERE h.inhrelid = c.oid)
-                """
-            )
-            for row in detached:
-                log(f"    detached: {row['relname']} marker={str(row['marker'])[:60]!r}")
-        finally:
-            await engine.dispose()
-            await conn.close()
+        """, month_at(current, -5).isoformat())
+        await connection.executemany("INSERT INTO events VALUES ($1, $2, $3)", [
+            (offset + 10, month_at(current, offset), f"event-{offset}") for offset in range(-5, 1)
+        ])
+        await connection.execute("""
+            UPDATE partman.part_config
+            SET retention = '3 months', retention_keep_table = true, infinite_time_partitions = true
+            WHERE parent_table = 'public.events'
+        """)
+        await connection.execute("SELECT partman.run_maintenance('public.events')")
+        before_off = await children(connection)
+        assert len(before_off) >= 7, before_off  # pg_partman's exact future horizon can extend beyond premake.
+        await connection.execute("""
+            UPDATE partman.part_config SET automatic_maintenance = 'off', premake = 3
+            WHERE parent_table = 'public.events'
+        """)
+        await connection.execute("SELECT partman.run_maintenance()")
+        assert await children(connection) == before_off
+        # Still before handover: a targeted call ignores automatic_maintenance='off'.
+        await connection.execute("SELECT partman.run_maintenance('public.events')")
+        assert len(await children(connection)) == len(before_off) + 1
+        print("PASS pg_partman 5.5.0: automatic_maintenance=off skips general maintenance but not a targeted call")
+
+        settings = dict(await connection.fetchrow("SELECT * FROM partman.part_config WHERE parent_table = 'public.events'"))
+        assert settings["control"] == "created_at" and settings["partition_interval"] == "1 mon"
+        assert settings["retention"] == "3 months" and settings["retention_keep_table"]
+        config = adopted_config(settings)
+        snapshot = await relations(connection)
+        before_children = await children(connection)
+        before_rows = await connection.fetch("SELECT * FROM events ORDER BY id")
+        inspected = await toolkit.service.inspect(config)
+        assert len(inspected.root.children) == len(before_children)
+        assert not inspected.orphans  # pg_partman's detached tables have no pg-partsmith marker.
+        plan = await toolkit.service.plan(config, now=current)
+        print(plan.describe())
+        assert await relations(connection) == snapshot
+        assert not plan.creates and not plan.drops
+        assert len(plan.detaches) == 1
+        assert plan.detaches[0].target.startswith("public.events_p")
+        print("PASS adoption: existing names/bounds recognised; interval retention differs from KeepNewest(3); no writes during planning")
+
+        # No background worker is installed; the lab owns all calls and has stopped calling pg_partman.
+        await unregister_partman(connection)
+        assert await connection.fetchval("SELECT count(*) FROM partman.part_config WHERE parent_table = 'public.events'") == 0
+        result = await toolkit.service.apply(config, plan)
+        assert not result.error and not result.issues and result.detached_count == 1 and result.dropped_count == 0, result
+        remaining = {row["oid"] for row in await children(connection)}
+        assert remaining == {row["oid"] for row in before_children} - {plan.detaches[0].oid}
+        after_rows = await connection.fetch(
+            f"SELECT * FROM events UNION ALL SELECT * FROM {plan.detaches[0].target} ORDER BY id"
+        )
+        assert after_rows == before_rows
+        assert {row["oid"] for row in await relations(connection)} == {row["oid"] for row in snapshot}
+        tree = await toolkit.service.inspect(config)
+        assert len(tree.orphans) == 1 and tree.orphans[0].name == plan.detaches[0].target
+        print("PASS handover: registration removed, old table OIDs and all data preserved, detached table kept by DropNever")
+
+        next_start = max(datetime.fromisoformat(child.bounds.to_value) for child in tree.root.children if not child.is_default)
+        horizon = (next_start.year - current.year) * 12 + next_start.month - current.month + 1
+        wider = config.model_copy(update={"lifecycle": config.lifecycle.model_copy(update={"creation": CreateAhead(count=horizon)})})
+        growth = await toolkit.service.plan(wider, now=current)
+        assert len(growth.creates) == 1 and not growth.detaches and not growth.drops
+        result = await toolkit.service.apply(wider, growth)
+        assert result.created_count == 1 and not result.issues, result
+        assert not (await toolkit.service.plan(wider, now=current)).operations
+        assert await connection.fetchval("SELECT count(*) FROM events_default") == 0
+        print("PASS new maintainer: one additional future month created, next plan is empty, DEFAULT is empty")
     finally:
-        container.stop()
+        await engine.dispose()
+        await connection.close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    with database("pg-partman-lab:17") as (engine_url, dsn):
+        async def run():
+            async with asyncio.timeout(120):
+                await main(engine_url, dsn)
+        asyncio.run(run())
