@@ -11,5 +11,5 @@
 - **2026-09-13** — [Обслуживание партиций PostgreSQL: от плана до проверенного архива](../posts/2026-09-13-postgresql-partition-maintenance.md)
 - **2026-09-13** — [Сессии и транзакции в SQLAlchemy: кто отвечает за commit](../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md)
 - **2026-09-07** — [Почему перехватчики gRPC ломаются на потоковых RPC](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md)
-- **2026-09-07** — [Ядро без зависимостей: зачем инфраструктурным библиотекам необязательные зависимости](../posts/2026-09-07-zero-dependency-cores.md)
+- **2026-09-07** — [Ядро без зависимостей: подключаем только нужные интеграции](../posts/2026-09-07-zero-dependency-cores.md)
 - **2026-09-06** — [Таймаут — не дедлайн: как теряется бюджет времени в микросервисах](../posts/2026-09-06-timeouts-are-not-deadlines.md)

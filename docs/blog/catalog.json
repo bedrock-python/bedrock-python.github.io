@@ -297,7 +297,7 @@
     {
       "id": "2026-09-13-why-bedrock-python-libraries",
       "title": "Why I extract Python service infrastructure into libraries",
-      "description": "Across Python services using the same stack, I kept assembling similar infrastructure: SQLAlchemy sessions, Redis and Kafka clients, resource startup and shutdown, retries…",
+      "description": "Imagine an orders API: read an order from PostgreSQL, ask the warehouse for stock, return whether the quantity is sufficient. Later, a background job needs the same information.",
       "url": "posts/2026-09-13-why-bedrock-python-libraries/",
       "date": "2026-09-13",
       "categories": [
@@ -311,13 +311,35 @@
       "topics": [
         "engineering"
       ],
-      "minutes": 4,
-      "search": "Why I extract Python service infrastructure into libraries Across Python services using the same stack, I kept assembling similar infrastructure: SQLAlchemy sessions, Redis and Kafka clients, resource startup and shutdown, retries… bedrock-python architecture servicewright Meta Python & tooling What is worth extracting Why separate packages How the pieces fit in a service The cost of independent libraries What this blog covers Examples and labs"
+      "minutes": 7,
+      "search": "Why I extract Python service infrastructure into libraries Imagine an orders API: read an order from PostgreSQL, ask the warehouse for stock, return whether the quantity is sufficient. Later, a background job needs the same information. bedrock-python architecture servicewright Meta Python & tooling Start with the decision the service owns Connect PostgreSQL and the warehouse Give the whole operation one time limit Create shared resources once and close them last Check the behavior, not just the imports When a separate library earns its cost Choose the pieces your service needs Source and reproduction"
+    },
+    {
+      "id": "2026-09-07-zero-dependency-cores",
+      "title": "A core without dependencies: install the integrations your service needs",
+      "description": "Imagine an orders API that reads stock from a warehouse over HTTP. A separate CI job inspects the same client configuration and checks which adapters support it.",
+      "url": "posts/2026-09-07-zero-dependency-cores/",
+      "date": "2026-09-07",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "deadline-budget",
+        "clientwright",
+        "servicewright",
+        "packaging",
+        "dependencies"
+      ],
+      "topics": [
+        "engineering"
+      ],
+      "minutes": 7,
+      "search": "A core without dependencies: install the integrations your service needs Imagine an orders API that reads stock from a warehouse over HTTP. A separate CI job inspects the same client configuration and checks which adapters support it. deadline-budget clientwright servicewright packaging dependencies Design Python & tooling Share configuration before choosing a transport The message is the feature Install the extra and make the request Accept a small interface for the remaining time What is actually installed Keep unrelated version constraints out of a service When a dependency belongs in the base install Check both sides of the boundary Start with the core, add the integration you use Run the example"
     },
     {
       "id": "2026-09-07-documentation-for-ai-coding-agents",
-      "title": "We started writing documentation for AI coding agents",
-      "description": "In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people.",
+      "title": "Documentation an AI coding agent can use and verify",
+      "description": "Imagine asking a coding agent to add a shipping quote to an orders service. It must check stock, then calculate shipping, with 600 ms for both steps and a 400 ms ceiling for each.",
       "url": "posts/2026-09-07-documentation-for-ai-coding-agents/",
       "date": "2026-09-07",
       "categories": [
@@ -333,8 +355,8 @@
       "topics": [
         "engineering"
       ],
-      "minutes": 9,
-      "search": "We started writing documentation for AI coding agents In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people. bedrock-python documentation ai-agents llm python-library-template Meta Python & tooling Two readers, two questions One page per library Rules that hold or break the code WRONG, then RIGHT The page has to reach the model Keeping it true What it did for the humans"
+      "minutes": 7,
+      "search": "Documentation an AI coding agent can use and verify Imagine asking a coding agent to add a shipping quote to an orders service. It must check stock, then calculate shipping, with 600 ms for both steps and a 400 ms ceiling for each. bedrock-python documentation ai-agents llm python-library-template Meta Python & tooling Give the reader enough context for the task Put imports, defaults and ownership together Show the mistake and its replacement Make the rules visible in a working example Give the agent the actual page contents Test the statements that can become stale Leave the next reader a verifiable starting point"
     },
     {
       "id": "2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs",
@@ -357,28 +379,6 @@
       ],
       "minutes": 7,
       "search": "Why gRPC interceptors break on streaming RPCs Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero. grpc-client-kit grpc interceptors observability asyncio Design gRPC The reporting service we will call First, make sure the interceptor actually runs Timing continuation measures setup Wrap iteration for the simple case One around_call for all four shapes Keep interceptor context separate from caller context Stop the RPC when the worker stops reading Run the examples What to take into your service"
-    },
-    {
-      "id": "2026-09-07-zero-dependency-cores",
-      "title": "Zero-dependency cores: why optional dependencies matter in infrastructure libraries",
-      "description": "An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too.",
-      "url": "posts/2026-09-07-zero-dependency-cores/",
-      "date": "2026-09-07",
-      "categories": [
-        "design"
-      ],
-      "tags": [
-        "deadline-budget",
-        "clientwright",
-        "servicewright",
-        "packaging",
-        "dependencies"
-      ],
-      "topics": [
-        "engineering"
-      ],
-      "minutes": 6,
-      "search": "Zero-dependency cores: why optional dependencies matter in infrastructure libraries An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too. deadline-budget clientwright servicewright packaging dependencies Design Python & tooling What each library costs The failure mode this prevents What a good core looks like The message is the feature When a hard dependency is right The checklist The pieces"
     },
     {
       "id": "2026-09-06-timeouts-are-not-deadlines",

@@ -12,46 +12,105 @@ tags:
   - python-library-template
 ---
 
-# We started writing documentation for AI coding agents
+# Documentation an AI coding agent can use and verify {#we-started-writing-documentation-for-ai-coding-agents}
 
-<div class="bdr-post__hero" data-bdr-post="2026-09-07-documentation-for-ai-coding-agents" role="img" aria-label="One page written for a model, handed over in a single click" markdown="0"></div>
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-documentation-for-ai-coding-agents" role="img" aria-label="A task, a versioned API description and a working example lead to code that can be checked" markdown="0"></div>
 
-In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people. Coding assistants wiring my libraries into services have invented a class that does not exist, called a synchronous function with `await`, and passed a session where the library wants an engine, each time with complete confidence, because the documentation they had read was written for someone who browses. This post is about what I changed: a page per library written for a model, the rules I put on it, the mechanics that hand it to a chat window in one click, and what it turned out to cost.
+Imagine asking a coding agent to add a shipping quote to an orders service. It must check stock, then calculate shipping, with 600 ms for both steps and a 400 ms ceiling for each. The project uses deadline-budget. A link to the overview explains the idea, but the implementation also needs the exact import, synchronous methods, timeout units and cancellation behavior.
+
+We will assemble that information into a short task brief, implement the function and test the promises made by the documentation. This is a worked example of writing useful documentation, not a benchmark of an AI model.
 
 <!-- more -->
 
-## Two readers, two questions
+## Give the reader enough context for the task {#two-readers-two-questions}
 
-A person reading library documentation is answering "should I use this, and how does it think?" They start at the overview, skim the concepts, open the quick start, and come back to the reference when a signature is unclear. Prose works for them. Diagrams work for them. A tutorial that builds up over six pages works for them, because they carry state between pages and forgive the pages for not repeating themselves.
+“Use deadline-budget” leaves several decisions open. Does creating a budget start a timer? Does `timeout_for_call()` need `await`? Will the library cancel a warehouse request? A plausible answer to any of these can produce incorrect code.
 
-A model that is about to write code against the library is answering a narrower question: "what exactly is the API, and what will break if I get it wrong?" It does not browse. It gets whatever was pasted into its context, in one shot, and it fills every gap with the most plausible thing it has seen elsewhere. When a docs site says "pass the coordinator" without saying where the coordinator is imported from, a model imports it from the package root, because that is where such things usually live. When a page shows `await run_alembic_upgrade(...)` and never says that `get_all_revisions` is synchronous, the model awaits both. The failures are not random: they are the library as it would have been designed by the average of every other library.
+An agent may be able to browse, search the repository and run tests. We should give it a clear starting point and tell it where to verify a missing detail. A human implementing the same function needs those facts too.
 
-That is the observation that started this. The model was not misreading the documentation. It was reading it correctly and the documentation was not saying the things it needed. Concepts, yes. Invariants, no.
+For this task, we can provide a brief like this alongside the relevant files:
 
-## One page per library
+> Implement `shipping_quote(sku, *, stock, shipping)` using `deadline-budget==0.1.3` on Python 3.13.
+>
+> Share 600 ms across stock lookup and shipping calculation; cap each at 400 ms. Return `None` when the stock count is zero or negative; otherwise return the quote.
+>
+> Read the supplied API brief and adapter contract before choosing calls. Run the provided tests and report the result.
 
-Every library in the organisation now has a page called `agents.md`, in the navigation as "For AI agents", at `/agents/` on its docs site. It is not a summary of the other pages. It is the whole library on one page, written for a reader that will never see the other pages unless told to fetch one.
+The adapters are part of our application. `stock` returns an integer count; `shipping` returns a quote. Both are async callables accepting `sku` and a keyword-only `timeout` in seconds. They must apply that timeout and propagate cancellation. Naming this boundary prevents the example from quietly inventing a warehouse client inside deadline-budget.
 
-The pages share a skeleton, and the skeleton is the design. This is deadline-budget's header, the first thing a model reads:
+## Put imports, defaults and ownership together {#one-page-per-library}
 
-```text
-| Package      | deadline-budget on PyPI, import root deadline_budget                         |
-| Requires     | Python 3.10+, no runtime dependencies                                        |
-| Install      | pip install deadline-budget · extras: settings (Pydantic models), dishka     |
-| Entry points | DeadlineBudget, BudgetContext — both from deadline_budget                    |
-| Async        | None. Every method is synchronous and returns immediately; it reads a clock, |
-|              | it never sleeps, awaits or cancels                                           |
+The [Bedrock library template](https://github.com/bedrock-python/python-library-template/blob/master/template/docs/agents.md.jinja) includes `docs/agents.md` for this purpose. For our example, a small API table is enough to orient the reader:
+
+| Question | Answer for this example |
+|---|---|
+| What is installed? | `deadline-budget==0.1.3`; tested with Python 3.13 |
+| Where are the names imported from? | `from deadline_budget import BudgetContext, DeadlineExceededError` |
+| How is a context created? | `BudgetContext.create(total_seconds, call_caps=None, *, min_timeout=0.1, safety_margin=0.0)` |
+| Which calls need `await`? | Neither `create()` nor `timeout_for_call()`; both are synchronous |
+| What are the units? | Seconds; `timeout_for_call()` returns a `float` |
+| Who owns the budget? | One context per quote, shared by both steps |
+| Who cancels work? | The adapter and the application's `asyncio.timeout()` boundary |
+| Which errors matter? | `DeadlineExceededError` while calculating a new timeout; `TimeoutError` from the operation boundary or these adapters |
+
+The [full deadline-budget agent guide](https://github.com/bedrock-python/deadline-budget/blob/master/docs/agents.md) covers more API surface. The [lab README](../lab/2026-09-07-documentation-for-ai-coding-agents/README.md) is our smaller brief for this one integration, including the adapter contract and runnable code. A focused brief should identify its version and scope so a reader knows when to consult the broader reference.
+
+## Show the mistake and its replacement {#wrong-then-right}
+
+Consider a possible mistake inside an async function:
+
+```python
+from deadline_budget import BudgetContext
+
+# WRONG: inside an async function
+ctx = await BudgetContext.create(total_seconds=0.6)
 ```
 
-Package name and import root, because they differ and models conflate them. Where the entry points are imported from, because that is the first thing a model gets wrong. Whether anything is async, before a single example, because a model that has seen one `await` will await everything.
+This raises `TypeError`: `create()` returns a `BudgetContext`, which is not awaitable. The correction is small:
 
-Then a section called **Scope** with two paragraphs: what the library does, and what it does not. The second paragraph is the more useful one. deadline-budget's says it "enforces nothing. It starts no timer, spawns no task, cancels nothing, and wraps no client. It has no transport of its own: no header, no context variable, no thread-local." Every one of those clauses is a thing a model would otherwise assume the library does, and then write code that depends on.
+```python
+from deadline_budget import BudgetContext
 
-Then a **Mental model**, four to six nouns and the flow between them, and a **Wiring** section with the smallest complete program. Then the API as tables: name, signature, what it returns, what it raises. Then the two sections that do most of the work.
+ctx = BudgetContext.create(total_seconds=0.6)
+timeout = ctx.timeout_for_call("stock")
+```
+
+The lab executes the incorrect call and asserts the error. It also checks the public signature and defaults against the installed package. We can therefore explain a specific API mistake without claiming that a model produced it or that a particular prompt always prevents it.
+
+A short pair works well for one local mistake. For a rule spanning several calls, give the reader a complete function instead.
+
+## Make the rules visible in a working example {#rules-that-hold-or-break-the-code}
+
+Here is `shipping.py`. Its only external import is the real budget API; `stock` and `shipping` are supplied by the application:
+
+```python
+import asyncio
+
+from deadline_budget import BudgetContext
+
+
+async def shipping_quote(sku, *, stock, shipping):
+    ctx = BudgetContext.create(
+        total_seconds=0.6,
+        min_timeout=0,
+        call_caps={"stock": 0.4, "shipping": 0.4},
+    )
+    async with asyncio.timeout(ctx.remaining()):
+        available = await stock(sku, timeout=ctx.timeout_for_call("stock"))
+        if available <= 0:
+            return None
+        return await shipping(sku, timeout=ctx.timeout_for_call("shipping"))
+```
+
+The context starts once, before the stock check. The next timeout is calculated just before each call. If the first step consumes 250 ms, the second gets at most 350 ms; creating a new context there would wrongly give it a fresh budget.
+
+Two details need to be stated beside the code. First, `min_timeout` defaults to 100 ms in version 0.1.3 and can exceed the remaining time. We explicitly use zero here. Second, the budget only calculates numbers. [Python's `asyncio.timeout()`](https://docs.python.org/3.13/library/asyncio-task.html#asyncio.timeout) requests cancellation of the current task when the enclosing operation runs out of time. It relies on cooperative async code; blocking work or suppressed cancellation can overrun it.
+
+The names in `call_caps` are part of the example's contract too. An unknown name has no cap; `"stcok"` does not trigger a configuration error. A typo can therefore change behavior while the code still imports successfully.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Give the agent the whole contract</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>From a task description to verifiable code</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -66,82 +125,83 @@ config:
     nodeSpacing: 24
     rankSpacing: 32
 ---
-flowchart LR
-    accTitle: Give the agent the whole contract
-    accDescr: A single agents page combines imports, signatures, invariants and examples. It reduces the missing context that the model would otherwise fill with guesses.
- A["Imports and signatures"] --> D["agents.md"]
- R["Rules and boundaries"] --> D
- E["Wrong / right examples"] --> D
- D --> M["Coding agent"] --> C["Integration code"]
+flowchart TD
+    accTitle: From a task description to verifiable code
+    accDescr: The task, API details and working example form the context. Integration code is checked, and discovered errors feed back into the documentation.
+    A["Task and rules"] --> D["Context for the agent"]
+    B["Version, imports, arguments"] --> D
+    C["Working example"] --> D
+    D --> E["Integration code"] --> F["Executable checks"]
+    F -.-> D
 ```
 
 </div>
-<p class="bdr-diagram__caption">A single agents page combines imports, signatures, invariants and examples. It reduces the missing context that the model would otherwise fill with guesses.</p>
+<p class="bdr-diagram__caption">The task, API details and working example form the context. Integration code is checked, and discovered errors feed back into the documentation.</p>
 </figure>
 <!-- /diagram:concept -->
 
-## Rules that hold or break the code
+## Give the agent the actual page contents {#the-page-has-to-reach-the-model}
 
-Every page has a numbered list under that heading. They are not tips. Each one is an invariant that the library will not enforce for you and that produces working-looking code when broken. A few, from different libraries:
+There are two useful handoff paths: give an agent that can fetch files a direct Markdown link, or copy the relevant page into its context. A URL in a prompt is not evidence that the page was retrieved. For a tool that cannot open it, provide the text or a local file.
 
-- servicewright: "`serve()` returns while still accepting work. When `stop` is set, return; do not close the listener there. The Host flips readiness to false first, then calls `drain(grace)`."
-- alembic-gauntlet: "Your `env.py` decides whether any of this is real. It must run on `config.attributes['connection']` when that key is present. Ignore it and the tests pass while migrating `public` on a connection nobody rolls back."
-- grpc-client-kit: "A timeout is the budget of the entire call, retries included. `max_attempts × timeout` is not how long a call can take."
-- pg-partsmith: "Give it an `Engine` / `AsyncEngine`, never a `Session` / `AsyncSession`. DDL runs on its own connection and commits immediately; a session's transaction is the wrong shape."
-- omni-box: "The library never opens or commits a database transaction."
-- clientwright: "`UNSET` is not `None`. `UNSET` defers to the adapter's native default and says so in the report; `None` means explicitly unbounded."
+The library template includes an [export script](https://github.com/bedrock-python/python-library-template/blob/master/template/scripts/emit_markdown.py) and a **Copy page** control. The export runs after the documentation build. Its path mapping includes section indexes:
 
-Notice the shape. Each rule names the thing a model would plausibly do, says what happens when it does, and gives the sentence to hold instead. "Engine, never Session" is four words a model can carry through two hundred lines of generated code. The paragraph in the concepts guide that explains why DDL and sessions do not mix is true and useful and a model will not carry it anywhere.
+| Source | Published Markdown |
+|---|---|
+| `docs/agents.md` | `site/agents.md` |
+| `docs/guide/quickstart.md` | `site/guide/quickstart.md` |
+| `docs/guide/index.md` | `site/guide.md` |
 
-The lists run from fifteen to twenty rules per library. Writing them was the most useful documentation exercise I have done in years, for a reason that has nothing to do with models: to write a rule in that form you have to know the behaviour precisely, and a concepts guide never demands that of its author.
+Pages marked `copy_page: false` are excluded. That matters for an API page whose source contains only a docstring-rendering directive: copying the directive does not give the reader the rendered API. Verify the exported file, including its code blocks and links, rather than assuming the HTML page proves that export works.
 
-## WRONG, then RIGHT
+Keep a small reading map next to the brief. For this task, it can point to the [deadline article](2026-09-06-timeouts-are-not-deadlines.md) for propagation between calls, [optional dependencies](2026-09-07-zero-dependency-cores.md) for installation choices, and the library reference for an unlisted method. Link by the question a page answers; there is no need to paste every page into every task.
 
-The second section is **Common mistakes**, and every entry is a pair:
+## Test the statements that can become stale {#keeping-it-true}
 
-```python
-# WRONG — a mixin that does not exist in this package
-from alembic_gauntlet.contrib.testcontainers import TestcontainersDatabaseMixin
+Our lab checks the version, imports, defaults and the function's behavior. It also compares the README's Python block with `shipping.py` by syntax tree. A code change without the corresponding example update fails the check.
 
-class TestMigrations(TestcontainersDatabaseMixin, MigrationTestBase): ...
-
-# RIGHT — contrib ships one fixture; import it into a conftest
-# tests/conftest.py
-from alembic_gauntlet.contrib.testcontainers import migration_db_url  # noqa: F401
-```
+The behavior test records both timeouts. It uses a manually advanced clock only inside the budget module; asyncio keeps its real clock. This is the test body from `test_contract.py`:
 
 ```python
-# WRONG — the budget object sent to another service
-await billing.charge(order_id, budget=pickle.dumps(ctx.budget))
+async def test_sequential_steps_share_one_budget(self):
+    calls = []
 
-# RIGHT — the number sent, a new budget built on arrival
-await billing.charge(order_id, timeout=ctx.timeout_for_call("billing.charge"))
-# ... in the callee:
-budget = DeadlineBudget(total_seconds=timeout_from_request, safety_margin=0.2)
+    async def stock(sku, *, timeout):
+        calls.append(("stock", sku, timeout))
+        self.clock.advance(0.25)
+        return 3
+
+    async def shipping(sku, *, timeout):
+        calls.append(("shipping", sku, timeout))
+        return {"shipping_cents": 490}
+
+    result = await shipping_quote("sku-42", stock=stock, shipping=shipping)
+    self.assertEqual(result, {"shipping_cents": 490})
+    self.assertEqual(
+        [(name, sku) for name, sku, _ in calls],
+        [("stock", "sku-42"), ("shipping", "sku-42")],
+    )
+    self.assertAlmostEqual(calls[0][2], 0.4)
+    self.assertAlmostEqual(calls[1][2], 0.35)
 ```
 
-The WRONG half is not a straw man. Each one is the plausible shape: what the API would look like if it had been designed by the average of every other library, which is exactly what a model reaches for when a page leaves a gap. A page that describes "the testcontainers integration" and stops there will get you that mixin. Showing the wrong code next to the right code works better than any amount of prose about it, because a model pattern-matches on shape: it will recognise the shape it was about to produce and take the one beside it. There are 83 such pairs across the fourteen pages today.
+The first 400 ms is the configured per-call cap; the next 350 ms is the shared budget's remainder. Other tests cover empty stock, exhaustion before the second step, the default minimum, a misspelled call name and a stalled step cancelled by the actual asyncio timeout. They distinguish a budget calculation error from a downstream timeout.
 
-## The page has to reach the model
+Run the checks from the website repository root:
 
-A page written for a model is useless if the way to get it there is to select all in a browser and hope the formatting survives. So every documentation page in the organisation is also served as raw Markdown at its own URL: the page at `/guide/quickstart/` is also at `/guide/quickstart.md`, and `/agents/` is `/agents.md`. Nothing clever produces this. After the site builds, a thirty-line script copies each `docs/<path>.md` to `site/<path>.md`, one URL away from the HTML it built. A model that can fetch a URL can fetch the page as text; an agent told "read `/agents.md` before you write code" needs no scraping.
+```bash
+cd docs/blog/lab/2026-09-07-documentation-for-ai-coding-agents
+uv run --no-project --python 3.13 --with-requirements requirements.txt python test_contract.py
+```
 
-Above every page there is a control for the human with a chat window open. Its main button is **Copy page**, which puts the Markdown on the clipboard. The menu next to it has **View as Markdown**, **Open in ChatGPT**, **Open in Claude** and **Open in Perplexity**, each of which opens the assistant with the page's URL in the prompt and a request to read it first. The generated API reference declines the control with one line of front matter, `copy_page: false`, because its Markdown is a two-line instruction to a docstring renderer rather than the API; a file nothing links to is worse than no file when its content would mislead.
+There are eleven checks, using the pinned package and standard-library test tools. No model call, external service or Docker is involved. They verify that the documented example works; they do not establish how often an agent will implement it correctly.
 
-The agents page itself says all of this in a section called "How to read this page", so a model that received it by any route knows what else it may fetch and how. The last section of every page is a **Documentation map**: a table of the other pages and the one situation in which to fetch each. "Read it when you are choosing between `DeadlineBudget` and `BudgetContext`." That is a model-shaped index: not a list of what exists, but a list of when to go and get it.
+When a public API changes, review the affected brief, examples and tests in the same change. Passing tests only cover their assertions: they cannot prove that every sentence on an agents page is still correct. Avoid keeping a second hand-written API reference if a short contract and precise links are enough.
 
-## Keeping it true
+<div id="what-it-did-for-the-humans" data-search-exclude></div>
 
-A page like this is a promise about the API, and a stale promise teaches a model an API that no longer exists. That is worse than no page, because the model will trust it over the code. So the page is treated as part of the public surface. Every library's contributing guide says so, the pull request template has a checkbox for it, and the review rule is mechanical: if the diff changes the public surface and `docs/agents.md` is untouched, the pull request is not done.
+## Leave the next reader a verifiable starting point {#conclusion}
 
-The skeleton lives in the organisation's library template, with `TODO` markers for the parts that are library-specific, and the instructions for whoever creates a new library, human or agent, say to fill it in before the first commit. The Copy page control is four files that are byte-identical in every repository on purpose, so a change to the control is one sweep across all of them rather than fourteen slightly different fixes. pg-partsmith's page is the worked example the others were shaped after.
+For the shipping task, the useful documentation was concrete: a version, imports, defaults, adapter responsibilities, one working function and a command that checks it. These are also the facts a reviewer needs when assessing the resulting code.
 
-What it costs is real. The fourteen pages are 7,045 lines of Markdown between them, from 374 lines for the smallest library to 657 for the largest, and every public change touches one. I have not found a way to make that cheaper, and I have stopped trying, because of what happened next.
-
-## What it did for the humans
-
-The agents page turned out to be the best page on each site for a senior engineer who already knows the domain. The header table answers the five questions they were going to ask. The Scope section tells them in two paragraphs whether the library is the right shape. The rules are the things they would otherwise learn from an incident. It is the page to send a colleague who asks what a library does and what will bite them, and it is the one I open myself when I come back to a library after a month.
-
-I think that is the general lesson. Writing for a reader that has no patience, no context and no ability to browse forced me to say the invariants out loud, put the import next to the name, show the wrong code beside the right, and state what the library does not do as carefully as what it does. Those were always the things worth saying. The model was the first reader honest enough to fail when they were missing.
-
-Every library in [the catalog](https://bedrock-python.github.io/libraries/) has its page under "For AI agents". If you want to see the shape, [pg-partsmith's](https://bedrock-python.github.io/pg-partsmith/agents/) is the one the others were modelled on, and [deadline-budget's](https://bedrock-python.github.io/deadline-budget/agents/) is the shortest complete one.
+For Bedrock integrations, start with the library's agent page and match it to the installed version. Use the [template](https://github.com/bedrock-python/python-library-template) to create the same starting point for your own package, then add tests for the behavior your examples promise. The goal is enough verified context to implement the task and a clear way to detect mistakes.

@@ -258,8 +258,20 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
         <h3 class="bdr-entry__title">Why I extract Python service infrastructure into libraries</h3>
-        <p class="bdr-entry__description">Across Python services using the same stack, I kept assembling similar infrastructure: SQLAlchemy sessions, Redis and Kafka clients, resource startup and shutdown, retries…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <p class="bdr-entry__description">Imagine an orders API: read an order from PostgreSQL, ask the warehouse for stock, return whether the quantity is sufficient. Later, a background job needs the same information.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-07-zero-dependency-cores">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-zero-dependency-cores/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">A core without dependencies: install the integrations your service needs</h3>
+        <p class="bdr-entry__description">Imagine an orders API that reads stock from a warehouse over HTTP. A separate CI job inspects the same client configuration and checks which adapters support it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -269,9 +281,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
-        <h3 class="bdr-entry__title">We started writing documentation for AI coding agents</h3>
-        <p class="bdr-entry__description">In 2024 I wrote documentation for developers. Somewhere in 2026 I noticed that a good share of the readers were not people.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>9 min read</span></div>
+        <h3 class="bdr-entry__title">Documentation an AI coding agent can use and verify</h3>
+        <p class="bdr-entry__description">Imagine asking a coding agent to add a shipping quote to an orders service. It must check stock, then calculate shipping, with 600 ms for both steps and a 400 ms ceiling for each.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -284,18 +296,6 @@ hide:
         <h3 class="bdr-entry__title">Why gRPC interceptors break on streaming RPCs</h3>
         <p class="bdr-entry__description">Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-07-zero-dependency-cores">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-zero-dependency-cores/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">Zero-dependency cores: why optional dependencies matter in infrastructure libraries</h3>
-        <p class="bdr-entry__description">An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

@@ -150,8 +150,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Об экосистеме</div>
         <h3 class="bdr-entry__title">Зачем я выделяю инфраструктуру Python-сервисов в библиотеки</h3>
-        <p class="bdr-entry__description">В Python-сервисах на одном стеке я снова и снова собирал похожую инфраструктуру: сессии SQLAlchemy, клиентов Redis и Kafka, запуск и остановку ресурсов, повторные запросы…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>3 мин на чтение</span></div>
+        <p class="bdr-entry__description">Представим API заказов: прочитать заказ из PostgreSQL, запросить остаток на складе и вернуть, хватит ли товара. Позже те же данные понадобятся фоновому заданию.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -269,9 +269,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Об экосистеме</div>
-        <h3 class="bdr-entry__title">Мы начали писать документацию для ИИ-агентов</h3>
-        <p class="bdr-entry__description">В 2024 году я писал документацию для разработчиков. В какой-то момент 2026-го заметил, что значительная часть читателей — ИИ-ассистенты.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
+        <h3 class="bdr-entry__title">Документация, по которой ИИ-агент может написать и проверить код</h3>
+        <p class="bdr-entry__description">Представим, что мы просим ИИ-агента добавить расчёт доставки в сервис заказов. Сначала нужно проверить остаток товара, затем рассчитать доставку: на оба шага отведено 600 мс, на…</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>6 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -293,9 +293,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-zero-dependency-cores/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Ядро без зависимостей: зачем инфраструктурным библиотекам необязательные зависимости</h3>
-        <p class="bdr-entry__description">Инфраструктурную библиотеку подключают ко многим сервисам, и каждый из них получает все её зависимости.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>5 мин на чтение</span></div>
+        <h3 class="bdr-entry__title">Ядро без зависимостей: подключаем только нужные интеграции</h3>
+        <p class="bdr-entry__description">Представим API заказов, которое запрашивает остатки у склада по HTTP. Рядом есть задание CI: оно читает те же настройки клиента и проверяет возможности адаптеров.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>6 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

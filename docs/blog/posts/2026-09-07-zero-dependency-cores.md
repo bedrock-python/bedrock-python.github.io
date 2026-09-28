@@ -12,63 +12,57 @@ tags:
   - dependencies
 ---
 
-# Zero-dependency cores: why optional dependencies matter in infrastructure libraries
+# A core without dependencies: install the integrations your service needs {#zero-dependency-cores-why-optional-dependencies-matter-in-infrastructure-libraries}
 
-<div class="bdr-post__hero" data-bdr-post="2026-09-07-zero-dependency-cores" role="img" aria-label="A small core, and integrations docked only by the services that ask" markdown="0"></div>
+<div class="bdr-post__hero" data-bdr-post="2026-09-07-zero-dependency-cores" role="img" aria-label="A shared client configuration works on its own; the orders API adds HTTP and deadline integrations" markdown="0"></div>
 
-An infrastructure library is one that ends up in every service, and every dependency it declares ends up there too. That is the whole argument, and it is usually made in the abstract. So I measured it: for eight libraries, what a bare install actually pulls in, how many megabytes it puts on disk, and how long importing it costs. The smallest core installs one distribution and imports in 1.2 milliseconds. The one with a hard database driver installs nine and imports in 117.
+Imagine an orders API that reads stock from a warehouse over HTTP. A separate CI job inspects the same client configuration and checks which adapters support it. The API needs an HTTP library; inspecting configuration should work without installing every transport and web framework.
+
+We will start with a bare clientwright install, reach the point where an extra is required, then add it and make a real request. The question is concrete: which operations work before we install the integration, and what happens when we ask for more?
 
 <!-- more -->
 
-The numbers come from [the post's lab](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-zero-dependency-cores), which builds a throwaway virtual environment per package, counts what landed in it and times the import five times. Python 3.13, measured today against the published versions.
+## Share configuration before choosing a transport {#what-a-good-core-looks-like}
 
-## What each library costs
+Our `warehouse_policy.py` defines a two-second limit and one attempt. Retries are disabled here to keep the example about dependencies. These types come from the [clientwright](https://github.com/bedrock-python/clientwright) core:
 
-```text
-    package                     deps      MB  import ms   with the extra
-    deadline-budget                1     0.1        1.2
-    clientwright                   1     0.3       23.9
-    grpc-client-kit                3    38.3       27.6   [deadline]: +1 deps, +0.7 MB
-    redis-client-kit               2     2.6       43.4   [settings]: +7 deps, +8.7 MB
-    servicewright                  1     0.4       30.1   [fastapi]: +22 deps, +16.4 MB
-    sqlalchemy-foundation-kit      9    18.1      124.7   [metrics]: +1 deps, +7.9 MB
-    aiokafka-foundation-kit        5     2.0       33.4   [models]: +4 deps, +7.1 MB
-    pg-partsmith                  10    17.4      107.6   [cli]: +9 deps, +14.1 MB
+```python
+from clientwright import ClientConfig, RetryConfig, TimeoutConfig
+
+
+def warehouse_config(base_url):
+    return ClientConfig(
+        service_name="warehouse",
+        base_url=base_url,
+        timeout=TimeoutConfig(total=2),
+        retry=RetryConfig(max_attempts=1),
+        circuit_breaker=None,
+        deadline_header="X-Deadline-Ms",
+        on_unsupported="strict",
+    )
 ```
 
-Three libraries install exactly one distribution: themselves. `deadline-budget` is a deadline that propagates, and it needs nothing to be one. `clientwright` builds HTTP clients and depends on no HTTP library, because which one you use is your decision, not its. `servicewright` runs an application's lifecycle and depends on no web framework, for the same reason.
+With only `clientwright==0.5.0` installed, the lab creates this configuration, reads the adapter registry and checks the capabilities matrix:
 
-The `[fastapi]` column is the number that makes the case: **twenty-two distributions and sixteen megabytes**, for a library whose core is one distribution and four hundred kilobytes. A service that runs a gRPC entrypoint and no HTTP one pays none of that.
+```python
+from importlib.util import find_spec
+from clientwright import capabilities_matrix, registered_adapters
+from warehouse_policy import warehouse_config
 
-## The failure mode this prevents
-
-The reason to care is not disk. It is the resolver.
-
-A library that hard-depends on FastAPI pins a range of FastAPI, which pins a range of Starlette and Pydantic. A service that uses that library and also uses another library with its own FastAPI range now has a resolution problem that neither library's author knew about. The more services and the more shared libraries, the more likely it is that some pair of them cannot be installed together — and that the fix is upgrading something unrelated across the whole fleet.
-
-Every dependency an infrastructure library declares is a constraint it imposes on every service it touches. An optional one is a constraint only on the services that opted in.
-
-Import time is the smaller effect and it is not nothing: 1.2 milliseconds against 124.7 is two orders of magnitude, and it lands on every process start, every CI job, every serverless cold start, and every `--help`.
-
-## What a good core looks like
-
-The pattern that produces the three one-distribution rows is: **the core is the decisions, the extras are the integrations.**
-
-`clientwright` is the clearest case. Its core knows about timeouts, retries, budgets, breakers and metrics — the policy layer, which is the part worth sharing between services. It knows nothing about httpx, aiohttp, requests or urllib3; each of those is an adapter behind an extra, resolved by name at build time:
-
-```text
-    registered adapters without any HTTP library: ('aiohttp', 'httpx', 'httpx2', 'requests', 'urllib3')
+config = warehouse_config("http://127.0.0.1:1")
+assert config.timeout.total == 2
+assert "httpx" in capabilities_matrix()
+assert find_spec("httpx") is None
+print(registered_adapters())
 ```
 
-All five are *registered* with no HTTP library installed, because the registry is a table of names and import paths, not a set of imports. That is what lets the capabilities matrix be documented and compared without installing anything, and it is why the adapter's absence only becomes an error when you ask for it:
+`find_spec()` checks whether Python can find httpx. The registry and matrix remain usable when it cannot. Registered names are `aiohttp`, `httpx`, `httpx2`, `requests` and `urllib3`; registration does not mean their libraries are installed.
 
-```text
-    build('httpx') -> ImportError: httpx support requires clientwright[httpx]; install it.
-```
+In this version, the registry stores import paths. Even `import clientwright.adapters.httpx` is lazy: it does not load the HTTP implementation. The selected adapter is loaded when `build()` resolves it. This gives the CI job something useful to inspect before choosing a transport; it does not prove that an eventual client configuration can be applied in full.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Optional integrations depend on the core</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>Integrations connect to the core</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -84,55 +78,139 @@ config:
     rankSpacing: 32
 ---
 flowchart BT
-    accTitle: Optional integrations depend on the core
-    accDescr: The core imports neither frameworks nor optional adapters. Extras add integrations around its contracts; a package whose purpose is SQLAlchemy integration can still depend on SQLAlchemy directly.
-    A["Optional transport adapter"] -->|"Imports"| C["Core: contracts, state, policies"]
-    B["Optional framework integration"] -->|"Imports"| C
-    O["Optional observability integration"] -->|"Imports"| C
+    accTitle: Integrations connect to the core
+    accDescr: Client configuration and the budget interface work without an HTTP library. The httpx adapter and deadline-budget are added where the application needs them.
+    A["clientwright core: configuration and interfaces"]
+    B["httpx adapter"] --> A
+    C["deadline-budget context"] -.->|"remaining()"| A
+    D["Configuration check in CI"] --> A
 ```
 
 </div>
-<p class="bdr-diagram__caption">The core imports neither frameworks nor optional adapters. Extras add integrations around its contracts; a package whose purpose is SQLAlchemy integration can still depend on SQLAlchemy directly.</p>
+<p class="bdr-diagram__caption">Client configuration and the budget interface work without an HTTP library. The httpx adapter and deadline-budget are added where the application needs them.</p>
 </figure>
 <!-- /diagram:concept -->
 
-## The message is the feature
+## The message is the feature {#the-message-is-the-feature}
 
-An optional dependency is a feature with a failure mode, and the failure mode is a message. There are three shapes in the lab, and the difference between them is the difference between a two-minute problem and a twenty-minute one:
+Now let the orders API try to create its client in that same bare environment:
 
-```text
-    servicewright     ImportError: FastAPI support requires servicewright[fastapi]; install it.
-    redis-client-kit  ImportError: pydantic-settings not installed. Install
-                      redis-client-kit[settings] to use BaseRedisSettings.
-    grpc-client-kit   imported; HAS_DEADLINE_BUDGET = False
+```python
+from clientwright import build
+from warehouse_policy import warehouse_config
+
+build("httpx", warehouse_config("http://127.0.0.1:1"))
 ```
 
-The first two name the extra. That is the whole requirement: the user typed an import, and the answer tells them exactly what to install. A bare `ModuleNotFoundError: No module named 'starlette'` — which is what the first line said before today's fix — names a package the user never asked for and cannot obviously map back to an extra.
+The lab verifies that this raises `ImportError` and that the message names `clientwright[httpx]`. The reported error is:
 
-The third is a different and deliberate shape: a feature that degrades instead of failing. The deadline layer is a no-op when the deadline package is absent, announced with a warning and a flag anyone can check, because a client without deadline propagation is still a working client. That choice is only right when the degraded behaviour is *safe*; a security check that silently no-ops is the same pattern and a disaster.
+```text
+ImportError: httpx support requires clientwright[httpx]; install it.
+```
 
-The rule I use: **raise when the absence changes correctness, degrade when it changes only capability, and never make either one silent.**
+That tells the developer which integration to install. A complaint about an unfamiliar transitive package would leave them searching through the dependency tree. For comparison, bare `servicewright==0.13.1` imports successfully, but importing its FastAPI adapter raises an error naming `servicewright[fastapi]`.
 
-## When a hard dependency is right
+Test the public operation that needs the integration. Testing only `import clientwright.adapters.httpx` would miss this failure path because that package is lazy.
 
-Two rows in the table have real dependencies, and both are correct.
+## Install the extra and make the request {#install-extra}
 
-`sqlalchemy-foundation-kit` hard-depends on SQLAlchemy and asyncpg: nine distributions, 18 MB, 124 ms. It is a library *about* async SQLAlchemy against PostgreSQL; making the driver optional would be pretending the library has a use without it. `pg-partsmith` is the same argument with SQLAlchemy and Pydantic.
+Install `clientwright[httpx]==0.5.0` in the API's environment. An **extra** is a named set of additional dependencies, declared in package metadata. It does not switch a runtime flag or replace the core. Python's packaging guide describes how to declare [optional dependencies](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#dependencies-and-requirements).
 
-The test is not "can this be optional" but "is there a real user who wants this library without it". For a Redis client, there is no user who does not want redis-py. For a service lifecycle, there are many users who do not want FastAPI.
+The service can now use the same configuration to fetch stock:
 
-Where the answer is genuinely "some do, some do not", the shape is an extra plus a protocol: the core defines what it needs structurally, the extra ships an implementation. That is how metrics work across these libraries — the core takes anything with the right methods, and `[metrics]` adds one distribution and a Prometheus implementation for the services that want it.
+```python
+from clientwright import build
 
-## The checklist
+from warehouse_policy import warehouse_config
 
-- **Can a service use this library without dependency X?** If yes, X is an extra.
-- **Does the core import X at module level anywhere?** One drifted import turns an extra into a hard dependency, silently, and the only way to know is a test that imports each optional subpackage in an environment without it.
-- **Does the failure name the extra?** Test the message, not just the exception type.
-- **Is the degraded path safe?** If it is not, do not degrade.
-- **Would you accept this dependency in every service you own?** Because that is what declaring it means.
 
-## The pieces
+async def fetch_stock(base_url, deps=None):
+    async with build("httpx", warehouse_config(base_url), deps) as client:
+        response = await client.get("/stock/sku-42")
+        response.raise_for_status()
+        return response.json()
+```
 
-The measurements are across the [Bedrock Python](https://bedrock-python.github.io/) libraries, and the shape is the same in each: a core with no dependencies it can avoid, integrations behind extras, structural protocols instead of imports where a seam is enough. Two of the messages in this post were fixed today, because writing this post is what measured them.
+In the lab, a local HTTP server returns `{"available": 3}`. The check verifies the request path, response and propagated `X-Deadline-Ms` header. It also checks that `build()` returns an actual `httpx.AsyncClient` and that exiting its context closes it. FastAPI, aiohttp and requests remain absent from this environment.
 
-One distribution and 1.2 milliseconds, or twenty-three distributions and sixteen megabytes. The difference is whether the library decided for you.
+The important boundary is where we choose `"httpx"`. The configuration module imports only clientwright; the service creates and owns the transport client when it needs HTTP.
+
+## Accept a small interface for the remaining time {#protocols}
+
+Suppose the order lookup now has a 500 ms budget shared with other steps. Install `clientwright[httpx,deadline]==0.5.0`; the `[deadline]` extra adds [deadline-budget](https://github.com/bedrock-python/deadline-budget). We can pass its budget directly to the client:
+
+```python
+from clientwright import AdapterDeps
+from deadline_budget import BudgetContext
+
+from http_flow import fetch_stock
+
+
+async def fetch_with_budget(base_url):
+    budget = BudgetContext.create(total_seconds=0.5)
+    return await fetch_stock(base_url, AdapterDeps(deadline_source=budget))
+```
+
+clientwright's `DeadlineSource` protocol requires `remaining() -> float | None`. `BudgetContext` has that method, so it can provide the remaining time without inheriting a clientwright class. The core uses that interface without importing deadline-budget. In this example the budget belongs to one call; [the deadlines article](2026-09-06-timeouts-are-not-deadlines.md) covers sharing one across a larger operation.
+
+The local server receives at most 500 ms, even though the client configuration allows two seconds. Before installing the extra, importing our `budget_flow.py` fails because `deadline_budget` is absent. We deliberately keep that failure: once the application promises a shared deadline, silently falling back to a different time limit would change its behavior.
+
+An integration may be optional for a library while being required by a particular service.
+
+## What is actually installed {#what-each-library-costs}
+
+The lab starts with three separate environments, then adds extras to two of them. With Python 3.13 and the pinned versions, it checks these outcomes:
+
+| Installation | What the lab verifies |
+|---|---|
+| `deadline-budget==0.1.3` | Only this distribution; a budget works without HTTP or web packages |
+| `clientwright==0.5.0` | Only this distribution; configuration and capability discovery work |
+| `clientwright[httpx]==0.5.0` | Native HTTP client sends a request; deadline-budget is still absent |
+| `clientwright[httpx,deadline]==0.5.0` | The same request uses the 500 ms budget |
+| `servicewright==0.13.1` | Only this distribution; the FastAPI adapter reports its missing extra |
+| `servicewright[fastapi]==0.13.1` | The adapter imports and its entrypoint can be constructed |
+
+“One distribution” includes the library itself: it means zero additional installed packages. Extras add their transitive dependencies too. A constraints file pins versions for this lab; passing it with `--constraint` does not install every package it lists.
+
+The optional `--measure` mode records the full inventory, `site-packages` size in MiB and five fresh-process imports of the package root. It reports the median and all samples. That import measurement excludes starting Python, does not measure loading every adapter, and runs with the operating system's file cache in play. Use the report to compare your own environment, not as a promise about startup time on another machine.
+
+## Keep unrelated version constraints out of a service {#the-failure-mode-this-prevents}
+
+Suppose a shared lifecycle library required FastAPI in its base dependencies. A worker using only its lifecycle would still inherit FastAPI's dependency constraints. If another package required an incompatible version, the worker's environment could stop resolving even though the worker never serves HTTP.
+
+An extra narrows that problem to the applications which select it. It does **not** remove conflicts in the API environment where FastAPI is actually needed. Installing every extra everywhere would also give up this benefit.
+
+## When a dependency belongs in the base install {#when-a-hard-dependency-is-right}
+
+The test is whether the library has a useful scenario without that dependency. A configuration inspector can use clientwright without httpx. A lifecycle worker can use servicewright without FastAPI. A package whose purpose is SQLAlchemy integration can reasonably require SQLAlchemy.
+
+There is also a cost to optional integrations: import guards, more installation combinations to test, and documentation explaining which extra provides each operation. Extract a real boundary rather than turning every import into a plugin. [The composition example](2026-09-13-why-bedrock-python-libraries.md) shows how these choices meet inside one service.
+
+## Check both sides of the boundary {#the-checklist}
+
+Run the core checks in a clean environment, then check each integration after installing its extra. A developer environment containing every extra cannot demonstrate that a bare installation works. The lab's `footprint.py` can run in CI: a failed installation, unexpected import result or failed assertion makes it exit with an error.
+
+<div id="the-pieces" data-search-exclude></div>
+
+## Start with the core, add the integration you use {#conclusion}
+
+We used clientwright configuration without an HTTP library, saw a useful error at client creation, added httpx and then connected a shared deadline. The same boundary lets servicewright offer a lifecycle without forcing FastAPI into every consumer.
+
+Use `clientwright[httpx]` when the service needs an httpx client, add `[deadline]` when its calls must share a deadline-budget context, and choose `servicewright[fastapi]` for the FastAPI entrypoint. Keep the base install where the core is enough. The result is a dependency list that follows what the application actually does.
+
+## Run the example {#labs}
+
+From the website repository root, with uv installed:
+
+```bash
+cd docs/blog/lab/2026-09-07-zero-dependency-cores
+uv run --no-project --python 3.13 python footprint.py
+```
+
+The script creates its own temporary environments and a local HTTP server. It works with Windows and POSIX environment paths; Docker is not needed. Package downloads require network access. For inventories and measurements, use:
+
+```bash
+uv run --no-project --python 3.13 python footprint.py --measure --report footprint-results.json
+```
+
+The [lab README](../lab/2026-09-07-zero-dependency-cores/README.md) describes the files, assertions and measurement limits.

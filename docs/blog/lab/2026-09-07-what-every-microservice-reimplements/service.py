@@ -1,100 +1,132 @@
-"""One service, four libraries, no framework: lifecycle, sessions, an outbound client and a request deadline."""
+"""Compose four libraries around a small orders application."""
 
-import contextlib
+import asyncio
 import os
+from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
 
-from clientwright import AdapterDeps, ClientConfig, RetryConfig, TimeoutConfig, build
-from clientwright.contrib.deadline import AmbientDeadlineSource, use_budget
+import httpx
+from clientwright.contrib.deadline import use_budget
 from deadline_budget import BudgetContext
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, HTTPException
 from servicewright import AppSpec, Service, run_sync
 from servicewright.adapters.fastapi import FastApiEntrypoint, HttpConfig, UnitScopeDep
 from servicewright.adapters.health.postgres import PostgresHealthCheck
 from servicewright.adapters.warmers import PostgresWarmer
-from sqlalchemy import text
 from sqlalchemy_foundation_kit import AsyncSessionManager
+
+from adapters import HttpStockReader, SqlOrderStore, stock_client
+from orders import OrderMissing, OrderView, StockUnavailable
 
 
 @dataclass(frozen=True)
-class Settings:  # the shape the runtime reads; nothing to inherit
+class Settings:
+    database_url: str
+    warehouse_url: str
     logging: object | None = None
     metrics: object | None = None
     tracing: object | None = None
     error_tracking: object | None = None
 
-    def get_app_version(self) -> str:
+    def get_app_version(self):
         return "1.0.0"
 
 
-class Scope:  # what the runtime asks of a scope: `await scope.get(key)`
-    def __init__(self, **provides) -> None:
-        self.__dict__.update(provides)
+class Scope:
+    def __init__(self, db, view):
+        self.db, self.view = db, view
 
     async def get(self, key):
-        return getattr(self, key)
+        if key is OrderView:
+            return self.view
+        raise KeyError(key)
 
 
-class Container:  # your DI, in twelve lines: one app scope for singletons, one unit scope per request
-    def __init__(self, db: AsyncSessionManager, http) -> None:
-        self.db, self.http = db, http
+class Container:
+    def __init__(self, settings):
+        self.settings = settings
+        self.events = []
+        self.db = None
+        self.http = None
+        self.scope = None
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
     async def app_scope(self):
         try:
-            yield Scope(db=self.db, http=self.http)
-        finally:  # pools close here, after every entrypoint has drained
-            await self.http.aclose()
-            await self.db.aclose()
+            async with AsyncExitStack() as stack:
+                self.db = await stack.enter_async_context(
+                    AsyncSessionManager(
+                        self.settings.database_url,
+                        poolclass="async_adapted_queue",
+                    )
+                )
+                self.http = await stack.enter_async_context(
+                    stock_client(self.settings.warehouse_url)
+                )
+                view = OrderView(SqlOrderStore(self.db), HttpStockReader(self.http))
+                self.scope = Scope(self.db, view)
+                self.events.append("resources:open")
+                yield self.scope
+        finally:
+            self.events.append("resources:closed")
 
-    @contextlib.asynccontextmanager
+    @asynccontextmanager
     async def unit_scope(self, context=None):
-        async with self.db.get_session() as session:
-            yield Scope(session=session, http=self.http)
-
-
-def create_container(settings: Settings) -> Container:
-    db = AsyncSessionManager(os.environ["DATABASE_URL"], poolclass="async_adapted_queue")
-    http = build("httpx", ClientConfig(
-        service_name="orders",
-        base_url=os.environ["WAREHOUSE_URL"],
-        timeout=TimeoutConfig(total=5.0),
-        retry=RetryConfig(max_attempts=3),
-        deadline_header="X-Deadline-Ms",       # what is left of the request, on the wire
-        on_unsupported="strict",
-    ), AdapterDeps(deadline_source=AmbientDeadlineSource()))
-    return Container(db, http)
+        self.events.append("unit:open")
+        try:
+            yield Scope(self.db, self.scope.view)
+        finally:
+            self.events.append("unit:closed")
 
 
 router = APIRouter()
 
 
 @router.get("/orders/{order_id}")
-async def get_order(order_id: int, unit: UnitScopeDep, x_deadline_ms: int | None = Header(default=None)):
-    budget = BudgetContext.create(total_seconds=x_deadline_ms / 1000, safety_margin=0.1) if x_deadline_ms else None
-    with use_budget(budget):                    # every outbound call below is trimmed to it
-        session, http = await unit.get("session"), await unit.get("http")
-        known = (await session.execute(text("SELECT count(*) FROM orders WHERE id = :id"), {"id": order_id})).scalar()
-        stock = (await http.get(f"/stock/{order_id}")).json()
-    return {"order_id": order_id, "known": bool(known), "stock": stock}
+async def get_order(
+    order_id: int,
+    unit: UnitScopeDep,
+    x_deadline_ms: int = Header(default=800, ge=50, le=2000),
+):
+    budget = BudgetContext.create(total_seconds=x_deadline_ms / 1000)
+    try:
+        with use_budget(budget):
+            async with asyncio.timeout(budget.remaining()):
+                view = await unit.get(OrderView)
+                return await view.get(order_id)
+    except OrderMissing as error:
+        raise HTTPException(404, "Order not found") from error
+    except StockUnavailable as error:
+        raise HTTPException(503, "Stock is temporarily unavailable") from error
+    except (TimeoutError, httpx.TimeoutException) as error:
+        raise HTTPException(504, "Order lookup deadline exceeded") from error
 
 
-async def register_health(app_scope: Scope) -> None:
-    spec.health.add_check("postgres", PostgresHealthCheck(app_scope.db.session_maker))
+def build_service(settings, *, port=0):
+    container = Container(settings)
+    spec = AppSpec(
+        service_name="orders",
+        create_container=lambda _: container,
+        warmers_factory=lambda ctx: [PostgresWarmer(ctx.container.db, timeout=2)],
+        drain_delay_seconds=0.2,
+        drain_grace_seconds=3,
+        cleanup_timeout_seconds=2,
+    )
 
+    async def register_health(scope):
+        spec.health.add_check(
+            "postgres", PostgresHealthCheck(scope.db.session_maker, timeout=1)
+        )
 
-spec = AppSpec(
-    service_name="orders",
-    create_container=create_container,
-    warmers_factory=lambda ctx: [PostgresWarmer(ctx.container.db)],   # readiness waits for a real query
-    drain_delay_seconds=1.0,                                          # keep serving while endpoints propagate
-    drain_grace_seconds=10.0,
-    cleanup_timeout_seconds=5.0,
-)
-spec.lifecycle.add_pre_start_hook(register_health)
-service = Service(spec, entrypoints=[
-    FastApiEntrypoint(config=HttpConfig(host="127.0.0.1", port=int(os.environ.get("PORT", "8000"))), routers=(router,)),
-])
+    spec.lifecycle.add_pre_start_hook(register_health)
+    api = FastApiEntrypoint(
+        config=HttpConfig(host="127.0.0.1", port=port, graceful_timeout=2),
+        routers=(router,),
+    )
+    return Service(spec, entrypoints=[api]), api, container
+
 
 if __name__ == "__main__":
-    run_sync(service, Settings())
+    settings = Settings(os.environ["DATABASE_URL"], os.environ["WAREHOUSE_URL"])
+    service, _, _ = build_service(settings, port=int(os.environ.get("PORT", "8080")))
+    run_sync(service, settings)

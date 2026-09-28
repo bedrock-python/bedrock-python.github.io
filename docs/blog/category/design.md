@@ -10,6 +10,6 @@ Architecture and decisions behind the ecosystem.
 - **2026-09-13** — [Reliable event delivery with Outbox, Inbox and Kafka](../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md)
 - **2026-09-13** — [SQLAlchemy sessions and transactions: who owns commit](../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md)
 - **2026-09-13** — [The Python service lifecycle: startup, health checks and shutdown](../posts/2026-09-13-python-service-lifecycle.md)
+- **2026-09-07** — [A core without dependencies: install the integrations your service needs](../posts/2026-09-07-zero-dependency-cores.md)
 - **2026-09-07** — [Why gRPC interceptors break on streaming RPCs](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md)
-- **2026-09-07** — [Zero-dependency cores: why optional dependencies matter in infrastructure libraries](../posts/2026-09-07-zero-dependency-cores.md)
 - **2026-09-06** — [Timeouts are not deadlines: how latency budgets break across microservices](../posts/2026-09-06-timeouts-are-not-deadlines.md)
