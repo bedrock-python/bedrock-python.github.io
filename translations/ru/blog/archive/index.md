@@ -17,7 +17,7 @@
 - **2026-09-13** — [Как строить HTTP- и gRPC-клиенты для продакшена](../posts/2026-09-13-production-http-grpc-clients.md)
 - **2026-09-13** — [Надёжная доставка событий: Outbox, Inbox и сбои Kafka](../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md)
 - **2026-09-13** — [Обслуживание партиций PostgreSQL: от плана до проверенного архива](../posts/2026-09-13-postgresql-partition-maintenance.md)
-- **2026-09-13** — [Почему ревью с ИИ нужно контролировать](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
+- **2026-09-13** — [Почему замечания ИИ-ревью нужно проверять](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-09-13** — [Сессии и транзакции в SQLAlchemy: кто отвечает за commit](../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md)
 - **2026-09-07** — [Документация, по которой ИИ-агент может написать и проверить код](../posts/2026-09-07-documentation-for-ai-coding-agents.md)
 - **2026-09-07** — [Почему перехватчики gRPC ломаются на потоковых RPC](../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md)

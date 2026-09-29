@@ -17,7 +17,7 @@ Every post in the Bedrock Python blog, grouped by year.
 - **2026-09-13** — [SQLAlchemy sessions and transactions: who owns commit](../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md)
 - **2026-09-13** — [Testing Alembic migrations in CI](../posts/2026-09-13-testing-alembic-migrations-in-ci.md)
 - **2026-09-13** — [The Python service lifecycle: startup, health checks and shutdown](../posts/2026-09-13-python-service-lifecycle.md)
-- **2026-09-13** — [Why AI code review needs human oversight](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
+- **2026-09-13** — [Why AI review findings need verification](../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-09-13** — [Why I extract Python service infrastructure into libraries](../posts/2026-09-13-why-bedrock-python-libraries.md)
 - **2026-09-07** — [A core without dependencies: install the integrations your service needs](../posts/2026-09-07-zero-dependency-cores.md)
 - **2026-09-07** — [Documentation an AI coding agent can use and verify](../posts/2026-09-07-documentation-for-ai-coding-agents.md)

@@ -245,9 +245,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
-        <h3 class="bdr-entry__title">Why AI code review needs human oversight</h3>
-        <p class="bdr-entry__description">AI helped me find bugs in my own merge requests. The problems began when I started automating reviews of colleagues&#x27; code: useful findings arrived alongside incorrect suggestions…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>4 min read</span></div>
+        <h3 class="bdr-entry__title">Why AI review findings need verification</h3>
+        <p class="bdr-entry__description">Imagine a merge request that adds a retry when the warehouse times out while reserving stock. The change looks small, and the successful-path test passes.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

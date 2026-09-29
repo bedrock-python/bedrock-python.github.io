@@ -13,61 +13,121 @@ tags:
   - github
 ---
 
-# Why AI code review needs human oversight {#ai-code-review-should-not-be-fully-autonomous}
+# Why AI review findings need verification {#ai-code-review-should-not-be-fully-autonomous}
 
-<div class="bdr-post__hero" data-bdr-post="2026-09-13-ai-code-review-should-not-be-fully-autonomous" role="img" aria-label="AI suggests code review findings, a person checks them and decides what to do" markdown="0"></div>
+<div class="bdr-post__hero" data-bdr-post="2026-09-13-ai-code-review-should-not-be-fully-autonomous" role="img" aria-label="A review finding becomes a reproducible failure, a code change and a checked comment" markdown="0"></div>
 
-AI helped me find bugs in my own merge requests. The problems began when I started automating reviews of colleagues' code: useful findings arrived alongside incorrect suggestions and wordy comments. That experience convinced me that the main place for AI review is in the author's preparation, before handing an MR to the team.
+Imagine a merge request that adds a retry when the warehouse times out while reserving stock. The change looks small, and the successful-path test passes. But the warehouse may have created the reservation before its reply was lost. Retrying can create a second reservation for the same order.
+
+AI can help identify that scenario. Before turning it into a comment for a colleague, we need to check the warehouse contract, reproduce the effect and decide what the application should do instead. Here is that workflow with executable code. The example findings are written for this walkthrough; no model evaluation is being reported.
 
 <!-- more -->
 
-## From my own MRs to colleagues' code {#how-i-started}
+## Start with the change and its contract {#how-i-started}
 
-The first experiments worked well. I asked an agent to check my code, assessed its findings, and fixed the bugs it found. With the task's context fresh in my mind, evaluating its suggestions was relatively straightforward.
+Our orders service calls an application adapter, `warehouse.reserve(order_id)`. For this example, every accepted call creates a new reservation. The warehouse does not deduplicate by order ID, and a `TimeoutError` does not reveal whether the write happened. These are explicit assumptions for the example, not properties of every warehouse API.
 
-I then started using AI to review colleagues' MRs. I manually turned useful findings into discussion threads after checking the reasoning and editing the text. I understood every comment I published and could explain it to the author.
+The MR adds a second attempt:
 
-## What changed with automation {#the-pipeline}
+```python
+async def reserve_with_retry(order_id, warehouse):
+    for attempt in range(2):
+        try:
+            return await warehouse.reserve(order_id)
+        except TimeoutError:
+            if attempt == 1:
+                raise
+```
 
-When I automated the process, comment quality became a problem. The model produced lengthy explanations where a couple of sentences would have sufficed and suggested fixes without accounting for context. The output still needed work before publication.
+The lab uses a controlled substitute for the adapter, with failure points before and after the write. It lets us inspect the simulated side effect without waiting for a real network failure.
 
-That led to a separate *polish* stage: verify the findings, remove irrelevant ones, and shorten the rest. I used this approach in [mr-review](https://bedrock-python.github.io/mr-review/), too. The resulting reviews became more useful and easier to read.
+An instruction to review this change should include the adapter contract, the task's purpose and the relevant tests. Otherwise, the agent may assume that repeated calls are deduplicated or that a timeout guarantees no write. [The documentation article](2026-09-07-documentation-for-ai-coding-agents.md) shows how to supply that context.
 
-A colleague's process was fully autonomous. AI created threads and replied to discussions without anyone checking the messages first. Sometimes it posted a finding under his name and then automatically replied to the same thread. Watching this, I identified three problems.
+## Turn a suspected bug into a reproduction {#the-pipeline}
 
-## 1. The cost of an incorrect finding {#what-goes-wrong-when-the-bot-posts}
+The suspected failure is precise: the warehouse records a reservation, loses the reply, and receives the same operation again. In `WarehouseStub`, `"timeout_after_write"` appends the reservation before raising `TimeoutError`; `"ok"` returns the next reservation normally.
 
-A model may understand the code without knowing the team's plans, the task's scope, or the reasons behind earlier decisions. A suggested improvement, for example, might already be planned for a later stage. Without that context, even a technically sound comment can be misplaced.
+This check can run against either implementation:
 
-While a finding remains with the reviewer, they can check and dismiss it. Once it is published, that work passes to the MR's author: read it, investigate, explain the constraints, and close the discussion. The time saved by skipping verification becomes a colleague's expense.
+```python
+from reservation import ReservationOutcomeUnknown
+from warehouse_stub import WarehouseStub
 
-## 2. Trust between colleagues {#review-is-a-conversation}
 
-In a review, I expect a substantive conversation about the chosen approach, the alternatives considered, and anything I may have missed. That is how participants learn from each other.
+async def check_lost_reply(reserve):
+    warehouse = WarehouseStub("timeout_after_write", "ok")
+    try:
+        await reserve("order-42", warehouse)
+    except ReservationOutcomeUnknown:
+        pass
+    print(f"calls={len(warehouse.calls)}, reservations={len(warehouse.reservations)}")
+    assert len(warehouse.reservations) == 1, (
+        "One operation created duplicate reservations"
+    )
+```
 
-Long generated threads make that conversation harder. First, the author has to extract a specific concern from general commentary. If the reply to their explanation is also sent automatically, it becomes unclear whether their colleague is participating at all.
+With `reserve_with_retry`, it prints `calls=2, reservations=2` and fails the assertion. A successful second reply does not undo the first reservation. We now have an input condition, a path through the changed code and an observable result.
 
-I find that frustrating: the review feels like a formality, with the work of sorting through the output left to me. The wish to save time is understandable, but from the author's perspective, it can feel dismissive of their work.
+The fixture demonstrates this control flow under the stated contract. It does not prove that a particular deployed warehouse behaves this way; that still needs its API contract or an integration test. If the real operation is already deduplicated, the finding must be reconsidered.
 
-A comment under a reviewer's name implies that they have read the code, checked the finding, and are prepared to discuss it. Using AI does not remove that responsibility.
+## Separate bugs, incorrect claims and open questions {#what-goes-wrong-when-the-bot-posts}
 
-## 3. Losing knowledge of the project {#what-the-person-adds}
+A review pass might return several suggestions about this loop. They need different treatment:
 
-Reading colleagues' MRs teaches us which features are being added, how they work, and which tradeoffs the team has made. We will need that knowledge for future changes and debugging.
+| Proposed finding | What we can establish | Action |
+|---|---|---|
+| A lost reply can create two reservations | The reproduction shows two writes | Keep, with the scenario and consequence |
+| The loop retries forever | `range(2)` and a two-timeout test show two attempts | Dismiss the claim |
+| Add an idempotency key | Useful only if the receiving API supports the required semantics | Check the contract before proposing a fix |
+| Rename `attempt` or adjust formatting | No behavior problem established | Leave to project conventions and tooling |
 
-If the entire review is delegated to an agent, the implementation may remain familiar only to its author. While that person is around, this can go unnoticed. If they leave or become unavailable, everyone else has to reconstruct the context.
+An incorrect finding costs someone time even if it sounds careful. Once it becomes a discussion thread, the author has to investigate and explain it. Checking it while it is still a draft keeps that work with the person preparing the review.
 
-Participating in reviews helps distribute knowledge across the team. That requires reading code and asking questions; an agent's report alone is insufficient.
+## Publish a short comment you can defend {#review-is-a-conversation}
 
-## AI review before requesting peer review {#the-copilot-not-the-gatekeeper}
+A useful comment points at the retry branch and states the condition and effect:
 
-**I propose making AI review a routine part of preparing changes, owned by the author.** If an agent can find a problem before the team discusses the code, the developer can run that check themselves. They know the task's purpose and can assess findings and fix bugs sooner.
+> If the warehouse creates the reservation and then loses the reply, this retry creates another reservation for the same order. `reproduce.py before` produces two reservations. Could we avoid the automatic retry until the API provides a deduplication contract?
 
-In the workflow, this belongs alongside pre-commit, linters, and tests. The distinction is that the model's conclusions require judgement: each finding needs verification, and an absence of findings does not guarantee correctness. The MR can already exist as a draft—the check should precede the request for peer review.
+That is enough to start a technical conversation. It does not need a general lecture about distributed systems. If the author answers that the real warehouse deduplicates requests, the next step is to inspect that behavior and update or withdraw the finding.
+
+Someone posting under their name should be able to explain the comment and assess that reply. Automatically continuing the thread without understanding the new context can keep an already-resolved objection alive.
+
+## Choose the behavior after the timeout {#what-the-person-adds}
+
+For this example, the narrow correction is to stop retrying automatically and preserve the unknown outcome:
+
+```python
+class ReservationOutcomeUnknown(RuntimeError):
+    def __init__(self, order_id):
+        self.order_id = order_id
+        super().__init__(f"Reservation outcome is unknown for order {order_id}")
+
+
+async def reserve_once(order_id, warehouse):
+    try:
+        return await warehouse.reserve(order_id)
+    except TimeoutError as error:
+        raise ReservationOutcomeUnknown(order_id) from error
+```
+
+This does not say that the reservation failed. The caller receives the order ID and the original exception as the cause. It must handle the uncertain result through the application's status-check or reconciliation process, rather than treating it as success or blindly retrying this new exception at a higher layer.
+
+The same reproduction now prints `calls=1, reservations=1` and passes. Tests also cover a timeout before the write: it yields the same public unknown-outcome error, but no reservation exists. The client cannot distinguish those two cases from the timeout alone.
+
+Deduplication may be the right longer-term design. A new header is not enough: the receiving service has to enforce the contract, and retries must use the same operation identity. That is a separate decision, covered in [the idempotency article](2026-09-13-idempotency-in-apis-and-background-jobs.md).
+
+This is where peer review adds project knowledge. The team needs to agree who resolves an unknown reservation, how the order state changes and what the user sees. A local reproduction establishes the bug; it does not choose those product behaviors.
+
+## Run AI review while preparing the MR {#the-copilot-not-the-gatekeeper}
+
+I use AI review as part of the author's preparation: run the normal checks, examine the findings, reproduce plausible failures, fix confirmed problems and then request peer review. Reviewers can also use an agent to explore code, while keeping responsibility for the comments they publish.
+
+[mr-review](https://github.com/bedrock-python/mr-review#how-it-works) supports a workflow of **Brief → Dispatch → Polish → Post**. Brief supplies review context; Dispatch obtains findings; Polish lets the user edit, keep or dismiss them; Post publishes the selected comments. In the example above, reproducing the lost reply and rejecting the infinite-loop claim belong before publication. Editing wording alone would not verify either claim.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>AI checks before peer review</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">THE IDEA, VISUALIZED</span><strong>From a finding to a checked comment</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -83,29 +143,45 @@ config:
     rankSpacing: 32
 ---
 flowchart TD
-    accTitle: AI checks before peer review
-    accDescr: The author runs AI review and assesses its findings before handing the MR to colleagues. The team reads the code and discusses decisions personally.
-    A["Author prepares changes"] --> B["Runs AI review"]
-    B --> C["Checks findings and fixes code"]
-    C --> D["Completes checks: linters and tests"]
-    D --> E["Requests peer review"]
-    E --> F["Colleagues read code and discuss decisions"]
+    accTitle: From a finding to a checked comment
+    accDescr: The author checks the finding, reproduces the failure and fixes the code. After another check, colleagues discuss the current change and application behavior.
+    A["Change and context"] --> B["AI findings"]
+    B --> C["Verification and reproduction"]
+    C --> D["Code correction"]
+    D --> E["Run checks again"]
+    E --> F["Peer review and discussion"]
 ```
 
 </div>
-<p class="bdr-diagram__caption">The author runs AI review and assesses its findings before handing the MR to colleagues. The team reads the code and discusses decisions personally.</p>
+<p class="bdr-diagram__caption">The author checks the finding, reproduces the failure and fixes the code. After another check, colleagues discuss the current change and application behavior.</p>
 </figure>
 <!-- /diagram:concept -->
 
-The team then reads the code and discusses the decisions. Reviewers can also consult AI if it helps their analysis, but publishing a comment or reply should remain their own decision.
+An AI pass with no findings does not prove the MR is correct. Its value is in the confirmed problems it helps uncover. Colleagues still need to read the implementation and discuss decisions, so knowledge of the new behavior is shared beyond its author.
 
-## Team agreements {#what-it-costs}
+## Recheck a finding when the code changes {#what-it-costs}
 
-For this process, I would agree on a few rules:
+After replacing `reserve_with_retry`, a comment describing that old loop is no longer ready to publish. Record which revision was reviewed, compare the updated diff and rerun the relevant reproduction. Check that the cited line and claimed behavior still exist. A substantial change may justify another review pass; an unchanged comment does not become valid merely because the tool can post it.
 
-- **Timing.** Which changes require AI review, and which revisions warrant another pass.
-- **Context and focus.** Supply the task description, constraints, and project rules. Check logic, error handling, and gaps in tests; leave formatting to linters.
-- **Handling findings.** The author verifies the findings and fixes confirmed problems before requesting peer review.
-- **Publication.** Every comment or reply sent under an employee's name must be read and checked by that person.
+Teams can make this routine with three agreements: provide the task and contracts, verify each finding before sending it, and have the person publishing a comment handle the discussion. Also decide where automated checks fit in the MR process. The policy should make responsibility clear without turning every style preference into a blocking issue.
 
-By the time the author requests review, they should have worked through the AI findings. That leaves colleagues' time for evaluating decisions, sharing experience, and understanding the project—the work that gives team review its value.
+## Run the example {#labs}
+
+With uv installed, run from the website repository root:
+
+```bash
+cd docs/blog/lab/2026-09-13-ai-code-review-should-not-be-fully-autonomous
+uv run --no-project --python 3.13 python reproduce.py before
+uv run --no-project --python 3.13 python reproduce.py after
+uv run --no-project --python 3.13 python test_review.py
+```
+
+The `before` command intentionally exits with an assertion error. `after` passes, and the seven-test suite checks successful calls, both timeout positions, bounded retries and unrelated errors. The lab uses Python 3.13 and the standard library; it calls no model, contacts no warehouse and posts no review comments.
+
+The [lab README](../lab/2026-09-13-ai-code-review-should-not-be-fully-autonomous/README.md) explains the assumptions and results.
+
+## Keep the evidence with the finding {#conclusion}
+
+We took a possible finding through a failing reproduction, a focused fix and a passing check. Along the way, one claim was rejected and a larger design question was left for the team. That is useful work to finish before asking a colleague to respond.
+
+Use mr-review to collect and refine findings, and attach the relevant code and test result to the comments you keep. Let AI help you find the next question; take responsibility for checking the answer, publishing the comment and discussing it with the author.

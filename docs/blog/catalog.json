@@ -273,8 +273,8 @@
     },
     {
       "id": "2026-09-13-ai-code-review-should-not-be-fully-autonomous",
-      "title": "Why AI code review needs human oversight",
-      "description": "AI helped me find bugs in my own merge requests. The problems began when I started automating reviews of colleagues' code: useful findings arrived alongside incorrect suggestions…",
+      "title": "Why AI review findings need verification",
+      "description": "Imagine a merge request that adds a retry when the warehouse times out while reserving stock. The change looks small, and the successful-path test passes.",
       "url": "posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/",
       "date": "2026-09-13",
       "categories": [
@@ -291,8 +291,8 @@
       "topics": [
         "engineering"
       ],
-      "minutes": 4,
-      "search": "Why AI code review needs human oversight AI helped me find bugs in my own merge requests. The problems began when I started automating reviews of colleagues' code: useful findings arrived alongside incorrect suggestions… mr-review code-review llm ai-agents gitlab github Tools Python & tooling From my own MRs to colleagues' code What changed with automation 1. The cost of an incorrect finding 2. Trust between colleagues 3. Losing knowledge of the project AI review before requesting peer review Team agreements"
+      "minutes": 7,
+      "search": "Why AI review findings need verification Imagine a merge request that adds a retry when the warehouse times out while reserving stock. The change looks small, and the successful-path test passes. mr-review code-review llm ai-agents gitlab github Tools Python & tooling Start with the change and its contract Turn a suspected bug into a reproduction Separate bugs, incorrect claims and open questions Publish a short comment you can defend Choose the behavior after the timeout Run AI review while preparing the MR Recheck a finding when the code changes Run the example Keep the evidence with the finding"
     },
     {
       "id": "2026-09-13-why-bedrock-python-libraries",

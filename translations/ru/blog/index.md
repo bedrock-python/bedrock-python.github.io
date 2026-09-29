@@ -245,9 +245,9 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Инструменты</div>
-        <h3 class="bdr-entry__title">Почему ревью с ИИ нужно контролировать</h3>
-        <p class="bdr-entry__description">ИИ помогал мне находить ошибки в собственных merge request. Проблемы начались, когда я стал автоматизировать ревью кода коллег: полезные находки смешивались с неверными…</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>4 мин на чтение</span></div>
+        <h3 class="bdr-entry__title">Почему замечания ИИ-ревью нужно проверять</h3>
+        <p class="bdr-entry__description">Представим merge request, который добавляет повтор запроса на резервирование товара после таймаута склада. Изменение небольшое, тест успешного вызова проходит.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>6 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
