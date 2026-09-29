@@ -330,9 +330,9 @@ The examples were checked with Python 3.13, `servicewright==0.13.1`, `fastapi==0
 
 ## What to use in your service {#conclusion}
 
-We started HTTP and a worker from one resource setup, rejected a failed startup, kept liveness green during a Redis outage, and tested both completion and cancellation of an active request. Each case has an observable result instead of a promise to “shut down gracefully.”
+HTTP and the worker share one store. A warmup failure prevents the server from starting; a Redis outage leaves the process alive. During shutdown, the store closes after the active request completes or is cancelled. The lab checks this order using a request that starts before shutdown.
 
-Use our [servicewright](https://bedrock-python.github.io/servicewright/) library when several entrypoints need the same lifecycle: `AppSpec` owns the shared configuration, adapters handle their transports, and your code defines required dependencies and work limits. Keep FastAPI lifespan for an HTTP-only application when it already covers your needs. The useful next step is to run the lab's shutdown check against one of your real handlers and its actual resources.
+Use our [servicewright](https://bedrock-python.github.io/servicewright/) library when several entrypoints need the same lifecycle: `AppSpec` owns the shared configuration, adapters handle their transports, and your code defines required dependencies and work limits. Keep FastAPI lifespan for an HTTP-only application when it already covers your needs. Run the lab's shutdown check against one of your real handlers and its actual resources.
 
 ## Examples and labs {#labs}
 

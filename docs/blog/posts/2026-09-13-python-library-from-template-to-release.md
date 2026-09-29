@@ -305,11 +305,11 @@ on:
 
 [`workflow_run`](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run) lets the publishing workflow react to that completion. The template then checks the Release Please result, looks for a release tag and checks out that tag. This is **not a check that CI passed for the tagged commit**. The template also rewrites the version file from the tag before building. Before using this flow for a real release, require successful CI for that exact commit and add the tag/version check before the rewrite, or replace the rewrite with the check.
 
-There is another first-release detail: [a PR created with the default `GITHUB_TOKEN` does not trigger ordinary PR workflows](https://github.com/googleapis/release-please-action#other-actions-on-release-please-prs). Plan how the release PR will receive its required checks—for example, use a GitHub App token for Release Please. The local lab does not verify those repository settings, OIDC or a PyPI upload.
+There is another first-release detail: [a PR created with the default `GITHUB_TOKEN` does not trigger ordinary PR workflows](https://github.com/googleapis/release-please-action#other-actions-on-release-please-prs). Plan how the release PR will receive its required checks. For example, use a GitHub App token for Release Please. The local lab does not verify those repository settings, OIDC or a PyPI upload.
 
 ## What we have at the end {#conclusion}
 
-We took one reporting rule through project generation, behavior tests, deliberate failures, CI result checks, packaging and two clean installations. There is now useful behavior to release, plus evidence that the package carries it to a consumer.
+The `report-periods` project now includes a month-boundary function, edge-case tests and installation checks for both wheel and sdist. Deliberate failures verified that CI catches errors; clean environments confirmed that the built package works.
 
 Use Bedrock's [python-library-template](https://github.com/bedrock-python/python-library-template) to reuse packaging, test and release configuration across libraries. Add a real consumer scenario and an installation check to each project, then configure and verify its publication path. Each library can keep its own version and release schedule.
 

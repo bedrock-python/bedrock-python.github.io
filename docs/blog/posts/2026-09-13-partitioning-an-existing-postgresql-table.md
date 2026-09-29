@@ -282,7 +282,7 @@ CONFIG = TablePartitionConfig(
 )
 ```
 
-`toolkit.service.ensure_partitions(CONFIG, months)` creates the four explicit July–October 2026 ranges. To read August by the partition key, encode both boundaries; this function also imports `datetime` and `UTC` from `datetime`:
+`toolkit.service.ensure_partitions(CONFIG, months)` creates the four explicit ranges from July through October 2026. To read August by the partition key, encode both boundaries; this function also imports `datetime` and `UTC` from `datetime`:
 
 ```python
 async def august_events(connection):
@@ -327,5 +327,5 @@ Use [pg-partsmith](https://bedrock-python.github.io/pg-partsmith/) to create ran
 
 ## Examples and labs {#labs}
 
-- [Lab: partitioning a live table](../lab/2026-09-07-partition-existing-table/README.md) — the updated rehearsal uses a maintenance window and checks intermediate visibility.
+- [Lab: partitioning a live table](../lab/2026-09-07-partition-existing-table/README.md): the rehearsal uses a maintenance window and checks intermediate visibility.
 - [Lab: UUIDv7 as a PostgreSQL partition key](../lab/2026-09-07-uuidv7-partition-key/README.md)

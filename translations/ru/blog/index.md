@@ -91,7 +91,7 @@ hide:
         <div class="bdr-entry__eyebrow">Kafka и обмен сообщениями <span>·</span> Руководства</div>
         <h3 class="bdr-entry__title">Kafka в Python: отправка, обработка и остановка сервиса</h3>
         <p class="bdr-entry__description">Представим сервис доставки, который отправляет статусы посылок в Kafka. Сервис отслеживания читает их и обновляет карточку заказа.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>8 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -163,7 +163,7 @@ hide:
         <div class="bdr-entry__eyebrow">Redis и идемпотентность <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Идемпотентность в API и фоновых задачах</h3>
         <p class="bdr-entry__description">Представим сервис заказов. Покупатель оплачивает заказ на 1999 копеек, платёж проходит, но HTTP-соединение обрывается до получения ответа. Клиент повторяет запрос.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>6 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-09-13">13 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -270,7 +270,7 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python и инструменты <span>·</span> Об экосистеме</div>
         <h3 class="bdr-entry__title">Документация, по которой ИИ-агент может написать и проверить код</h3>
-        <p class="bdr-entry__description">Представим, что мы просим ИИ-агента добавить расчёт доставки в сервис заказов. Сначала нужно проверить остаток товара, затем рассчитать доставку: на оба шага отведено 600 мс, на…</p>
+        <p class="bdr-entry__description">Представим, что мы просим ИИ-агента добавить расчёт доставки в сервис заказов. Сначала нужно проверить остаток товара, затем рассчитать доставку: на оба шага отведено 600 мс, при…</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-07">7 сент. 2026</time><span>·</span><span>6 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
@@ -305,7 +305,7 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-09-06-timeouts-are-not-deadlines/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP и отказоустойчивость <span>·</span> Архитектура</div>
-        <h3 class="bdr-entry__title">Таймаут — не дедлайн: как теряется бюджет времени в микросервисах</h3>
+        <h3 class="bdr-entry__title">Почему таймаут не заменяет дедлайн в микросервисах</h3>
         <p class="bdr-entry__description">Представим сервис Orders: он получает остатки по HTTP, затем резервирует товар и проводит оплату через gRPC.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-06">6 сент. 2026</time><span>·</span><span>7 мин на чтение</span></div>
       </div>

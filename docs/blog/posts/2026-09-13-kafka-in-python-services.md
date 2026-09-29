@@ -133,7 +133,7 @@ async def consume_batches(consumer, process, stop):
                     await consumer.commit({partition: messages[-1].offset + 1})
 ```
 
-Each poll returns at most five records across all partitions. The ten-second timeout covers processing **and commits for the fetched batch**. A commit is made separately for each partition after its records succeed. Completing offsets 0–4 stores offset **5**, the next record to read.
+Each poll returns at most five records across all partitions. The ten-second timeout covers processing **and commits for the fetched batch**. A commit is made separately for each partition after its records succeed. Completing offsets 0 through 4 stores offset **5**, the next record to read.
 
 If processing raises or times out, the loop exits. It does not continue and commit past the failed record. Previously committed partitions keep their progress; the unfinished partition may replay records whose effects already happened. Our revision check tolerates those repeats.
 
@@ -142,7 +142,7 @@ The lab checks these outcomes on a single partition:
 | Scenario | Processed offsets | Committed offset | Replacement starts at |
 | --- | --- | --- | --- |
 | Handler fails on the third record | 0, 1 | None | 0 |
-| All five records finish, manual commit | 0–4 | 5 | 5 |
+| All five records finish, manual commit | 0-4 | 5 | 5 |
 | Auto-commit runs after fetching five but processing two | 0, 1 | 5 | 5 |
 
 The last row is why auto-commit is wrong for this batch-processing contract: it can move the recovery point beyond work that has not happened. Those records remain in Kafka, but an ordinary group restart will skip them.

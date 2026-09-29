@@ -172,8 +172,8 @@ The lab holds the first call inside its action until the second reaches the coor
 | `in_flight` | What happens to the second request | Charges |
 |---|---|---|
 | `"run"` | Executes the action too | 2 |
-| `"wait"` — the default | Waits for the first result | 1 |
-| `"raise"` — our API | Receives `IdempotencyInProgressError` | 1 |
+| `"wait"` (the default) | Waits for the first result | 1 |
+| `"raise"` (our API) | Receives `IdempotencyInProgressError` | 1 |
 
 In `wait` mode the lease duration bounds waiting; set the request's total deadline separately. Use `run` only where concurrent duplicate actions are acceptable.
 

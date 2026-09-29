@@ -182,6 +182,6 @@ The [lab README](../lab/2026-09-13-ai-code-review-should-not-be-fully-autonomous
 
 ## Keep the evidence with the finding {#conclusion}
 
-We took a possible finding through a failing reproduction, a focused fix and a passing check. Along the way, one claim was rejected and a larger design question was left for the team. That is useful work to finish before asking a colleague to respond.
+The test confirmed the duplicate reservation and checked the fix. The infinite-loop claim was wrong, while the idempotency proposal needed more information about the warehouse API. The MR author now has a specific bug to discuss and an example that reproduces it.
 
-Use mr-review to collect and refine findings, and attach the relevant code and test result to the comments you keep. Let AI help you find the next question; take responsibility for checking the answer, publishing the comment and discussing it with the author.
+Use mr-review to collect and refine findings, and attach the relevant code and test result to the comments you keep. Before publishing a comment, verify it and be ready to discuss the result with the author.

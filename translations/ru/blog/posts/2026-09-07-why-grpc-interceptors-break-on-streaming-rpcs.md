@@ -24,7 +24,7 @@ tags:
 
 ## Какой сервис будем вызывать {#reporting-service}
 
-У нашего сервиса четыре операции — по одной на каждый вид RPC. В обозначении вида, например unary-stream, первая часть описывает запрос, вторая — ответ:
+У нашего сервиса четыре операции, по одной на каждый вид RPC. В обозначении RPC, например unary-stream, первая часть описывает запрос, вторая описывает ответ:
 
 | Метод | Вид RPC | Что делает воркер |
 |---|---|---|
@@ -55,7 +55,7 @@ async def report_rows(request, context):
         yield row
 ```
 
-На запрос `b"ok"` приходят пять строк. На `b"fail"` — две строки, затем `UNAVAILABLE`. Значение `b"fast"` убирает паузы для отдельной проверки длительности. Сервис также передаёт завершающие метаданные `report-id: r-42`.
+На запрос `b"ok"` приходят пять строк. На `b"fail"` сервер отдаёт две строки, затем `UNAVAILABLE`. Значение `b"fast"` убирает паузы для отдельной проверки длительности. Сервис также передаёт завершающие метаданные `report-id: r-42`.
 
 ## Сначала убеждаемся, что перехватчик вызывается {#the-interceptor-that-is-registered-for-one-kind-out-of-four}
 
@@ -100,7 +100,7 @@ class EverythingInterceptor(
 
 ## Таймер вокруг continuation измеряет подготовку {#what-a-unary-interceptor-measures-on-a-stream}
 
-У этого перехватчика только один базовый класс — для потокового ответа. С регистрацией всё правильно, а с измерением по-прежнему нет:
+Этот перехватчик наследует только класс для потокового ответа. С регистрацией всё правильно, а с измерением по-прежнему нет:
 
 ```python
 import asyncio
@@ -131,11 +131,11 @@ class SetupTimer(grpc.aio.UnaryStreamClientInterceptor):
 
 Практикум проверяет: `entered == 1`, а к приходу первой строки событие `finished` уже установлено. При сбое воркер получает две строки и `UNAVAILABLE`, но `errors` остаётся равным нулю.
 
-[`continuation`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.UnaryStreamClientInterceptor) возвращает объект вызова, не дожидаясь завершения потока. Сетевая ошибка появляется позже, внутри `async for`. Это различие важно и для обычного unary-перехватчика: получить объект вызова — ещё не значит дождаться его ответа.
+[`continuation`](https://grpc.github.io/grpc/python/grpc_asyncio.html#grpc.aio.UnaryStreamClientInterceptor) возвращает объект вызова, не дожидаясь завершения потока. Сетевая ошибка появляется позже, внутри `async for`. Это различие важно и для обычного unary-перехватчика: объект вызова можно получить раньше ответа.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
-<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Создать вызов — ещё не завершить RPC</strong></figcaption>
+<figcaption><span class="bdr-diagram__eyebrow">ИДЕЯ В СХЕМЕ</span><strong>Вызов создан, но RPC ещё не завершён</strong></figcaption>
 <div class="bdr-diagram__viewport" markdown="1" data-search-exclude>
 
 ```mermaid
@@ -151,7 +151,7 @@ config:
     rankSpacing: 32
 ---
 flowchart TD
-    accTitle: Создать вызов — ещё не завершить RPC
+    accTitle: Вызов создан, но RPC ещё не завершён
     accDescr: Обёртка вокруг continuation завершает измерение после создания call. Перехватчик around_call получает итог RPC: успех, ошибку или отмену.
     A["Создан call"]
     B["Читаем элементы"]
@@ -204,7 +204,7 @@ class IterationTimer(grpc.aio.UnaryStreamClientInterceptor):
 
 ## Один around_call для четырёх видов RPC {#the-four-kinds-one-implementation}
 
-В Bedrock [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) для этого есть `AsyncAroundClientInterceptor`. Его метод `around_call()` делает один `yield`: до него выполняется подготовка, после — обработка результата. В практикуме складываем результаты в очередь, чтобы явно дождаться завершения, а не подбирать задержку:
+В Bedrock [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) для этого есть `AsyncAroundClientInterceptor`. Его метод `around_call()` делает один `yield`: до него выполняется подготовка, после обрабатывается результат. В практикуме складываем результаты в очередь, чтобы явно дождаться завершения, а не подбирать задержку:
 
 ```python
 from contextvars import ContextVar
@@ -351,6 +351,6 @@ uv run --no-project --python 3.13 --with-requirements requirements.txt python pr
 
 ## Что использовать в своём сервисе {#conclusion}
 
-Мы проследили путь отчёта от создания вызова до чтения, ошибки посреди потока и досрочной отмены. Перехватчик должен запускаться для нужного вида RPC и видеть его результат. Вызывающий код должен управлять чтением и отменой.
+Для потокового отчёта мало измерить создание вызова: перехватчик должен видеть завершение RPC и ошибку во время чтения. Вызывающий код отвечает за цикл чтения и отмену, если отчёт больше не нужен.
 
 Используйте [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit), если общий слой логирования, метрик или трассировки должен работать для всех четырёх видов RPC. `around_call` и `flatten_interceptors` позволяют написать его один раз. Проверяйте его на сценарии потребителя, как в этом практикуме: с частичным чтением и ошибкой после первого элемента. Владение каналами, дедлайны и повторы разобраны в статье [«HTTP- и gRPC-клиенты для продакшена»](2026-09-13-production-http-grpc-clients.md).

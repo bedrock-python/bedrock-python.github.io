@@ -334,7 +334,7 @@ Verified with Python 3.13, omni-box 0.3.0, aiokafka 0.14.0, SQLAlchemy 2.0.54 an
 
 ## Put the two patterns to work {#conclusion}
 
-We followed an order through a missing publication, repeated delivery, handler failure and broker outage. **Outbox saves the event with the order; Inbox saves the processing result with the invoice.** Stable IDs and offset commits after database commit connect those two boundaries.
+**Outbox saves the event with the order; Inbox saves the processing result with the invoice.** Retries preserve the event ID, and offsets are committed only after the database commit. Delivery can then resume after a failure while preserving a single invoice.
 
 Use our [omni-box](https://bedrock-python.github.io/omni-box/) library when your service needs this PostgreSQL-to-Kafka flow. It supplies the repositories, relay and `InboxConsumerRunner` shown here; start with the runnable example, then choose transaction boundaries, replay retention and failure handling for your own operation.
 

@@ -308,7 +308,7 @@ Successful HTTP responses alone do not describe the outage. Track Redis errors, 
 
 ## Conclusion {#conclusion}
 
-We worked through three operations in one shop. The catalog can survive a cache outage while the database can support the fallback. Login stops when its limit cannot be checked. Payment does not start without admission, and the provider's separate guarantee prevents another charge. Health checks expose these differences so the service can act on them.
+In this shop, the catalog can survive a cache outage while the database can support the fallback. Login stops when its limit cannot be checked. Payment does not start without admission, and the provider's separate guarantee prevents another charge. A successful `PING` alone cannot tell you which routes still work.
 
 Use [redis-client-kit](https://bedrock-python.github.io/redis-client-kit/) to build a client with explicit connection, timeout and retry settings, and to add a `PING` or write probe. Define route behavior in the application and verify it against your failure scenarios. Start by running the labs below and replacing their test doubles with your adapters.
 

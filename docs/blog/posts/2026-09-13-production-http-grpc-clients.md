@@ -161,9 +161,9 @@ RETRIES = RetryConfig(
 )
 ```
 
-With no `Retry-After`, the first delay is 80–120 ms and the second is 160–240 ms. With `Retry-After: 1`, the policy uses a one-second delay instead. If that delay cannot fit the remaining deadline, the lab observes the original 503 response and one server request: there is no extra attempt and no need to wait until the deadline expires. The library also caps `Retry-After` with `retry_after_max`, which defaults to 60 seconds; consider that cap when adopting an upstream's contract.
+With no `Retry-After`, the first delay is 80 to 120 ms and the second is 160 to 240 ms. With `Retry-After: 1`, the policy uses a one-second delay instead. If that delay cannot fit the remaining deadline, the lab observes the original 503 response and one server request: there is no extra attempt and no need to wait until the deadline expires. The library also caps `Retry-After` with `retry_after_max`, which defaults to 60 seconds; consider that cap when adopting an upstream's contract.
 
-`budget_ratio=0.1` applies to extra attempts for an origin — the URL's scheme, host and port — within the client runtime. In version 0.5.0 a fresh origin starts with ten retry tokens, then logical calls replenish the bucket at the configured ratio. It therefore permits an initial burst; it is not a strict ten-percent cap for every batch of calls.
+`budget_ratio=0.1` applies to extra attempts for an origin within the client runtime. The origin is the URL's scheme, host and port. In version 0.5.0 a fresh origin starts with ten retry tokens, then logical calls replenish the bucket at the configured ratio. It therefore permits an initial burst; it is not a strict ten-percent cap for every batch of calls.
 
 The [budget lab](../lab/2026-09-07-retry-budget/README.md) makes 50 sequential calls to an endpoint that always returns 503, with the breaker disabled:
 
@@ -356,7 +356,7 @@ All nine snippets are extracted from the runnable labs and checked with Python 3
 
 ## Choose policies for the operations you actually call {#conclusion}
 
-We read stock, retried a temporary failure, recovered a payment result without repeating its effect, isolated an unavailable origin and connected two gRPC clients with different retry rules. Each setting now has a visible consequence: attempts sent, time spent or effects recorded.
+We read stock, retried a temporary failure, recovered a payment result without repeating its effect, isolated an unavailable origin and connected two gRPC clients with different retry rules. When choosing settings, check the number of attempts, elapsed time and records left after a failure.
 
 Use our [clientwright](https://bedrock-python.github.io/clientwright/) library for HTTP policy while keeping native SDK interfaces, and [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/) for gRPC channels and interceptors. Start with a total time limit and the operations that are safe to repeat. Then add the retry budget and breaker, checking them against a failing test dependency before using the configuration in your service.
 

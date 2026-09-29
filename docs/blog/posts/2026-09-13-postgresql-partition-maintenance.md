@@ -16,7 +16,7 @@ tags:
 
 Imagine an analytics service with monthly `events` partitions. Reports need the current month and the previous two. Writers need another two months prepared ahead. An old table may be deleted only seven days after detachment and after its archive has been verified. A `receipts` table still references some events.
 
-Follow one maintenance run on September 15, 2026: April–September exist, but October does not. We will inspect the plan, see a foreign key prevent detachment, and check what survives when archiving fails. The examples run against PostgreSQL 17 and pg-partsmith 1.5.1, with Python dependencies pinned in the labs.
+Follow one maintenance run on September 15, 2026: partitions exist from April through September, but October is missing. We will inspect the plan, see a foreign key prevent detachment, and check what survives when archiving fails. The examples run against PostgreSQL 17 and pg-partsmith 1.5.1, with Python dependencies pinned in the labs.
 
 <!-- more -->
 
@@ -294,7 +294,7 @@ Each script uses a disposable container. The first fixes the planning date for m
 
 ## Bring the checks into your service {#conclusion}
 
-We created future ranges, preserved a referenced partition, exercised archive failure and retry, restored deleted rows from a file, and handed maintenance over from another tool. Each scenario supplied a concrete check of the outcome.
+We created future ranges, preserved a referenced partition, exercised archive failure and retry, restored deleted rows from a file, and handed maintenance over from another tool.
 
 Use [pg-partsmith](https://bedrock-python.github.io/pg-partsmith/) to plan and execute creation, detachment, and deletion policies. Connect your archive through `before_drop`, check `error` together with `issues`, and schedule maintenance well before the next period. Define retention using actual dates so the data that remains available to your service is clear.
 

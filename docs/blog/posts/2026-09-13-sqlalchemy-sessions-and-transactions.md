@@ -324,7 +324,7 @@ If the response to `COMMIT` itself is lost, the application may not know the out
 
 ## Conclusion {#conclusion}
 
-We moved from two independent commits to an operation that saves the order and event together. Then we moved external waiting outside the transaction, gave concurrent tasks separate sessions, allowed a partial rollback for an optional step and checked database-enforced read-only behavior.
+The order and event now commit together, and waiting for the shipping quote holds no database connection. Concurrent tasks use separate sessions; the optional step uses a savepoint. An attempted PostgreSQL write verifies the read-only mode.
 
 Use [sqlalchemy-foundation-kit](https://bedrock-python.github.io/sqlalchemy-foundation-kit/) when you want to express these operations consistently through `transaction()`, `query()` and `savepoint()`, assembling repositories around one session. Start with the labs below: substitute your models and verify that a required step's failure leaves no partial operation in the database.
 

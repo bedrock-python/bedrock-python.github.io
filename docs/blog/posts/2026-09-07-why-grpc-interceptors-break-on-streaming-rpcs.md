@@ -351,6 +351,6 @@ Both scripts assert outcomes and fail on a mismatch. They check registration, ro
 
 ## What to take into your service {#conclusion}
 
-We followed a report from call creation through reading, a mid-stream failure and early cancellation. The interceptor must run for the right RPC shape and observe its outcome; the caller must own the reading loop and cancellation. Those are separate responsibilities.
+For a streaming report, measuring call creation is not enough: the interceptor must observe RPC completion and failures during reading. The caller controls the reading loop and cancels the call when it no longer needs the report.
 
 Use [grpc-client-kit](https://github.com/bedrock-python/grpc-client-kit) when a shared logging, metrics or tracing layer needs to work across all four RPC shapes. `around_call` and `flatten_interceptors` provide that common implementation. Keep a consumer scenario like this lab alongside it, including partial reads and failure after the first item. For channel ownership, deadlines and retries, continue with [production HTTP and gRPC clients](2026-09-13-production-http-grpc-clients.md).

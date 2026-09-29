@@ -384,4 +384,4 @@ Use [alembic-gauntlet](https://bedrock-python.github.io/alembic-gauntlet/) for s
 
 ## Examples and labs {#labs}
 
-- [Lab: the five migration tests](../lab/2026-09-07-five-alembic-migration-tests/README.md) — the historical name is retained; the current lab contains twenty tests and fourteen migration histories.
+- [Lab: the five migration tests](../lab/2026-09-07-five-alembic-migration-tests/README.md): the name is unchanged, but the lab now contains twenty tests and fourteen migration histories.
