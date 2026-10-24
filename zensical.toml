@@ -102,7 +102,7 @@ icon = "fontawesome/brands/python"
 link = "https://pypi.org/user/bedrock-python/"
 
 [project.plugins.blog]
-enabled = true
+enabled = false
 blog_dir = "blog"
 post_date_format = "long"
 post_url_format = "{date}/{slug}"
