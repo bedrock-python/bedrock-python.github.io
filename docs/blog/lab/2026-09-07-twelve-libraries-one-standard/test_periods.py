@@ -28,6 +28,6 @@ def test__month_bounds__aware_input__returns_utc_range(value: str, expected_star
 
 
 def test__month_bounds__missing_offset__raises() -> None:
-    value = datetime(2026, 9, 1, tzinfo=UTC).replace(tzinfo=None)
+    value = datetime.fromisoformat("2026-09-01T00:00:00")
     with pytest.raises(ValueError, match="explicit UTC offset"):
         month_bounds(value)

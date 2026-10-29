@@ -1,6 +1,6 @@
 # Lab: a documentation contract for a shipping quote {#lab-documentation-contract}
 
-This page is a compact task-specific brief for the [documentation article](../../posts/2026-09-07-documentation-for-ai-coding-agents.md). It describes the API the example uses, its application dependencies and how to verify the result. It is not the library's complete API reference.
+This page is a compact task-specific brief for the [documentation article](../../posts/2026-10-26-documentation-for-ai-coding-agents.md). It describes the API the example uses, its application dependencies and how to verify the result. It is not the library's complete API reference.
 
 ## Environment and scope {#scope}
 
@@ -57,9 +57,9 @@ cd docs/blog/lab/2026-09-07-documentation-for-ai-coding-agents
 uv run --no-project --python 3.13 --with-requirements requirements.txt python test_contract.py
 ```
 
-The standard-library test suite checks the pinned version and public defaults, the expected error when awaiting a synchronous method, shared budget arithmetic, a missing cap, no-stock behavior, exhaustion before the next step, and the distinction between calculation and cancellation. It also compares the Python block above with `shipping.py` by syntax tree, so changing only one copy fails the check.
+The standard-library test suite checks the pinned version and public defaults, the expected error when awaiting a synchronous method, shared budget arithmetic, the article's new-context-per-step mistake, a small remainder passed on unchanged, a missing cap, no-stock behavior, exhaustion before the next step, and the distinction between calculation and cancellation. It also compares the Python block above, and its copies in the English and Russian articles, with `shipping.py` by syntax tree, so changing only one copy fails the check. Those sync checks are for maintainers of this page; an independent implementation is judged by the behavior tests.
 
-Most timing cases replace only the library module's clock with a manually advanced clock. Asyncio retains its real clock. A separate stalled-call test verifies actual cancellation by the 600 ms operation timeout, with a five-second watchdog. No exact wall-clock duration is asserted.
+All tests replace the library module's clock with a manually advanced clock. Asyncio retains its real clock. A separate stalled-call test verifies actual cancellation by the 600 ms operation timeout, with a five-second watchdog. No exact wall-clock duration is asserted.
 
 No Docker, external service or API key is needed. Network access is needed only to download Python or the pinned package if absent from the cache. A failed assertion exits with an error. These tests verify documentation and code; they do not measure an AI model's performance.
 
@@ -68,5 +68,5 @@ No Docker, external service or API key is needed. Network access is needed only 
 - `shipping.py`: the application function shown on this page.
 - `test_contract.py`: executable assertions for the code and documentation.
 - `requirements.txt`: the package version used by the example.
-- [deadline-budget agent guide](https://github.com/bedrock-python/deadline-budget/blob/master/docs/agents.md): the broader library API; match it to the version you install.
+- [deadline-budget 0.1.3 agent guide](https://github.com/bedrock-python/deadline-budget/blob/deadline-budget-v0.1.3/docs/agents.md): the broader library API for the pinned version.
 - [The deadline article](../../posts/2026-09-06-timeouts-are-not-deadlines.md): request propagation and client integration.

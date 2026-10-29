@@ -1,6 +1,6 @@
 # Lab: exactly-once effects
 
-Runnable code from [the article](../../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md).
+Runnable code from [the article](../../posts/2026-10-03-reliable-events-outbox-inbox-kafka.md).
 Docker must be running. The script creates and removes its own PostgreSQL and Kafka
 containers. Run from this directory in a repository checkout:
 
@@ -14,7 +14,7 @@ Images: `postgres:17-alpine` and `confluentinc/cp-kafka:7.6.0` in KRaft mode.
 The PostgreSQL driver is explicitly asyncpg.
 
 `models.py` defines orders, invoices and the two omni-box ORM models.
-`event_flow.py` contains all seven Python snippets printed in both article editions.
+`event_flow.py` contains the code printed in the article and the relay's producer setup.
 `lab_support.py` provides the containers and bounded Kafka reads used by all three labs.
 The two services share one database here to keep the fixture small.
 

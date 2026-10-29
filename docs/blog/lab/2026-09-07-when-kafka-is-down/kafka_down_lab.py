@@ -23,22 +23,22 @@ GROUP BY status;
 
 async def main(db_url, bootstrap, kafka):
     await create_topics(bootstrap, "orders.created")
-    async with database(db_url) as sessions:
+    async with database(db_url) as session_factory:
         async with flow.kafka_publisher(bootstrap) as broker:
             # Publish once so that topic metadata and the producer connection are ready.
-            warmup_id = await flow.place_order(sessions, uuid4())
-            sent = await flow.relay_once(sessions, broker)
+            warmup_id = await flow.place_order(session_factory, uuid4())
+            sent = await flow.relay_once(session_factory, broker)
             assert sent.processed_event_ids == [warmup_id]
 
             container = kafka.get_wrapped_container()
             await asyncio.to_thread(container.pause)
             try:
-                event_ids = {await flow.place_order(sessions, uuid4()) for _ in range(3)}
-                assert await count(sessions, Order) == 4
+                event_ids = {await flow.place_order(session_factory, uuid4()) for _ in range(3)}
+                assert await count(session_factory, Order) == 4
                 for cycle in range(3):
-                    result = await flow.relay_once(sessions, broker)
+                    result = await flow.relay_once(session_factory, broker)
                     assert not result.processed_event_ids, result
-                    async with sessions() as session:
+                    async with session_factory() as session:
                         rows = (await session.execute(text(BACKLOG_SQL))).all()
                     assert rows == [("pending", 3, 0)], rows
                     print(f"PASS paused cycle {cycle + 1}: orders=4, pending=3, attempts=0")
@@ -49,15 +49,15 @@ async def main(db_url, bootstrap, kafka):
 
             async with asyncio.timeout(45):
                 while True:
-                    await flow.relay_once(sessions, broker)
+                    await flow.relay_once(session_factory, broker)
                     pending = await count(
-                        sessions, OutboxEventDB, OutboxEventDB.status != "completed",
+                        session_factory, OutboxEventDB, OutboxEventDB.status != "completed",
                     )
                     if pending == 0:
                         break
                     await asyncio.sleep(1)
 
-            async with sessions() as session:
+            async with session_factory() as session:
                 rows = (await session.execute(select(
                     OutboxEventDB.id, OutboxEventDB.status, OutboxEventDB.attempts_made,
                 ))).all()

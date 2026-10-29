@@ -22,7 +22,7 @@ server or throughput benchmark is involved.
 The script also reports what happens when two statements share one session.
 Unsupported sharing may appear to work on an individual run, so a specific exception
 is not required. Both tasks are awaited before cleanup. The supported variant uses
-the article's `TaskGroup` function: six independent orders must receive six distinct
+the `TaskGroup` function from `order_flow.py`: six independent orders must receive six distinct
 sessions, save six order/event pairs and return every connection.
 
 A successful run ends with `PASS: session and pool scenarios`.

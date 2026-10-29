@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from lab_support import database, expect_sqlstate, scanned_relations
 from migration_flow import (
-    cutover, finish_ranges, migration_toolkit, move_batch, prepare_keys, prepare_next_month,
+    build_key_index, cutover, finish_ranges, migration_toolkit, move_batch, prepare_next_month, prepare_notes,
     remove_empty_default, restore_references,
 )
 
@@ -38,7 +38,8 @@ async def main(engine_url, dsn):
             await expect_sqlstate(connection, "0A000", "CREATE TABLE invalid_events (LIKE events INCLUDING ALL) PARTITION BY RANGE (created_at)")
             await expect_sqlstate(connection, "2BP01", "ALTER TABLE events DROP CONSTRAINT events_pkey")
             print("PASS keys: timestamp partitioning needs a composite key; incoming FK prevents dropping the old PK", flush=True)
-            await prepare_keys(connection)
+            await build_key_index(connection)
+            await prepare_notes(connection)
 
             # Hold a real read transaction so the cutover must time out instead of waiting indefinitely.
             blocker = await asyncpg.connect(dsn)
@@ -81,8 +82,7 @@ async def main(engine_url, dsn):
             # A new engine/toolkit proves resumption uses committed database state.
             await engine.dispose()
             toolkit, config = migration_toolkit(engine)
-            expected_months = [datetime(2026, month, 1, tzinfo=UTC) for month in (7, 8, 9)]
-            resumed = await finish_ranges(toolkit, config, expected_months)
+            resumed = await finish_ranges(toolkit, config)
             assert resumed.complete and resumed.rows_moved == len(before) - 100
             assert await connection.fetch("SELECT * FROM events ORDER BY id, created_at") == before
             assert await connection.fetchval("SELECT total FROM event_summary") == 0

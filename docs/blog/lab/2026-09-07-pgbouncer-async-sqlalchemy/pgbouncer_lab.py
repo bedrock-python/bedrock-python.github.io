@@ -99,7 +99,7 @@ async def main(lab, tracked, untracked):
         conservative = untracked.config().model_copy(update={
             "query": QuerySettings(statement_cache_size=0, prepared_statement_cache_size=0),
         })
-        await workload(conservative, "PgBouncer tracking=0, kit unique names and caches=0")
+        await workload(conservative, "PgBouncer tracking=0, caches=0, unnamed statements")
         await settings_and_timeout(tracked)
 
 

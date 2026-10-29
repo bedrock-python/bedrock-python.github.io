@@ -117,19 +117,19 @@ async def backoff():
         print('PASS Retry-After: delay respected; retry skipped when it cannot fit the budget')
 
     async with HttpOrigin() as origin:
-        async with http_client(origin.url) as client:
+        async with http_client('payments', origin.url) as client:
             response = await client.post('/payments', json={'order_id': 'order-42'})
             assert response.status_code == 503
         assert origin.calls['/payments'] == 1 and origin.charges == 1
     async with HttpOrigin() as origin:
-        async with http_client(origin.url) as client:
+        async with http_client('payments', origin.url) as client:
             assert await charge(client, 'order-42', 1500) == 'payment-1'
             assert origin.calls['/payments'] == 2 and origin.charges == 1
             assert await charge(client, 'order-42', 1500) == 'payment-1'
         assert origin.calls['/payments'] == 3 and origin.charges == 1
         print('PASS payment: a plain POST is not retried; a stable server-backed key deduplicates')
     async with HttpOrigin() as origin:
-        async with http_client(origin.url) as client:
+        async with http_client('payments', origin.url) as client:
             response = await client.post('/payments', json={}, extensions={IDEMPOTENT_EXTENSION: True})
             assert response.status_code == 200
         assert origin.charges == 2

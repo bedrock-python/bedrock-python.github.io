@@ -1,6 +1,6 @@
-# Практикум: что заново реализует каждый Python-микросервис {#lab-what-every-production-python-microservice-reimplements}
+# Практикум: API заказов на четырёх библиотеках {#lab-what-every-production-python-microservice-reimplements}
 
-API заказов читает PostgreSQL и запрашивает остаток у локального склада. Соединяем servicewright, sqlalchemy-foundation-kit, clientwright и deadline-budget. Пример к статье [«Зачем я выделяю инфраструктуру Python-сервисов в библиотеки»](../../posts/2026-09-13-why-bedrock-python-libraries.md).
+API заказов читает PostgreSQL и запрашивает остаток у локального склада. Соединяем servicewright, sqlalchemy-foundation-kit, clientwright и deadline-budget. Пример к статье [«Зачем выделять инфраструктуру Python-сервисов в библиотеки»](../../posts/2026-10-27-why-bedrock-python-libraries.md).
 
 ## Запуск {#run}
 

@@ -1,4 +1,4 @@
-pg-partsmith==1.5.1
+pg-partsmith==1.8.0
 SQLAlchemy[asyncio]==2.0.54
 asyncpg==0.31.0
 pydantic==2.13.5

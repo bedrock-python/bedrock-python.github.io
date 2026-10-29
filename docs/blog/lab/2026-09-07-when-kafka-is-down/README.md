@@ -1,6 +1,6 @@
 # Lab: a Kafka outage and backlog recovery {#lab-what-happens-when-kafka-is-down-for-an-hour}
 
-Runnable outage scenario from [the article](../../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md).
+Runnable outage scenario from [the article](../../posts/2026-10-03-reliable-events-outbox-inbox-kafka.md).
 Docker must be running. Run from this directory in a repository checkout:
 
 ```bash
@@ -28,7 +28,7 @@ The test makes no claim that other publication errors behave the same way.
 An in-flight send may arrive after a timeout, so recovery checks delivered event IDs
 and completed Outbox rows rather than asserting one Kafka record per event.
 
-`BACKLOG_SQL` is the exact SQL query shown in both article editions.
+`BACKLOG_SQL` is the query behind the backlog output shown in both article editions.
 All status and delivery checks use assertions; `PASS` lines report verified results.
 The outage lasts seconds, not an hour. The article's hour-long backlog example is arithmetic,
 not a load test. This single-broker experiment does not test replication, sustained

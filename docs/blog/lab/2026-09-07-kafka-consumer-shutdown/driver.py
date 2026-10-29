@@ -31,7 +31,7 @@ async def scenario(bootstrap, mode):
         work = consume(bootstrap, process, stop, group)
     else:
         work = build_service(
-            bootstrap, process, group=group, grace=0.05 if mode == "timeout" else 12,
+            bootstrap, process, group=group, grace=0.05 if mode == "timeout" else 5,
         ).run(Settings(), stop=stop)
     task = asyncio.create_task(work)
     try:

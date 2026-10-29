@@ -1,6 +1,6 @@
 # Lab: when should Redis fail open?
 
-Runnable scenarios from [the article](../../posts/2026-09-13-redis-failures-and-health-checks.md).
+Runnable scenarios from [the article](../../posts/2026-09-30-redis-failures-and-health-checks.md).
 Docker must be running. The scripts create and remove their own Redis containers;
 they do not connect to an existing database or payment provider. Run from this directory
 in a checkout of the repository:

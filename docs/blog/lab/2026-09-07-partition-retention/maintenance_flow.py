@@ -1,12 +1,11 @@
 """The article's executable policy, plan, archive and scheduler examples."""
 from datetime import timedelta
 import json
-import os
 from pathlib import Path
 
 from pg_partsmith import (
     AllOf, CreateAhead, DropAfter, ExpireIf, KeepNewest,
-    LifecyclePolicy, PartitionEvent, PartitionGranularity,
+    LifecyclePolicy, LockAcquisitionError, PartitionEvent, PartitionGranularity,
     TablePartitionConfig, Unreferenced,
 )
 from pg_partsmith.aio import BasePartitionLifecycleHooks
@@ -55,6 +54,9 @@ class JsonArchive(BasePartitionLifecycleHooks):
         self.directory = directory
 
     async def before_drop(self, event: PartitionEvent):
+        oid = await self.connection.fetchval("SELECT to_regclass($1)::oid", event.partition.name)
+        if oid != event.operation.oid:
+            raise RuntimeError(f"{event.partition.name} is not the planned table")
         schema, name = event.partition.name.split(".", 1)
         quoted = ".".join('"' + part.replace('"', '""') + '"' for part in (schema, name))
         rows = await self.connection.fetch(
@@ -62,14 +64,10 @@ class JsonArchive(BasePartitionLifecycleHooks):
         )
         data = [[row["id"], row["created_at"].isoformat(), row["payload"]] for row in rows]
         document = {"table": event.partition.name, "rows": data}
-        # The OID distinguishes a replacement table with the same name.
-        path = self.directory / f"{event.operation.oid}.json"
+        path = self.directory / f"{oid}.json"
         if not path.exists():
             temporary = path.with_suffix(".tmp")
-            with temporary.open("w", encoding="utf-8") as stream:
-                json.dump(document, stream, ensure_ascii=False)
-                stream.flush()
-                os.fsync(stream.fileno())
+            temporary.write_text(json.dumps(document, ensure_ascii=False), encoding="utf-8")
             temporary.replace(path)
         if json.loads(path.read_text(encoding="utf-8")) != document:
             raise RuntimeError(f"Archive verification failed: {path.name}")
@@ -78,16 +76,19 @@ class JsonArchive(BasePartitionLifecycleHooks):
 
 # snippet:tick
 async def maintenance_tick(toolkit, config):
-    result = await toolkit.maintainer.run_maintenance_safe(config)
+    try:
+        result = await toolkit.maintainer.run_maintenance(config)
+    except LockAcquisitionError:
+        print({"skipped": "another worker holds the maintenance lock"})
+        return None
     print({
         "created": result.created_count,
         "detached": result.detached_count,
         "dropped": result.dropped_count,
         "duration_ms": result.duration_ms,
-        "error": result.error,
         "issues": [issue.model_dump() for issue in result.issues],
     })
-    if result.error or result.issues:
-        raise RuntimeError("Partition maintenance did not finish cleanly")
+    if result.issues:
+        raise RuntimeError("Partition maintenance finished with issues")
     return result
 # /snippet:tick

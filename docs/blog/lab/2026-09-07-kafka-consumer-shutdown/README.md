@@ -1,6 +1,6 @@
 # Lab: Kafka consumer shutdown and replay {#lab-graceful-kafka-consumer-shutdown-in-kubernetes}
 
-Shutdown scenarios from [the article](../../posts/2026-09-13-kafka-in-python-services.md).
+Shutdown scenarios from [the article](../../posts/2026-10-02-kafka-in-python-services.md).
 Docker must be running. From this directory in a repository checkout, run:
 
 ```bash

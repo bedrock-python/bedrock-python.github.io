@@ -90,7 +90,7 @@ async def provision_delivery_topic(bootstrap, *, partitions=3, replicas=1):
 
 
 # snippet:shutdown
-async def run_tracking(bootstrap, process, stop, *, group="tracking", grace=12):
+async def run_tracking(bootstrap, process, stop, *, group="tracking", grace=5):
     async with consumer_lifecycle(
         tracking_settings(bootstrap, group), topics=(TOPIC,),
     ) as consumer:

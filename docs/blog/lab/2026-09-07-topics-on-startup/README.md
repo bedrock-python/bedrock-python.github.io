@@ -1,6 +1,6 @@
 # Lab: who creates the Kafka topic
 
-Topic provisioning from [the article](../../posts/2026-09-13-kafka-in-python-services.md).
+Topic provisioning from [the article](../../posts/2026-10-02-kafka-in-python-services.md).
 Docker must be running. Run from this directory in a repository checkout:
 
 ```bash

@@ -100,7 +100,7 @@
     },
     {
       "group": "03",
-      "slug": "2026-09-13-python-service-lifecycle",
+      "slug": "2026-09-20-python-service-lifecycle",
       "category": "Design",
       "tags": [
         "servicewright",
@@ -161,7 +161,7 @@
     },
     {
       "group": "04",
-      "slug": "2026-09-13-sqlalchemy-sessions-and-transactions",
+      "slug": "2026-10-08-sqlalchemy-sessions-and-transactions",
       "category": "Design",
       "tags": [
         "sqlalchemy-foundation-kit",
@@ -203,7 +203,7 @@
     },
     {
       "group": "05",
-      "slug": "2026-09-13-sqlalchemy-pgbouncer-pools",
+      "slug": "2026-10-09-sqlalchemy-pgbouncer-pools",
       "category": "Tutorials",
       "tags": [
         "sqlalchemy-foundation-kit",
@@ -248,7 +248,7 @@
     },
     {
       "group": "06",
-      "slug": "2026-09-13-testing-alembic-migrations-in-ci",
+      "slug": "2026-10-11-testing-alembic-migrations-in-ci",
       "category": "Tutorials",
       "tags": [
         "alembic-gauntlet",
@@ -303,7 +303,7 @@
     },
     {
       "group": "07",
-      "slug": "2026-09-13-postgresql-partition-maintenance",
+      "slug": "2026-10-18-postgresql-partition-maintenance",
       "category": "Design",
       "tags": [
         "pg-partsmith",
@@ -357,7 +357,7 @@
     },
     {
       "group": "08",
-      "slug": "2026-09-13-partitioning-an-existing-postgresql-table",
+      "slug": "2026-10-17-partitioning-an-existing-postgresql-table",
       "category": "Tutorials",
       "tags": [
         "pg-partsmith",
@@ -403,7 +403,7 @@
     },
     {
       "group": "09",
-      "slug": "2026-09-13-idempotency-in-apis-and-background-jobs",
+      "slug": "2026-09-14-idempotency-in-apis-and-background-jobs",
       "category": "Design",
       "tags": [
         "idempotency-kit",
@@ -456,7 +456,7 @@
     },
     {
       "group": "10",
-      "slug": "2026-09-13-reliable-events-outbox-inbox-kafka",
+      "slug": "2026-10-03-reliable-events-outbox-inbox-kafka",
       "category": "Design",
       "tags": [
         "omni-box",
@@ -519,7 +519,7 @@
     },
     {
       "group": "11",
-      "slug": "2026-09-13-kafka-in-python-services",
+      "slug": "2026-10-02-kafka-in-python-services",
       "category": "Tutorials",
       "tags": [
         "aiokafka-foundation-kit",
@@ -570,7 +570,7 @@
     },
     {
       "group": "12",
-      "slug": "2026-09-13-redis-failures-and-health-checks",
+      "slug": "2026-09-30-redis-failures-and-health-checks",
       "category": "Design",
       "tags": [
         "redis-client-kit",
@@ -611,7 +611,7 @@
     },
     {
       "group": "13",
-      "slug": "2026-09-13-production-python-grpc-server",
+      "slug": "2026-09-23-production-python-grpc-server",
       "category": "Design",
       "tags": [
         "grpc-server-kit",
@@ -666,7 +666,7 @@
     },
     {
       "group": "15",
-      "slug": "2026-09-13-python-library-from-template-to-release",
+      "slug": "2026-10-22-python-library-from-template-to-release",
       "category": "Tutorials",
       "tags": [
         "python-library-template",
@@ -718,7 +718,7 @@
     },
     {
       "group": "19",
-      "slug": "2026-09-13-why-bedrock-python-libraries",
+      "slug": "2026-10-27-why-bedrock-python-libraries",
       "category": "Meta",
       "tags": [
         "bedrock-python",
@@ -726,7 +726,7 @@
         "servicewright"
       ],
       "cover": "2026-09-07-what-every-microservice-reimplements",
-      "title_ru": "Зачем я выделяю инфраструктуру Python-сервисов в библиотеки",
+      "title_ru": "Зачем выделять инфраструктуру Python-сервисов в библиотеки",
       "sources": [
         "2026-09-07-what-every-microservice-reimplements",
         "2026-05-30-welcome"

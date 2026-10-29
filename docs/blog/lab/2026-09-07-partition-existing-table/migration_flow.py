@@ -4,18 +4,23 @@ from datetime import UTC, datetime
 from pg_partsmith import PartitionGranularity, TablePartitionConfig
 from pg_partsmith.aio import PartitionToolkit
 
+# snippet:index
+async def build_key_index(connection):
+    await connection.execute("""
+        CREATE UNIQUE INDEX CONCURRENTLY events_id_created_at_key
+        ON events (id, created_at)
+    """)
+# /snippet:index
+
+
 # snippet:prepare
-async def prepare_keys(connection):
+async def prepare_notes(connection):
     await connection.execute("""
         ALTER TABLE event_notes ADD COLUMN event_created_at timestamptz;
         UPDATE event_notes AS n
         SET event_created_at = e.created_at
         FROM events AS e WHERE e.id = n.event_id;
         ALTER TABLE event_notes ALTER COLUMN event_created_at SET NOT NULL;
-    """)
-    await connection.execute("""
-        CREATE UNIQUE INDEX CONCURRENTLY events_id_created_at_key
-        ON events (id, created_at)
     """)
 # /snippet:prepare
 
@@ -59,15 +64,13 @@ async def move_batch(toolkit, config, *, max_batches=10):
     return result
 
 
-async def finish_ranges(toolkit, config, expected_months):
+async def finish_ranges(toolkit, config):
     while True:
         result = await move_batch(toolkit, config)
         if result.complete:
-            break
+            return result
         if result.rows_moved == 0:
             raise RuntimeError("Data movement made no progress")
-    await toolkit.service.ensure_partitions(config, expected_months)
-    return result
 # /snippet:toolkit
 
 
@@ -78,8 +81,7 @@ async def restore_references(connection):
         await connection.execute("""
             ALTER TABLE event_notes ADD CONSTRAINT event_notes_event_fkey
                 FOREIGN KEY (event_id, event_created_at)
-                REFERENCES events (id, created_at) NOT VALID;
-            ALTER TABLE event_notes VALIDATE CONSTRAINT event_notes_event_fkey;
+                REFERENCES events (id, created_at);
             ALTER SEQUENCE events_id_seq OWNED BY events.id;
             CREATE OR REPLACE VIEW event_summary AS SELECT count(*) AS total FROM events;
             GRANT SELECT, INSERT ON events TO events_app;

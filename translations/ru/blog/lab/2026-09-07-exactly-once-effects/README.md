@@ -1,6 +1,6 @@
 # Практикум: повторная доставка без второго счёта {#lab-exactly-once-effects}
 
-Запускаемый код из [статьи](../../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md).
+Запускаемый код из [статьи](../../posts/2026-10-03-reliable-events-outbox-inbox-kafka.md).
 Нужен работающий Docker. Скрипт создаёт и удаляет собственные контейнеры PostgreSQL
 и Kafka. Выполните команду из `docs/blog/lab/2026-09-07-exactly-once-effects`
 в клоне репозитория:
@@ -15,7 +15,7 @@ SQLAlchemy 2.0.54, asyncpg 0.31.0 и testcontainers 4.15.0.
 Для PostgreSQL явно указан драйвер asyncpg.
 
 В `models.py` определены заказы, счета и две ORM-модели omni-box.
-`event_flow.py` содержит все семь фрагментов Python из обеих версий статьи.
+`event_flow.py` содержит код из статьи и настройку producer для relay.
 `lab_support.py` запускает контейнеры и читает Kafka с ограничением времени;
 его используют все три практикума. Для простоты два сервиса здесь работают с одной БД.
 

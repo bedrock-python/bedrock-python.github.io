@@ -1,7 +1,7 @@
 # Article image prompts
 
 One prompt per blog post, named after the post file:
-`2026-09-07-zero-dependency-cores.md` -> `docs/blog/posts/2026-09-07-zero-dependency-cores.md`.
+`2026-10-21-zero-dependency-cores.md` -> `docs/blog/posts/2026-10-21-zero-dependency-cores.md`.
 
 Each file holds the post title, its category, the one-line idea the picture has to carry, and a
 single self-contained prompt block to paste into an image model. The style paragraph is repeated

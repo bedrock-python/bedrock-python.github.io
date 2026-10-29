@@ -56,7 +56,7 @@ async def charge_once(
         ids.operation, ids.idempotency_key, 3600,
         PydanticResultAdapter(Charge), charge, payment, provider_key,
         idempotency_fingerprint=fingerprint_of(
-            order_id=str(payment.order_id),
+            order_id=payment.order_id,
             amount=payment.amount,
             currency=payment.currency,
         ),

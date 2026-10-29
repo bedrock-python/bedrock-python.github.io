@@ -1,6 +1,6 @@
 # Lab: the transactional inbox
 
-Runnable consumer scenarios from [the article](../../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md).
+Runnable consumer scenarios from [the article](../../posts/2026-10-03-reliable-events-outbox-inbox-kafka.md).
 Docker must be running. Run from this directory in a repository checkout:
 
 ```bash

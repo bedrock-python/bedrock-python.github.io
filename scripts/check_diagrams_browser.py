@@ -9,12 +9,12 @@ from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = {
-    "2026-09-13-reliable-events-outbox-inbox-kafka",
+    "2026-10-03-reliable-events-outbox-inbox-kafka",
     "2026-09-13-production-http-grpc-clients",
-    "2026-09-13-sqlalchemy-sessions-and-transactions",
-    "2026-09-13-redis-failures-and-health-checks",
-    "2026-09-13-production-python-grpc-server",
-    "2026-09-13-python-service-lifecycle",
+    "2026-10-08-sqlalchemy-sessions-and-transactions",
+    "2026-09-30-redis-failures-and-health-checks",
+    "2026-09-23-production-python-grpc-server",
+    "2026-09-20-python-service-lifecycle",
 }
 
 
@@ -124,7 +124,7 @@ def main():
         fallback = browser.new_context()
         fallback.route("**/*mermaid*.js*", lambda route: route.abort())
         offline = fallback.new_page()
-        offline.goto(args.base_url.rstrip("/") + "/blog/posts/2026-09-13-reliable-events-outbox-inbox-kafka/")
+        offline.goto(args.base_url.rstrip("/") + "/blog/posts/2026-10-03-reliable-events-outbox-inbox-kafka/")
         expect(offline.locator(".bdr-diagram__caption")).to_be_visible()
         expect(offline.locator(".bdr-diagram__expand")).to_be_hidden()
         fallback.close()

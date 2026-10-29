@@ -4,7 +4,7 @@ The gateway is an HTTP client driving two local aiohttp servers, orders and paym
 
 The first payments response is lost after both the charge and its completed Redis record exist. The first orders response is also lost. Connections close deliberately rather than relying on a slow request to imply a successful charge.
 
-Each design makes two calls to orders and three to payments. Assertions verify three charges without a coordinator, two when the gateway creates a new key on retry, and one when the key remains stable. A changed amount then gets HTTP 409, and a key containing a colon gets HTTP 400 before another charge.
+Each design makes two calls to orders and three to payments. Assertions verify three charges without a coordinator, two when the gateway creates a new key on retry, and one when the key remains stable. A changed amount then gets HTTP 422, and a key containing a colon gets HTTP 400 before another charge.
 
 This is a transport and idempotency lab. It has no authentication middleware: tenant IDs in its generated requests are trusted fixture data. A real API obtains tenant identity from authenticated context and authorizes access to the order.
 

@@ -1,6 +1,6 @@
 # Lab: UUIDv7 as a PostgreSQL partition key
 
-This separate design keeps `PRIMARY KEY (id)` by partitioning directly on `id`. It uses PostgreSQL 17 and pg-partsmith 1.5.1, with explicit July–October 2026 partitions so results do not depend on today's date.
+This separate design keeps `PRIMARY KEY (id)` by partitioning directly on `id`. It uses PostgreSQL 17 and pg-partsmith 1.8.0, with explicit July–October 2026 partitions so results do not depend on today's date.
 
 Docker and `uv` are required. Run from this directory:
 

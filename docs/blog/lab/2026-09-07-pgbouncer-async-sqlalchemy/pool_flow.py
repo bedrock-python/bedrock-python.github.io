@@ -18,7 +18,7 @@ def database_config(host, port, user, password, database):
         db_schema="app",
         jit=None,
         use_orjson_serialization=False,
-        pool=PoolSettings(size=2, max_overflow=0, timeout=0.2),
+        pool=PoolSettings(size=2, max_overflow=0, timeout=0.2, pre_ping=False),
         query=QuerySettings(
             statement_cache_size=100,
             prepared_statement_cache_size=100,

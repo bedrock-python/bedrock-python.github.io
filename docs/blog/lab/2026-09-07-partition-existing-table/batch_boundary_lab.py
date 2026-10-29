@@ -1,4 +1,4 @@
-"""Reproduce the exact-batch boundary in pg-partsmith 1.5.1 and verify explicit final attachment."""
+"""An exact batch empties DEFAULT before the attach; pg-partsmith 1.8.0 attaches the table on the next call."""
 import asyncio
 from datetime import UTC, datetime
 
@@ -29,15 +29,20 @@ async def main(engine_url, dsn):
             before = await connection.fetch("SELECT * FROM boundary_events ORDER BY id")
             first = await move_batch(toolkit, config, max_batches=1)
             assert first.rows_moved == 100 and not first.complete
-            second = await move_batch(toolkit, config, max_batches=1)
-            assert second.complete and second.rows_moved == 0
             assert await connection.fetchval("SELECT count(*) FROM boundary_events") == 0
             assert await connection.fetchval("SELECT count(*) FROM boundary_events__2026_07") == 100
-            print("PASS reproduced 1.5.1 boundary: complete=True, parent=0, unattached table=100", flush=True)
-            await finish_ranges(toolkit, config, [datetime(2026, 7, 1, tzinfo=UTC)])
+            plan = await toolkit.service.plan(config, now=datetime(2026, 9, 15, tzinfo=UTC))
+            assert [f.reason.value for f in plan.findings] == ["unattached_rows"]
+            print("PASS budget ends after an exact batch: parent=0, unattached table=100, plan warns unattached_rows", flush=True)
+            second = await move_batch(toolkit, config, max_batches=1)
+            assert second.complete and second.rows_moved == 0
+            assert second.partitions == ("public.boundary_events__2026_07",)
+            assert await connection.fetchval("SELECT count(*) FROM boundary_events") == 100
+            print("PASS next call attaches it: complete=True, rows_moved=0, parent sees all 100 rows", flush=True)
+            await finish_ranges(toolkit, config)
             assert await connection.fetch("SELECT * FROM boundary_events ORDER BY id") == before
             assert await connection.fetchval("SELECT EXISTS (SELECT FROM pg_inherits WHERE inhparent='boundary_events'::regclass AND inhrelid='boundary_events__2026_07'::regclass)")
-            print("PASS recovery: ensure_partitions attached the expected month; all 100 rows are visible", flush=True)
+            print("PASS reconciliation: July is attached and all 100 original rows match through the parent", flush=True)
     finally:
         await engine.dispose()
         await connection.close()

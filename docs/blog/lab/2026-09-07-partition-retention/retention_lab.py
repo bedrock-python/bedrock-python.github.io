@@ -30,8 +30,8 @@ async def setup(connection):
         CREATE TABLE events__2026_03 PARTITION OF events
             FOR VALUES FROM ('2026-02-01') TO ('2026-04-01');
         INSERT INTO events VALUES (31, '2026-03-12', 'irregular range');
-        CREATE TABLE events__2025_01 (LIKE events INCLUDING ALL);
-        INSERT INTO events__2025_01 VALUES (1, '2025-01-01', 'unmarked standalone table');
+        CREATE TABLE events_export_2025_01 (LIKE events INCLUDING ALL);
+        INSERT INTO events_export_2025_01 VALUES (1, '2025-01-01', 'unmarked standalone table');
     """)
     for month in range(4, 10):
         name = "events_may_manual" if month == 5 else f"events__2026_{month:02}"
@@ -75,7 +75,7 @@ async def main(engine_url, dsn, archive_directory):
         assert {op.target for op in plan.detaches} == {"public.events__2026_04", "public.events__2026_06"}
         assert not plan.drops
         assert any(f.partition_name == "public.events__2026_03" for f in plan.findings)
-        assert all(op.target != "public.events__2025_01" for op in plan.operations)
+        assert all(op.target != "public.events_export_2025_01" for op in plan.operations)
         plan = MaintenancePlan.model_validate_json(plan.model_dump_json())
         try:
             await toolkit.service.apply(events_config(protect_references=False), plan)
@@ -105,12 +105,12 @@ async def main(engine_url, dsn, archive_directory):
         state = await relations(connection)
         second = PartitionToolkit.from_engine(second_engine)
         async with toolkit.locks.acquire_lock(config.qualified_name):
-            await expect_runtime(maintenance_tick(second, config), "did not finish cleanly")
+            assert await maintenance_tick(second, config) is None
         assert await relations(connection) == state
         # A fresh attempt can acquire the same key after the first worker releases it.
         async with second.locks.acquire_lock(config.qualified_name):
             pass
-        print("PASS scheduling: second toolkit on another engine cannot maintain the locked table; release permits retry")
+        print("PASS scheduling: a second worker skips the locked table without changing it; release permits retry")
 
         tree = await toolkit.service.inspect(config)
         assert len(tree.orphans) == 2 and all(orphan.detached_at for orphan in tree.orphans)
@@ -158,7 +158,7 @@ async def main(engine_url, dsn, archive_directory):
         result = await apply_reviewed(toolkit, config, released)
         assert result.detached_count == 1 and result.dropped_count == 0
         assert await connection.fetchval("SELECT count(*) FROM events__2026_03") == 1
-        assert await connection.fetchval("SELECT count(*) FROM events__2025_01") == 1
+        assert await connection.fetchval("SELECT count(*) FROM events_export_2025_01") == 1
         print("PASS ownership: manual monthly partition becomes eligible after references disappear; irregular and unmarked tables survive")
     finally:
         await second_engine.dispose()

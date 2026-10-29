@@ -70,13 +70,13 @@ async def records(bootstrap, topic):
         await consumer.stop()
 
 
-async def count(sessions, model, *conditions):
-    async with sessions() as session:
+async def count(session_factory, model, *conditions):
+    async with session_factory() as session:
         return await session.scalar(select(func.count()).select_from(model).where(*conditions))
 
 
-async def invoice_count(sessions, order_id):
-    return await count(sessions, Invoice, Invoice.order_id == order_id)
+async def invoice_count(session_factory, order_id):
+    return await count(session_factory, Invoice, Invoice.order_id == order_id)
 
 
 async def process(runner, how_many=1):

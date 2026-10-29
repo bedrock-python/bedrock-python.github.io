@@ -125,26 +125,26 @@ hide:
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
-<a class="bdr-card" href="blog/posts/2026-09-13-kafka-in-python-services/">
+<a class="bdr-card" href="blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Kafka в Python: отправка, обработка и остановка сервиса</h3>
-  <p class="bdr-card__lede">Представим сервис доставки, который отправляет статусы посылок в Kafka. Сервис отслеживания читает их и обновляет карточку заказа.</p>
-  <div class="bdr-card__meta">2026-09-13</div>
+  <div class="bdr-card__eyebrow">Инструменты</div>
+  <h3 class="bdr-card__title">Почему замечания ИИ-ревью нужно проверять</h3>
+  <p class="bdr-card__lede">Многие команды подключили к merge request ИИ-ревьюера. Он пишет замечания уверенно, как опытный коллега, но уверенный тон ещё не значит, что замечание верно.</p>
+  <div class="bdr-card__meta">2026-10-29</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-09-13-python-library-from-template-to-release/">
+<a class="bdr-card" href="blog/posts/2026-10-27-why-bedrock-python-libraries/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Python-библиотека от шаблона до релиза</h3>
-  <p class="bdr-card__lede">Представим сервис отчётов и воркер выгрузок. Оба вычисляют начало и конец месяца в UTC, но каждый своей функцией. В одной из них забыли про переход года.</p>
-  <div class="bdr-card__meta">2026-09-13</div>
+  <div class="bdr-card__eyebrow">Об экосистеме</div>
+  <h3 class="bdr-card__title">Зачем выделять инфраструктуру Python-сервисов в библиотеки</h3>
+  <p class="bdr-card__lede">Когда сервисов становится больше одного, у них появляется общая обвязка: пул соединений, ретраи, дедлайн запроса, порядок остановки.</p>
+  <div class="bdr-card__meta">2026-10-27</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-09-13-redis-failures-and-health-checks/">
+<a class="bdr-card" href="blog/posts/2026-10-26-documentation-for-ai-coding-agents/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Redis недоступен: проверки состояния и поведение сервиса</h3>
-  <p class="bdr-card__lede">Представим интернет-магазин с тремя операциями: просмотр цены, вход в аккаунт и оплата заказа.</p>
-  <div class="bdr-card__meta">2026-09-13</div>
+  <div class="bdr-card__eyebrow">Об экосистеме</div>
+  <h3 class="bdr-card__title">Документация, с которой ИИ-агент пишет проверяемый код</h3>
+  <p class="bdr-card__lede">Всё больше кода в сервисах пишут ИИ-агенты, и пишут его по той документации, которая есть у проекта. Чего в ней не хватает, агент додумывает сам, и не всегда верно.</p>
+  <div class="bdr-card__meta">2026-10-26</div>
 </a>
 <!-- catalog:home:end -->
 </div>

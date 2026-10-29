@@ -79,14 +79,12 @@ async def report(unit: UnitScopeDep) -> dict[str, int]:
 # snippet:worker
 async def periodic_report(scope, stop: asyncio.Event):
     store = await scope.get(ReportStore)
-    while not stop.is_set():
+    while True:
         try:
             await asyncio.wait_for(stop.wait(), timeout=0.5)
             return
         except TimeoutError:
             pass
-        if stop.is_set():
-            return
         async with asyncio.timeout(1):
             await store.report('worker')
 # /snippet:worker

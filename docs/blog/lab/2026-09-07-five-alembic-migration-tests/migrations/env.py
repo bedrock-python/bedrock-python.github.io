@@ -8,20 +8,18 @@ from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
-from sqlalchemy.schema import CreateSchema
 
 from shop.models import Base
 
 config = context.config
 target_metadata = Base.metadata
 
+# snippet:environment
 # The test runner injects the schema it created for this test; production gets "public".
 target_schema = config.attributes.get("target_schema") or os.getenv("MIGRATION_SCHEMA", "public")
 
 
-# snippet:environment
 def do_run_migrations(connection: Connection) -> None:
-    connection.execute(CreateSchema(target_schema, if_not_exists=True))
     quoted_schema = connection.dialect.identifier_preparer.quote_schema(target_schema)
     connection.execute(
         text("SELECT set_config('search_path', :schema, true)"),

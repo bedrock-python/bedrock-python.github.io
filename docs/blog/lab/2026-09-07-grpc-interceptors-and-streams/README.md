@@ -1,6 +1,6 @@
 # Lab: gRPC client interceptors and streaming RPCs {#lab-grpc-client-interceptors-and-streaming-rpcs}
 
-An export worker calls a real local reporting service. The lab checks registration, streaming outcomes, context and cleanup. Companion to [Why gRPC interceptors break on streaming RPCs](../../posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md).
+An export worker calls a real local reporting service. The lab checks registration, streaming outcomes, context and cleanup. Companion to [Why gRPC interceptors break on streaming RPCs](../../posts/2026-09-08-why-grpc-interceptors-break-on-streaming-rpcs.md).
 
 ## Run {#run}
 
@@ -20,7 +20,7 @@ Pinned versions: `grpc-client-kit==0.4.0`, `grpcio==1.84.0`; Python 3.13. Byte m
 |---|---|
 | One native object inheriting four bases | Only unary-unary runs in this grpcio version |
 | One logical interceptor, four adapters | Each RPC shape produces one successful observation |
-| Timer around continuation | It really runs, finishes before the first row and misses the later network failure |
+| Timer around continuation | It really runs, finishes before the first row and misses the server error that arrives later |
 | Timer around iteration | Counts the mid-stream error; retains status, details and trailing metadata |
 | Library observer | Five rows on success; two rows then `UNAVAILABLE` on failure |
 | Early exit | Explicit cancellation stops the server handler and produces one `CANCELLED` record |

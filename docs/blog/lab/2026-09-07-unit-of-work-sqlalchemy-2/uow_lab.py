@@ -11,16 +11,16 @@ from models import Base, NewsletterSubscription, Order, OrderEvent
 import order_flow as flow
 
 
-async def counts(sessions):
-    async with sessions() as session:
+async def counts(session_factory):
+    async with session_factory() as session:
         return tuple([
             await session.scalar(select(func.count()).select_from(model))
             for model in (Order, OrderEvent, NewsletterSubscription)
         ])
 
 
-async def reset(sessions):
-    async with sessions.begin() as session:
+async def reset(session_factory):
+    async with session_factory.begin() as session:
         await session.execute(text(
             "TRUNCATE order_events, orders, newsletter_subscriptions RESTART IDENTITY"
         ))
@@ -37,8 +37,8 @@ async def expect_error(kind, command, sqlstate=None):
 
 
 async def main(url):
-    engine, sessions = flow.open_database(url)
-    uow = flow.make_uow(sessions)
+    engine, session_factory = flow.open_database(url)
+    uow = flow.make_uow(session_factory)
     try:
         async with engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
@@ -49,48 +49,48 @@ async def main(url):
 
         await expect_error(
             IntegrityError,
-            flow.place_order_broken(sessions, "sku-1", event_kind=""),
+            flow.place_order_broken(session_factory, "sku-1", event_kind=""),
             "23514",
         )
-        assert await counts(sessions) == (1, 0, 0)
+        assert await counts(session_factory) == (1, 0, 0)
         print("two commits + rejected event: orders=1, events=0")
-        await reset(sessions)
+        await reset(session_factory)
 
         await expect_error(
             IntegrityError,
-            flow.place_order_native(sessions, "sku-1", event_kind=""),
+            flow.place_order_native(session_factory, "sku-1", event_kind=""),
             "23514",
         )
-        assert await counts(sessions) == (0, 0, 0)
-        print("sessions.begin() + rejected event: orders=0, events=0")
+        assert await counts(session_factory) == (0, 0, 0)
+        print("session_factory.begin() + rejected event: orders=0, events=0")
 
-        await flow.verify_rollback(uow, sessions)
+        await flow.verify_rollback(uow, session_factory)
         print("uow.transaction() + rejected event: orders=0, events=0")
 
         # A generated ID after flush is not evidence that the row has committed.
         async with uow.transaction() as tx:
             order = await tx.orders.add("sku-flushed")
             assert order.id is not None
-            assert await counts(sessions) == (0, 0, 0)
+            assert await counts(session_factory) == (0, 0, 0)
             await tx.events.add(order.id)
-        assert await counts(sessions) == (1, 1, 0)
+        assert await counts(session_factory) == (1, 1, 0)
         print("flush: ID available, observer sees no row; commit: both rows visible")
-        await reset(sessions)
+        await reset(session_factory)
 
         for create in (
-            lambda: flow.place_order_native(sessions, "sku-native"),
+            lambda: flow.place_order_native(session_factory, "sku-native"),
             lambda: flow.place_order(uow, "sku-kit", delivery_cents=250),
         ):
             result = await create()
             dto = await flow.read_order(uow, result["order_id"])
             assert dto["order_id"] == result["order_id"]
-        assert await counts(sessions) == (2, 2, 0)
+        assert await counts(session_factory) == (2, 2, 0)
         print("successful native and kit contexts: one order and event per operation")
 
         first = await flow.place_order_with_subscription(uow, "sku-1", "buyer@example.org")
         second = await flow.place_order_with_subscription(uow, "sku-2", "buyer@example.org")
         assert first != second
-        assert await counts(sessions) == (4, 4, 1)
+        assert await counts(session_factory) == (4, 4, 1)
         print("duplicate optional subscription: two orders committed, one subscription")
 
         # A different integrity error must escape, rolling back mandatory writes too.
@@ -99,17 +99,17 @@ async def main(url):
             flow.place_order_with_subscription(uow, "sku-invalid", ""),
             "23514",
         )
-        assert await counts(sessions) == (4, 4, 1)
+        assert await counts(session_factory) == (4, 4, 1)
         print("unexpected subscription error: whole operation rolled back")
 
         async with uow.query() as tx:
             await tx.orders.add("discarded")
-        assert await counts(sessions) == (4, 4, 1)
+        assert await counts(session_factory) == (4, 4, 1)
         # query() does not enforce READ ONLY: a caller can explicitly commit a write.
         async with uow.query() as tx:
             await tx.orders.add("explicitly-committed")
             await tx.session.commit()
-        assert await counts(sessions) == (5, 4, 1)
+        assert await counts(session_factory) == (5, 4, 1)
         print("query(): uncommitted INSERT discarded, explicit commit remains possible")
 
         try:
@@ -120,9 +120,9 @@ async def main(url):
             assert error.orig.sqlstate == "25006"
         else:
             raise AssertionError("PostgreSQL should reject the INSERT")
-        assert await counts(sessions) == (5, 4, 1)
+        assert await counts(session_factory) == (5, 4, 1)
         print("SET TRANSACTION READ ONLY: INSERT rejected by PostgreSQL (25006)")
-        await reset(sessions)
+        await reset(session_factory)
 
         # Cancel before commit, after the order INSERT has reached PostgreSQL.
         inserted, release = asyncio.Event(), asyncio.Event()
@@ -142,7 +142,7 @@ async def main(url):
         finally:
             release.set()
             await asyncio.gather(task, return_exceptions=True)
-        assert await counts(sessions) == (0, 0, 0)
+        assert await counts(session_factory) == (0, 0, 0)
         assert engine.pool.checkedout() == 0
         print("cancellation before commit: no rows, no checked-out connections")
     finally:

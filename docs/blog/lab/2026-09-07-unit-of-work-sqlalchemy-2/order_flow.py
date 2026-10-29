@@ -8,8 +8,8 @@ def open_database(url):
     engine = create_async_engine(
         url, pool_size=2, max_overflow=0, pool_timeout=0.5,
     )
-    sessions = async_sessionmaker(engine, expire_on_commit=False)
-    return engine, sessions
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    return engine, session_factory
 # /snippet:setup
 
 
@@ -17,8 +17,8 @@ def open_database(url):
 from models import Order, OrderEvent
 
 
-async def place_order_broken(sessions, sku, *, event_kind="created"):
-    async with sessions() as session:
+async def place_order_broken(session_factory, sku, *, event_kind="created"):
+    async with session_factory() as session:
         order = Order(sku=sku, delivery_cents=0)
         session.add(order)
         await session.commit()
@@ -30,8 +30,8 @@ async def place_order_broken(sessions, sku, *, event_kind="created"):
 
 
 # snippet:native
-async def place_order_native(sessions, sku, *, event_kind="created"):
-    async with sessions.begin() as session:
+async def place_order_native(session_factory, sku, *, event_kind="created"):
+    async with session_factory.begin() as session:
         order = Order(sku=sku, delivery_cents=0)
         session.add(order)
         await session.flush()
@@ -80,9 +80,9 @@ class OrderTransaction(AsyncSQLAlchemyUowTransaction):
         return EventRepository(self.session)
 
 
-def make_uow(sessions):
+def make_uow(session_factory):
     return AsyncSQLAlchemyUnitOfWork(
-        sessions, transaction_factory=OrderTransaction,
+        session_factory, transaction_factory=OrderTransaction,
     )
 
 
@@ -128,7 +128,7 @@ async def place_order_with_subscription(uow, sku, email):
                 tx.session.add(NewsletterSubscription(email=email))
                 await tx.session.flush()
         except IntegrityError as error:
-            if getattr(error.orig, "sqlstate", None) != "23505":
+            if error.orig.sqlstate != "23505":
                 raise
         result = {"order_id": order.id}
     return result
@@ -157,7 +157,7 @@ async def read_order(uow, order_id):
 from sqlalchemy import func, select
 
 
-async def verify_rollback(uow, sessions):
+async def verify_rollback(uow, session_factory):
     # Run against an empty lab database.
     try:
         await place_order(uow, "sku-1", event_kind="")
@@ -166,7 +166,7 @@ async def verify_rollback(uow, sessions):
     else:
         raise AssertionError("The CHECK constraint should reject the event")
 
-    async with sessions() as observer:
+    async with session_factory() as observer:
         assert await observer.scalar(select(func.count()).select_from(Order)) == 0
         assert await observer.scalar(select(func.count()).select_from(OrderEvent)) == 0
 # /snippet:verify

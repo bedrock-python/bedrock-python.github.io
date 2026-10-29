@@ -1,6 +1,6 @@
 # Lab: bare cores and optional integrations {#lab-what-a-library-costs-to-install-and-to-import}
 
-Executable example for [A core without dependencies](../../posts/2026-09-07-zero-dependency-cores.md). It tests what works before an extra is installed and what becomes available afterwards.
+Executable example for [A core without dependencies](../../posts/2026-10-21-zero-dependency-cores.md). It tests what works before an extra is installed and what becomes available afterwards.
 
 ## Run {#run}
 
@@ -36,7 +36,7 @@ The servicewright check covers installation and entrypoint construction, not sta
 uv run --no-project --python 3.13 python footprint.py --measure --report footprint-results.json
 ```
 
-The JSON report includes UTC time, platform, Python version, every installed distribution and version, `site-packages` file size in MiB, five import samples and their median for each installation stage. The count includes the library itself. Size is the sum of file lengths, not downloaded wheel size or allocated filesystem space; imports use `-B` to avoid writing bytecode during the probe.
+Every run prints the distribution count and `site-packages` size for each stage. `--report` saves them as JSON; `--measure` adds import timings. The JSON report includes UTC time, platform, Python version, every installed distribution and version, `site-packages` file size in MiB, five import samples and their median for each installation stage. The count includes the library itself. Size is the sum of file lengths, including precompiled bytecode, not downloaded wheel size or allocated filesystem space. Packages are installed with `--compile-bytecode`, so import samples do not include compiling sources; probes run with `-B` so they do not write new bytecode.
 
 Each timing sample imports the package root in a fresh process. It excludes interpreter startup, leaves the OS file cache active and does not import every optional integration. These are local observations, not a benchmark ranking. The functional checks do not assert exact timings or disk sizes. The report is written only when all scenarios pass.
 

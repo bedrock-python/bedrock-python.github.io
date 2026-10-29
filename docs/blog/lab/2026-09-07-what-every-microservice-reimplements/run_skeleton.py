@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 from importlib.metadata import version
 
 from servicewright import WarmupError
@@ -13,7 +14,33 @@ from testcontainers.community.postgres import PostgresContainer
 from adapters import HttpStockReader, stock_client
 from lab_support import Warehouse, running, wait_until
 from orders import Order, OrderView
-from service import Settings, build_service
+from service import Container, Settings, build_service
+
+
+class RecordingContainer(Container):
+    """Records the lifecycle order that the scenarios assert."""
+
+    def __init__(self, settings):
+        super().__init__(settings)
+        self.events = []
+
+    @asynccontextmanager
+    async def app_scope(self):
+        try:
+            async with super().app_scope() as scope:
+                self.events.append("resources:open")
+                yield scope
+        finally:
+            self.events.append("resources:closed")
+
+    @asynccontextmanager
+    async def unit_scope(self, context=None):
+        self.events.append("unit:open")
+        try:
+            async with super().unit_scope(context) as scope:
+                yield scope
+        finally:
+            self.events.append("unit:closed")
 
 
 async def seed(database_url):
@@ -43,7 +70,8 @@ async def check_closed(container):
 
 async def scenarios(database_url, warehouse_url, warehouse):
     settings = Settings(database_url, warehouse_url)
-    service, api, container = build_service(settings)
+    container = RecordingContainer(settings)
+    service, api = build_service(settings, container=container)
     async with running(service, api, settings) as (stop, task, client):
         assert container.events.count("resources:open") == 1
         assert "resources:closed" not in container.events
@@ -150,7 +178,8 @@ async def failed_startup(database_url, warehouse_url):
         .render_as_string(hide_password=False)
     )
     settings = Settings(bad_url, warehouse_url)
-    service, api, container = build_service(settings)
+    container = RecordingContainer(settings)
+    service, api = build_service(settings, container=container)
     try:
         await service.run(settings, stop=asyncio.Event())
     except WarmupError:

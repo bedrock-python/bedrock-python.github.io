@@ -121,8 +121,8 @@ To translate a page, create its counterpart under `translations/ru/` using the
 same relative path as in `docs/`. For example:
 
 ```text
-docs/blog/posts/2026-09-13-why-bedrock-python-libraries.md
-translations/ru/blog/posts/2026-09-13-why-bedrock-python-libraries.md
+docs/blog/posts/2026-10-27-why-bedrock-python-libraries.md
+translations/ru/blog/posts/2026-10-27-why-bedrock-python-libraries.md
 ```
 
 Translate the title, prose, descriptions, and accessibility labels. Keep dates,

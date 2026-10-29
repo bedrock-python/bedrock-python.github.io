@@ -94,14 +94,13 @@ async def shutdown():
         config = replace(server_config(), grace_period=0.3)
         app = build_app(store, metrics, Reporter(), config=config)
         app.build()
-        stop = asyncio.Event()
-        task = asyncio.create_task(serve_invoices(app, store, stop))
+        task = asyncio.create_task(serve_invoices(app, store))
         try:
             async with grpc.aio.insecure_channel(f"127.0.0.1:{app.bound_port}") as channel:
                 await asyncio.wait_for(channel.channel_ready(), 3)
                 pending = channel.unary_unary(METHOD)(b"ready", timeout=3)
                 await store.started.wait()
-                stop.set()
+                app.request_shutdown()
                 await asyncio.sleep(0.04)
                 assert not task.done() and not store.closed
                 if finish:
@@ -112,7 +111,7 @@ async def shutdown():
                 await asyncio.wait_for(task, 3)
                 assert store.active == 0 and store.closed
         finally:
-            stop.set()
+            app.request_shutdown()
             store.release.set()
             await asyncio.wait_for(task, 3)
         print(f"PASS shutdown: finish_in_grace={finish}, store closes after handler cleanup")

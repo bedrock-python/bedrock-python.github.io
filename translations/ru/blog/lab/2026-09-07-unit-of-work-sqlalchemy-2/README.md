@@ -1,6 +1,6 @@
 # Практикум: Unit of Work в SQLAlchemy 2 {#lab-the-unit-of-work-in-sqlalchemy-2}
 
-Запускаемый код из [статьи](../../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md).
+Запускаемый код из [статьи](../../posts/2026-10-08-sqlalchemy-sessions-and-transactions.md).
 Нужен работающий Docker. Скрипт создаёт и удаляет собственный контейнер PostgreSQL;
 существующие базы не используются. Выполните команду из
 `docs/blog/lab/2026-09-07-unit-of-work-sqlalchemy-2` в клоне репозитория:
@@ -15,7 +15,7 @@ SQLAlchemy 2.0.54, asyncpg 0.31.0 и testcontainers 4.15.0.
 (17.11 в проверенном запуске). Драйвер asyncpg указан явно.
 
 В `models.py` определены заказы, их события и необязательные подписки на рассылку.
-`order_flow.py` содержит десять фрагментов Python из обеих версий статьи.
+`order_flow.py` содержит код из статьи и варианты, которые нужны проверкам.
 `uow_lab.py` проверяет их на настоящем PostgreSQL, без моков репозиториев.
 
 Проверяются следующие результаты:

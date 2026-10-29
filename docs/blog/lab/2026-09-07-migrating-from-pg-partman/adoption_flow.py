@@ -1,4 +1,4 @@
-"""The article's explicit policy choice and per-table handover."""
+"""pg_partman's settings expressed as a pg-partsmith policy, and the per-table handover."""
 from pg_partsmith import (
     CreateAhead, DropNever, KeepNewest, LifecyclePolicy,
     PartitionGranularity, TablePartitionConfig,
@@ -7,15 +7,17 @@ from pg_partsmith import (
 
 # snippet:adoption
 def adopted_config(settings):
+    # Monthly table: premake counts future tables, CreateAhead also counts the current month.
+    # retention='3 months' keeps the current month and three before it; retention_keep_table=true
+    # leaves detached tables in place.
     return TablePartitionConfig(
         schema="public",
         table_name="events",
         partition_column=settings["control"],
         granularity=PartitionGranularity.MONTH,
         lifecycle=LifecyclePolicy(
-            creation=CreateAhead(count=3),  # Current month and two future months.
-            # An explicit NEW retention rule, not a conversion of an interval.
-            retention=KeepNewest(count=3),
+            creation=CreateAhead(count=settings["premake"] + 1),
+            retention=KeepNewest(count=4),
             drop=DropNever(),
         ),
     )

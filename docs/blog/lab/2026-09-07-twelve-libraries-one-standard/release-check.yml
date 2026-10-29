@@ -1,0 +1,11 @@
+# Replace the "Set version from release tag" step in the generated publish.yml with this step.
+- name: Check that the tag matches the committed version
+  env:
+    TAG: ${{ needs.check.outputs.tag }}
+  shell: python
+  run: |
+    import os, pathlib, re
+    source = pathlib.Path("report_periods/__version__.py").read_text()
+    version = re.search(r'__version__ = "([^"]+)"', source)[1]
+    if os.environ["TAG"] not in (f"v{version}", f"report-periods-v{version}"):
+        raise SystemExit(f"Tag {os.environ['TAG']} does not match version {version}")

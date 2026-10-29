@@ -1,6 +1,6 @@
 # Практикум: транзакционный Inbox {#lab-the-transactional-inbox}
 
-Сценарии обработки из [статьи](../../posts/2026-09-13-reliable-events-outbox-inbox-kafka.md).
+Сценарии обработки из [статьи](../../posts/2026-10-03-reliable-events-outbox-inbox-kafka.md).
 Нужен работающий Docker. Выполните команду из
 `docs/blog/lab/2026-09-07-transactional-inbox` в клоне репозитория:
 

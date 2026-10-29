@@ -18,8 +18,6 @@ import zipfile
 from copier import run_copy
 import yaml
 
-from release_checks import require_release_tag
-
 HERE = Path(__file__).resolve().parent
 TEMPLATE_REF = "a1a1e7d5eafdcac08aeed7c1a0daaff31c67ac8c"
 ANSWERS = {
@@ -117,16 +115,23 @@ def main():
     assert "contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')" in original_gate
     assert "skipped" not in original_gate
     fixed_gate = yaml.load((HERE / "ci-gate.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)["all-checks-passed"]
-    code = fixed_gate["steps"][0]["run"]
-    names = fixed_gate["needs"]
+    term = r"contains\(needs\.\*\.result, '(\w+)'\)"
+    any_term = r"contains\(needs\.\*\.result, '\w+'\)"
+
+    def rejected_results(script):
+        expression = re.search(r"\$\{\{(.*?)\}\}", script)[1].strip()
+        # Only a disjunction of contains() terms is modelled; anything else must fail this check.
+        assert re.fullmatch(rf"{any_term}(?: \|\| {any_term})*", expression), expression
+        return set(re.findall(term, expression))
+
+    rejected = rejected_results(fixed_gate["steps"][0]["run"])
+    original_rejected = rejected_results(original_gate)
+    assert rejected == {"failure", "cancelled", "skipped"} and original_rejected == {"failure", "cancelled"}
     old_false_positives = 0
-    for results in product(("success", "failure", "cancelled", "skipped"), repeat=len(names)):
-        jobs = {name: {"result": result} for name, result in zip(names, results, strict=True)}
-        expected = 0 if all(result == "success" for result in results) else 1
-        run(sys.executable, "-c", code, codes=(expected,), extra_env={"NEEDS_JSON": json.dumps(jobs)})
-        old_passed = not ({"failure", "cancelled"} & set(results))
-        old_false_positives += int(old_passed and expected == 1)
-    run(sys.executable, "-c", code, codes=(1,), extra_env={"NEEDS_JSON": "{}"})
+    for results in product(("success", "failure", "cancelled", "skipped"), repeat=len(fixed_gate["needs"])):
+        passes = not (rejected & set(results))
+        assert passes == all(result == "success" for result in results)
+        old_false_positives += int(not (original_rejected & set(results)) and not passes)
     assert old_false_positives == 7
     # Preserve the original workflow in the report, then install the exact demonstrated job.
     (output / "original-ci.yml").write_text(ci_path.read_text(encoding="utf-8"), encoding="utf-8")
@@ -142,23 +147,35 @@ def main():
         k: v for k, v in ci["jobs"].items() if k != "all-checks-passed"
     }
     ci_path.write_text(updated_ci, encoding="utf-8")
-    print("PASS CI gate: 64 job-result combinations and missing jobs; only all-success passes", flush=True)
+    print("PASS CI gate: of 64 job-result combinations only all-success passes; the original accepted 7 with skipped jobs", flush=True)
 
     # Locally model the version files from a reviewed release PR; no GitHub writes or release tag.
     (package / "__version__.py").write_text('__version__ = "0.1.0"  # x-release-please-version\n', encoding="utf-8")
     (project / ".release-please-manifest.json").write_text('{".": "0.1.0"}\n', encoding="utf-8")
     (project / "CHANGELOG.md").write_text("# Changelog\n\n## 0.1.0\n\n- Add UTC month boundaries for reports.\n", encoding="utf-8")
-    for tag in ("v0.1.0", "report-periods-v0.1.0"):
-        require_release_tag(tag, "0.1.0")
-    for tag in ("v0.2.0", "other-v0.1.0", "v0.1.0-extra", "main"):
-        try:
-            require_release_tag(tag, "0.1.0")
-        except ValueError:
-            pass
-        else:
-            raise AssertionError(f"Accepted invalid release tag {tag!r}")
+    # Run the replacement publish step's Python against the committed version file.
+    release_step = yaml.load((HERE / "release-check.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)[0]
+    for tag, code in (("v0.1.0", 0), ("report-periods-v0.1.0", 0), ("v0.2.0", 1), ("other-v0.1.0", 1),
+                      ("v0.1.0-extra", 1), ("main", 1)):
+        run(sys.executable, "-c", release_step["run"], codes=(code,), extra_env={"TAG": tag})
+    publish_path = project / ".github/workflows/publish.yml"
+    publish_text = publish_path.read_text(encoding="utf-8")
+    (output / "original-publish.yml").write_text(publish_text, encoding="utf-8")
+    step_text = "".join(line for line in (HERE / "release-check.yml").read_text(encoding="utf-8").splitlines(True)
+                        if not line.startswith("#"))
+    updated_publish, replacements = re.subn(
+        r"(?ms)^      - name: Set version from release tag\n.*?(?=^      - )",
+        lambda _: indent(step_text, "      "), publish_text,
+    )
+    assert replacements == 1
+    old_steps = yaml.load(publish_text, Loader=yaml.BaseLoader)["jobs"]["publish"]["steps"]
+    new_steps = yaml.load(updated_publish, Loader=yaml.BaseLoader)["jobs"]["publish"]["steps"]
+    assert [step for step in old_steps if step.get("name") != "Set version from release tag"] == [
+        step for step in new_steps if step != release_step
+    ] and release_step in new_steps
+    publish_path.write_text(updated_publish, encoding="utf-8")
     checks()
-    run(uv, "build", "--no-sources")
+    run(uv, "build")
     wheels = list((project / "dist").glob("*.whl"))
     sdists = list((project / "dist").glob("*.tar.gz"))
     assert len(wheels) == len(sdists) == 1
@@ -173,7 +190,7 @@ def main():
         for name in required:
             member = archive.extractfile(f"report_periods-0.1.0/{name}")
             assert member is not None and member.read() == wheel_code[name]
-    print("PASS build: matching source/wheel modules, py.typed, metadata and six release-tag cases", flush=True)
+    print("PASS build: six tag/version cases, matching source/wheel modules, py.typed and metadata", flush=True)
 
     consumer = output / "consumer"
     consumer.mkdir()
@@ -181,7 +198,7 @@ def main():
         venv = output / f"{label}-env"
         run(uv, "venv", "--python", "3.11", venv)
         interpreter = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-        run(uv, "pip", "install", "--python", interpreter, "--no-deps", artifact)
+        run(uv, "pip", "install", "--python", interpreter, artifact)
         smoke = run(interpreter, "-I", HERE / "artifact_smoke.py", cwd=consumer)
         assert "PASS installed artifact" in smoke.stdout
     print("PASS installation: wheel and sdist each work in a separate clean Python 3.11 environment", flush=True)

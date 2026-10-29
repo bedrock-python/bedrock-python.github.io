@@ -8,14 +8,13 @@ from servicewright import AppSpec, DaemonEntrypoint, Service, run_sync
 from consumer_common import Container, Settings, flow
 
 
-def build_service(bootstrap, process, *, group="tracking", grace=12):
+def build_service(bootstrap, process, *, group="tracking", grace=5):
     async def consume(scope, stop):
-        # The timeout belongs to this loop. DaemonEntrypoint.drain() is a no-op.
+        # servicewright waits for this function; the shutdown bound is grace.
         await flow.run_tracking(bootstrap, process, stop, group=group, grace=grace)
 
     spec = AppSpec(
         service_name="tracking", create_container=lambda settings: Container(),
-        cleanup_timeout_seconds=3,
     )
     return Service(spec, entrypoints=[DaemonEntrypoint(consume)])
 # /snippet:service

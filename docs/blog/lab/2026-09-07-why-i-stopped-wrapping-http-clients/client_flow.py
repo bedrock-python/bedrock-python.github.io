@@ -5,14 +5,14 @@ from clientwright import (
 )
 
 
-def http_client(base_url, *, metrics=None):
+def http_client(name, base_url, *, metrics=None):
     return build(
         'httpx',
         ClientConfig(
-            service_name='orders',
+            service_name=name,
             base_url=base_url,
             timeout=TimeoutConfig(total=2, connect=0.3, read=0.5),
-            retry=RetryConfig(max_attempts=3, budget_ratio=0.1),
+            retry=RetryConfig(),
             circuit_breaker=None,
             on_unsupported='strict',
         ),
@@ -27,9 +27,11 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def outbound_clients(inventory_url, payments_url):
-    async with http_client(inventory_url) as inventory:
-        async with http_client(payments_url) as payments:
-            yield inventory, payments
+    async with (
+        http_client('inventory', inventory_url) as inventory,
+        http_client('payments', payments_url) as payments,
+    ):
+        yield inventory, payments
 # /snippet:lifetime
 
 
@@ -49,7 +51,7 @@ async def charge(client, order_id, amount_minor):
     response = await client.post(
         '/payments',
         json={'order_id': order_id, 'amount_minor': amount_minor},
-        headers={'Idempotency-Key': f'charge:{order_id}'},
+        headers={'Idempotency-Key': f'charge-{order_id}'},
         extensions={IDEMPOTENT_EXTENSION: True},
     )
     response.raise_for_status()
@@ -57,7 +59,6 @@ async def charge(client, order_id, amount_minor):
 # /snippet:payment
 
 
-# snippet:backoff
 RETRIES = RetryConfig(
     max_attempts=3,
     initial_backoff=0.1,
@@ -67,7 +68,6 @@ RETRIES = RetryConfig(
     respect_retry_after=True,
     budget_ratio=0.1,
 )
-# /snippet:backoff
 
 
 # snippet:breaker
@@ -76,9 +76,9 @@ from clientwright import CircuitBreakerConfig
 
 def shared_http_client():
     return build('httpx', ClientConfig(
-        service_name='orders',
+        service_name='shop-backends',
         timeout=TimeoutConfig(total=2),
-        retry=RETRIES,
+        retry=RetryConfig(),
         circuit_breaker=CircuitBreakerConfig(
             fail_threshold=3,
             recovery_timeout=10,
@@ -94,7 +94,7 @@ from clientwright.core.testing import RecordingMetrics
 
 async def observe_stock(base_url):
     metrics = RecordingMetrics()
-    async with http_client(base_url, metrics=metrics) as client:
+    async with http_client('inventory', base_url, metrics=metrics) as client:
         available = await fetch_stock(client, 'sku-42')
     return available, len(metrics.calls), len(metrics.attempts)
 # /snippet:metrics

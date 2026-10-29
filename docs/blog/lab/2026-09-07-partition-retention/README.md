@@ -1,8 +1,8 @@
 # Lab: partition retention and a verified archive {#lab-partition-retention-is-not-drop-table}
 
-Run the analytics-service example from the [partition maintenance article](../../posts/2026-09-13-postgresql-partition-maintenance.md) against a disposable PostgreSQL 17 database. Python 3.13 and pg-partsmith 1.5.1 are used; `requirements.txt` pins the Python dependencies.
+Run the analytics-service example from the [partition maintenance article](../../posts/2026-10-18-postgresql-partition-maintenance.md) against a disposable PostgreSQL 17 database. Python 3.13 and pg-partsmith 1.8.0 are used; `requirements.txt` pins the Python dependencies.
 
-With a planning date of September 15, 2026, the policy keeps July–September, prepares October and November, and waits seven days after detachment before deletion. A receipt references a May event. The fixture also includes a two-month partition with a misleading monthly name and an unmarked standalone table.
+With a planning date of September 15, 2026, the policy keeps July–September, prepares October and November, and waits seven days after detachment before deletion. A receipt references a May event. The fixture also includes a two-month partition with a misleading monthly name and an unmarked standalone table whose name does not follow the monthly scheme.
 
 From this directory, with Docker running and `uv` installed:
 
@@ -15,8 +15,8 @@ The script asserts:
 - Planning leaves the catalog unchanged; JSON round-tripping preserves the plan, and a changed policy is refused before DDL.
 - October and November are created. April and June detach but their rows survive. October inserts work; late April inserts fail without a DEFAULT partition.
 - `Unreferenced()` keeps May attached. Without it, PostgreSQL refuses the detach; `success=True` still comes with an issue and the receipt survives.
-- A second toolkit on a separate engine cannot maintain a table whose advisory lock is held. It can acquire the lock after release.
-- The seven-day grace threshold is respected. A failing archive hook or an incorrect existing archive prevents deletion.
+- While one worker holds the table's advisory lock, a second worker on a separate engine skips the run and changes nothing. It can acquire the lock after release.
+- The seven-day grace threshold is respected. A failing archive hook or an incorrect existing archive prevents deletion; the hook also refuses a table whose OID differs from the plan.
 - A successful retry drops April and June only after writing and rereading their JSON files. All four rows are restored into a temporary table and compared with the originals.
 - Deleting the receipt makes manually created May eligible. The two-month partition and unmarked standalone table remain intact.
 

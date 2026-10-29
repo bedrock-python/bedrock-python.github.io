@@ -1,11 +1,15 @@
 """A read timeout is not a wall clock: a server that drips bytes never trips it."""
 import asyncio
+import logging
 import time
 
 import httpx
 
 from clientwright import ClientConfig, TimeoutConfig, build
 
+logging.disable(logging.CRITICAL)
+
+# snippet:inventory
 BYTES = 8
 INTERVAL = 0.5  # seconds between bytes; the response takes BYTES * INTERVAL
 
@@ -20,8 +24,9 @@ async def drip(reader, writer) -> None:
             writer.write(b"x")
             await writer.drain()
     except ConnectionResetError:
-        pass  # the client gave up mid-body, which is the point of one of the runs
+        pass  # the client gave up mid-body
     writer.close()
+# /snippet:inventory
 
 
 async def stall(reader, writer) -> None:

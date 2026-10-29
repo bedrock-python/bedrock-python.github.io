@@ -15,7 +15,7 @@ from models import Base
 from uow_lab import counts, reset
 
 
-async def compare_external_wait(engine, sessions, uow, *, inside):
+async def compare_external_wait(engine, session_factory, uow, *, inside):
     release, both_waiting = asyncio.Event(), asyncio.Event()
     arrivals = 0
 
@@ -43,7 +43,7 @@ async def compare_external_wait(engine, sessions, uow, *, inside):
         held = engine.pool.checkedout()
         assert held == (2 if inside else 0), held
         try:
-            async with sessions() as observer:
+            async with session_factory() as observer:
                 assert await observer.scalar(text("SELECT 1")) == 1
         except PoolTimeout:
             assert inside, "No connection should be held while quoting before the transaction"
@@ -55,34 +55,34 @@ async def compare_external_wait(engine, sessions, uow, *, inside):
         release.set()
         results = await asyncio.gather(*tasks, return_exceptions=True)
     assert all(isinstance(result, dict) for result in results), results
-    assert await counts(sessions) == (2, 2, 0)
-    async with sessions() as observer:
+    assert await counts(session_factory) == (2, 2, 0)
+    async with session_factory() as observer:
         assert await observer.scalar(text("SELECT sum(delivery_cents) FROM orders")) == 500
     assert engine.pool.checkedout() == 0
 
 
 async def main(url):
-    engine, sessions = flow.open_database(url)
-    uow = flow.make_uow(sessions)
+    engine, session_factory = flow.open_database(url)
+    uow = flow.make_uow(session_factory)
     try:
         async with engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
             print("PostgreSQL", await connection.scalar(text("SHOW server_version")))
 
-        async with sessions() as session:
+        async with session_factory() as session:
             assert engine.pool.checkedout() == 0
             await session.execute(text("SELECT 1"))
             assert engine.pool.checkedout() == 1
         assert engine.pool.checkedout() == 0
         print("new session: 0 connections; first query: 1; closed session: 0")
 
-        await compare_external_wait(engine, sessions, uow, inside=True)
-        await reset(sessions)
-        await compare_external_wait(engine, sessions, uow, inside=False)
-        await reset(sessions)
+        await compare_external_wait(engine, session_factory, uow, inside=True)
+        await reset(session_factory)
+        await compare_external_wait(engine, session_factory, uow, inside=False)
+        await reset(session_factory)
 
         # Drain both tasks before closing the session, including the rejected operation.
-        async with sessions() as shared:
+        async with session_factory() as shared:
             results = await asyncio.gather(
                 shared.execute(text("SELECT pg_sleep(0.05)")),
                 shared.execute(text("SELECT pg_sleep(0.05)")),
@@ -104,7 +104,7 @@ async def main(url):
                 opened_sessions.append(session)
 
         observed_uow = AsyncSQLAlchemyUnitOfWork(
-            sessions, transaction_factory=ObservedTransaction,
+            session_factory, transaction_factory=ObservedTransaction,
         )
         results = await flow.place_independent_orders(
             observed_uow, [f"sku-{i}" for i in range(6)],
@@ -112,7 +112,7 @@ async def main(url):
         assert len(results) == 6
         assert len({result["order_id"] for result in results}) == 6
         assert len({id(session) for session in opened_sessions}) == 6
-        assert await counts(sessions) == (6, 6, 0)
+        assert await counts(session_factory) == (6, 6, 0)
         assert engine.pool.checkedout() == 0
         print("six independent orders: six sessions, six order/event pairs, all connections returned")
     finally:

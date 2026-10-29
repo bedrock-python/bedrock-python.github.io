@@ -1,6 +1,6 @@
 # Практикум: кто создаёт топик Kafka {#lab-who-creates-the-kafka-topic}
 
-Создание топиков из [статьи](../../posts/2026-09-13-kafka-in-python-services.md).
+Создание топиков из [статьи](../../posts/2026-10-02-kafka-in-python-services.md).
 Нужен работающий Docker. Выполните команду из
 `docs/blog/lab/2026-09-07-topics-on-startup` в клоне репозитория:
 

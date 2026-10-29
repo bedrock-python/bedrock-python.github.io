@@ -26,36 +26,15 @@ async def record_order(session: AsyncSession, order_id: UUID) -> UUID:
     return event.id
 
 
-async def place_order(sessions: async_sessionmaker, order_id: UUID) -> UUID:
-    async with sessions.begin() as session:
+async def place_order(session_factory: async_sessionmaker, order_id: UUID) -> UUID:
+    async with session_factory.begin() as session:
         return await record_order(session, order_id)
 # /snippet:outbox
 
 
-# snippet:producer
-from contextlib import asynccontextmanager
-
-from aiokafka import AIOKafkaProducer
-
-from omni_box.core.converters import EnvelopeEventConverter
-from omni_box.infra.brokers.kafka import KafkaEventPublisher
-
-
-@asynccontextmanager
-async def kafka_publisher(bootstrap: str):
-    producer = AIOKafkaProducer(
-        bootstrap_servers=bootstrap, enable_idempotence=True, acks="all",
-    )
-    try:
-        await producer.start()
-        yield KafkaEventPublisher(producer, EnvelopeEventConverter())
-    finally:
-        await producer.stop()
-# /snippet:producer
-
-
 # snippet:relay
 from omni_box import OutboxPublisher
+from omni_box.infra.brokers.kafka import KafkaEventPublisher
 
 
 async def relay_batch(session: AsyncSession, broker: KafkaEventPublisher):
@@ -65,25 +44,27 @@ async def relay_batch(session: AsyncSession, broker: KafkaEventPublisher):
     )
 
 
-async def relay_once(sessions: async_sessionmaker, broker: KafkaEventPublisher):
-    async with sessions.begin() as session:
+async def relay_once(session_factory: async_sessionmaker, broker: KafkaEventPublisher):
+    async with session_factory.begin() as session:
         return await relay_batch(session, broker)
 # /snippet:relay
 
 
 # snippet:transaction
+from contextlib import asynccontextmanager
+
 from omni_box.infra.storage.postgres import PostgresInboxRepository
 
 from models import InboxEventDB
 
 
 class InboxTransaction:
-    def __init__(self, sessions: async_sessionmaker):
-        self.sessions = sessions
+    def __init__(self, session_factory: async_sessionmaker):
+        self.session_factory = session_factory
 
     @asynccontextmanager
     async def transaction(self):
-        async with self.sessions.begin() as session:
+        async with self.session_factory.begin() as session:
             yield PostgresInboxRepository(session, model_class=InboxEventDB)
 # /snippet:transaction
 
@@ -110,7 +91,7 @@ from omni_box import AckStrategy, InboxConsumerRunner
 from omni_box.infra.brokers.kafka import KafkaEventConsumer
 
 
-def billing_runner(sessions, bootstrap, *, topic="orders.created",
+def billing_runner(session_factory, bootstrap, *, topic="orders.created",
                    group="billing", handler=create_invoice):
     consumer = AIOKafkaConsumer(
         topic, bootstrap_servers=bootstrap, group_id=group,
@@ -118,11 +99,10 @@ def billing_runner(sessions, bootstrap, *, topic="orders.created",
     )
     return InboxConsumerRunner(
         consumer=KafkaEventConsumer(consumer),
-        transaction_provider=InboxTransaction(sessions),
+        transaction_provider=InboxTransaction(session_factory),
         handler=handler,
         worker_id="billing-1", consumer_group=group,
         ack_strategy=AckStrategy.EXACTLY_ONCE_INBOX,
-        exactly_once_commit_on_failed=False,
     )
 # /snippet:consumer
 
@@ -138,3 +118,21 @@ async def run_billing(runner: InboxConsumerRunner):
     finally:
         await runner.stop()
 # /snippet:worker
+
+
+# The relay's producer setup; the labs use it, the article does not print it.
+from aiokafka import AIOKafkaProducer
+
+from omni_box.core.converters import EnvelopeEventConverter
+
+
+@asynccontextmanager
+async def kafka_publisher(bootstrap: str):
+    producer = AIOKafkaProducer(
+        bootstrap_servers=bootstrap, enable_idempotence=True, acks="all",
+    )
+    try:
+        await producer.start()
+        yield KafkaEventPublisher(producer, EnvelopeEventConverter())
+    finally:
+        await producer.stop()

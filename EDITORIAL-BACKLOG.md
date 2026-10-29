@@ -264,7 +264,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 7. We started writing documentation for AI coding agents
 
-- File: `docs/blog/posts/2026-09-07-documentation-for-ai-coding-agents.md`
+- File: `docs/blog/posts/2026-10-26-documentation-for-ai-coding-agents.md`
 - Search title: *Building Python Libraries for AI Coding Agents, Not Just Humans*
 - LinkedIn hook: "In 2024 I wrote docs for developers. In 2026 I realised half of my documentation users are not human."
 - Tags: `bedrock-python`, `documentation`, `ai-agents`, `python-library-template`
@@ -475,7 +475,7 @@ The failure modes of autonomous bots: noise, confident nonsense, reviewer
 fatigue, and the maintainer who stops reading. The pipeline brief, review,
 human polish, post, and what the polish step actually changes, with real
 examples of comments that were dropped. Closes on mr-review. Drafted 2026-09-07:
-`docs/blog/posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
+`docs/blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
 pipeline from the tool's documentation; real dropped-comment examples need a review session and are the maintainer's to add).
 
 ### 24. What happens when Kafka is down for an hour?

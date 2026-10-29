@@ -1,6 +1,6 @@
 # Практикум: остановка consumer Kafka и повторная обработка {#lab-graceful-kafka-consumer-shutdown-in-kubernetes}
 
-Сценарии остановки из [статьи](../../posts/2026-09-13-kafka-in-python-services.md).
+Сценарии остановки из [статьи](../../posts/2026-10-02-kafka-in-python-services.md).
 Нужен работающий Docker. Выполните команду из
 `docs/blog/lab/2026-09-07-kafka-consumer-shutdown` в клоне репозитория:
 

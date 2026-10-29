@@ -14,5 +14,5 @@ jobs:
         working-directory: docs/blog/lab/2026-09-07-five-alembic-migration-tests
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0
       - run: uv run --no-project --python 3.13 --with-requirements requirements.txt python -m pytest -q

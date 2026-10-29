@@ -29,7 +29,7 @@ async def send_order(producer, topic, order_id, event_id=None):
 
 async def main(db_url, bootstrap):
     await create_topics(bootstrap, "inbox.rollback", "inbox.ack", "inbox.no-id")
-    async with database(db_url) as sessions:
+    async with database(db_url) as session_factory:
         async with AIOKafkaProducer(bootstrap_servers=bootstrap) as producer:
             first_order, next_order = uuid4(), uuid4()
             await send_order(producer, "inbox.rollback", first_order, uuid4())
@@ -41,7 +41,7 @@ async def main(db_url, bootstrap):
 
             group = "billing-rollback"
             runner = flow.billing_runner(
-                sessions, bootstrap, topic="inbox.rollback", group=group,
+                session_factory, bootstrap, topic="inbox.rollback", group=group,
                 handler=fail_after_insert,
             )
             try:
@@ -51,18 +51,18 @@ async def main(db_url, bootstrap):
                 assert "Retry message" in str(error), error
             else:
                 raise AssertionError("The worker must stop on an uncommitted result")
-            assert await invoice_count(sessions, first_order) == 0
-            assert await invoice_count(sessions, next_order) == 0
-            assert await count(sessions, InboxEventDB) == 0
+            assert await invoice_count(session_factory, first_order) == 0
+            assert await invoice_count(session_factory, next_order) == 0
+            assert await count(session_factory, InboxEventDB) == 0
             assert await committed_offset(bootstrap, "inbox.rollback", group) is None
             print("PASS handler failure: invoices=0, inbox=0, offset uncommitted; worker stopped")
 
             results = await process(flow.billing_runner(
-                sessions, bootstrap, topic="inbox.rollback", group=group,
+                session_factory, bootstrap, topic="inbox.rollback", group=group,
             ), 2)
             assert all(result.processed and result.committed for result in results)
-            assert await invoice_count(sessions, first_order) == 1
-            assert await invoice_count(sessions, next_order) == 1
+            assert await invoice_count(session_factory, first_order) == 1
+            assert await invoice_count(session_factory, next_order) == 1
             assert await committed_offset(bootstrap, "inbox.rollback", group) == 2
             print("PASS restart: failed record retried before the next record, invoices=2")
 
@@ -73,9 +73,9 @@ async def main(db_url, bootstrap):
             class FailOffsetCommit(AIOKafkaConsumer):
                 async def commit(self, offsets=None):
                     # This runs at the real adapter's acknowledgement boundary.
-                    assert await invoice_count(sessions, order_id) == 1
+                    assert await invoice_count(session_factory, order_id) == 1
                     assert await count(
-                        sessions, InboxEventDB, InboxEventDB.consumer_group == group,
+                        session_factory, InboxEventDB, InboxEventDB.consumer_group == group,
                         InboxEventDB.status == "completed",
                     ) == 1
                     raise ProcessCrash("database committed, Kafka offset not committed")
@@ -85,7 +85,7 @@ async def main(db_url, bootstrap):
                     topic, bootstrap_servers=bootstrap, group_id=group,
                     auto_offset_reset="earliest", enable_auto_commit=False,
                 )),
-                transaction_provider=flow.InboxTransaction(sessions),
+                transaction_provider=flow.InboxTransaction(session_factory),
                 handler=flow.create_invoice, worker_id="billing-1", consumer_group=group,
                 ack_strategy=flow.AckStrategy.EXACTLY_ONCE_INBOX,
                 exactly_once_commit_on_failed=False,
@@ -98,42 +98,42 @@ async def main(db_url, bootstrap):
                 raise AssertionError("Injected offset failure was not reached")
             assert await committed_offset(bootstrap, topic, group) is None
             replay, = await process(flow.billing_runner(
-                sessions, bootstrap, topic=topic, group=group,
+                session_factory, bootstrap, topic=topic, group=group,
             ))
             assert replay.duplicate and replay.committed and not replay.processed, replay
-            assert await invoice_count(sessions, order_id) == 1
+            assert await invoice_count(session_factory, order_id) == 1
             assert await committed_offset(bootstrap, topic, group) == 1
             print("PASS failure after DB commit: replay=duplicate, invoices=1, offset=1")
 
             independent, = await process(flow.billing_runner(
-                sessions, bootstrap, topic=topic, group="another-recipient",
+                session_factory, bootstrap, topic=topic, group="another-recipient",
             ))
             assert independent.processed and not independent.duplicate, independent
-            assert await invoice_count(sessions, order_id) == 2
+            assert await invoice_count(session_factory, order_id) == 2
             print("PASS another consumer group: separate Inbox identity, handler runs again")
 
-            async with sessions.begin() as session:
+            async with session_factory.begin() as session:
                 await session.execute(delete(InboxEventDB).where(
                     InboxEventDB.consumer_group == group,
                     InboxEventDB.message_id == str(event_id),
                 ))
             await send_order(producer, topic, order_id, event_id)
             after_cleanup, = await process(flow.billing_runner(
-                sessions, bootstrap, topic=topic, group=group,
+                session_factory, bootstrap, topic=topic, group=group,
             ))
             assert after_cleanup.processed and not after_cleanup.duplicate, after_cleanup
-            assert await invoice_count(sessions, order_id) == 3
+            assert await invoice_count(session_factory, order_id) == 3
             print("PASS Inbox cleanup + replay: old event executes again")
 
             order_id = uuid4()
             await send_order(producer, "inbox.no-id", order_id)
             await send_order(producer, "inbox.no-id", order_id)
             copies = await process(flow.billing_runner(
-                sessions, bootstrap, topic="inbox.no-id", group="billing-no-id",
+                session_factory, bootstrap, topic="inbox.no-id", group="billing-no-id",
             ), 2)
             assert all(result.processed and not result.duplicate for result in copies)
             assert copies[0].message_id != copies[1].message_id
-            assert await invoice_count(sessions, order_id) == 2
+            assert await invoice_count(session_factory, order_id) == 2
             print("PASS missing event_id: different Kafka offsets are different Inbox messages")
 
 

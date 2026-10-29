@@ -6,7 +6,7 @@ from contextvars import ContextVar
 from time import perf_counter
 
 import grpc
-from grpc_client_kit.interceptors.base import AsyncAroundClientInterceptor, ClientCall
+from grpc_client_kit import AsyncAroundClientInterceptor, ClientCall
 
 REQUEST_ID = ContextVar("request_id", default=None)
 

@@ -92,6 +92,7 @@ def main():
                     "uv",
                     "pip",
                     "install",
+                    "--compile-bytecode",
                     "--python",
                     python,
                     "--constraint",

@@ -1,6 +1,6 @@
 # Lab: the unit of work in SQLAlchemy 2
 
-Runnable code from [the article](../../posts/2026-09-13-sqlalchemy-sessions-and-transactions.md).
+Runnable code from [the article](../../posts/2026-10-08-sqlalchemy-sessions-and-transactions.md).
 Docker must be running. The script creates and removes its own PostgreSQL container;
 it does not use an existing database. Run from this directory in a repository checkout:
 
@@ -14,7 +14,7 @@ The image is `postgres:17-alpine`; the script prints its server version
 (17.11 in the verified run). The asyncpg driver is selected explicitly.
 
 `models.py` defines orders, their events and optional newsletter subscriptions.
-`order_flow.py` contains the ten Python snippets printed in both article editions.
+`order_flow.py` contains the code printed in the article, plus the variants the checks need.
 `uow_lab.py` exercises them against real PostgreSQL, without repository mocks.
 
 Assertions cover:

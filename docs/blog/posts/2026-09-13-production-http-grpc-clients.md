@@ -16,9 +16,11 @@ tags:
 
 <div class="bdr-post__hero" data-bdr-post="2026-09-13-production-http-grpc-clients" role="img" aria-label="Keep the client; attach the policy beside it" markdown="0"></div>
 
-Imagine an orders service with two HTTP dependencies. Inventory returns the available quantity of a product; payments charges the order. A failed inventory read may be repeated. A failed payment response needs more care: the money may already have been charged.
+An orders service calls a warehouse and a payment service, and either can be slow or not answer at all. The first instinct is to retry.
 
-We will configure those clients, make the dependencies fail and count the requests that actually reach them. Then we will connect to a gRPC version of inventory and check which settings can be carried over and which behave differently.
+But a retried stock read is harmless, while a retried payment can charge the buyer twice, and the client cannot tell the two apart.
+
+We will configure its HTTP and gRPC clients, break their dependencies and count the requests that actually reach them.
 
 <!-- more -->
 
@@ -31,7 +33,7 @@ We will configure those clients, make the dependencies fail and count the reques
 
 ## Create clients when the application starts {#ownership}
 
-Use [clientwright](https://bedrock-python.github.io/clientwright/) to attach time limits and retry policy to HTTPX. `build('httpx', ...)` returns a native `httpx.AsyncClient`; handlers keep using `get()`, `post()` and native responses:
+[clientwright](https://bedrock-python.github.io/clientwright/) attaches time limits and a retry policy to HTTPX, and `build('httpx', ...)` still returns a native `httpx.AsyncClient`:
 
 ```python
 from clientwright import (
@@ -39,14 +41,14 @@ from clientwright import (
 )
 
 
-def http_client(base_url, *, metrics=None):
+def http_client(name, base_url, *, metrics=None):
     return build(
         'httpx',
         ClientConfig(
-            service_name='orders',
+            service_name=name,
             base_url=base_url,
             timeout=TimeoutConfig(total=2, connect=0.3, read=0.5),
-            retry=RetryConfig(max_attempts=3, budget_ratio=0.1),
+            retry=RetryConfig(),
             circuit_breaker=None,
             on_unsupported='strict',
         ),
@@ -54,9 +56,9 @@ def http_client(base_url, *, metrics=None):
     )
 ```
 
-`max_attempts=3` includes the first request. `service_name='orders'` identifies the caller in telemetry. We will add a circuit breaker below. `on_unsupported='strict'` makes an unsupported setting fail at client construction; the [adapter lab](../lab/2026-09-07-why-i-stopped-wrapping-http-clients/README.md) demonstrates this with a Requests attempt timeout.
+`service_name` labels the client's metrics and logs. `RetryConfig()` already means three attempts, the first included, with 100 ms × 2 backoff, ±20% jitter, `Retry-After` support and a retry budget of 0.1. A circuit breaker is on by default (five failures, 60 seconds); `circuit_breaker=None` turns it off until we configure it below. `on_unsupported='strict'` makes a setting the adapter cannot apply fail at construction.
 
-Create both clients in the application's startup scope, inject them into handlers, and exit that scope after active handlers finish:
+Create both clients in the application's startup scope and close them after active handlers finish:
 
 ```python
 from contextlib import asynccontextmanager
@@ -64,12 +66,14 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def outbound_clients(inventory_url, payments_url):
-    async with http_client(inventory_url) as inventory:
-        async with http_client(payments_url) as payments:
-            yield inventory, payments
+    async with (
+        http_client('inventory', inventory_url) as inventory,
+        http_client('payments', payments_url) as payments,
+    ):
+        yield inventory, payments
 ```
 
-These are the base URLs of the two dependencies, for example `http://inventory:8080` and `http://payments:8080`. Opening this context for every incoming order would discard connection reuse and accumulated retry state. See the [service lifecycle example](2026-09-13-python-service-lifecycle.md) for where the application scope belongs.
+Opening them per request would throw away connection reuse, the retry budget and breaker state. The [service lifecycle article](2026-09-20-python-service-lifecycle.md) shows where the application scope belongs.
 
 <div id="reliability-is-not-retry3" data-search-exclude></div>
 <div id="why-retries-look-free" data-search-exclude></div>
@@ -83,7 +87,7 @@ These are the base URLs of the two dependencies, for example `http://inventory:8
 
 ## Give a stock read a total time limit {#budgets}
 
-Inventory exposes `GET /stock/{sku}` and returns `{"sku": "sku-42", "available": 7}`. Our handler needs one small function; the client already owns the transport policy:
+Inventory answers `GET /stock/{sku}` with `{"sku": "sku-42", "available": 7}`:
 
 ```python
 async def fetch_stock(client, sku):
@@ -92,11 +96,9 @@ async def fetch_stock(client, sku):
     return response.json()['available']
 ```
 
-For `await fetch_stock(inventory, 'sku-42')`, the configuration allows 0.3 seconds to connect, 0.5 seconds waiting for the next response chunk, and two seconds for the outgoing call across attempts and backoff. HTTPX's read timeout is a limit on inactivity, not the total response duration. See [HTTPX timeouts](https://www.python-httpx.org/advanced/timeouts/).
+The client allows 0.3 seconds to connect, 0.5 seconds between response chunks and two seconds for the whole call, attempts and backoff included. The [HTTPX read timeout](https://www.python-httpx.org/advanced/timeouts/) limits a pause, not the response: in the [deadline lab](../lab/2026-09-07-reliability-is-not-retry-3/README.md), a server sending a byte every 80 ms completes under a 300 ms read timeout, while `TimeoutConfig(total=0.35, read=0.3)` stops it with `DeadlineExceededError`.
 
-The [deadline lab](../lab/2026-09-07-reliability-is-not-retry-3/README.md) makes that distinction visible: the server sends one byte every 80 ms. Plain HTTPX with a 300 ms read timeout receives all ten bytes. With `TimeoutConfig(total=0.35, read=0.3)`, clientwright ends body consumption with `DeadlineExceededError` before the response completes.
-
-This limit covers an outgoing call. If inventory and payments must share the time left on an incoming order request, pass a common [DeadlineBudget](2026-09-06-timeouts-are-not-deadlines.md) through the call chain. Giving each client two fresh seconds would not provide a two-second budget for the whole order.
+To share the incoming request's time between inventory and payments, give the clients `AdapterDeps(deadline_source=AmbientDeadlineSource())` and set a `BudgetContext` with `use_budget()`, as in the [deadline article](2026-09-06-timeouts-are-not-deadlines.md). Two fresh seconds per client are not a two-second budget for the order.
 
 <div id="retries-can-make-an-outage-worse-designing-a-retry-budget" data-search-exclude></div>
 <div id="the-arithmetic" data-search-exclude></div>
@@ -114,9 +116,7 @@ This limit covers an outgoing call. If inventory and payments must share the tim
 
 ## Retry a payment only when the server can deduplicate it {#retries}
 
-Now payments saves a charge, then returns 503. A plain POST is not retried by this HTTP policy. Setting an idempotency flag alone makes a second request possible and produces a second charge in the lab.
-
-Suppose the payments API has a stronger contract: the same `Idempotency-Key` and payload return the saved result; reusing that key with a different payload is rejected. An order has exactly one charge operation, so its stable key can be derived from the order ID:
+Payments saves a charge and then returns 503. Retrying is safe only if the payments API returns the saved result for the same `Idempotency-Key` and payload, and rejects the key with a different payload. An order has one charge, so the key comes from the order ID:
 
 ```python
 from clientwright.adapters.httpx import IDEMPOTENT_EXTENSION
@@ -126,16 +126,14 @@ async def charge(client, order_id, amount_minor):
     response = await client.post(
         '/payments',
         json={'order_id': order_id, 'amount_minor': amount_minor},
-        headers={'Idempotency-Key': f'charge:{order_id}'},
+        headers={'Idempotency-Key': f'charge-{order_id}'},
         extensions={IDEMPOTENT_EXTENSION: True},
     )
     response.raise_for_status()
     return response.json()['payment_id']
 ```
 
-`IDEMPOTENT_EXTENSION` tells clientwright that this call may be retried. The header tells the payments service which operation to deduplicate. The server must implement that contract; the client flag does not implement it for the server.
-
-The [retry lab](../lab/2026-09-07-retry-after-backoff-jitter/README.md) checks three outcomes against a local HTTP service:
+`IDEMPOTENT_EXTENSION` lets clientwright retry the POST; the header lets the server recognize the repeat. The [retry lab](../lab/2026-09-07-retry-after-backoff-jitter/README.md) checks three versions against a local service:
 
 | After the first charge, the response is 503 | HTTP requests for the call | Charges recorded |
 | --- | --- | --- |
@@ -143,38 +141,20 @@ The [retry lab](../lab/2026-09-07-retry-after-backoff-jitter/README.md) checks t
 | POST marked idempotent, no server key | 2 | 2 |
 | POST with the stable key and client flag | 2 | 1; caller receives the saved payment ID |
 
-Calling `charge()` again with the same order and amount still returns that payment ID. The lab's deduplication uses memory and sequential requests to demonstrate the contract. A deployed payment API needs durable storage and atomic handling of concurrent duplicates; see [idempotency in APIs and jobs](2026-09-13-idempotency-in-apis-and-background-jobs.md).
+A second `charge()` for the same order returns the same payment ID. The lab deduplicates in memory and sequentially; a real API needs durable storage and atomic handling of concurrent duplicates; see [idempotency in APIs and jobs](2026-09-14-idempotency-in-apis-and-background-jobs.md).
 
 ### Respect the requested delay and limit extra traffic {#retry-budget}
 
-Use this policy for backoff, random spreading of attempts and a shared retry budget:
+With the default policy, the first retry waits 80 to 120 ms and the second 160 to 240 ms. `Retry-After: 1` replaces that with one second. If the requested delay cannot fit the remaining deadline, as with `Retry-After: 60` in the lab, the client returns the 503 at once after a single request.
 
-```python
-RETRIES = RetryConfig(
-    max_attempts=3,
-    initial_backoff=0.1,
-    max_backoff=1,
-    multiplier=2,
-    jitter=0.2,
-    respect_retry_after=True,
-    budget_ratio=0.1,
-)
-```
-
-With no `Retry-After`, the first delay is 80 to 120 ms and the second is 160 to 240 ms. With `Retry-After: 1`, the policy uses a one-second delay instead. If that delay cannot fit the remaining deadline, the lab observes the original 503 response and one server request: there is no extra attempt and no need to wait until the deadline expires. The library also caps `Retry-After` with `retry_after_max`, which defaults to 60 seconds; consider that cap when adopting an upstream's contract.
-
-`budget_ratio=0.1` applies to extra attempts for an origin within the client runtime. The origin is the URL's scheme, host and port. In version 0.5.0 a fresh origin starts with ten retry tokens, then logical calls replenish the bucket at the configured ratio. It therefore permits an initial burst; it is not a strict ten-percent cap for every batch of calls.
-
-The [budget lab](../lab/2026-09-07-retry-budget/README.md) makes 50 sequential calls to an endpoint that always returns 503, with the breaker disabled:
+The retry budget lives per origin (scheme, host and port) inside the client. A fresh origin starts with ten tokens, the bucket holds at most ten, and every call adds 0.1. The [budget lab](../lab/2026-09-07-retry-budget/README.md) makes 50 sequential calls to an endpoint that always returns 503, with the breaker off:
 
 | Retry settings | Server requests |
 | --- | --- |
 | Three attempts, `budget_ratio=None` | 150 |
-| Three attempts, `budget_ratio=0.1` | 64 in this run |
+| Three attempts, `budget_ratio=0.1` | 64 |
 
-The test checks the token-budget bound rather than assuming a universal count for concurrent traffic. These are process-local controls. Multiple replicas have separate buckets, and constructing a new client repeatedly would keep giving them fresh state. An outer three-attempt loop around this client's three attempts also produces nine requests for one operation; the adapter lab checks that case.
-
-Retries also need a reproducible body. This HTTPX adapter buffers a finite request iterator before replaying it; the lab checks that all three requests contain the same bytes. Do not assume a large upload remains streaming under that policy. For an upload client, disable owned retries and redirects with `retry=None, redirects='native'` when buffering is unsuitable, and separately bound the time spent obtaining data from the upload source.
+That is 50 first attempts, 10 retries from the initial tokens and 4 earned by the calls. Each replica and each new client starts with a full bucket, and an outer retry loop around this client multiplies attempts again: the [adapter lab](../lab/2026-09-07-why-i-stopped-wrapping-http-clients/README.md) turns three outer calls into nine requests. Retry in one layer only.
 
 <div id="circuit-breakers-should-be-per-origin-not-per-client" data-search-exclude></div>
 <div id="measured-one-counter-three-upstreams" data-search-exclude></div>
@@ -185,7 +165,7 @@ Retries also need a reproducible body. This HTTPX adapter buffers a finite reque
 
 ## Keep a payments outage from blocking inventory {#circuit-breakers}
 
-Suppose both destinations use one shared HTTP client. A circuit breaker should temporarily refuse the failing destination while healthy inventory remains usable:
+Separate clients already have separate breakers. A shared client that calls several origins by full URL needs its breaker keyed by origin, which is the default:
 
 ```python
 from clientwright import CircuitBreakerConfig
@@ -193,9 +173,9 @@ from clientwright import CircuitBreakerConfig
 
 def shared_http_client():
     return build('httpx', ClientConfig(
-        service_name='orders',
+        service_name='shop-backends',
         timeout=TimeoutConfig(total=2),
-        retry=RETRIES,
+        retry=RetryConfig(),
         circuit_breaker=CircuitBreakerConfig(
             fail_threshold=3,
             recovery_timeout=10,
@@ -204,11 +184,7 @@ def shared_http_client():
     ))
 ```
 
-Call it with full URLs. The default breaker key is the origin. In the [breaker lab](../lab/2026-09-07-circuit-breakers-per-origin/README.md), three failed calls to payments make nine attempts in total. The fourth call raises `CircuitOpenError` without another server request. A stock read to the other origin still returns 200.
-
-After the recovery interval, a limited probe can test the dependency again. The lab advances a supplied test clock to check the `open → half_open → closed` transition; it does not measure load-balancer recovery time. A 400 response does not trip this breaker.
-
-For clientwright, the breaker records one final outcome per logical call. It sits outside the retry loop:
+In the [breaker lab](../lab/2026-09-07-circuit-breakers-per-origin/README.md), three failed calls to payments make nine attempts, and the fourth raises `CircuitOpenError` without a request, while a stock read on another origin still returns 200. The breaker counts consecutive failed calls with status 500 or above; any other outcome, 400 and 429 included, resets the count. With a test clock, the lab also checks recovery from open through half-open to closed. One breaker check wraps the whole retry loop:
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
@@ -229,12 +205,12 @@ config:
 ---
 flowchart TD
     accTitle: One HTTP call, several possible attempts
-    accDescr: The HTTP breaker checks once before retries and records their final outcome. All attempts share the call deadline.
-    A["Whole-call budget"]
+    accDescr: The breaker is checked once per call and records the final outcome. Every attempt shares the call deadline and needs a retry token.
+    A["Call deadline"]
     B["Circuit breaker check"]
     C["Request attempt"]
     D["Assess result"]
-    E["Retry safe and within budget?"]
+    E["Retryable, attempts left, fits deadline, token available?"]
     F["Delay with jitter"]
     G["Record final outcome; return"]
     A --> B --> C --> D --> E
@@ -243,11 +219,11 @@ flowchart TD
 ```
 
 </div>
-<p class="bdr-diagram__caption">The HTTP breaker checks once before retries and records their final outcome. All attempts share the call deadline.</p>
+<p class="bdr-diagram__caption">The breaker is checked once per call and records the final outcome. Every attempt shares the call deadline and needs a retry token.</p>
 </figure>
 <!-- /diagram:concept -->
 
-An origin is a starting point for isolation. Two independently failing backends behind the same gateway origin need a more specific separation, such as distinct clients and policies.
+Two failing backends behind one gateway origin need a finer key, such as `CircuitKey.ORIGIN_ROUTE` with `ROUTE_EXTENSION`, or separate clients.
 
 <div id="safe-grpc-retries-which-status-codes-you-should-actually-retry" data-search-exclude></div>
 <div id="what-a-status-code-tells-you-about-the-work" data-search-exclude></div>
@@ -266,9 +242,7 @@ An origin is a starting point for isolation. Two independently failing backends 
 
 ## Give gRPC an explicit list of repeatable methods {#grpc}
 
-Now inventory also exposes gRPC: `GetStock` reads quantity, `Reserve` changes it, and `Export` streams records. The lab's `InventoryStub` binds those methods using raw bytes; a production service would normally generate its stub from protobuf. It is defined in the [gRPC lab](../lab/2026-09-07-safe-grpc-retries/README.md).
-
-Use [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/) to allow retries only for `GetStock`:
+The gRPC inventory has `GetStock` (a read), `Reserve` (a write) and `Export` (a stream). The [gRPC lab](../lab/2026-09-07-safe-grpc-retries/README.md) binds them in `InventoryStub` over raw bytes; generate yours from protobuf. [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/) allows retries only for `GetStock`:
 
 ```python
 import grpc
@@ -287,18 +261,15 @@ def inventory_chain():
             initial_backoff=0.05,
             retryable_codes={grpc.StatusCode.UNAVAILABLE},
             idempotent_methods={'/shop.Inventory/GetStock'},
-            retry_streaming=False,
         ),
     )
 ```
 
-`UNAVAILABLE` is not evidence that a handler did no work. The lab makes `Reserve` change inventory and then return that status. With the unrestricted retry policy it records three reservations; with this allowlist it records one and returns the error. `GetStock`, which fails twice before succeeding, still makes three attempts and returns `b'7'`.
-
-The one-second timeout covers the whole RPC. A separate test gives the RPC 300 ms: after a slow failed first attempt, the second gets only the remaining time and ends with `DEADLINE_EXCEEDED`.
+Without an allowlist, the kit's default `RetryConfig` retries every unary method on `UNAVAILABLE` and `RESOURCE_EXHAUSTED`. But `UNAVAILABLE` does not prove the handler did nothing: the lab's `Reserve` changes stock and then returns it, and the default policy records three reservations. With the allowlist there is one, and the caller gets the error, while `GetStock` still retries and returns `b'7'`. We also leave out `RESOURCE_EXHAUSTED`: a server out of capacity should not get extra traffic. The one-second timeout covers the whole RPC; given 300 ms, a slow first attempt leaves the second only the remainder, and it ends with `DEADLINE_EXCEEDED`.
 
 ### Share channels only between compatible clients {#channel-identity}
 
-An audit reader uses the same inventory address but must make only one attempt. Build its policy separately and keep the pool alive for the application:
+An audit reader uses the same address but must make one attempt:
 
 ```python
 from contextlib import asynccontextmanager
@@ -326,18 +297,17 @@ async def grpc_clients(target):
         yield orders, audit
 ```
 
-`interceptor_factory` creates and caches a chain per target. Reusing those chains keeps channel identity stable. The pool distinguishes security, credentials, options, compression and interceptor chains; an address alone is not enough. Exiting a `GrpcClient` context releases its stub use, while exiting `ChannelPool` closes the pooled channels. The [identity lab](../lab/2026-09-07-grpc-channel-identity/README.md) verifies reuse and separation through the public API and actual server attempt counts.
+`interceptor_factory` creates and caches a chain per target, which keeps channel identity stable. The pool separates channels by security, credentials, options, compression and interceptor chain, not by address alone; the [identity lab](../lab/2026-09-07-grpc-channel-identity/README.md) checks reuse and separation. `ChannelPool` owns the channels and closes them on exit; leaving a `GrpcClient` context does not touch them. `grpc.enable_retries=0` leaves retries to the interceptor, so [native gRPC retries](https://grpc.io/docs/guides/retry/) do not multiply them. For the audit client, `retry=None` removes the retry interceptor; an empty `idempotent_methods` would not mean "retry nothing".
 
-The example disables native gRPC retries with `grpc.enable_retries=0`, leaving retry ownership to the interceptor. Otherwise native service-config retries and application retries can combine. See [gRPC retry configuration](https://grpc.io/docs/guides/retry/). For the audit chain, `retry=None` omits the retry interceptor. In version 0.4.0 an empty `idempotent_methods` set does not mean “retry nothing.”
+The gRPC client differs from the HTTP one in three ways:
 
-Two more behaviors differ from HTTP:
-
-- The gRPC breaker is inside the retry loop and counts attempts. With a threshold of two, it blocks attempt three of the first failing call. The HTTP threshold above counts completed calls.
-- Restarting `Export` after receiving items `1, 2` can produce `1, 2, 1, 2, 3`. The lab checks both this opt-in behavior and the default failure after `1, 2`. Keep streaming retries off until the protocol defines resumption or deduplication; see [streaming interceptors](2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs.md).
+- grpc-client-kit 0.4.0 has no retry budget.
+- Its breaker is kept per method and sits inside the retry loop, counting attempts: with a threshold of two, a breaker in the lab blocks the third attempt of the first failing call.
+- Restarting `Export` after items `1, 2` can produce `1, 2, 1, 2, 3`. The lab checks both this opt-in behavior and the default failure; keep stream retries off until the protocol can resume or deduplicate. How interceptors see a stream's outcome is covered in [a separate article](2026-09-08-why-grpc-interceptors-break-on-streaming-rpcs.md).
 
 ## Count attempts as well as successful calls {#verification}
 
-For a stock endpoint that returns 503 twice and then succeeds, this helper returns `(7, 1, 3)`: quantity, logical calls and attempts.
+For a stock endpoint that returns 503 twice and then succeeds, this returns `(7, 1, 3)`: quantity, logical calls and attempts.
 
 ```python
 from clientwright.core.testing import RecordingMetrics
@@ -345,22 +315,20 @@ from clientwright.core.testing import RecordingMetrics
 
 async def observe_stock(base_url):
     metrics = RecordingMetrics()
-    async with http_client(base_url, metrics=metrics) as client:
+    async with http_client('inventory', base_url, metrics=metrics) as client:
         available = await fetch_stock(client, 'sku-42')
     return available, len(metrics.calls), len(metrics.attempts)
 ```
 
-`RecordingMetrics` is the library's test recorder; production supplies an implementation through `AdapterDeps(metrics=...)`. One successful business call can conceal three requests to the dependency. Body-consumption timings are recorded separately from the transport call, so account for that when interpreting latency metrics.
-
-All nine snippets are extracted from the runnable labs and checked with Python 3.13, `clientwright==0.5.0`, `httpx==0.28.1`, `grpc-client-kit==0.4.0` and `grpcio==1.84.0`. The seven labs use actual local HTTP/gRPC servers and assertions. They test client behavior; they are not benchmarks or tests of production TLS, proxies or payment storage.
+`RecordingMetrics` is the library's test recorder; production passes its own through `AdapterDeps(metrics=...)`. One successful call can hide three requests. The call duration ends at the response headers, and reading the body is recorded as a separate metric.
 
 ## Choose policies for the operations you actually call {#conclusion}
 
-We read stock, retried a temporary failure, recovered a payment result without repeating its effect, isolated an unavailable origin and connected two gRPC clients with different retry rules. When choosing settings, check the number of attempts, elapsed time and records left after a failure.
-
-Use our [clientwright](https://bedrock-python.github.io/clientwright/) library for HTTP policy while keeping native SDK interfaces, and [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/) for gRPC channels and interceptors. Start with a total time limit and the operations that are safe to repeat. Then add the retry budget and breaker, checking them against a failing test dependency before using the configuration in your service.
+Start with a total time limit and the list of operations that are safe to repeat, then tune the retry budget and the breaker against a dependency that fails on purpose. [clientwright](https://bedrock-python.github.io/clientwright/) does this for HTTP while keeping native clients, and [grpc-client-kit](https://bedrock-python.github.io/grpc-client-kit/) does it for gRPC channels and interceptors.
 
 ## Examples and labs {#labs}
+
+The snippets come from the labs and were checked with Python 3.13, `clientwright==0.5.0`, `httpx==0.28.1`, `grpc-client-kit==0.4.0` and `grpcio==1.84.0` against local HTTP and gRPC servers. They test client behavior, not performance, TLS, proxies or payment storage.
 
 - [Native HTTP clients, metrics and nested retries](../lab/2026-09-07-why-i-stopped-wrapping-http-clients/README.md)
 - [Read timeout versus total deadline](../lab/2026-09-07-reliability-is-not-retry-3/README.md)

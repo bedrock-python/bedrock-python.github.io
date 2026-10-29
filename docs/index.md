@@ -122,11 +122,11 @@ hide:
 </section>
 
 <section class="bdr-featured" markdown="0">
-  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-09-13-postgresql-partition-maintenance/" aria-label="Read Managing PostgreSQL partitions, one failure at a time"></a>
+  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-10-18-postgresql-partition-maintenance/" aria-label="Read Managing PostgreSQL partitions, one failure at a time"></a>
   <div>
     <div class="bdr-featured__eyebrow">Featured · Libraries</div>
     <h2 class="bdr-featured__title">
-      <a href="blog/posts/2026-09-13-postgresql-partition-maintenance/">Managing PostgreSQL partitions, one failure at a time</a>
+      <a href="blog/posts/2026-10-18-postgresql-partition-maintenance/">Managing PostgreSQL partitions, one failure at a time</a>
     </h2>
     <p class="bdr-featured__lede">
       Two ways a partitioned table gets you out of bed, and the library that grew out of
@@ -150,7 +150,7 @@ hide:
   </div>
 
   <div class="bdr-grid">
-    <a class="bdr-card" href="blog/posts/2026-09-07-zero-dependency-cores/">
+    <a class="bdr-card" href="blog/posts/2026-10-21-zero-dependency-cores/">
       <div class="bdr-card__visual bdr-card__visual--design"></div>
       <div class="bdr-card__eyebrow">Design</div>
       <h3 class="bdr-card__title">Zero-dependency cores</h3>
@@ -162,7 +162,7 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-13-python-library-from-template-to-release/">
+    <a class="bdr-card" href="blog/posts/2026-10-22-python-library-from-template-to-release/">
       <div class="bdr-card__visual bdr-card__visual--meta"></div>
       <div class="bdr-card__eyebrow">Meta</div>
       <h3 class="bdr-card__title">How I start a production-grade Python library in 2026</h3>
@@ -174,7 +174,7 @@ hide:
       <div class="bdr-card__meta">September 7, 2026</div>
     </a>
 
-    <a class="bdr-card" href="blog/posts/2026-09-13-postgresql-partition-maintenance/">
+    <a class="bdr-card" href="blog/posts/2026-10-18-postgresql-partition-maintenance/">
       <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
       <div class="bdr-card__eyebrow">Tutorials</div>
       <h3 class="bdr-card__title">Migrating from pg_partman to application-managed partitions</h3>

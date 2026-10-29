@@ -66,6 +66,28 @@ class DocumentationContract(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(snippets), 1)
         self.assertEqual(ast.dump(ast.parse(snippets[0])), ast.dump(source))
 
+    def test_article_code_matches_the_lab(self):
+        # Both editions of the article repeat shipping.py and must stay in sync.
+        root = Path(__file__).resolve().parent
+        slug = root.name
+        site = root.parents[3]
+        articles = [
+            site / "docs" / "blog" / "posts" / f"{slug}.md",
+            site / "translations" / "ru" / "blog" / "posts" / f"{slug}.md",
+        ]
+        if not all(path.exists() for path in articles):
+            self.skipTest("article sources are not next to this lab")
+        module = ast.parse((root / "shipping.py").read_text(encoding="utf-8"))
+        module.body = module.body[1:]
+        for article in articles:
+            blocks = re.findall(
+                r"^```python\n(.*?)^```",
+                article.read_text(encoding="utf-8"),
+                re.MULTILINE | re.DOTALL,
+            )
+            dumped = {ast.dump(ast.parse(block)) for block in blocks}
+            self.assertIn(ast.dump(module), dumped, article.name)
+
     async def test_sequential_steps_share_one_budget(self):
         calls = []
 
@@ -105,6 +127,45 @@ class DocumentationContract(unittest.IsolatedAsyncioTestCase):
         self.assertAlmostEqual(default.remaining(), 0.02)
         self.assertAlmostEqual(default.timeout_for_call("shipping"), 0.1)
         self.assertAlmostEqual(strict.timeout_for_call("shipping"), 0.02)
+
+    async def test_example_passes_a_small_remainder_unchanged(self):
+        calls = []
+
+        async def stock(sku, *, timeout):
+            self.clock.advance(0.58)
+            return 3
+
+        async def shipping(sku, *, timeout):
+            calls.append(timeout)
+            return {"shipping_cents": 490}
+
+        await shipping_quote("sku-42", stock=stock, shipping=shipping)
+        # With the default 100 ms minimum, shipping would be told to wait 0.1 s.
+        self.assertAlmostEqual(calls[0], 0.02)
+
+    async def test_new_context_per_step_resets_the_budget(self):
+        calls = []
+
+        async def stock(sku, *, timeout):
+            self.clock.advance(0.25)
+            return 3
+
+        async def shipping(sku, *, timeout):
+            calls.append(timeout)
+            return {"shipping_cents": 490}
+
+        caps = {"stock": 0.4, "shipping": 0.4}
+        sku = "sku-42"
+        # The article's WRONG example: the second context starts a fresh 600 ms.
+        ctx = BudgetContext.create(total_seconds=0.6, min_timeout=0, call_caps=caps)
+        await stock(sku, timeout=ctx.timeout_for_call("stock"))
+        ctx = BudgetContext.create(total_seconds=0.6, min_timeout=0, call_caps=caps)
+        await shipping(sku, timeout=ctx.timeout_for_call("shipping"))
+        self.assertAlmostEqual(calls[0], 0.4)
+
+        calls.clear()
+        await shipping_quote(sku, stock=stock, shipping=shipping)
+        self.assertAlmostEqual(calls[0], 0.35)
 
     def test_unknown_call_name_has_no_cap(self):
         ctx = BudgetContext.create(

@@ -1,6 +1,6 @@
 # Lab: verify a review finding before publishing it {#lab-review-evidence}
 
-Example for [Why AI review findings need verification](../../posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous.md). A retry creates duplicate reservations when the warehouse commits the first operation but loses its reply.
+Example for [Why AI review findings need verification](../../posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md). A retry creates duplicate reservations when the warehouse commits the first operation but loses its reply.
 
 ## Run {#run}
 

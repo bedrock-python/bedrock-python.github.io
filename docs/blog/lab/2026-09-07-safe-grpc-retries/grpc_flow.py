@@ -31,7 +31,6 @@ def inventory_chain():
             initial_backoff=0.05,
             retryable_codes={grpc.StatusCode.UNAVAILABLE},
             idempotent_methods={'/shop.Inventory/GetStock'},
-            retry_streaming=False,
         ),
     )
 # /snippet:grpc_policy

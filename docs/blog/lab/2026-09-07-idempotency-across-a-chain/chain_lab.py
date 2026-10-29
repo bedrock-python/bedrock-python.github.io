@@ -58,7 +58,7 @@ async def scenario(redis, mode):
                 headers={"Retry-After": "1"},
             )
         except IdempotencyKeyReuseError:
-            return web.json_response({"error": "key_reused"}, status=409)
+            return web.json_response({"error": "key_reused"}, status=422)
         if calls["payments"] == 1:
             # Charge AND the completed Redis result exist before the TCP connection closes.
             return drop_response(request)
@@ -106,7 +106,7 @@ async def scenario(redis, mode):
                         payments_url, json=changed.model_dump(mode="json"),
                         headers={"Idempotency-Key": original_key},
                     )
-                    assert response.status_code == 409
+                    assert response.status_code == 422
                     assert response.json()["error"] == "key_reused"
                     response = await downstream.post(
                         payments_url, json=request_body.model_dump(mode="json"),
@@ -114,7 +114,7 @@ async def scenario(redis, mode):
                     )
                     assert response.status_code == 400
                     assert len(provider.effects) == 1
-                    print("PASS HTTP 409 for changed amount; HTTP 400 for invalid key; no extra charges")
+                    print("PASS HTTP 422 for changed amount; HTTP 400 for invalid key; no extra charges")
 
 
 async def main(url):

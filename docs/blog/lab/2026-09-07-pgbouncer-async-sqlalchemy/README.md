@@ -11,7 +11,7 @@ uv run --no-project --python 3.13 --with-requirements requirements.txt python ji
 
 | Script | What it asserts |
 |---|---|
-| `pgbouncer_lab.py` | Four workers run 40 parameterized statements per setup: directly, through PgBouncer with tracking and both caches enabled, and with tracking and both caches disabled using the kit's unique names. Also checks order lookup, rollback and schema scope |
+| `pgbouncer_lab.py` | Four workers run 40 parameterized statements per setup: directly, through PgBouncer with tracking and both caches enabled, and with tracking and both caches disabled, where asyncpg sends unnamed statements. Also checks order lookup, rollback and schema scope |
 | `pgbouncer_lab.py`, forced backend switch | A prepared statement survives a PostgreSQL connection change with tracking enabled; the same reuse fails with SQLSTATE `26000` when tracking is disabled |
 | `pgbouncer_lab.py`, query cancellation | `SET LOCAL statement_timeout='100ms'` cancels `pg_sleep(1)` with SQLSTATE `57014`; rollback restores normal queries and the original timeout |
 | `jit_probe.py` | Unsupported startup parameters are rejected. Ignoring `jit` and `search_path` drops their values; the kit applies `db_schema` inside each transaction instead |

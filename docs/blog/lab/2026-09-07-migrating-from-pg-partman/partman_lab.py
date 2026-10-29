@@ -5,7 +5,6 @@ from pathlib import Path
 import sys
 
 import asyncpg
-from pg_partsmith import CreateAhead
 from pg_partsmith.aio import PartitionToolkit
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -59,7 +58,7 @@ async def main(engine_url, dsn):
         """)
         await connection.execute("SELECT partman.run_maintenance('public.events')")
         before_off = await children(connection)
-        assert len(before_off) >= 7, before_off  # pg_partman's exact future horizon can extend beyond premake.
+        assert len(before_off) == 7, before_off  # Current month, three before it, two ahead, DEFAULT.
         await connection.execute("""
             UPDATE partman.part_config SET automatic_maintenance = 'off', premake = 3
             WHERE parent_table = 'public.events'
@@ -73,7 +72,7 @@ async def main(engine_url, dsn):
 
         settings = dict(await connection.fetchrow("SELECT * FROM partman.part_config WHERE parent_table = 'public.events'"))
         assert settings["control"] == "created_at" and settings["partition_interval"] == "1 mon"
-        assert settings["retention"] == "3 months" and settings["retention_keep_table"]
+        assert settings["premake"] == 3 and settings["retention"] == "3 months" and settings["retention_keep_table"]
         config = adopted_config(settings)
         snapshot = await relations(connection)
         before_children = await children(connection)
@@ -84,37 +83,31 @@ async def main(engine_url, dsn):
         plan = await toolkit.service.plan(config, now=current)
         print(plan.describe())
         assert await relations(connection) == snapshot
-        assert not plan.creates and not plan.drops
-        assert len(plan.detaches) == 1
-        assert plan.detaches[0].target.startswith("public.events_p")
-        print("PASS adoption: existing names/bounds recognised; interval retention differs from KeepNewest(3); no writes during planning")
+        assert not plan.operations, plan.describe()
+        print("PASS adoption: CreateAhead(premake + 1) and KeepNewest(4) match pg_partman's set; the first plan is empty")
 
         # No background worker is installed; the lab owns all calls and has stopped calling pg_partman.
         await unregister_partman(connection)
         assert await connection.fetchval("SELECT count(*) FROM partman.part_config WHERE parent_table = 'public.events'") == 0
-        result = await toolkit.service.apply(config, plan)
-        assert not result.error and not result.issues and result.detached_count == 1 and result.dropped_count == 0, result
-        remaining = {row["oid"] for row in await children(connection)}
-        assert remaining == {row["oid"] for row in before_children} - {plan.detaches[0].oid}
-        after_rows = await connection.fetch(
-            f"SELECT * FROM events UNION ALL SELECT * FROM {plan.detaches[0].target} ORDER BY id"
-        )
-        assert after_rows == before_rows
-        assert {row["oid"] for row in await relations(connection)} == {row["oid"] for row in snapshot}
-        tree = await toolkit.service.inspect(config)
-        assert len(tree.orphans) == 1 and tree.orphans[0].name == plan.detaches[0].target
-        print("PASS handover: registration removed, old table OIDs and all data preserved, detached table kept by DropNever")
+        await connection.execute("SELECT partman.run_maintenance('public.events')")
+        assert await children(connection) == before_children
+        print("PASS handover: after unregistering, even a targeted pg_partman call changes nothing")
 
-        next_start = max(datetime.fromisoformat(child.bounds.to_value) for child in tree.root.children if not child.is_default)
-        horizon = (next_start.year - current.year) * 12 + next_start.month - current.month + 1
-        wider = config.model_copy(update={"lifecycle": config.lifecycle.model_copy(update={"creation": CreateAhead(count=horizon)})})
-        growth = await toolkit.service.plan(wider, now=current)
-        assert len(growth.creates) == 1 and not growth.detaches and not growth.drops
-        result = await toolkit.service.apply(wider, growth)
-        assert result.created_count == 1 and not result.issues, result
-        assert not (await toolkit.service.plan(wider, now=current)).operations
+        next_month = month_at(current, 1)
+        step = await toolkit.service.plan(config, now=next_month)
+        print(step.describe())
+        assert len(step.creates) == 1 and len(step.detaches) == 1 and not step.drops
+        detached = step.detaches[0]
+        assert detached.target.startswith("public.events_p")
+        result = await toolkit.service.apply(config, step)
+        assert not result.error and not result.issues and result.dropped_count == 0, result
+        remaining = {row["oid"] for row in await children(connection)}
+        assert {row["oid"] for row in before_children} - {detached.oid} <= remaining
+        after_rows = await connection.fetch(f"SELECT * FROM events UNION ALL SELECT * FROM {detached.target} ORDER BY id")
+        assert after_rows == before_rows
+        assert not (await toolkit.service.plan(config, now=next_month)).operations
         assert await connection.fetchval("SELECT count(*) FROM events_default") == 0
-        print("PASS new maintainer: one additional future month created, next plan is empty, DEFAULT is empty")
+        print("PASS next month: one partition created, the oldest detached and kept; old OIDs and all rows preserved")
     finally:
         await engine.dispose()
         await connection.close()

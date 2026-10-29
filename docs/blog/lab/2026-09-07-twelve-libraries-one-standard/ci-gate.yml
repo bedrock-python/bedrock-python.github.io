@@ -5,19 +5,10 @@ all-checks-passed:
   needs: [lint, test-unit, test-integration]
   runs-on: ubuntu-latest
   steps:
-    - name: Require every declared job to succeed
-      env:
-        NEEDS_JSON: ${{ toJSON(needs) }}
-      shell: python
+    - name: Check all jobs succeeded
       run: |
-        import json
-        import os
-        import sys
-
-        jobs = json.loads(os.environ["NEEDS_JSON"])
-        required = {"lint", "test-unit", "test-integration"}
-        valid = set(jobs) == required and all(
-            job["result"] == "success" for job in jobs.values()
-        )
-        print({name: job["result"] for name, job in jobs.items()})
-        sys.exit(0 if valid else 1)
+        if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" == "true" ]]; then
+          echo "One or more required checks failed or were skipped."
+          exit 1
+        fi
+        echo "All checks passed."

@@ -38,11 +38,11 @@ hide:
         <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="4" y="16" width="12" height="16" rx="3"/><rect x="32" y="16" width="12" height="16" rx="3"/><path d="M16 24h16m-11-5 5 5-5 5M10 10V6m28 36v-4"/></svg></div>
         <div><span class="bdr-collection__label">WHEN DEPENDENCIES FAIL</span><h3>Build resilient services</h3><p>Deadlines, retries & circuit breakers</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
       </a>
-      <a class="bdr-collection bdr-collection--postgres" data-blog-collection="postgres" href="posts/2026-09-13-postgresql-partition-maintenance/">
+      <a class="bdr-collection bdr-collection--postgres" data-blog-collection="postgres" href="posts/2026-10-18-postgresql-partition-maintenance/">
         <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><ellipse cx="24" cy="11" rx="15" ry="6"/><path d="M9 11v25c0 3.3 6.7 6 15 6s15-2.7 15-6V11M9 23c0 3.3 6.7 6 15 6s15-2.7 15-6M9 35c0 3.3 6.7 6 15 6s15-2.7 15-6"/></svg></div>
         <div><span class="bdr-collection__label">BEYOND THE QUERY</span><h3>Postgres in production</h3><p>Partitions, sessions & migrations</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
       </a>
-      <a class="bdr-collection bdr-collection--messaging" data-blog-collection="messaging" href="posts/2026-09-13-reliable-events-outbox-inbox-kafka/">
+      <a class="bdr-collection bdr-collection--messaging" data-blog-collection="messaging" href="posts/2026-10-03-reliable-events-outbox-inbox-kafka/">
         <div class="bdr-collection__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="3" y="18" width="10" height="12" rx="2"/><rect x="35" y="18" width="10" height="12" rx="2"/><rect x="19" y="6" width="10" height="12" rx="2"/><rect x="19" y="30" width="10" height="12" rx="2"/><path d="m13 24 6-12m10 0 6 12m-22 0 6 12m10 0 6-12"/></svg></div>
         <div><span class="bdr-collection__label">MAKE EVERY EVENT COUNT</span><h3>Deliver messages reliably</h3><p>Kafka, outbox & exactly-once effects</p></div><span class="bdr-collection__arrow" aria-hidden="true">↗</span>
       </a>
@@ -85,13 +85,193 @@ hide:
       <div class="bdr-active-filters" data-blog-active hidden></div>
       <div class="bdr-results" id="blog-results" data-blog-results>
 <!-- catalog:articles:start -->
-  <article class="bdr-entry" data-article-id="2026-09-13-python-library-from-template-to-release">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-python-library-from-template-to-release/">
+  <article class="bdr-entry" data-article-id="2026-10-29-ai-code-review-should-not-be-fully-autonomous">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
+        <h3 class="bdr-entry__title">Why AI review findings need verification</h3>
+        <p class="bdr-entry__description">Many teams now run an AI reviewer on merge requests. It writes findings as confidently as a senior colleague, but confidence does not make a finding true.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-29">Oct 29, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-27-why-bedrock-python-libraries">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-27-why-bedrock-python-libraries/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">Why I extract Python service infrastructure into libraries</h3>
+        <p class="bdr-entry__description">Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-27">Oct 27, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-26-documentation-for-ai-coding-agents">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-26-documentation-for-ai-coding-agents/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
+        <h3 class="bdr-entry__title">Documentation that lets an AI coding agent write checkable code</h3>
+        <p class="bdr-entry__description">More and more service code is written by AI coding agents, and they write it from whatever documentation the project has.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-26">Oct 26, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-22-python-library-from-template-to-release">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-22-python-library-from-template-to-release/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tutorials</div>
         <h3 class="bdr-entry__title">A Python library from template to release</h3>
-        <p class="bdr-entry__description">Imagine a reporting service and an export worker that both need the start and end of a UTC month. Each has its own helper, and one gets December wrong.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
+        <p class="bdr-entry__description">Small shared code often lives as copies: each service has its own helper, and over time they drift apart.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-22">Oct 22, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-21-zero-dependency-cores">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-21-zero-dependency-cores/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">A core without dependencies: install the integrations your service needs</h3>
+        <p class="bdr-entry__description">An infrastructure library ends up in many services, and each of its mandatory dependencies lands in every one of them, including those that never use it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-21">Oct 21, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-18-postgresql-partition-maintenance">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-18-postgresql-partition-maintenance/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">PostgreSQL partition maintenance: from a plan to a verified archive</h3>
+        <p class="bdr-entry__description">Monthly partitions need routine care: every month someone has to create next month&#x27;s table and retire an old one.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-18">Oct 18, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-17-partitioning-an-existing-postgresql-table">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-17-partitioning-an-existing-postgresql-table/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Partitioning an existing PostgreSQL table</h3>
+        <p class="bdr-entry__description">An events table grows for years until its size gets in the way of queries and cleanup, and it gets split into monthly partitions.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-17">Oct 17, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-11-testing-alembic-migrations-in-ci">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-11-testing-alembic-migrations-in-ci/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Testing Alembic migrations in CI</h3>
+        <p class="bdr-entry__description">Schema migrations are usually checked in CI with one step: apply them to an empty database. If the step is green, the migration is considered safe.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-11">Oct 11, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-09-sqlalchemy-pgbouncer-pools">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-09-sqlalchemy-pgbouncer-pools/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">SQLAlchemy and PgBouncer: configuring and diagnosing connection pools</h3>
+        <p class="bdr-entry__description">Once there are enough services and pods, PostgreSQL runs out of connections and PgBouncer goes in front of it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-09">Oct 9, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-08-sqlalchemy-sessions-and-transactions">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-08-sqlalchemy-sessions-and-transactions/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">SQLAlchemy sessions and transactions: who owns commit</h3>
+        <p class="bdr-entry__description">Picture the order service of an online shop. A customer places an order, and the service saves it and writes a created event that tells the warehouse and delivery about it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-08">Oct 8, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-03-reliable-events-outbox-inbox-kafka">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-03-reliable-events-outbox-inbox-kafka/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Reliable event delivery with Outbox, Inbox and Kafka</h3>
+        <p class="bdr-entry__description">Picture this: a customer places an order. The order service saves it in PostgreSQL and publishes an event to Kafka. Billing reads the event and issues an invoice.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-03">Oct 3, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-10-02-kafka-in-python-services">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-10-02-kafka-in-python-services/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
+        <h3 class="bdr-entry__title">Kafka in Python: publishing, processing and stopping safely</h3>
+        <p class="bdr-entry__description">A delivery service publishes parcel statuses to Kafka, and a tracking service reads them to show buyers where their order is.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-10-02">Oct 2, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-30-redis-failures-and-health-checks">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-30-redis-failures-and-health-checks/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Redis is down: which routes keep working, and why PING won&#x27;t tell you</h3>
+        <p class="bdr-entry__description">In an online shop, Redis usually sits next to the main database: it caches prices, counts login attempts and gates repeated payment clicks. While it works, nobody thinks about it.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-30">Sep 30, 2026</time><span>·</span><span>7 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-23-production-python-grpc-server">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-23-production-python-grpc-server/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Preparing a Python gRPC server for production</h3>
+        <p class="bdr-entry__description">Starting a gRPC server in Python is easy: a handler and a few lines of startup code. Making it behave predictably when things go wrong is the hard part.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-23">Sep 23, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-20-python-service-lifecycle">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-20-python-service-lifecycle/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">The Python service lifecycle: startup, health checks and shutdown</h3>
+        <p class="bdr-entry__description">A service in Kubernetes restarts all the time: on every rollout, on scaling, when a pod moves to another node.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-20">Sep 20, 2026</time><span>·</span><span>6 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
+  <article class="bdr-entry" data-article-id="2026-09-14-idempotency-in-apis-and-background-jobs">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-14-idempotency-in-apis-and-background-jobs/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Idempotency in APIs and background jobs</h3>
+        <p class="bdr-entry__description">Networks lose responses, users click twice and brokers redeliver messages. Sooner or later, any request or job arrives twice.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-14">Sep 14, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -102,200 +282,20 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Building HTTP and gRPC clients for production</h3>
-        <p class="bdr-entry__description">Imagine an orders service with two HTTP dependencies. Inventory returns the available quantity of a product; payments charges the order. A failed inventory read may be repeated.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-idempotency-in-apis-and-background-jobs">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-idempotency-in-apis-and-background-jobs/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">Idempotency in APIs and background jobs</h3>
-        <p class="bdr-entry__description">Imagine an orders service. A buyer pays 1,999 kopecks, the charge succeeds, but the HTTP connection closes before the response arrives. The client retries.</p>
+        <p class="bdr-entry__description">An orders service calls a warehouse and a payment service, and either can be slow or not answer at all. The first instinct is to retry.</p>
         <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
     </a>
   </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-kafka-in-python-services">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-kafka-in-python-services/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Tutorials</div>
-        <h3 class="bdr-entry__title">Kafka in Python: publishing, processing and stopping safely</h3>
-        <p class="bdr-entry__description">Imagine a delivery service that publishes parcel statuses to Kafka. A tracking service reads them and updates the customer&#x27;s order page.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-partitioning-an-existing-postgresql-table">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-partitioning-an-existing-postgresql-table/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
-        <h3 class="bdr-entry__title">Partitioning an existing PostgreSQL table</h3>
-        <p class="bdr-entry__description">Imagine an analytics service that stores events in events. Reports usually read one month, and operators add notes in event_notes.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-postgresql-partition-maintenance">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-postgresql-partition-maintenance/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">PostgreSQL partition maintenance: from a plan to a verified archive</h3>
-        <p class="bdr-entry__description">Imagine an analytics service with monthly events partitions. Reports need the current month and the previous two. Writers need another two months prepared ahead.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>9 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-production-python-grpc-server">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-production-python-grpc-server/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">Preparing a Python gRPC server for production</h3>
-        <p class="bdr-entry__description">Imagine an orders service with a GetInvoice method: a buyer requests an invoice for a paid order. It works locally.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-redis-failures-and-health-checks">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-redis-failures-and-health-checks/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Redis &amp; idempotency <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">Redis failures: health checks and service behavior</h3>
-        <p class="bdr-entry__description">Imagine an online shop with three operations: looking up a price, signing in and paying for an order.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-reliable-events-outbox-inbox-kafka">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-reliable-events-outbox-inbox-kafka/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Kafka &amp; messaging <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">Reliable event delivery with Outbox, Inbox and Kafka</h3>
-        <p class="bdr-entry__description">Imagine an online shop with two services. The order service saves a purchase in PostgreSQL and publishes order.created to Kafka.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-sqlalchemy-pgbouncer-pools">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-sqlalchemy-pgbouncer-pools/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
-        <h3 class="bdr-entry__title">SQLAlchemy and PgBouncer: configuring and diagnosing connection pools</h3>
-        <p class="bdr-entry__description">Imagine an orders service: GET /orders/42 reads an order from PostgreSQL and asks a shipping service for a delivery quote.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-sqlalchemy-sessions-and-transactions">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-sqlalchemy-sessions-and-transactions/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">SQLAlchemy sessions and transactions: who owns commit</h3>
-        <p class="bdr-entry__description">Imagine an order service that saves an order and a created event so other services can learn about the purchase. If recording the event fails, the order must roll back too.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-testing-alembic-migrations-in-ci">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-testing-alembic-migrations-in-ci/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">PostgreSQL &amp; SQLAlchemy <span>·</span> Tutorials</div>
-        <h3 class="bdr-entry__title">Testing Alembic migrations in CI</h3>
-        <p class="bdr-entry__description">Imagine a shop with users and orders. A new release adds users.is_active; earlier migrations created the order status enum and a rule that an order amount must be positive.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-python-service-lifecycle">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-python-service-lifecycle/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Service lifecycle <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">The Python service lifecycle: startup, health checks and shutdown</h3>
-        <p class="bdr-entry__description">Imagine a reports service. GET /reports builds a report on demand; a worker periodically builds the same report in the background. Both need a database connection.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>8 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-ai-code-review-should-not-be-fully-autonomous">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-ai-code-review-should-not-be-fully-autonomous/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Tools</div>
-        <h3 class="bdr-entry__title">Why AI review findings need verification</h3>
-        <p class="bdr-entry__description">Imagine a merge request that adds a retry when the warehouse times out while reserving stock. The change looks small, and the successful-path test passes.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-13-why-bedrock-python-libraries">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-13-why-bedrock-python-libraries/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
-        <h3 class="bdr-entry__title">Why I extract Python service infrastructure into libraries</h3>
-        <p class="bdr-entry__description">Imagine an orders API: read an order from PostgreSQL, ask the warehouse for stock, return whether the quantity is sufficient. Later, a background job needs the same information.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-13">Sep 13, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-07-zero-dependency-cores">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-zero-dependency-cores/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Design</div>
-        <h3 class="bdr-entry__title">A core without dependencies: install the integrations your service needs</h3>
-        <p class="bdr-entry__description">Imagine an orders API that reads stock from a warehouse over HTTP. A separate CI job inspects the same client configuration and checks which adapters support it.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-07-documentation-for-ai-coding-agents">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-documentation-for-ai-coding-agents/">
-      <div class="bdr-entry__body">
-        <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
-        <h3 class="bdr-entry__title">Documentation an AI coding agent can use and verify</h3>
-        <p class="bdr-entry__description">Imagine asking a coding agent to add a shipping quote to an orders service. It must check stock, then calculate shipping, with 600 ms for both steps and a 400 ms ceiling for each.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
-      </div>
-      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
-      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
-    </a>
-  </article>
-  <article class="bdr-entry" data-article-id="2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs">
-    <a class="bdr-entry__link bdr-card" href="posts/2026-09-07-why-grpc-interceptors-break-on-streaming-rpcs/">
+  <article class="bdr-entry" data-article-id="2026-09-08-why-grpc-interceptors-break-on-streaming-rpcs">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-09-08-why-grpc-interceptors-break-on-streaming-rpcs/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">gRPC <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Why gRPC interceptors break on streaming RPCs</h3>
-        <p class="bdr-entry__description">Imagine an export worker downloading rows from a reporting service over gRPC. The download takes hundreds of milliseconds, but its interceptor records almost zero.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-07">Sep 7, 2026</time><span>·</span><span>7 min read</span></div>
+        <p class="bdr-entry__description">gRPC interceptors are usually written once, so that logging, metrics and tracing cover every call.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-08">Sep 8, 2026</time><span>·</span><span>6 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
@@ -306,8 +306,8 @@ hide:
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">HTTP &amp; resilience <span>·</span> Design</div>
         <h3 class="bdr-entry__title">Timeouts are not deadlines: how latency budgets break across microservices</h3>
-        <p class="bdr-entry__description">Imagine an Orders service: it reads stock over HTTP, then reserves items and charges a card over gRPC.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>8 min read</span></div>
+        <p class="bdr-entry__description">A user request rarely stays in one service. It passes through a chain of calls, each with its own timeout, and that looks like enough to keep it from hanging.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-09-06">Sep 6, 2026</time><span>·</span><span>7 min read</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>

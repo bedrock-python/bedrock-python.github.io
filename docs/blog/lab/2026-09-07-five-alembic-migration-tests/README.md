@@ -1,6 +1,6 @@
-# Lab: the five migration tests
+# Lab: Alembic migration tests {#lab-the-five-migration-tests}
 
-The historical title is retained. The current lab has **20 tests, one correct migration history and 13 broken variants** for a shop with users and orders. Each broken variant changes one revision file; its `BUG.txt` explains the error.
+The lab has **20 tests, one correct migration history and 14 broken variants** for a shop with users and orders. Each broken variant changes one revision file; its `BUG.txt` explains the error.
 
 Docker and `uv` are required. Run from this directory:
 
@@ -40,6 +40,7 @@ The clean history creates users, then orders and their enum, then a positive-amo
 |---|---|
 | `enum_leftover` | Up/down/up fails because the enum survives downgrade |
 | `wrong_name_in_downgrade` | Rollback tries to drop a nonexistent CHECK |
+| `head_noop_downgrade` | The newest revision's downgrade does nothing; only the handwritten up/down/up fails |
 | `two_heads` | Both head checks and `upgrade head` fail |
 | `bad_name` | Naming-convention check fails |
 | `drift`, `drift_type`, `drift_server_default` | Schema diff reports nullable, type or default mismatch |
@@ -49,8 +50,8 @@ The clean history creates users, then orders and their enum, then a positive-amo
 | `drift_check_expression` | Names match, but the zero-amount behavior test fails |
 | `data_loss` | Schema matches, but the saved order disappears |
 
-The matrix also asserts that the seven inherited gauntlet checks pass in the last two variants: they demonstrate the need for application-specific tests. The hand-written round trip covers the final revision's reapplication; the gauntlet 0.3.0 stairway ends with that revision downgraded.
+The matrix also asserts that the seven inherited gauntlet checks pass in `head_noop_downgrade`, `drift_check_expression` and `data_loss`: these histories need handwritten tests. The gauntlet 0.3.0 stairway never applies the newest revision a second time, so only the handwritten round trip catches its broken downgrade.
 
 Alembic 1.20 has an optional CHECK-name autogenerate plugin, disabled in this lab. Neither that name comparison nor gauntlet's CHECK-name check proves expression equivalence. These tests verify correctness on small data sets; they do not measure production lock times or migration throughput.
 
-[Read the article](../../posts/2026-09-13-testing-alembic-migrations-in-ci.md).
+[Read the article](../../posts/2026-10-11-testing-alembic-migrations-in-ci.md).

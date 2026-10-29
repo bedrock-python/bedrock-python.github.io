@@ -1,6 +1,6 @@
 # Lab: Kafka clients, commits and redelivery {#lab-the-production-checklist-for-aiokafka}
 
-Runnable examples from [the article](../../posts/2026-09-13-kafka-in-python-services.md).
+Runnable examples from [the article](../../posts/2026-10-02-kafka-in-python-services.md).
 Docker must be running. From this directory in a repository checkout, run:
 
 ```bash
@@ -12,15 +12,16 @@ testcontainers 4.15.0. The script creates and removes its own
 `confluentinc/cp-kafka:7.6.0` container in KRaft mode. Automatic broker-side topic
 creation is disabled.
 
-`kafka_flow.py` contains the article's eight Kafka snippets, including its handler,
-consumer loop and shutdown wrapper. The ninth snippet, the servicewright adapter,
-is in the [shutdown lab](../2026-09-07-kafka-consumer-shutdown/README.md).
+`kafka_flow.py` contains the seven code blocks printed in the article, from the producer
+to the shutdown wrapper, plus the `read_lag()` helper this lab uses to measure lag.
+The servicewright adapter that runs the shutdown wrapper is in the
+[shutdown lab](../2026-09-07-kafka-consumer-shutdown/README.md).
 `lab_support.py` provides the shared container and bounded reads.
 
 Assertions verify:
 
 - the published `ensure_topics_async()` creates a three-partition topic without patches;
-- dictionaries arrive as JSON values, keys remain bytes, and one key stays in one partition;
+- dictionaries arrive as JSON values, keys remain bytes;
 - after five fetched records, position lag is zero while committed lag is still five;
 - a handler failure after two effects leaves the batch uncommitted and all five records replay;
 - the sample tracking view ignores repeated or older revisions;

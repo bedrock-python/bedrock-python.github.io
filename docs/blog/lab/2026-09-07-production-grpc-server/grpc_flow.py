@@ -9,20 +9,18 @@ from invoice_domain import (
 # snippet:exception_handler
 import grpc
 from grpc_server_kit.aio.interceptors import AsyncExceptionHandlerInterceptor
+from servicewright.adapters.grpc import GRPC_STATUS_BY_KIND
 
 
 SERVICE = "orders.Invoices"
-
-ERROR_STATUS = {
-    OrderNotFound: grpc.StatusCode.NOT_FOUND,
-    InvoiceNotReady: grpc.StatusCode.FAILED_PRECONDITION,
-    InvoiceAccessDenied: grpc.StatusCode.PERMISSION_DENIED,
-    InvoiceStoreUnavailable: grpc.StatusCode.UNAVAILABLE,
-}
+PUBLIC_ERRORS = (
+    OrderNotFound, InvoiceNotReady, InvoiceAccessDenied, InvoiceStoreUnavailable,
+)
+ERROR_STATUS = {error: GRPC_STATUS_BY_KIND[error.kind] for error in PUBLIC_ERRORS}
 
 
 def public_details(error, status):
-    if isinstance(error, tuple(ERROR_STATUS)) and error.public:
+    if isinstance(error, PUBLIC_ERRORS) and error.public:
         return error.code
     return "internal_error"
 
@@ -86,8 +84,6 @@ def build_app(store, metrics, reporter, *, config=None):
 
 # snippet:health
 class InvoiceStoreHealth:
-    name = "invoice-store"
-
     def __init__(self, store):
         self.store = store
 
@@ -105,10 +101,9 @@ def enable_readiness(app, store):
 # /snippet:health
 
 # snippet:lifecycle
-async def serve_invoices(app, store, stop):
+async def serve_invoices(app, store):
     try:
-        async with app:
-            await stop.wait()
+        await app.run()
     finally:
         await store.close()
 # /snippet:lifecycle
