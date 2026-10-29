@@ -242,7 +242,7 @@ async def remove_empty_default(connection):
 | Июльский диапазон в `EXPLAIN (FORMAT JSON)` | Сканирует только `events__2026_07` |
 | Вставка в месяц без партиции | Падает с `23514` |
 
-Отклонять такие записи решили в этом примере; можно и оставить DEFAULT и следить за ним. Дальше нужно регулярное [обслуживание партиций](2026-10-18-postgresql-partition-maintenance.md).
+Отклонять такие записи решили в этом примере; можно и оставить DEFAULT и следить за ним. Дальше нужно регулярное обслуживание партиций.
 
 <div id="uuidv7-as-a-postgresql-partition-key" data-search-exclude></div>
 <div id="one-column-in-the-primary-key" data-search-exclude></div>

@@ -202,7 +202,7 @@ async def place_order_after_quote(uow, quote_shipping, sku):
     return await place_order(uow, sku, delivery_cents=delivery_cents)
 ```
 
-Waiting for the quote inside the transaction would hold a connection for the whole wait: in the [session lab](../lab/2026-09-07-stop-passing-asyncsession-everywhere/README.md), two such requests take the entire pool, and a third times out (the [PgBouncer article](2026-10-09-sqlalchemy-pgbouncer-pools.md#held-connection) shows it on pool metrics). Fetched first, the quote holds no connection while waiting, but it can go stale before commit; if it has an expiry, check it inside the transaction.
+Waiting for the quote inside the transaction would hold a connection for the whole wait: in the [session lab](../lab/2026-09-07-stop-passing-asyncsession-everywhere/README.md), two such requests take the entire pool, and a third times out. Fetched first, the quote holds no connection while waiting, but it can go stale before commit; if it has an expiry, check it inside the transaction.
 
 ## Savepoint: keep the order when the subscription already exists {#savepoints}
 

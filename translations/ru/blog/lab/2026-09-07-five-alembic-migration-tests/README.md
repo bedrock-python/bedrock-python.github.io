@@ -17,7 +17,7 @@ uv run --no-project --python 3.13 --with-requirements requirements.txt python ru
 uv run --no-project --python 3.13 --with-requirements requirements.txt python run_matrix.py --variants clean,drift_check_expression,data_loss
 ```
 
-Используется образ PostgreSQL `postgres:17-alpine`. Обычный запуск pytest поднимает один контейнер на тестовую сессию; скрипт перебора вариантов — один контейнер для всех дочерних процессов. Каждый тест работает в собственной схеме, которая удаляется после проверки. Контейнер удаляется при выходе. Через `MIGRATION_TEST_URL` можно передать существующую **временную тестовую БД**. Переменная `VARIANT` выбирает историю; по умолчанию это `clean`.
+Используется образ PostgreSQL `postgres:17-alpine`. Обычный запуск pytest поднимает один контейнер на тестовую сессию; скрипт перебора вариантов поднимает один контейнер на все дочерние процессы. Каждый тест работает в собственной схеме, которая удаляется после проверки. Контейнер удаляется при выходе. Через `MIGRATION_TEST_URL` можно передать существующую **временную тестовую БД**. Переменная `VARIANT` выбирает историю; по умолчанию это `clean`.
 
 В `requirements.txt` закреплены alembic-gauntlet 0.3.0, Alembic 1.20.0, SQLAlchemy 2.0.54, asyncpg 0.31.0, pytest 9.1.1, pytest-asyncio 1.4.0 и testcontainers 4.15.0. В `pytest.ini` включён asyncio auto mode. После установки alembic-gauntlet его плагин pytest регистрирует фикстуру `migration_engine`.
 
@@ -34,7 +34,7 @@ uv run --no-project --python 3.13 --with-requirements requirements.txt python ru
 | `tests/test_environment.py` | Запускает самостоятельный путь `env.py` в отдельном процессе; новым соединением проверяет сохранённую ревизию и таблицы |
 | `ci-example.yml` | Шаблон GitHub Actions; для подключения скопируйте в `.github/workflows/` и укажите каталог тестов своего проекта |
 
-Исправная история создаёт пользователей, затем заказы и их enum, добавляет CHECK положительной суммы и после этого — `users.is_active` с серверным default `true`.
+Исправная история создаёт пользователей, затем заказы и их enum, добавляет CHECK положительной суммы, а после этого `users.is_active` с серверным default `true`.
 
 | Вариант | Какая ошибка обнаруживается |
 |---|---|

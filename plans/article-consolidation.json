@@ -731,7 +731,7 @@
         "2026-09-07-what-every-microservice-reimplements",
         "2026-05-30-welcome"
       ],
-      "title_en": "Why I extract Python service infrastructure into libraries",
+      "title_en": "Why extract Python service infrastructure into libraries",
       "legacy_anchors": {
         "2026-09-07-what-every-microservice-reimplements": [
           "what-every-production-python-microservice-reimplements",

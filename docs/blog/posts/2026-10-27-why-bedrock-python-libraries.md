@@ -10,7 +10,7 @@ tags:
   - servicewright
 ---
 
-# Why I extract Python service infrastructure into libraries {#why-bedrock-python-libraries}
+# Why extract Python service infrastructure into libraries {#why-bedrock-python-libraries}
 
 <div class="bdr-post__hero" data-bdr-post="2026-10-27-why-bedrock-python-libraries" role="img" aria-label="An orders API combines a database session, an HTTP client, a deadline and resource cleanup" markdown="0"></div>
 

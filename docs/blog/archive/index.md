@@ -5,7 +5,7 @@ Every post in the Bedrock Python blog, grouped by year.
 ## 2026
 
 - **2026-10-29** — [Why AI review findings need verification](../posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md)
-- **2026-10-27** — [Why I extract Python service infrastructure into libraries](../posts/2026-10-27-why-bedrock-python-libraries.md)
+- **2026-10-27** — [Why extract Python service infrastructure into libraries](../posts/2026-10-27-why-bedrock-python-libraries.md)
 - **2026-10-26** — [Documentation that lets an AI coding agent write checkable code](../posts/2026-10-26-documentation-for-ai-coding-agents.md)
 - **2026-10-22** — [A Python library from template to release](../posts/2026-10-22-python-library-from-template-to-release.md)
 - **2026-10-21** — [A core without dependencies: install the integrations your service needs](../posts/2026-10-21-zero-dependency-cores.md)

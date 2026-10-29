@@ -1,4 +1,4 @@
-# Why I extract Python service infrastructure into libraries
+# Why extract Python service infrastructure into libraries
 
 - **Post:** `docs/blog/posts/2026-10-27-why-bedrock-python-libraries.md`
 - **Category:** Meta

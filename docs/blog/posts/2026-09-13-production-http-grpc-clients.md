@@ -73,7 +73,7 @@ async def outbound_clients(inventory_url, payments_url):
         yield inventory, payments
 ```
 
-Opening them per request would throw away connection reuse, the retry budget and breaker state. The [service lifecycle article](2026-09-20-python-service-lifecycle.md) shows where the application scope belongs.
+Opening them per request would throw away connection reuse, the retry budget and breaker state.
 
 <div id="reliability-is-not-retry3" data-search-exclude></div>
 <div id="why-retries-look-free" data-search-exclude></div>
@@ -141,7 +141,7 @@ async def charge(client, order_id, amount_minor):
 | POST marked idempotent, no server key | 2 | 2 |
 | POST with the stable key and client flag | 2 | 1; caller receives the saved payment ID |
 
-A second `charge()` for the same order returns the same payment ID. The lab deduplicates in memory and sequentially; a real API needs durable storage and atomic handling of concurrent duplicates; see [idempotency in APIs and jobs](2026-09-14-idempotency-in-apis-and-background-jobs.md).
+A second `charge()` for the same order returns the same payment ID. The lab deduplicates in memory and sequentially; a real API needs durable storage and atomic handling of concurrent duplicates.
 
 ### Respect the requested delay and limit extra traffic {#retry-budget}
 

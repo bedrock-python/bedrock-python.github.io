@@ -202,7 +202,7 @@ That is why `charge_once` gives the provider a key built from the tenant, the ac
 
 ## Redis is unavailable, or the key has expired {#failure-policy}
 
-When Redis fails, idempotency-kit 0.4.1 runs the action without protection (fail open). In the lab, two calls with one key during a Redis outage charge twice at a provider without its own deduplication. So payment protection must hold at the provider, and changes to your own database belong in one transaction with the processing record, as in [the inbox example](2026-10-03-reliable-events-outbox-inbox-kafka.md).
+When Redis fails, idempotency-kit 0.4.1 runs the action without protection (fail open). In the lab, two calls with one key during a Redis outage charge twice at a provider without its own deduplication. So payment protection must hold at the provider, and changes to your own database belong in one transaction with the processing record.
 
 Records expire too. The lease covers a running action, payment results live for an hour and invoice results for a day; once a record is gone, the original key runs the action again, so cover your longest retry or redelivery window. The coordinator keeps TTLs in whole minutes, rounding down, with a one-minute minimum. A crashed process leaves its reservation until the lease runs out, and expiry does not stop a slow first action: the lab shows a second one starting beside it.
 

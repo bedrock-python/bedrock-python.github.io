@@ -72,7 +72,7 @@ async def publish_status(producer, delivery_id, status, revision):
     )
 ```
 
-`send_and_wait()` возвращает подтверждение брокера с партицией и offset; это не значит, что сервис отслеживания уже применил обновление. Идемпотентность закрывает только внутренние повторы producer ([гарантии producer в aiokafka](https://aiokafka.readthedocs.io/en/stable/producer.html#idempotent-produce)): если ваш код сам повторит `publish_status()` после таймаута, обновление может попасть в топик дважды. Чтобы сохранить данные вместе с сообщением, нужен [Outbox](2026-10-03-reliable-events-outbox-inbox-kafka.md).
+`send_and_wait()` возвращает подтверждение брокера с партицией и offset; это не значит, что сервис отслеживания уже применил обновление. Идемпотентность закрывает только внутренние повторы producer ([гарантии producer в aiokafka](https://aiokafka.readthedocs.io/en/stable/producer.html#idempotent-produce)): если ваш код сам повторит `publish_status()` после таймаута, обновление может попасть в топик дважды. Чтобы сохранить данные вместе с сообщением, нужен Outbox.
 
 ## Обновляем витрину отслеживания, потом делаем commit {#consumer}
 

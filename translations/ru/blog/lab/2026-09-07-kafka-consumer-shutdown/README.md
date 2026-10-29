@@ -8,7 +8,7 @@
 uv run --no-project --python 3.13 --with-requirements requirements.txt driver.py
 ```
 
-В зависимостях — aiokafka-foundation-kit 0.1.3, aiokafka 0.14.0 и testcontainers 4.15.0
+В зависимостях закреплены aiokafka-foundation-kit 0.1.3, aiokafka 0.14.0 и testcontainers 4.15.0
 из [практикума про клиентов](../2026-09-07-aiokafka-checklist/README.md),
 а также servicewright 0.13.1. Соседняя директория должна быть на месте:
 в ней находятся `kafka_flow.py` и функции запуска контейнера.
