@@ -101,7 +101,7 @@ hide:
     <a class="bdr-entry__link bdr-card" href="posts/2026-10-27-why-bedrock-python-libraries/">
       <div class="bdr-entry__body">
         <div class="bdr-entry__eyebrow">Python &amp; tooling <span>·</span> Meta</div>
-        <h3 class="bdr-entry__title">Why I extract Python service infrastructure into libraries</h3>
+        <h3 class="bdr-entry__title">Why extract Python service infrastructure into libraries</h3>
         <p class="bdr-entry__description">Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order.</p>
         <div class="bdr-entry__meta"><time datetime="2026-10-27">Oct 27, 2026</time><span>·</span><span>7 min read</span></div>
       </div>

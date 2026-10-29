@@ -175,14 +175,14 @@ class JsonArchive(BasePartitionLifecycleHooks):
             raise RuntimeError(f"Archive verification failed: {path.name}")
 ```
 
-Register it with `PartitionToolkit.from_engine(engine, hooks=[JsonArchive(connection, directory)])`, passing an `asyncpg.Connection` and an existing directory. The file is named after the OID, so a repeated call verifies the existing archive, and a mismatch refuses the drop. A real archive needs streaming export to durable storage and its own restore check; stop any writes to detached tables before export.
+Register it with `PartitionToolkit.from_engine(engine, hooks=[JsonArchive(connection, directory)])`, passing an `asyncpg.Connection` and an existing directory. The file is named after the OID, so a repeated call verifies the existing archive, and a mismatch refuses the drop. A real archive needs streaming export to durable archive storage and its own restore check; stop any writes to detached tables before export.
 
 The lab checks the whole path:
 
 | Situation | Database and archive assertion |
 |---|---|
 | Seven days have not passed | The plan contains no `DROP` |
-| Grace has passed, storage is unavailable | The hook raises; both tables remain |
+| Grace has passed, archive storage is unavailable | The hook raises; both tables remain |
 | An existing archive has wrong contents | Verification refuses the drop |
 | Retry after fixing the problem | Two tables are dropped; all four rows are restored from JSON into a temporary table and match the originals |
 

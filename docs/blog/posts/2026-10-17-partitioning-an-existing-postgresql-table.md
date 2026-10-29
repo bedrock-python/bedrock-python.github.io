@@ -242,7 +242,7 @@ The finished rehearsal checks more than a row count:
 | A July range in `EXPLAIN (FORMAT JSON)` | Scans only `events__2026_07` |
 | An insert for a month with no partition | Fails with `23514` |
 
-Rejecting such writes is this example's policy; keeping a monitored DEFAULT partition is another. Regular [partition maintenance](2026-10-18-postgresql-partition-maintenance.md) comes next.
+Rejecting such writes is this example's policy; keeping a monitored DEFAULT partition is another. Next comes regular partition maintenance.
 
 <div id="uuidv7-as-a-postgresql-partition-key" data-search-exclude></div>
 <div id="one-column-in-the-primary-key" data-search-exclude></div>

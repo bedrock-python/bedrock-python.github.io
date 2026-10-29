@@ -1,6 +1,6 @@
 # Lab: an orders API on four libraries {#lab-what-every-production-python-microservice-reimplements}
 
-An orders API reads PostgreSQL and asks a local warehouse for stock. It combines servicewright, sqlalchemy-foundation-kit, clientwright and deadline-budget. Companion to [Why I extract Python service infrastructure into libraries](../../posts/2026-10-27-why-bedrock-python-libraries.md).
+An orders API reads PostgreSQL and asks a local warehouse for stock. It combines servicewright, sqlalchemy-foundation-kit, clientwright and deadline-budget. Companion to [Why extract Python service infrastructure into libraries](../../posts/2026-10-27-why-bedrock-python-libraries.md).
 
 ## Run {#run}
 

@@ -72,7 +72,7 @@ async def publish_status(producer, delivery_id, status, revision):
     )
 ```
 
-Awaiting it returns the broker's acknowledgement with partition and offset; it does not mean that tracking has applied the update. Idempotence covers only the producer's own retries ([aiokafka producer guarantees](https://aiokafka.readthedocs.io/en/stable/producer.html#idempotent-produce)): if your code calls `publish_status()` again after a timeout, the update can land twice. Saving data together with a message needs the [Outbox flow](2026-10-03-reliable-events-outbox-inbox-kafka.md).
+Awaiting it returns the broker's acknowledgement with partition and offset; it does not mean that tracking has applied the update. Idempotence covers only the producer's own retries ([aiokafka producer guarantees](https://aiokafka.readthedocs.io/en/stable/producer.html#idempotent-produce)): if your code calls `publish_status()` again after a timeout, the update can land twice. Saving data together with a message needs an Outbox.
 
 ## Update the tracking view, then commit {#consumer}
 

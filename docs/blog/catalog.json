@@ -25,7 +25,7 @@
     },
     {
       "id": "2026-10-27-why-bedrock-python-libraries",
-      "title": "Why I extract Python service infrastructure into libraries",
+      "title": "Why extract Python service infrastructure into libraries",
       "description": "Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order.",
       "url": "posts/2026-10-27-why-bedrock-python-libraries/",
       "date": "2026-10-27",
@@ -41,7 +41,7 @@
         "engineering"
       ],
       "minutes": 7,
-      "search": "Why I extract Python service infrastructure into libraries Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order. bedrock-python architecture servicewright Meta Python & tooling Start with the decision the service owns Connect PostgreSQL and the warehouse Give the whole operation one time limit Create shared resources once and close them last Check the behavior, not just the imports When a separate library earns its cost What the libraries take and what stays Examples and labs"
+      "search": "Why extract Python service infrastructure into libraries Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order. bedrock-python architecture servicewright Meta Python & tooling Start with the decision the service owns Connect PostgreSQL and the warehouse Give the whole operation one time limit Create shared resources once and close them last Check the behavior, not just the imports When a separate library earns its cost What the libraries take and what stays Examples and labs"
     },
     {
       "id": "2026-10-26-documentation-for-ai-coding-agents",
