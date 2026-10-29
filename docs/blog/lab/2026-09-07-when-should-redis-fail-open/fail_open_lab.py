@@ -1,107 +1,185 @@
-"""When Redis is gone: what each use of it should do, and how long deciding takes."""
+"""Exercise the article's functions against a real Redis, including failures."""
 
 import asyncio
 import logging
+import socket
 import time
 
-from pydantic import BaseModel
-from redis.asyncio import Redis
-from redis.exceptions import ConnectionError, TimeoutError as RedisTimeoutError
-from testcontainers.redis import RedisContainer
+from testcontainers.community.redis import RedisContainer
 
-from idempotency_kit import AsyncIdempotencyCoordinator, IdempotencyDomainService, PydanticResultAdapter
-from idempotency_kit.infra.storage.redis.aio import RedisAsyncIdempotencyRepository
-from redis_client_kit import check_async_redis_health, close_async_redis_client, create_async_redis_client
-from redis_client_kit.settings import BaseRedisSettings, RedisConnectionSettings, RedisPoolSettings
-
-logging.disable(logging.CRITICAL)
+import shop
 
 
-class Charge(BaseModel):
-    charge_id: str
+class Catalog:
+    """Stand-in for PostgreSQL; count reads so a fallback is observable."""
+
+    def __init__(self):
+        self.reads = 0
+
+    async def load_price(self, sku):
+        self.reads += 1
+        return "9.99"
 
 
-charges = 0
+class PaymentProvider:
+    """In-memory test double, not a real payment integration or durable store."""
+
+    def __init__(self):
+        self.charges = {}
+
+    async def charge(self, *, amount_minor, idempotency_key):
+        if idempotency_key in self.charges:
+            previous_amount, receipt = self.charges[idempotency_key]
+            if amount_minor != previous_amount:
+                raise ValueError("The same key cannot describe a different payment")
+            return receipt
+        receipt = f"charge-{len(self.charges) + 1}"
+        self.charges[idempotency_key] = (amount_minor, receipt)
+        return receipt
 
 
-async def charge_card(amount: int) -> Charge:
-    global charges
-    charges += 1
-    return Charge(charge_id=f"ch_{charges}")
+async def expect_error(kind, command):
+    try:
+        await command
+    except kind:
+        return
+    raise AssertionError(f"Expected {kind.__name__}")
 
 
-async def timed(label: str, coro, cap: float = 3.0) -> None:
+async def wait_ready(redis):
+    """Wait for the Docker fixture before testing the application's tight budgets."""
+    async with asyncio.timeout(10):
+        while not await shop.redis_health(redis):
+            await asyncio.sleep(0.05)
+
+
+async def unavailable(redis, catalog, provider, label):
     started = time.perf_counter()
-    try:
-        result = await asyncio.wait_for(coro, timeout=cap)
-        print(f"  {label:<52} -> {result!s:<28} {time.perf_counter() - started:6.2f} s")
-    except asyncio.TimeoutError:
-        print(f"  {label:<52} -> {'still waiting':<28} {time.perf_counter() - started:6.2f} s  (gave up watching)")
-    except (ConnectionError, RedisTimeoutError) as error:
-        print(f"  {label:<52} -> {type(error).__name__:<28} {time.perf_counter() - started:6.2f} s")
-
-
-async def cached_price(redis: Redis, sku: str) -> str:
-    """A cache that fails open: Redis trouble costs the lookup, never the request."""
-    try:
-        hit = await redis.get(f"price:{sku}")
-        if hit:
-            return f"hit {hit.decode()}"
-    except (ConnectionError, RedisTimeoutError):
-        return "computed (cache unavailable)"
-    await asyncio.sleep(0.05)  # the expensive computation
-    try:
-        await redis.set(f"price:{sku}", "9.99", ex=60)
-    except (ConnectionError, RedisTimeoutError):
-        pass
-    return "computed"
-
-
-async def rate_limited(redis: Redis, user: str, *, fail_open: bool) -> str:
-    try:
-        count = await redis.incr(f"rl:{user}")
-        return "allowed" if count <= 100 else "denied"
-    except (ConnectionError, RedisTimeoutError):
-        return "allowed (limiter unavailable)" if fail_open else "denied (limiter unavailable)"
-
-
-async def main(host: str, port: int, wrapped) -> None:
-    settings = BaseRedisSettings(
-        key_prefix="shop",
-        connection=RedisConnectionSettings(host=host, port=port),
-        pool=RedisPoolSettings(socket_timeout=0.5, socket_connect_timeout=0.5),   # the decision this post is about
+    before = catalog.reads
+    assert await shop.product_price(redis, catalog.load_price, "sku-1") == "9.99"
+    assert catalog.reads == before + 1
+    await expect_error(shop.ServiceUnavailable, shop.allow_login(redis, "alice"))
+    before = len(provider.charges)
+    await expect_error(
+        shop.ServiceUnavailable,
+        shop.pay_order(redis, provider.charge, "order-outage", 999),
     )
-    kit = create_async_redis_client(settings)
-    bare = Redis(host=host, port=port)   # redis-py's defaults: no socket timeout at all
-    coordinator = AsyncIdempotencyCoordinator(RedisAsyncIdempotencyRepository(kit), IdempotencyDomainService())
-
-    print("--- Redis is up ---")
-    await timed("cache, first lookup", cached_price(kit, "sku-1"))
-    await timed("cache, second lookup", cached_price(kit, "sku-1"))
-    await timed("rate limiter", rate_limited(kit, "u1", fail_open=True))
-    await timed("idempotent charge", coordinator.coordinate("payment.charge", "order-1", 3600, PydanticResultAdapter(Charge), charge_card, 10))
-    await timed("health check", check_async_redis_health(kit))
-
-    wrapped.pause()   # the box is there, the process is not answering: every packet goes into a hole
-    print("\n--- Redis is paused: connections neither succeed nor fail ---")
-    await timed("bare redis-py GET, no timeouts configured", bare.get("price:sku-1"))
-    await timed("kit GET, socket_timeout=0.5", kit.get("price:sku-1"))
-    await timed("cache lookup (fails open)", cached_price(kit, "sku-1"))
-    await timed("rate limiter, fail_open=True", rate_limited(kit, "u1", fail_open=True))
-    await timed("rate limiter, fail_open=False", rate_limited(kit, "u1", fail_open=False))
-    before = charges
-    await timed("idempotent charge, new key (fails open: runs)", coordinator.coordinate("payment.charge", "order-2", 3600, PydanticResultAdapter(Charge), charge_card, 10))
-    await timed("idempotent charge, SAME key again (store gone)", coordinator.coordinate("payment.charge", "order-2", 3600, PydanticResultAdapter(Charge), charge_card, 10))
-    print(f"  charges made while the store was gone: {charges - before}")
-    await timed("health check", check_async_redis_health(kit))
-
-    wrapped.unpause()
-    print("\n--- Redis is back ---")
-    await timed("kit GET, same client, no restart", kit.get("price:sku-1"))
-    await timed("health check", check_async_redis_health(kit))
-    await close_async_redis_client(kit)
-    await bare.aclose()
+    assert len(provider.charges) == before
+    assert not await shop.redis_health(redis, require_write=True)
+    elapsed = time.perf_counter() - started
+    assert elapsed < 2.0, f"Failure handling stalled for {elapsed:.2f}s"
+    print(f"{label}: DB fallback; login/payment refused; no new charge ({elapsed:.2f}s)")
 
 
-with RedisContainer("redis:7-alpine") as container:
-    asyncio.run(main(container.get_container_host_ip(), int(container.get_exposed_port(6379)), container.get_wrapped_container()))
+async def main(container):
+    redis = shop.make_redis(
+        container.get_container_host_ip(), int(container.get_exposed_port(6379)),
+    )
+    catalog, provider = Catalog(), PaymentProvider()
+    wrapped = container.get_wrapped_container()
+    try:
+        await wait_ready(redis)
+        print("Redis", (await redis.info("server"))["redis_version"])
+        assert await shop.product_price(redis, catalog.load_price, "sku-1") == "9.99"
+        assert await shop.product_price(redis, catalog.load_price, "sku-1") == "9.99"
+        assert catalog.reads == 1
+        assert 0 < await redis.ttl("shop:price:sku-1") <= 60
+        print("cache: two reads, one DB lookup, expiring cache entry")
+
+        decisions = await asyncio.gather(
+            *(shop.allow_login(redis, "alice") for _ in range(8)),
+            return_exceptions=True,
+        )
+        assert decisions.count(None) == 5
+        assert sum(isinstance(item, shop.TooManyRequests) for item in decisions) == 3
+        assert 0 < await redis.pttl("shop:login:alice") <= 60_000
+        # Shorten the fixture's TTL instead of waiting a minute.
+        await redis.pexpire("shop:login:alice", 1)
+        await asyncio.sleep(0.03)
+        await shop.allow_login(redis, "alice")
+        assert await redis.get("shop:login:alice") == "1"
+        print("login: five admitted, three limited; next window admits again")
+
+        results = await asyncio.gather(
+            *(shop.pay_order(redis, provider.charge, "order-1", 999) for _ in range(2)),
+            return_exceptions=True,
+        )
+        assert "charge-1" in results
+        assert sum(isinstance(item, shop.PaymentBusy) for item in results) == 1
+        await redis.pexpire("shop:payment:order-1", 1)
+        await asyncio.sleep(0.03)
+        assert await shop.pay_order(redis, provider.charge, "order-1", 999) == "charge-1"
+        assert len(provider.charges) == 1
+        print("payment: concurrent duplicate refused; retry after TTL returns same charge")
+
+        # The provider commits a charge, but its response never reaches our handler.
+        async def lost_response(**kwargs):
+            await provider.charge(**kwargs)
+            raise TimeoutError("Provider response lost after charge")
+
+        await expect_error(TimeoutError, shop.pay_order(redis, lost_response, "order-2", 999))
+        await redis.pexpire("shop:payment:order-2", 1)
+        await asyncio.sleep(0.03)
+        assert await shop.pay_order(redis, provider.charge, "order-2", 999) == "charge-2"
+        assert len(provider.charges) == 2
+        print("payment: lost response, same provider key, no second charge")
+
+        wrapped.pause()
+        try:
+            await unavailable(redis, catalog, provider, "paused Redis")
+            # Caller cancellation must not be converted into a cache fallback.
+            before = catalog.reads
+            task = asyncio.create_task(shop.product_price(redis, catalog.load_price, "sku-1"))
+            await asyncio.sleep(0.02)
+            task.cancel()
+            await expect_error(asyncio.CancelledError, task)
+            assert catalog.reads == before
+        finally:
+            wrapped.unpause()
+
+        held = []
+        try:
+            for _ in range(10):
+                held.append(await redis.connection_pool.get_connection())
+            await unavailable(redis, catalog, provider, "exhausted pool")
+        finally:
+            for connection in held:
+                await redis.connection_pool.release(connection)
+
+        # Reserve a local port without listening so no other service can claim it.
+        with socket.socket() as reserved:
+            reserved.bind(("127.0.0.1", 0))
+            refused = shop.make_redis("127.0.0.1", reserved.getsockname()[1])
+            try:
+                await unavailable(refused, catalog, provider, "refused connection")
+            finally:
+                await refused.aclose()
+
+        for _ in range(8):
+            await shop.db_slots.acquire()
+        try:
+            before = catalog.reads
+            await expect_error(
+                shop.ServiceUnavailable,
+                shop.product_price(redis, catalog.load_price, "uncached-sku"),
+            )
+            assert catalog.reads == before
+        finally:
+            for _ in range(8):
+                shop.db_slots.release()
+        print("DB overload: bounded wait, request refused without another DB read")
+
+        assert await shop.redis_health(redis, require_write=True)
+        assert await shop.product_price(redis, catalog.load_price, "sku-1") == "9.99"
+        await shop.allow_login(redis, "after-recovery")
+        assert await shop.pay_order(redis, provider.charge, "order-outage", 999) == "charge-3"
+        print("recovery: cache, login, payment and health work with the same client")
+    finally:
+        await redis.aclose()
+
+
+if __name__ == "__main__":
+    logging.disable(logging.CRITICAL)
+    with RedisContainer("redis:7-alpine") as container:
+        asyncio.run(main(container))
+    print("PASS: shop scenarios")

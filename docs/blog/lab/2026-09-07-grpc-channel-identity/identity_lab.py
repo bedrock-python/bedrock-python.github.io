@@ -1,102 +1,46 @@
-"""gRPC channels pooled by address, and pooled by everything gRPC baked into them."""
-
+"""Observe channel identity via public get_channel() and actual RPC behavior."""
 import asyncio
-
+import logging
+from pathlib import Path
+import sys
 import grpc
-import grpc.aio
 
-from grpc_client_kit import ChannelPool, ConnectivityConfig, GrpcClient, GrpcClientConfig, RetryConfig, TimeoutConfig, build_interceptors
-
-SERVICE = "lab.Ledger"
-
-
-class Ledger:
-    def __init__(self) -> None:
-        self.attempts = 0
-
-    async def post(self, request: bytes, context: grpc.aio.ServicerContext) -> bytes:
-        self.attempts += 1
-        await context.abort(grpc.StatusCode.UNAVAILABLE, "replica draining")
-        return b""
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '2026-09-07-safe-grpc-retries'))
+from grpc_client_kit import ChannelPool, TimeoutConfig, build_interceptors
+from grpc_flow import OPTIONS, grpc_clients, inventory_chain
+from grpc_origin import grpc_origin
+from retries_lab import expect_unavailable
 
 
-class Stub:
-    def __init__(self, channel: grpc.aio.Channel) -> None:
-        self.post = channel.unary_unary(f"/{SERVICE}/Post")
+async def main():
+    async with grpc_origin() as (inventory, target):
+        async with grpc_clients(target) as (orders, audit):
+            async with orders as stub:
+                await expect_unavailable(stub.get_stock(b'down'))
+            assert inventory.attempts[('stock', b'down')] == 3
+            async with audit as stub:
+                await expect_unavailable(stub.get_stock(b'down'))
+            assert inventory.attempts[('stock', b'down')] == 4
+            assert orders.interceptors_for(target)[0] is orders.interceptors_for(target)[0]
+            print('PASS same target: orders makes three attempts, audit makes one')
+
+        async with ChannelPool() as pool:
+            chain = inventory_chain()
+            plain = build_interceptors(timeout=TimeoutConfig(default=1))
+            first = await pool.get_channel(target, insecure=True, options=OPTIONS, interceptors=chain)
+            again = await pool.get_channel(target, insecure=True, options=OPTIONS, interceptors=chain)
+            audit = await pool.get_channel(target, insecure=True, options=OPTIONS, interceptors=plain)
+            changed = await pool.get_channel(target, insecure=True, options=OPTIONS + [('grpc.keepalive_time_ms', 30000)], interceptors=chain)
+            assert first is again and first is not audit and first is not changed
+            new_chain = await pool.get_channel(target, insecure=True, options=OPTIONS, interceptors=inventory_chain())
+            assert first is not new_chain
+            await asyncio.wait_for(first.channel_ready(), timeout=3)
+            print('PASS public channel identity: reuse stable chain; separate chains and options')
+        for channel in (first, audit, changed, new_chain):
+            assert channel.get_state() == grpc.ChannelConnectivity.SHUTDOWN
+        print('PASS pool owns shutdown: all acquired channels are closed')
 
 
-async def serve(ledger: Ledger) -> tuple[grpc.aio.Server, str]:
-    server = grpc.aio.server()
-    server.add_generic_rpc_handlers((grpc.method_handlers_generic_handler(SERVICE, {"Post": grpc.unary_unary_rpc_method_handler(ledger.post)}),))
-    port = server.add_insecure_port("127.0.0.1:0")
-    await server.start()
-    return server, f"127.0.0.1:{port}"
-
-
-async def call(stub: Stub, ledger: Ledger) -> str:
-    ledger.attempts = 0
-    try:
-        await stub.post(b"x")
-        return "OK"
-    except grpc.aio.AioRpcError as error:
-        return f"{error.code().name} after {ledger.attempts} attempt(s) at the server"
-
-
-async def main() -> None:
-    ledger = Ledger()
-    server, target = await serve(ledger)
-    retrying = build_interceptors(timeout=TimeoutConfig(default=2.0), retry=RetryConfig(max_attempts=3, initial_backoff=0.01, jitter=0.0))
-    plain = build_interceptors(timeout=TimeoutConfig(default=2.0))
-
-    print("--- two clients, one address: a retrying orders client and a non-retrying audit client ---")
-    by_address: dict[str, grpc.aio.Channel] = {}
-
-    def naive_channel(address: str, interceptors) -> grpc.aio.Channel:
-        """The pool most codebases write: one channel per address, whoever asked first wins."""
-        if address not in by_address:
-            from grpc_client_kit import flatten_interceptors
-            by_address[address] = grpc.aio.insecure_channel(address, interceptors=flatten_interceptors(interceptors))
-        return by_address[address]
-
-    orders_stub = Stub(naive_channel(target, retrying))
-    audit_stub = Stub(naive_channel(target, plain))
-    print(f"  pool keyed by address:  orders -> {await call(orders_stub, ledger)}")
-    print(f"                          audit  -> {await call(audit_stub, ledger)}   (the audit client inherited the orders client's retries)")
-    for ch in by_address.values():
-        await ch.close()
-
-    async with ChannelPool() as pool:
-        orders = GrpcClient(Stub, GrpcClientConfig(target=target, insecure=True), pool, interceptors=retrying)
-        audit = GrpcClient(Stub, GrpcClientConfig(target=target, insecure=True), pool, interceptors=plain)
-        async with orders as stub:
-            print(f"  pool keyed by identity: orders -> {await call(stub, ledger)}")
-        async with audit as stub:
-            print(f"                          audit  -> {await call(stub, ledger)}   channels in the pool: {len(pool._entries)}")
-
-    print("\n--- the chain rebuilt per request ---")
-    async with ChannelPool() as pool:
-        for i in range(5):
-            chain = build_interceptors(timeout=TimeoutConfig(default=2.0))   # "a fresh chain, just to be safe"
-            client = GrpcClient(Stub, GrpcClientConfig(target=target, insecure=True), pool, interceptors=chain)
-            async with client as stub:
-                await call(stub, ledger)
-        print(f"  a chain built per call:  5 calls -> {len(pool._entries)} channels")
-    async with ChannelPool() as pool:
-        chain = build_interceptors(timeout=TimeoutConfig(default=2.0))
-        for i in range(5):
-            client = GrpcClient(Stub, GrpcClientConfig(target=target, insecure=True), pool, interceptors=chain)
-            async with client as stub:
-                await call(stub, ledger)
-        print(f"  one chain per target:    5 calls -> {len(pool._entries)} channel(s)")
-
-    print("\n--- same address, different keepalive: a channel argument is part of the identity ---")
-    async with ChannelPool() as pool:
-        for connectivity in (None, ConnectivityConfig(keepalive_time=10.0)):
-            client = GrpcClient(Stub, GrpcClientConfig(target=target, insecure=True, connectivity=connectivity), pool, interceptors=plain)
-            async with client as stub:
-                await call(stub, ledger)
-        print(f"  two connectivity configs -> {len(pool._entries)} channels")
-    await server.stop(grace=None)
-
-
-asyncio.run(main())
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.CRITICAL)
+    asyncio.run(main())

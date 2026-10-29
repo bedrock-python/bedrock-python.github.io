@@ -1,0 +1,2 @@
+-r ../2026-09-07-aiokafka-checklist/requirements.txt
+servicewright==0.13.1

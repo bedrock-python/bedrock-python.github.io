@@ -1,0 +1,1 @@
+-r ../2026-09-07-why-i-stopped-wrapping-http-clients/requirements.txt

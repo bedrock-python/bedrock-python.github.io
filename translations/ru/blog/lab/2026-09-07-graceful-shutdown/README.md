@@ -1,20 +1,20 @@
-# Практикум: корректное завершение — это протокол {#lab-graceful-shutdown-is-a-protocol}
+# Практикум: завершение HTTP-запросов перед закрытием ресурсов {#lab-graceful-shutdown-is-a-protocol}
 
-Скрипты для измерения завершения работы: два сервера с одинаковыми маршрутами и управляющий скрипт, имитирующий поведение Kubernetes.
+`driver.py` запускает общий сервис отчётов и отправляет настоящие HTTP-запросы на localhost. Проверяются два исхода:
+
+- Принятый отчёт длительностью 0,8 секунды возвращает 200 после смены readiness на 503; хранилище закрывается позже.
+- Отчёт длительностью 30 секунд не укладывается в секундный лимит Uvicorn, отменяется и возвращает 500, поскольку отправка ответа ещё не началась. Затем закрывается ресурс. Такой ответ получен для этого обработчика и зафиксированных версий; это не общее правило для любой отмены.
+
+`AppSpec.drain_grace_seconds=3` оставляет HTTP-адаптеру время на завершение после лимита запроса в Uvicorn. Это разные ограничения. `cleanup_timeout_seconds` действует на отдельные шаги остановки; закрытие ресурсов в области приложения тоже должно иметь собственные ограничения.
+
+`server_servicewright.py` и `server_plain.py` — варианты для ручного запуска. Второй использует FastAPI lifespan и завершение запросов средствами Uvicorn: для многих приложений только с HTTP этого достаточно. Автоматический драйвер проверяет вариант с servicewright через `Service.run(..., stop=event)`; он не посылает SIGTERM и не имитирует выкладку в Kubernetes. Доставку сигнала и задержку маршрутизации нужно проверить при развёртывании.
+
+Сохраните соседний [практикум с общим жизненным циклом](../2026-09-07-one-lifecycle/README.md): здесь используются его хранилище и обработчик. Docker не нужен.
+
+Запустите из каталога `docs/blog/lab/2026-09-07-graceful-shutdown` в копии репозитория:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python "servicewright[fastapi]" httpx
-.venv/bin/python driver.py server_plain.py
-.venv/bin/python driver.py server_servicewright.py                  # drain_delay_seconds=0
-DRAIN_DELAY=1.5 .venv/bin/python driver.py server_servicewright.py  # the protocol with its window
+uv run --no-project --python 3.13 --with-requirements requirements.txt python driver.py
 ```
-
-| Скрипт | Назначение |
-|---|---|
-| `routes.py` | Общие для обоих серверов маршруты `/work` (20 мс) и `/slow` (2 с) |
-| `server_plain.py` | FastAPI под `uvicorn.run` со штатной обработкой SIGTERM в uvicorn |
-| `server_servicewright.py` | Те же маршруты под управлением жизненного цикла servicewright; `DRAIN_DELAY` задаёт `AppSpec.drain_delay_seconds` |
-| `driver.py` | Запускает сервер, ждёт готовности, отправляет один медленный запрос и SIGTERM, затем продолжает отправлять запросы каждые 20 мс в течение `LAG` секунд — задержки распространения изменений endpoints, — опрашивает readiness и подсчитывает ответы |
 
 [Исходный код практикума на GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-graceful-shutdown).

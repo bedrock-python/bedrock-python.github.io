@@ -1,5 +1,14 @@
 # Editorial plan: production Python engineering
 
+> Historical backlog. On 2026-09-13, the author approved consolidating the
+> active 48 articles into 19. The current mapping, retained labs and legacy
+> fragment identifiers are recorded in [article-consolidation.json](plans/article-consolidation.json).
+> The old topic breakdown and length targets below are superseded: write around
+> one complete reader task, remove repeated explanations, and keep full labs
+> separately. Lists and catalogs are generated with `scripts/build_blog_catalog.py`.
+> Editorial approval is tracked outside this repository; consolidation does not
+> imply that the author has approved the new text for publication.
+
 The blog is not about Bedrock packages. It is about production Python
 engineering, written by the people building Bedrock packages. Every post opens
 on a problem the reader already has and only near the end shows which library
@@ -255,7 +264,7 @@ mention. The section plan is a starting point, not a contract.
 
 ### 7. We started writing documentation for AI coding agents
 
-- File: `docs/blog/posts/2026-09-07-documentation-for-ai-coding-agents.md`
+- File: `docs/blog/posts/2026-10-26-documentation-for-ai-coding-agents.md`
 - Search title: *Building Python Libraries for AI Coding Agents, Not Just Humans*
 - LinkedIn hook: "In 2024 I wrote docs for developers. In 2026 I realised half of my documentation users are not human."
 - Tags: `bedrock-python`, `documentation`, `ai-agents`, `python-library-template`
@@ -466,7 +475,7 @@ The failure modes of autonomous bots: noise, confident nonsense, reviewer
 fatigue, and the maintainer who stops reading. The pipeline brief, review,
 human polish, post, and what the polish step actually changes, with real
 examples of comments that were dropped. Closes on mr-review. Drafted 2026-09-07:
-`docs/blog/posts/2026-09-07-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
+`docs/blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md` (no lab: the post describes the
 pipeline from the tool's documentation; real dropped-comment examples need a review session and are the maintainer's to add).
 
 ### 24. What happens when Kafka is down for an hour?

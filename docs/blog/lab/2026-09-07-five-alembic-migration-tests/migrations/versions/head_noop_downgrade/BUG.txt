@@ -1,0 +1,1 @@
+The newest revision's downgrade leaves users.is_active in place, so applying it again fails.

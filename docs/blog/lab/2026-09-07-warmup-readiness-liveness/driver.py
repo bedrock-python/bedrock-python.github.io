@@ -1,135 +1,82 @@
-"""Poll the two probes and a route through a whole lifecycle: warmup, a dependency outage, SIGTERM."""
-
-from __future__ import annotations
-
-import os
-import signal
-import socket
-import subprocess
-import sys
-import threading
-import time
-from importlib.metadata import version
+"""Real Redis outage: assert readiness changes independently of liveness."""
+import asyncio
+import logging
 
 import httpx
-from testcontainers.redis import RedisContainer
-
-WARMUP_SECONDS = 3.0
-DRAIN_DELAY = 2.0
-INTERVAL = 0.1
-
-
-def free_port() -> int:
-    with socket.socket() as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
+from testcontainers.community.redis import RedisContainer
+from servicewright import WarmupError
+from service import build_health_service
+from one_lifecycle import Settings
+from report_store import ReportStore
+from lab_support import wait_until, wait_http
 
 
-class Poller(threading.Thread):
-    """Ask livez, readyz and a route every 100 ms and keep the transitions."""
+async def exercise(redis):
+    url = f'redis://{redis.get_container_host_ip()}:{redis.get_exposed_port(6379)}/0'
+    store = ReportStore()
+    store.allow_warmup.clear()
+    service, api, container = build_health_service(url, store)
+    stop = asyncio.Event()
+    task = asyncio.create_task(service.run(Settings(), stop=stop))
+    paused = False
+    try:
+        await asyncio.wait_for(store.warming.wait(), timeout=5)
+        assert api.bound_port is None and not service.spec.health.ready
+        store.allow_warmup.set()
+        await wait_until(lambda: api.bound_port is not None, task)
+        async with httpx.AsyncClient(
+            base_url=f'http://127.0.0.1:{api.bound_port}', timeout=3, trust_env=False,
+        ) as client:
+            await wait_http(client, task)
+            assert (await client.get('/system/health/livez')).status_code == 200
+            print('PASS warmup: no listener before initialization; both probes then return 200')
 
-    def __init__(self, base: str) -> None:
-        super().__init__(daemon=True)
-        self.base = base
-        self.samples: list[tuple[float, str, str, str]] = []
-        self.started = time.perf_counter()
-        self.stop = threading.Event()
+            await asyncio.to_thread(redis.get_wrapped_container().pause)
+            paused = True
+            assert (await client.get('/system/health/readyz')).status_code == 503
+            assert (await client.get('/system/health/livez')).status_code == 200
+            assert (await client.get('/reports')).status_code == 200
+            print('PASS Redis paused: readyz=503, livez=200; direct route without Redis still works')
 
-    def probe(self, client: httpx.Client, path: str) -> str:
+            await asyncio.to_thread(redis.get_wrapped_container().unpause)
+            paused = False
+            await wait_http(client, task)
+            print('PASS Redis restored: readiness recovers without service restart')
+
+            stop.set()
+            await wait_until(lambda: not service.spec.health.ready, task)
+            assert (await client.get('/system/health/readyz')).status_code == 503
+            assert (await client.get('/system/health/livez')).status_code == 200
+            assert (await client.get('/reports')).status_code == 200
+            print('PASS stop: readiness withdrawn while HTTP still accepts during drain delay')
+    finally:
+        if paused:
+            await asyncio.to_thread(redis.get_wrapped_container().unpause)
+        stop.set()
+        await asyncio.wait_for(task, timeout=10)
+    assert container.closed and not store.opened
+    print('PASS cleanup: Redis client and report store closed')
+
+    failed_store = ReportStore()
+    failed_service, failed_api, failed_container = build_health_service(url, failed_store)
+    await asyncio.to_thread(redis.get_wrapped_container().pause)
+    try:
         try:
-            return str(client.get(f"{self.base}{path}", timeout=1.0).status_code)
-        except httpx.HTTPError as error:
-            return type(error).__name__
-
-    def run(self) -> None:
-        with httpx.Client() as client:
-            while not self.stop.is_set():
-                at = time.perf_counter() - self.started
-                self.samples.append(
-                    (at, self.probe(client, "/system/health/livez"), self.probe(client, "/system/health/readyz"),
-                     self.probe(client, "/cached"))
-                )
-                time.sleep(INTERVAL)
-
-    def transitions(self) -> list[tuple[float, str, str, str]]:
-        out: list[tuple[float, str, str, str]] = []
-        for sample in self.samples:
-            if not out or sample[1:] != out[-1][1:]:
-                out.append(sample)
-        return out
-
-    def first(self, index: int, value: str) -> float | None:
-        return next((s[0] for s in self.samples if s[index] == value), None)
+            await asyncio.wait_for(
+                failed_service.run(Settings(), stop=asyncio.Event()), timeout=5,
+            )
+        except WarmupError:
+            pass
+        else:
+            raise AssertionError('startup succeeded without mandatory Redis')
+    finally:
+        await asyncio.to_thread(redis.get_wrapped_container().unpause)
+    assert failed_container.closed and not failed_store.opened
+    assert failed_api.bound_port is None and not failed_service.spec.health.ready
+    print('PASS Redis unavailable at startup: warmup fails, both resources close, no HTTP bind')
 
 
-def log(msg: str) -> None:
-    print(msg, flush=True)
-
-
-def main() -> None:
-    with RedisContainer("redis:7-alpine") as redis:
-        port = free_port()
-        env = {
-            **os.environ,
-            "WARMUP_SECONDS": str(WARMUP_SECONDS),
-            "DRAIN_DELAY": str(DRAIN_DELAY),
-            "REDIS_URL": f"redis://{redis.get_container_host_ip()}:{redis.get_exposed_port(6379)}/0",
-        }
-        log(f"servicewright {version('servicewright')}, warmup {WARMUP_SECONDS:.0f} s, "
-            f"drain delay {DRAIN_DELAY:.0f} s")
-        poller = Poller(f"http://127.0.0.1:{port}")
-        proc = subprocess.Popen([sys.executable, "service.py", str(port)], env=env)
-        poller.start()
-
-        time.sleep(WARMUP_SECONDS + 3)
-        log("--- 1. startup")
-        live = poller.first(1, "200")
-        ready = poller.first(2, "200")
-        route = poller.first(3, "200")
-        log(f"    first 200 from livez:  {live:.1f} s" if live else "    livez never answered")
-        log(f"    first 200 from readyz: {ready:.1f} s" if ready else "    readyz never answered")
-        log(f"    first 200 from the route: {route:.1f} s" if route else "    the route never answered")
-
-        log("--- 2. the dependency goes away (Redis paused)")
-        redis.get_wrapped_container().pause()
-        paused_at = time.perf_counter() - poller.started
-        time.sleep(3)
-        after = [s for s in poller.samples if s[0] > paused_at + 1.0][:1]
-        if after:
-            at, livez, readyz, route_code = after[0]
-            log(f"    at {at:.1f} s: livez={livez}  readyz={readyz}  the route that does not need Redis={route_code}")
-        redis.get_wrapped_container().unpause()
-        time.sleep(2)
-        back = [s for s in poller.samples if s[0] > time.perf_counter() - poller.started - 0.5][:1]
-        if back:
-            at, livez, readyz, route_code = back[0]
-            log(f"    Redis back, at {at:.1f} s: livez={livez}  readyz={readyz}  route={route_code}")
-
-        log(f"--- 3. SIGTERM, with drain_delay_seconds={DRAIN_DELAY:.0f}")
-        sigterm_at = time.perf_counter() - poller.started
-        proc.send_signal(signal.SIGTERM)
-        code = proc.wait(timeout=30)
-        exited_at = time.perf_counter() - poller.started
-        time.sleep(0.5)
-        poller.stop.set()
-        poller.join(timeout=2)
-
-        after_term = [s for s in poller.samples if s[0] >= sigterm_at]
-        ready_false = next((s[0] for s in after_term if s[2] != "200"), None)
-        route_gone = next((s[0] for s in after_term if s[3] != "200"), None)
-        log(f"    SIGTERM at {sigterm_at:.1f} s, process exited at {exited_at:.1f} s with code {code}")
-        if ready_false:
-            log(f"    readyz stopped saying 200 at {ready_false:.1f} s ({ready_false - sigterm_at:.1f} s after SIGTERM)")
-        if route_gone:
-            log(f"    the route stopped answering at {route_gone:.1f} s "
-                f"({route_gone - sigterm_at:.1f} s after SIGTERM)")
-        if ready_false and route_gone:
-            log(f"    requests kept succeeding for {route_gone - ready_false:.1f} s after readiness went false")
-
-        log("--- the transitions the poller saw")
-        for at, livez, readyz, route_code in poller.transitions():
-            log(f"    {at:5.1f} s  livez={livez:<20} readyz={readyz:<20} /cached={route_code}")
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.CRITICAL)
+    with RedisContainer('redis:7-alpine') as redis:
+        asyncio.run(exercise(redis))

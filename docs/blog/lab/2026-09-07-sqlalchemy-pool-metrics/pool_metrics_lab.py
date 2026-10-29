@@ -1,82 +1,140 @@
-"""What a SQLAlchemy connection pool looks like from the outside while it runs out of connections."""
-
+"""Locate waits with real PostgreSQL/PgBouncer and the kit's exported Prometheus metrics."""
 import asyncio
-import re
-import time
+from pathlib import Path
+import sys
 
-from prometheus_client import REGISTRY, generate_latest
+from prometheus_client import REGISTRY
 from sqlalchemy import text
 from sqlalchemy.exc import TimeoutError as PoolTimeout
-from testcontainers.postgres import PostgresContainer
+from sqlalchemy_foundation_kit import create_async_session_manager
 
-from sqlalchemy_foundation_kit import AsyncSessionManager
-from sqlalchemy_foundation_kit.contrib.metrics import PostgresMetrics
-from sqlalchemy_foundation_kit.contrib.settings import PoolSettings
-
-WORKERS = 8
-
-
-def sample() -> dict[str, float]:
-    out: dict[str, float] = {}
-    for line in generate_latest(REGISTRY).decode().splitlines():
-        if line.startswith("postgres_db_") and not line.startswith("#"):
-            name, value = line.rsplit(" ", 1)
-            out[name] = float(value)
-    return out
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-pgbouncer-async-sqlalchemy"))
+from lab_support import DatabaseLab, Shipping, seed, wait_until
+from pool_flow import (
+    get_order, instrumented_manager, order_with_quote_after, order_with_quote_inside,
+)
 
 
-previous = {"wait_count": 0.0, "wait_sum": 0.0, "held_count": 0.0, "held_sum": 0.0}
+def metric(prefix, suffix):
+    return REGISTRY.get_sample_value(f"{prefix}_postgres_db_{suffix}") or 0.0
 
 
-def rate(s: dict[str, float], series: str, key: str) -> tuple[float, float]:
-    """The mean of one histogram over the last half second, and how many observations it had."""
-    count = s.get(f"{series}_count", 0.0)
-    total = s.get(f"{series}_sum", 0.0)
-    dc, ds = count - previous[f"{key}_count"], total - previous[f"{key}_sum"]
-    previous[f"{key}_count"], previous[f"{key}_sum"] = count, total
-    return (ds / dc if dc else 0.0), dc
-
-
-def describe(s: dict[str, float]) -> str:
-    size = s.get("postgres_db_pool_size", 0)
-    out = s.get("postgres_db_pool_checked_out", 0)
-    over = s.get("postgres_db_pool_overflow", 0)
-    wait, checkouts = rate(s, "postgres_db_connection_checkout_wait_seconds", "wait")
-    held, _ = rate(s, "postgres_db_connection_held_duration_seconds", "held")
-    timeouts = sum(v for k, v in s.items() if k.startswith("postgres_db_connection_timeouts_total"))
-    return (f"in_use={out:.0f}/{size + over:.0f}  checkouts/s={checkouts * 2:4.0f}  "
-            f"wait={wait * 1000:6.0f} ms  held={held * 1000:6.0f} ms  timeouts_total={timeouts:.0f}")
-
-
-async def main(url: str) -> None:
-    manager = AsyncSessionManager(url, poolclass="async_adapted_queue", metrics=PostgresMetrics(),
-                                  pool_settings=PoolSettings(size=2, max_overflow=2, timeout=1.0))
-    query_seconds = {"value": 0.05}
-    stop = asyncio.Event()
-    failures = {"pool_timeout": 0}
-
-    async def worker() -> None:
-        while not stop.is_set():
+async def local_queue(config):
+    config = config.model_copy(update={"pool": config.pool.model_copy(update={"size": 1, "pre_ping": False})})
+    async with instrumented_manager(config, "local") as manager:
+        started, release = asyncio.Event(), asyncio.Event()
+        async def holder():
+            async with manager.get_transaction() as session:
+                await session.execute(text("SELECT 1"))
+                started.set()
+                await release.wait()
+        first = asyncio.create_task(holder())
+        try:
+            await started.wait()
+            assert manager.engine.pool.checkedout() == 1
+            before = metric("local", "connection_timeouts_total")
             try:
-                async with manager.get_session() as session:
-                    await session.execute(text("SELECT pg_sleep(:s)"), {"s": query_seconds["value"]})
+                await get_order(manager, 42)
             except PoolTimeout:
-                failures["pool_timeout"] += 1
+                pass
+            else:
+                raise AssertionError("Second checkout must hit the local pool timeout")
+            assert metric("local", "connection_timeouts_total") == before + 1
+            assert metric("local", "connection_checkout_wait_seconds_count") == 2
+        finally:
+            release.set()
+            await first
+        assert manager.engine.pool.checkedout() == 0
+        assert await get_order(manager, 42) == {"id": 42, "total": 1999}
+    print("PASS local pool: one held connection, one timeout, exported counter +1, recovery")
+
+
+async def holding(config):
+    async with instrumented_manager(config, "holding") as manager:
+        await get_order(manager, 42)  # Warm connection and caches before observations.
+        before = metric("holding", "connection_held_duration_seconds_sum")
+        async with manager.get_transaction() as session:
+            await session.execute(text("SELECT pg_sleep(0.2)"))
+        held = metric("holding", "connection_held_duration_seconds_sum") - before
+        assert held >= 0.19
+        print(f"PASS slow SQL: held histogram grew by {held:.3f}s for pg_sleep(0.2)")
+
+        for action, expected in ((order_with_quote_inside, 1), (order_with_quote_after, 0)):
+            shipping = Shipping()
+            task = asyncio.create_task(action(manager, 42, shipping))
+            try:
+                await shipping.started.wait()
+                assert manager.engine.pool.checkedout() == expected
+                # There is no SQL in flight now; the remote-service fixture holds the task.
                 await asyncio.sleep(0.05)
-
-    tasks = [asyncio.create_task(worker()) for _ in range(WORKERS)]
-    t0 = time.perf_counter()
-    print(f"--- {WORKERS} workers, pool_size=2, max_overflow=2, pool_timeout=1.0 s ---")
-    for tick in range(16):
-        await asyncio.sleep(0.5)
-        if tick == 6:
-            query_seconds["value"] = 1.0   # the database slows down: each query now holds a connection for a second
-            print("  ... the database slows down: queries take 1.0 s instead of 0.05 s")
-        print(f"  {time.perf_counter() - t0:4.1f} s  {describe(sample())}  requests failed on pool timeout={failures['pool_timeout']}")
-    stop.set()
-    await asyncio.gather(*tasks)
-    await manager.aclose()
+                assert not task.done()
+            finally:
+                shipping.release.set()
+                response = await task
+            assert response == {"id": 42, "total": 1999, "shipping": 350}
+            assert manager.engine.pool.checkedout() == 0
+            print(f"PASS {action.__name__}: connections held during external wait={expected}")
 
 
-with PostgresContainer("postgres:17-alpine") as pg:
-    asyncio.run(main(pg.get_connection_url().replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)))
+async def second_queue(bouncer):
+    config = bouncer.config()
+    config = config.model_copy(update={
+        "db_schema": None,
+        "pool": config.pool.model_copy(update={"pre_ping": False}),
+    })
+    async with instrumented_manager(config, "bouncer") as manager:
+        # Warm both client connections. No pre-ping or schema hook can issue SQL during checkout.
+        async with manager.engine.connect() as a, manager.engine.connect() as b:
+            await a.execute(text("SELECT 1"))
+            await a.commit()
+            await b.execute(text("SELECT 1"))
+            await b.commit()
+        acquired, release, second_acquired = asyncio.Event(), asyncio.Event(), asyncio.Event()
+        async def holder():
+            async with manager.engine.begin() as connection:
+                await connection.execute(text("SELECT 1"))
+                acquired.set()
+                await release.wait()
+        async def waiter():
+            async with manager.engine.connect() as connection:
+                second_acquired.set()
+                return (await connection.execute(text("SELECT 42"))).scalar_one()
+        first = asyncio.create_task(holder())
+        second = None
+        try:
+            await acquired.wait()
+            count = metric("bouncer", "connection_checkout_wait_seconds_count")
+            second = asyncio.create_task(waiter())
+            await second_acquired.wait()
+            assert metric("bouncer", "connection_checkout_wait_seconds_count") == count + 1
+            def is_queued():
+                pools = bouncer.admin("SHOW POOLS")
+                return any(row["database"] == "test" and int(row["cl_waiting"]) == 1 for row in pools)
+            await wait_until(is_queued)
+            assert not second.done()
+            assert manager.engine.pool.checkedout() == 2
+            assert metric("bouncer", "connection_timeouts_total") == 0
+            assert bouncer.admin("SHOW STATS")
+        finally:
+            release.set()
+            await first
+            if second is not None:
+                assert await second == 42
+        assert manager.engine.pool.checkedout() == 0
+    print("PASS PgBouncer queue: SQLAlchemy checkout completed; cl_waiting=1; no local timeout")
+
+
+async def main(lab, bouncer):
+    async with asyncio.timeout(40):
+        config = lab.direct_config()
+        async with create_async_session_manager(config) as manager:
+            await seed(manager)
+        await local_queue(config)
+        await holding(config)
+        await second_queue(bouncer)
+
+
+if __name__ == "__main__":
+    with DatabaseLab() as lab:
+        bouncer = lab.bouncer(default_pool_size=1)
+        asyncio.run(main(lab, bouncer))

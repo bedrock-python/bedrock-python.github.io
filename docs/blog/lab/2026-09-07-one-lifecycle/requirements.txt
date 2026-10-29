@@ -1,0 +1,4 @@
+servicewright[fastapi]==0.13.1
+fastapi==0.141.1
+uvicorn==0.53.0
+httpx==0.28.1

@@ -1,0 +1,5 @@
+omni-box[postgres,kafka]==0.3.0
+aiokafka==0.14.0
+SQLAlchemy==2.0.54
+asyncpg==0.31.0
+testcontainers[kafka,postgres]==4.15.0

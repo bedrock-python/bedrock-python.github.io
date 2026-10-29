@@ -1,16 +1,17 @@
-# Lab: one lifecycle for HTTP, a scheduler and a worker
+# Lab: one lifecycle for HTTP and a worker {#lab-one-lifecycle-for-http-a-scheduler-and-a-worker}
 
-`one_lifecycle.py` is one `AppSpec` with three entrypoints (a FastAPI server, an APScheduler job every
-half second, a daemon loop) sharing one pool; `ROLE` picks which of them the process runs. Each
-entrypoint is wrapped in a tracer that prints the four calls the Host makes on it. `run_roles.py`
-starts the service as `all`, `api` and `worker`, drives it briefly, sends SIGTERM and prints the
-timeline.
+A reports service has an HTTP route and a periodic worker. `one_lifecycle.py` connects them to the same `AppSpec` and container. The `api`, `worker` and `all` roles choose which entrypoints run. Separate processes get separate resources; they share the initialization code.
+
+`report_store.py` is an instrumented in-memory database stand-in. It records opens, reports, cancellation and close, and fails if a report outlives its resource. `run_roles.py` checks all three roles, warmup failure, stop during warmup and failure of an essential worker. Assertions verify the order; timing measurements are not used as proof.
+
+The periodic callback owns its one-second operation limit. `DaemonEntrypoint` does not turn an arbitrary callback into a bounded draining queue. In the `all` role, the Host waits for the callback to return before withdrawing readiness.
+
+The driver uses real localhost HTTP and `Service.run(..., stop=event)` on Windows and Linux. It does not test OS signals or Kubernetes routing. For a manual run, execute `one_lifecycle.py api` with the same dependencies; it listens on `127.0.0.1:8080` and `run_sync` owns process signals.
+
+Run from `docs/blog/lab/2026-09-07-one-lifecycle` in the repository checkout:
 
 ```bash
-uv venv --python 3.13 .venv
-uv pip install --prerelease=allow --python .venv/bin/python "servicewright[fastapi,apscheduler4]==0.10.0" "httpx==0.28.1"
-.venv/bin/python run_roles.py
+uv run --no-project --python 3.13 --with-requirements requirements.txt python run_roles.py
 ```
 
-`--prerelease=allow` is for APScheduler 4, which is still a pre-release; pin httpx, or the same flag
-pulls in a 1.0 development build.
+[Lab source on GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-one-lifecycle).

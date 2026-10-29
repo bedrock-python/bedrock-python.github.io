@@ -1,30 +1,51 @@
+"""Prove that ignored startup parameters are dropped rather than applied."""
 import asyncio
-from pydantic import SecretStr
-from sqlalchemy import text
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.postgres import PostgresContainer
+import asyncpg
 from sqlalchemy_foundation_kit import create_async_session_manager
-from sqlalchemy_foundation_kit.contrib.settings import BasePostgresConfig, ConnectionSettings
 
-async def probe(host, port, label):
-    config = BasePostgresConfig(connection=ConnectionSettings(host=host, port=int(port), user="test", password=SecretStr("test"), database="test"),
-                                application_name="probe", db_schema="app", use_orjson_serialization=False)
-    m = create_async_session_manager(config)
-    async with m.get_session() as s:
-        jit = (await s.execute(text("SHOW jit"))).scalar(); sp = (await s.execute(text("SHOW search_path"))).scalar(); an = (await s.execute(text("SHOW application_name"))).scalar()
-    print(f"  {label:<48} jit={jit!r} search_path={sp!r} application_name={an!r}")
-    await m.aclose()
+from lab_support import DatabaseLab, seed
+from pool_flow import effective_settings
 
-with Network() as net, PostgresContainer("postgres:17-alpine", username="test", password="test", dbname="test").with_network(net).with_network_aliases("db") as pg:
-    d = pg.get_connection_url().split("@")[1].split("/")[0].split(":")
-    b = DockerContainer("edoburu/pgbouncer:latest").with_exposed_ports(5432).with_network(net)
-    for k, v in {"DB_HOST": "db", "DB_USER": "test", "DB_PASSWORD": "test", "DB_NAME": "test", "POOL_MODE": "transaction", "AUTH_TYPE": "scram-sha-256", "IGNORE_STARTUP_PARAMETERS": "jit,search_path"}.items():
-        b = b.with_env(k, v)
-    b.start(); wait_for_logs(b, "process up", timeout=30)
+
+async def raw_settings(dsn, settings):
+    connection = await asyncpg.connect(dsn, statement_cache_size=0, server_settings=settings)
     try:
-        asyncio.run(probe(d[0], d[1], "direct to PostgreSQL"))
-        asyncio.run(probe(b.get_container_host_ip(), b.get_exposed_port(5432), "PgBouncer, ignore_startup_parameters=jit,search_path"))
+        async with connection.transaction():
+            return {name: await connection.fetchval(f"SHOW {name}") for name in ("jit", "search_path", "application_name")}
     finally:
-        b.stop()
+        await connection.close()
+
+
+async def main(lab, strict, ignoring):
+    async with asyncio.timeout(25):
+        direct = lab.direct_config()
+        async with create_async_session_manager(direct) as manager:
+            await seed(manager)
+        settings = {"jit": "off", "search_path": "app", "application_name": "startup-probe"}
+        actual = await raw_settings(direct.to_dsn(driver=None), settings)
+        assert actual == {"jit": "off", "search_path": "app", "application_name": "startup-probe"}
+        print("PASS direct startup: jit=off, search_path=app")
+        try:
+            await raw_settings(strict.dsn, settings)
+        except asyncpg.PostgresError as error:
+            assert "unsupported startup parameter" in str(error)
+        else:
+            raise AssertionError("Strict PgBouncer must reject unsupported startup settings")
+        actual = await raw_settings(ignoring.dsn, settings)
+        baseline = await raw_settings(direct.to_dsn(driver=None), {"application_name": "baseline"})
+        assert actual["jit"] == baseline["jit"] == "on"
+        assert actual["search_path"] == baseline["search_path"] != "app"
+        assert actual["application_name"] == "startup-probe"
+        print(f"PASS ignored startup: jit={actual['jit']}, search_path={actual['search_path']!r}; application_name kept")
+
+        async with create_async_session_manager(strict.config()) as manager:
+            actual = await effective_settings(manager)
+            assert actual == {"jit": "on", "search_path": "app", "application_name": "orders-api"}
+        print("PASS kit config: no jit startup parameter; schema applied inside each transaction")
+
+
+if __name__ == "__main__":
+    with DatabaseLab() as lab:
+        strict = lab.bouncer()
+        ignoring = lab.bouncer(ignore_startup_parameters="jit,search_path")
+        asyncio.run(main(lab, strict, ignoring))

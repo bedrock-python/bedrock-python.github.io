@@ -32,18 +32,17 @@ async def timed(label, coro):
 
 async def main() -> None:
     server = await asyncio.start_server(hang, "127.0.0.1", 0)
-    url = f"http://127.0.0.1:{server.sockets[0].getsockname()[1]}/charge"
+    url = f"http://127.0.0.1:{server.sockets[0].getsockname()[1]}/inventory"
 
-    async def hand_loop():
-        async with httpx.AsyncClient(timeout=1.0) as client:
-            last = None
+    async with httpx.AsyncClient(timeout=1.0) as client:
+        async def hand_loop():
             for attempt in range(3):
                 try:
                     return await client.get(url)
-                except httpx.TimeoutException as error:
-                    last = error
-            raise last
-    await timed("hand-rolled loop: 3 attempts, timeout=1.0 each", hand_loop())
+                except httpx.TimeoutException:
+                    if attempt == 2:
+                        raise
+        await timed("hand-rolled loop: 3 attempts, timeout=1.0 each", hand_loop())
 
     retry = RetryConfig(max_attempts=3, initial_backoff=0.01)
     for label, timeout in (

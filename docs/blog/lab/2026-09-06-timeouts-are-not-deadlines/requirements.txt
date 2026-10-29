@@ -1,0 +1,5 @@
+httpx==0.28.1
+grpcio==1.83.1
+deadline-budget==0.1.3
+clientwright[httpx,deadline]==0.2.2
+grpc-client-kit[deadline]==0.1.0

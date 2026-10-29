@@ -1,24 +1,36 @@
-"""What both consumers share: settings, the topic, and how a message is 'processed'."""
+"""Shared article code and the minimal servicewright container for this lab."""
 
-import asyncio
-import os
+from contextlib import asynccontextmanager
+from dataclasses import dataclass
+from pathlib import Path
 import sys
-import time
 
-from aiokafka_foundation_kit.contrib.models import BaseKafkaConsumerSettings
-
-TOPIC = os.environ.get("ORDERS_TOPIC", "orders")
-T0 = time.perf_counter()
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-aiokafka-checklist"))
+import kafka_flow as flow
+from lab_support import committed_offset, fetch_count, infrastructure, seed
 
 
-def log(text: str) -> None:
-    print(f"{time.perf_counter() - T0:6.2f} s  {text}", flush=True)
+@dataclass(frozen=True)
+class Settings:
+    logging: object | None = None
+    metrics: object | None = None
+    tracing: object | None = None
+    error_tracking: object | None = None
+
+    def get_app_version(self):
+        return "1.0.0"
 
 
-def settings() -> BaseKafkaConsumerSettings:
-    return BaseKafkaConsumerSettings(bootstrap_servers=os.environ["KAFKA"], group_id=os.environ["GROUP"], auto_offset_reset="earliest")
+class Scope:
+    async def get(self, key):
+        raise KeyError(key)
 
 
-async def process(message) -> None:
-    await asyncio.sleep(0.2)   # the work: an insert, a call, a mail
-    log(f"processed {message.value['n']}")
+class Container:
+    @asynccontextmanager
+    async def app_scope(self):
+        yield Scope()
+
+    @asynccontextmanager
+    async def unit_scope(self, context=None):
+        yield Scope()

@@ -1,0 +1,2 @@
+grpc-client-kit==0.4.0
+grpcio==1.84.0

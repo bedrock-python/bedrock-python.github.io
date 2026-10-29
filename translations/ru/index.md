@@ -125,26 +125,26 @@ hide:
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
-<a class="bdr-card" href="blog/posts/2026-09-07-circuit-breakers-should-be-per-origin/">
+<a class="bdr-card" href="blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Circuit breaker должен быть отдельным для каждого origin, а не клиента</h3>
-  <p class="bdr-card__lede">Circuit breaker проще всего объяснить и проще всего привязать не к тому ключу. Объяснение помещается в предложение: после достаточного числа сбоев ненадолго прекратить вызовы…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
+  <div class="bdr-card__eyebrow">Инструменты</div>
+  <h3 class="bdr-card__title">Почему замечания ИИ-ревью нужно проверять</h3>
+  <p class="bdr-card__lede">Многие команды подключили к merge request ИИ-ревьюера. Он пишет замечания уверенно, как опытный коллега, но уверенный тон ещё не значит, что замечание верно.</p>
+  <div class="bdr-card__meta">2026-10-29</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-09-07-pgbouncer-transaction-mode-async-sqlalchemy/">
+<a class="bdr-card" href="blog/posts/2026-10-27-why-bedrock-python-libraries/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">PgBouncer в режиме транзакций и асинхронный SQLAlchemy: рабочая конфигурация, которой не хватает в документации</h3>
-  <p class="bdr-card__lede">Конфигурация SQLAlchemy прекрасно работает напрямую с PostgreSQL. Затем перед БД ставят PgBouncer в режиме транзакций, ради которого обычно и нужен пулер, и прежние предположения…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
+  <div class="bdr-card__eyebrow">Об экосистеме</div>
+  <h3 class="bdr-card__title">Зачем выделять инфраструктуру Python-сервисов в библиотеки</h3>
+  <p class="bdr-card__lede">Когда сервисов становится больше одного, у них появляется общая обвязка: пул соединений, ретраи, дедлайн запроса, порядок остановки.</p>
+  <div class="bdr-card__meta">2026-10-27</div>
 </a>
-<a class="bdr-card" href="blog/posts/2026-09-07-retry-after-backoff-and-jitter/">
+<a class="bdr-card" href="blog/posts/2026-10-26-documentation-for-ai-coding-agents/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Руководства</div>
-  <h3 class="bdr-card__title">Retry-After, backoff и jitter: что делает HTTP-клиент в продакшене</h3>
-  <p class="bdr-card__lede">Обычный цикл повторов — четыре строки: попытаться, поймать, подождать, повторить. Рабочая политика HTTP-клиента требует примерно восьми решений, которые этот цикл молча принимает…</p>
-  <div class="bdr-card__meta">2026-09-07</div>
+  <div class="bdr-card__eyebrow">Об экосистеме</div>
+  <h3 class="bdr-card__title">Документация, с которой ИИ-агент пишет проверяемый код</h3>
+  <p class="bdr-card__lede">Всё больше кода в сервисах пишут ИИ-агенты, и пишут его по той документации, которая есть у проекта. Чего в ней не хватает, агент додумывает сам, и не всегда верно.</p>
+  <div class="bdr-card__meta">2026-10-26</div>
 </a>
 <!-- catalog:home:end -->
 </div>

@@ -1,144 +1,96 @@
-"""What a gRPC caller is told for each kind of Python exception, and what it costs to get it wrong.
-
-One server, three configurations: no exception handling, the kit's default map, and a map with the
-service's own domain errors added. Ten exceptions go through each, and the lab prints the status
-code and the details string the client received — the two things a caller can act on.
-"""
-
-from __future__ import annotations
-
+"""Observe error mapping, reporting order, and metrics through real gRPC calls."""
 import asyncio
-from importlib.metadata import version
+import logging
+from pathlib import Path
+import sys
 
 import grpc
-import grpc.aio
+from grpc_server_kit import GrpcApp
+from grpc_server_kit.aio.interceptors import AsyncExceptionHandlerInterceptor, AsyncSentryInterceptor
 
-from grpc_server_kit import GrpcApp, GrpcServerConfig
-from grpc_server_kit.aio.interceptors import (
-    GRPC_DEFAULT_ERROR_STATUS_MAP,
-    AsyncExceptionHandlerInterceptor,
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "2026-09-07-production-grpc-server"))
+from grpc_flow import (
+    SERVICE, build_app, exception_handler, register_invoice_service, server_config,
+)
+from lab_support import (
+    PRIVATE_MARKER, InvoiceStore, Metrics, Reporter, call, expect_error, result, wait_until,
 )
 
-SERVICE = "lab.Orders"
-METHOD = f"/{SERVICE}/Do"
-DSN = "postgresql://orders:hunter2@db.internal:5432/orders"
+
+async def defaults():
+    for name, interceptors, code, details in (
+        ("bare server", [], grpc.StatusCode.UNKNOWN, None),
+        ("kit defaults", [AsyncExceptionHandlerInterceptor()], grpc.StatusCode.INVALID_ARGUMENT, "Invalid request data"),
+        ("explicit map", [exception_handler()], grpc.StatusCode.INTERNAL, "internal_error"),
+    ):
+        app = GrpcApp(server_config(), interceptors=interceptors)
+        app.register(lambda server: register_invoice_service(server, InvoiceStore()))
+        async with app:
+            async with grpc.aio.insecure_channel(f"127.0.0.1:{app.bound_port}") as channel:
+                error = await expect_error(call(channel, "value-bug"), code, details)
+                assert (PRIVATE_MARKER in error.details()) == (name == "bare server")
+        print(f"PASS {name}: internal ValueError -> {code.name}, details_checked=True")
 
 
-class OrderNotFound(Exception):
-    """A domain error: the caller asked for something that is not there."""
+async def explicit_contract():
+    metrics, reporter, store = Metrics(), Reporter(), InvoiceStore()
+    app = build_app(store, metrics, reporter)
 
+    async def deliberate_abort(request, context):
+        await context.abort(grpc.StatusCode.UNAUTHENTICATED, "authentication_required")
 
-class OrderAlreadyPaid(Exception):
-    """A domain error: the state does not allow this."""
-
-
-class RateLimited(Exception):
-    """A domain error: come back later."""
-
-
-CASES: dict[str, Exception] = {
-    "ValueError": ValueError("amount must be positive"),
-    "PermissionError": PermissionError("token lacks scope orders:write"),
-    "FileNotFoundError": FileNotFoundError("no such invoice"),
-    "TimeoutError": TimeoutError("the ledger did not answer in 2 s"),
-    "NotImplementedError": NotImplementedError("refunds are not supported yet"),
-    "KeyError": KeyError("order_id"),
-    "ConnectionError": ConnectionError(f"could not connect to {DSN}"),
-    "RuntimeError": RuntimeError(f"ledger write failed against {DSN}"),
-    "OrderNotFound": OrderNotFound("order 42"),
-    "OrderAlreadyPaid": OrderAlreadyPaid("order 42 was paid at 09:12"),
-    "RateLimited": RateLimited("100 requests per minute"),
-}
-
-
-def log(msg: str) -> None:
-    print(msg, flush=True)
-
-
-async def handler(request: bytes, context: grpc.aio.ServicerContext) -> bytes:
-    case = request.decode()
-    if case in CASES:
-        raise CASES[case]
-    return b"ok"
-
-
-def register(server) -> None:
-    server.add_generic_rpc_handlers(
-        (
-            grpc.method_handlers_generic_handler(
-                SERVICE, {"Do": grpc.unary_unary_rpc_method_handler(handler)}
-            ),
-        )
-    )
-
-
-async def call(target: str, case: str) -> tuple[str, str]:
-    async with grpc.aio.insecure_channel(target) as channel:
-        try:
-            await channel.unary_unary(METHOD)(case.encode(), timeout=5)
-            return "OK", ""
-        except grpc.aio.AioRpcError as error:
-            return error.code().name, (error.details() or "")
-
-
-async def run(label: str, interceptors: list) -> None:
-    log(f"--- {label}")
-    app = GrpcApp(GrpcServerConfig(host="127.0.0.1", port=0), interceptors=list(interceptors))
-    app.register(register)
+    app.register(lambda server: server.add_generic_rpc_handlers((grpc.method_handlers_generic_handler(
+        SERVICE, {"Abort": grpc.unary_unary_rpc_method_handler(deliberate_abort)},
+    ),)))
+    cases = {
+        "missing": ("NOT_FOUND", "order_not_found"),
+        "unpaid": ("FAILED_PRECONDITION", "invoice_not_ready"),
+        "foreign": ("PERMISSION_DENIED", "invoice_access_denied"),
+        "offline": ("UNAVAILABLE", "invoice_store_unavailable"),
+        "private": ("INTERNAL", "internal_error"),
+        "bug": ("INTERNAL", "internal_error"),
+        "value-bug": ("INTERNAL", "internal_error"),
+    }
     async with app:
-        target = f"127.0.0.1:{app.bound_port}"
-        for case in CASES:
-            code, details = await call(target, case)
-            leak = "  <- leaks the password" if "hunter2" in details else ""
-            log(f"    {case:<20} {code:<20} {details[:72]!r}{leak}")
-
-
-async def main() -> None:
-    log(f"grpc-server-kit {version('grpc-server-kit')}, grpcio {version('grpcio')}")
-    log(f"the kit's default map: "
-        f"{ {exc.__name__: code.name for exc, code in GRPC_DEFAULT_ERROR_STATUS_MAP.items()} }")
-    log("")
-
-    await run("no exception handling at all", [])
-    log("")
-    await run("the default map", [AsyncExceptionHandlerInterceptor()])
-    log("")
-    await run(
-        "the default map plus this service's domain errors",
-        [
-            AsyncExceptionHandlerInterceptor(
-                error_status_map={
-                    OrderNotFound: grpc.StatusCode.NOT_FOUND,
-                    OrderAlreadyPaid: grpc.StatusCode.FAILED_PRECONDITION,
-                    RateLimited: grpc.StatusCode.RESOURCE_EXHAUSTED,
-                    ConnectionError: grpc.StatusCode.UNAVAILABLE,
-                }
+        async with grpc.aio.insecure_channel(f"127.0.0.1:{app.bound_port}") as channel:
+            assert result(await call(channel))["amount"] == 1999
+            for name, (code, details) in cases.items():
+                error = await expect_error(call(channel, name), getattr(grpc.StatusCode, code), details)
+                assert PRIVATE_MARKER not in error.details()
+                await wait_until(lambda: len(metrics.rows) == 1 + list(cases).index(name) + 1)
+                assert metrics.rows[-1]["grpc_code"] == code
+                assert metrics.rows[-1]["duration"] >= 0
+            await expect_error(
+                channel.unary_unary(f"/{SERVICE}/Abort")(b"", timeout=2),
+                grpc.StatusCode.UNAUTHENTICATED, "authentication_required",
             )
-        ],
-    )
-    log("")
-    log("--- the same, with details the caller can act on for the domain errors only")
+            await wait_until(lambda: len(metrics.rows) == 9)
+            assert metrics.rows[-1]["grpc_code"] == "UNAUTHENTICATED"
+    assert reporter.errors == ["InvoiceStoreUnavailable", "PrivateLedgerError", "RuntimeError", "ValueError"]
+    assert store.active == 0
+    print("PASS explicit contract: seven errors, success, deliberate abort, final metrics, four server reports")
 
-    def detail_factory(exc: Exception, status: grpc.StatusCode) -> str:
-        if isinstance(exc, OrderNotFound | OrderAlreadyPaid | RateLimited):
-            return f"{type(exc).__name__}: {exc}"
-        return "Request processing failed"
 
-    await run(
-        "a detail factory that trusts domain errors only",
-        [
-            AsyncExceptionHandlerInterceptor(
-                error_status_map={
-                    OrderNotFound: grpc.StatusCode.NOT_FOUND,
-                    OrderAlreadyPaid: grpc.StatusCode.FAILED_PRECONDITION,
-                    RateLimited: grpc.StatusCode.RESOURCE_EXHAUSTED,
-                    ConnectionError: grpc.StatusCode.UNAVAILABLE,
-                },
-                detail_factory=detail_factory,
-            )
-        ],
-    )
+async def reporting_order():
+    reporter = Reporter()
+    app = GrpcApp(server_config(), interceptors=[
+        AsyncSentryInterceptor(reporter), exception_handler(),
+    ])
+    app.register(lambda server: register_invoice_service(server, InvoiceStore()))
+    async with app:
+        async with grpc.aio.insecure_channel(f"127.0.0.1:{app.bound_port}") as channel:
+            await expect_error(call(channel, "bug"), grpc.StatusCode.INTERNAL, "internal_error")
+    assert reporter.errors == []
+    print("PASS wrong reporter order: client gets INTERNAL, reporter misses the original exception")
+
+
+async def main():
+    async with asyncio.timeout(20):
+        await defaults()
+        await explicit_contract()
+        await reporting_order()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.CRITICAL)
     asyncio.run(main())

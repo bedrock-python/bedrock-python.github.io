@@ -42,10 +42,10 @@
 .md-typeset .bdr-home-hero__proof a:hover { color: var(--bdr-accent); }
 .bdr-home-hero__proof > span[aria-hidden] { color: var(--bdr-border-2); }
 .bdr-home-hero a:focus-visible { outline: 2px solid var(--bdr-accent); outline-offset: 5px; }
-.bdr-home-featured-art { display: block; background: var(--bdr-surface-2) url("../assets/blog/2026-09-06-pg-partsmith.webp") center / cover; border: 1px solid var(--bdr-border); transition: border-color .2s; }
+.bdr-home-featured-art { display: block; background: var(--bdr-surface-2) url("../assets/blog/2026-10-18-postgresql-partition-maintenance.webp") center / cover; border: 1px solid var(--bdr-border); transition: border-color .2s; }
 .bdr-home-featured-art:hover { border-color: var(--bdr-accent); }
 .bdr-home-featured-art:focus-visible { outline: 2px solid var(--bdr-accent); outline-offset: 5px; }
-[data-md-color-scheme="slate"] .bdr-home-featured-art { background-image: url("../assets/blog/2026-09-06-pg-partsmith-dark.webp"); }
+[data-md-color-scheme="slate"] .bdr-home-featured-art { background-image: url("../assets/blog/2026-10-18-postgresql-partition-maintenance-dark.webp"); }
 
 /* A few task-based entry points keep the homepage separate from the full catalogs. */
 .bdr-home-pathways { padding-top: 28px; margin-bottom: 40px; border-top: 1px solid var(--bdr-border); }

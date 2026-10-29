@@ -1,0 +1,8 @@
+grpc-server-kit[health]==0.2.0
+grpcio==1.84.0
+grpcio-health-checking==1.84.0
+servicewright[fastapi,grpc]==0.13.1
+fastapi==0.141.1
+uvicorn==0.53.0
+httpx==0.28.1
+cryptography==50.0.1

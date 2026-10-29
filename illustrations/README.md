@@ -1,7 +1,7 @@
 # Article image prompts
 
 One prompt per blog post, named after the post file:
-`2026-09-07-zero-dependency-cores.md` -> `docs/blog/posts/2026-09-07-zero-dependency-cores.md`.
+`2026-10-21-zero-dependency-cores.md` -> `docs/blog/posts/2026-10-21-zero-dependency-cores.md`.
 
 Each file holds the post title, its category, the one-line idea the picture has to carry, and a
 single self-contained prompt block to paste into an image model. The style paragraph is repeated
@@ -66,7 +66,7 @@ export OPENAI_API_KEY=...
 uv run generate_images.py --dry-run                  # what would be sent, no API calls
 uv run generate_images.py --only 2026-05-30-welcome  # one post
 uv run generate_images.py --only '*kafka*' --variants 3
-uv run generate_images.py                            # all 49
+uv run generate_images.py                            # all article prompts
 ```
 
 Output lands in `images/` as `<post-slug>.png`, beside a `<post-slug>.json` sidecar holding the

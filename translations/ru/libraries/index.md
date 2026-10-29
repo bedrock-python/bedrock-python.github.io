@@ -75,7 +75,7 @@ hide:
             <a class="bdr-package__version" data-pypi="grpc-server-kit" href="https://pypi.org/project/grpc-server-kit/" title="grpc-server-kit на PyPI">v0.1.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/grpc-server-kit/">grpc-server-kit<span aria-hidden="true">↗</span></a></h3>
-          <p class="bdr-package__description">Серверы <code>grpc.aio</code> без шаблонного кода: фасад <code>GrpcApp</code>, TLS/mTLS, корректное завершение, проверки состояния и перехватчики с поддержкой потоковых вызовов.</p>
+          <p class="bdr-package__description">Серверы <code>grpc.aio</code> без шаблонного кода: фасад <code>GrpcApp</code>, TLS/mTLS, корректное завершение, проверки состояния и интерцепторы с поддержкой потоковых вызовов.</p>
           <div class="bdr-package__tags"><span>Python 3.12+</span><span>только grpcio</span></div>
           <div class="bdr-package__links"><a href="https://bedrock-python.github.io/grpc-server-kit/">Документация <span aria-hidden="true">↗</span></a>
             <a class="bdr-package__github" href="https://github.com/bedrock-python/grpc-server-kit">GitHub <span aria-hidden="true">↗</span></a>

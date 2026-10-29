@@ -15,6 +15,7 @@ from shop.models import Base
 from tests.helpers import current_revision, fresh_schema, migrate, revisions_base_to_head
 
 
+# snippet:stairway
 async def test_every_revision_up_down_up(migration_engine: AsyncEngine, alembic_config: Config) -> None:
     """The stairway: each revision applied, rolled back one step, applied again."""
     revisions = revisions_base_to_head(alembic_config)
@@ -24,6 +25,7 @@ async def test_every_revision_up_down_up(migration_engine: AsyncEngine, alembic_
             assert await current_revision(migration_engine, schema) == revision
             await migrate(migration_engine, alembic_config, schema, command.downgrade, revisions[i - 1] if i else "base")
             await migrate(migration_engine, alembic_config, schema, command.upgrade, revision)
+# /snippet:stairway
 
 
 async def test_schema_matches_the_models(migration_engine: AsyncEngine, alembic_config: Config) -> None:
