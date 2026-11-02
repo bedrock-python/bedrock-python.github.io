@@ -25,23 +25,23 @@ Every serious service has rules that developers did not invent: when a customer 
 
 While there are a dozen such rules, people keep them in their heads and in a couple of `if` statements. Once there are hundreds and the business changes them every quarter, code without a shared picture starts to fight back: a fix in one place breaks three others, and in meetings developers and domain experts talk past each other. Domain-Driven Design, or DDD, is a set of principles for exactly these services. Their difficulty lies not in the load but in the domain itself, and the code is built around a model of that domain rather than around tables and endpoints.
 
-This article grew out of a talk one of us gave to a team where backend developers, ML engineers and analysts work side by side. The questions from the audience turned out to be as useful as the slides, and many of them made it into the text.
+This article grew out of an internal talk for backend developers, ML engineers and analysts. The questions from the audience turned out to be as useful as the slides, and many of them made it into the text.
 
-DDD ideas are usually split into two levels. Strategic ideas answer what to model and where: what model and language the system has, where the context boundaries run, which parts matter to the business and where to invest effort. Tactical ideas answer how to express the model in code within one context: value objects, entities, aggregates, repositories, domain events. Evans covers tactics in the second part of his book and strategy only in the last, fourth part, and tactics are what people usually argue about. We go in the opposite order: strategy first (the model, the language, boundaries, subdomains), then the principles that connect it to code (invariants and the trilemma), and tactics at the end.
+DDD ideas are usually split into two levels. Strategic ideas answer what to model and where: what model and language the system has, where the context boundaries run, which parts matter to the business and where to invest effort. Tactical ideas answer how to express the model in code within one context: value objects, entities, aggregates, repositories, domain events. Evans covers tactics in the second part of his book and strategy only in the last, fourth part, and tactics are what people usually argue about. This article goes in the opposite order: strategy first (the model, the language, boundaries, subdomains), then the principles that connect it to code (invariants and the trilemma), and tactics at the end.
 
-Two caveats up front. We are not DDD experts and we are not retelling the blue book; this is an overview of the key ideas with our own assessment. DDD is also one of the most hotly debated topics in software: almost every claim here has respected opponents, and where it does, we name them. The examples need Python 3.12 or newer. The code in this article is checked by a [lab](../lab/2026-11-02-domain-driven-design/README.md) on Python 3.13, SQLAlchemy 2.1.6, sqlalchemy-foundation-kit 0.5.1, omni-box 0.3.1 and PostgreSQL 17.11.
+Two caveats up front. This is neither an expert's view nor a retelling of the blue book, but an overview of the key ideas with a subjective assessment. DDD is also one of the most hotly debated topics in software: almost every claim here has respected opponents, and where it does, they are named. The examples need Python 3.12 or newer. The code in this article is checked by a [lab](../lab/2026-11-02-domain-driven-design/README.md) on Python 3.13, SQLAlchemy 2.1.6, sqlalchemy-foundation-kit 0.5.1, omni-box 0.3.1 and PostgreSQL 17.11.
 
 <!-- more -->
 
 ## The model matters more than the code {#model}
 
-If you keep only one idea from DDD, keep this one: before you write a feature, fit it into the model. In the talk we called it 95% of DDD and 95% of success. The number is subjective, but this is where to start.
+If you keep only one idea from DDD, keep this one: before you write a feature, fit it into the model. The talk rated this idea at 95% of DDD and 95% of success. The number is subjective, but this is where to start.
 
-The usual way to solve a task is direct: a requirement arrives, you find a place in the code, you add to it. DDD puts one more step between the requirement and the code. First you sit down and work out which entities the process has, what happens to them and how they interact. On paper, on a whiteboard, in your head, it does not matter where. The picture you end up with is the domain model: our idea of how this piece of the world works.
+The usual way to solve a task is direct: a requirement arrives, you find a place in the code, you add to it. DDD puts one more step between the requirement and the code. First you sit down and work out which entities the process has, what happens to them and how they interact. On paper, on a whiteboard, in your head, it does not matter where. The picture you end up with is the domain model: an idea of how this piece of the world works.
 
 Physics offers a good analogy. The atom is complicated, and physicists describe it with models: in Rutherford's, electrons orbit the nucleus like planets; then quantum mechanics arrived. No model is "the truth", but each one is useful and each next one is more accurate. Software works the same way: a model does not have to match reality, it has to be a useful simplification.
 
-Once there is a model, features are built inside it. You cannot just add an `if` or prop something up with a workaround when it does not fit your entities. First you adapt the model to the new requirement, then you write the code. Sometimes the code drifts away from reality, and then we refine the model again. Evans calls this refactoring toward deeper insight.
+Once there is a model, features are built inside it. You cannot just add an `if` or prop something up with a workaround when it does not fit your entities. First you adapt the model to the new requirement, then you write the code. Sometimes the code drifts away from reality, and then the model is refined again. Evans calls this refactoring toward deeper insight.
 
 <!-- diagram:concept -->
 <figure class="bdr-diagram" markdown="1">
@@ -76,19 +76,19 @@ Once there is a model, features are built inside it. You cannot just add an `if`
 </figure>
 <!-- /diagram:concept -->
 
-The worst thing you can do in this loop is break the model. And the most valuable thing in a project is not the code but the model: how the team understands the problem. Code matters, but it is only a record of the model. That sounds abstract, yet in practice it is the difference between "we move JSON from one endpoint to another" and "we solve this particular problem with these particular concepts". Most services we have seen have no model at all: things get bolted on here and there, and nobody can say which rules the system must never break.
+The worst thing you can do in this loop is break the model. And the most valuable thing in a project is not the code but the model: how the team understands the problem. Code matters, but it is only a record of the model. That sounds abstract, yet in practice it is the difference between "moving JSON from one endpoint to another" and "solving this particular problem with these particular concepts". Many services have no model at all: things get bolted on here and there, and nobody can say which rules the system must never break.
 
 ## Ubiquitous language {#ubiquitous-language}
 
 Second in importance after the model, worth another 4% of success, is the ubiquitous language.
 
-One of us used to build a service for doctors. The doctors spoke in their terms, the developers in theirs, and at every meeting both sides nodded politely without understanding each other. The doctors asked for one thing, the developers built another, and a couple of months later it turned out that everyone had meant something different by the same word.
+Picture a service for doctors. The doctors speak in their terms, the developers in theirs, and at every meeting both sides nod politely without understanding each other. The doctors ask for one thing, the developers build another, and a couple of months later it turns out that everyone meant something different by the same word.
 
 A typical chain of translations looks like this. The expert says "the shopper places an order", the analyst writes "the user creates a request" in the ticket, and the code gets `session.add(order_row)`. Each translation loses part of the meaning, and a year later the analyst's "request" has grown properties that the expert's "order" never had.
 
 The cure is one language, defined by the model. If the model has "order", "shipment" and "payment", those words are used in meetings, in tickets, and in the names of classes, methods and tests. If the team agreed to say `customer`, nobody writes `user`: otherwise the two words start living separate lives. The language is alive: as soon as you notice a mismatch, you fix the language and the model together and make sure everyone hears about it.
 
-A language has limits to where it applies, and that brings us to the next idea.
+A language has limits to where it applies, and that is the next idea.
 
 ## Bounded Context: where a model ends {#bounded-context}
 
@@ -109,11 +109,11 @@ How contexts relate to each other is described by a context map. Evans gives a w
 | Open Host Service, Published Language | the supplier publishes a protocol and a format for many consumers at once |
 | Separate Ways | the contexts do not integrate at all |
 
-In practice the two you meet most often are opposite approaches: an Anticorruption Layer, when we protect our model from a foreign one, and Conformist, when a context admits it is less important and simply lives in someone else's concepts.
+In practice the two you meet most often are opposite approaches: an Anticorruption Layer, when a context protects its model from a foreign one, and Conformist, when a context admits it is less important and simply lives in someone else's concepts.
 
 Martin Fowler has a well-known [illustration](https://martinfowler.com/bliki/BoundedContext.html): a sales context and a support context, both with a customer and a product. The entities look the same, but each context has its own view of them and its own attributes. Fowler does not suggest merging them: each context has its own model of the shared concept, and integrating them requires a mapping. So duplication, both in code and in the database, is fine. What matters more is loose coupling between contexts and high cohesion within each one.
 
-In the talk we called bounded contexts "another half a percent of success" after the model and the language. To be fair, Vernon and Khononov put them at the center of strategic DDD, and as soon as one word gets two meanings or two teams work on the same system, we agree with them.
+The talk gave bounded contexts "another half a percent of success" after the model and the language. To be fair, Vernon and Khononov put them at the center of strategic DDD, and as soon as one word gets two meanings or two teams work on the same system, it is hard to disagree with them.
 
 ## Core, supporting, generic: where to spend effort {#subdomains}
 
@@ -133,7 +133,7 @@ Where the line falls depends on the business. Notifications to couriers stay gen
 
 The main practical conclusion follows from this classification: how much DDD to spend on each part. Khononov, in "Learning Domain-Driven Design", ties the subdomain type directly to the way you write its logic. A rich domain model and the full set of DDD tactics pay off in the core. For supporting subdomains, plain CRUD or a transaction script is often enough. Generic ones are bought and hidden behind an adapter. Applying DDD everywhere in the same way is a reliable way to end up hating it.
 
-Someone in the audience also asked how this division relates to the domain, application and infrastructure layers. Subdomains cut the system by importance; layers cut each part by responsibility. The two axes are orthogonal: each context can have its own layers, and there is no contradiction. What is more, each subdomain gets its own set of layers. The core has a rich domain model at the center. A supporting subdomain often gets by with an API and a transaction script over tables. And a generic one is someone else's service altogether, so all we keep of it is an adapter.
+Someone in the audience also asked how this division relates to the domain, application and infrastructure layers. Subdomains cut the system by importance; layers cut each part by responsibility. The two axes are orthogonal: each context can have its own layers, and there is no contradiction. What is more, each subdomain gets its own set of layers. The core has a rich domain model at the center. A supporting subdomain often gets by with an API and a transaction script over tables. And a generic one is someone else's service altogether, so all that is left of it in the code is an adapter.
 
 <!-- diagram:layers -->
 <figure class="bdr-diagram" markdown="1">
@@ -226,11 +226,11 @@ This is where DDD meets clean, onion and hexagonal architectures. DDD says *what
 
 ## Rich model and anemic model {#rich-model}
 
-From here on we get into code, and the discussion gets more pedantic.
+From here on it is about code, and the discussion gets more pedantic.
 
-What is a model from the code's point of view? A set of objects that maintain invariants: rules we formulated ourselves and consider always true. A good domain model maintains many invariants. In other words, it is encapsulated: Khorikov defines encapsulation precisely as the protection of invariants, not as hiding fields.
+What is a model from the code's point of view? A set of objects that maintain invariants: domain rules that must always hold. A good domain model maintains many invariants. In other words, it is encapsulated: Khorikov defines encapsulation precisely as the protection of invariants, not as hiding fields.
 
-The opposite of a good model is called anemic. Data lives in some objects and logic in others: DTOs travel around the service, functions change their fields, and there is no structure beyond function signatures. We slid into such a model ourselves in one of our services when we were in a hurry. It looks like this:
+The opposite of a good model is called anemic. Data lives in some objects and logic in others: DTOs travel around the service, functions change their fields, and there is no structure beyond function signatures. It is easy to slide into such a model when a deadline is close. It looks like this:
 
 ```python
 @dataclass
@@ -273,7 +273,7 @@ class Customer:
     current_discount: Discount
 ```
 
-`Email`, `Status` and `Discount` are value objects here; we will come back to them. For now it is enough that you cannot create an `Email` from an invalid string. There is a joke name for code made only of strings: stringly typed, as opposed to strongly typed. If you are not ready to write a value object yet, Python has `typing.NewType`: it adds no checks, but the meaning becomes visible in signatures.
+`Email`, `Status` and `Discount` are value objects here; more on them below. For now it is enough that you cannot create an `Email` from an invalid string. There is a joke name for code made only of strings: stringly typed, as opposed to strongly typed. If you are not ready to write a value object yet, Python has `typing.NewType`: it adds no checks, but the meaning becomes visible in signatures.
 
 ### Step two: behavior moves into the entity {#behaviour}
 
@@ -289,7 +289,7 @@ class CustomerService:
 
 The rule lives in the service, and it is easy to bypass: any code can append an order to the list or set the status by hand. If the rule is needed in two places or changes, you will have to hunt for it across the whole project. A good sign is when external code calls one method on an object and the object does everything needed itself. If the caller has to reach inside and check things, there is no encapsulation.
 
-We move the rule into the entity:
+The rule belongs in the entity:
 
 ```python
 class Customer:
@@ -315,7 +315,7 @@ class Customer:
 
 From outside, the state can only be read: the status through a property, the orders as an immutable tuple. In Python, privacy is a convention, and an underscore will not stop someone who really wants in. But it clearly marks the boundary, and linters and code review guard it.
 
-The result is a pyramid. At the bottom are value objects: they hold most of the logic, and since they are immutable, they are safe. In the middle are entities: they coordinate value objects and keep invariants. At the top are services that only orchestrate. Refactoring starts at the bottom. The less mutable state there is and the closer we get to "the service calls one method on the entity", the better.
+The result is a pyramid. At the bottom are value objects: they hold most of the logic, and since they are immutable, they are safe. In the middle are entities: they coordinate value objects and keep invariants. At the top are services that only orchestrate. Refactoring starts at the bottom. The less mutable state there is and the closer the code gets to "the service calls one method on the entity", the better.
 
 ## Make the implicit explicit {#implicit-concepts}
 
@@ -421,7 +421,7 @@ This gives a simple rule for the whole domain layer: it contains no `await`. If 
 
 ## The trilemma: where to check that an email is free {#trilemma}
 
-This part caused the most arguments at the talk, and for good reason. The task is simple: a user changes their email, but only if no other user has the address. `User` is our main entity, and its email must never become inconsistent. The question is: who decides that the address is taken?
+This part caused the most arguments at the talk, and for good reason. The task is simple: a user changes their email, but only if no other user has the address. `User` is the main entity here, and its email must never become inconsistent. The question is: who decides that the address is taken?
 
 ### Option 1: check in the controller {#check-in-controller}
 
@@ -462,11 +462,11 @@ class User:
         self._email = email
 ```
 
-The controller loads every address in use and passes them to the domain. The entity decides by itself and depends on nothing. Elegant, but pointless with a million users. Someone in the audience suggested passing a boolean `taken` flag instead of the set. But who computes it? The controller. And we are back to the first option.
+The controller loads every address in use and passes them to the domain. The entity decides by itself and depends on nothing. Elegant, but pointless with a million users. Someone in the audience suggested passing a boolean `taken` flag instead of the set. But who computes it? The controller. That is the first option again.
 
 ### Two out of three {#two-of-three}
 
-Vladimir Khorikov calls this the [DDD trilemma](https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/). His three properties are domain model completeness (all domain logic lives in the domain), purity (the domain has no out-of-process dependencies) and performance. At the talk we called the first two encapsulation and isolation. You can have only two of the three:
+Vladimir Khorikov calls this the [DDD trilemma](https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/). His three properties are domain model completeness (all domain logic lives in the domain), purity (the domain has no out-of-process dependencies) and performance. The talk called the first two encapsulation and isolation. You can have only two of the three:
 
 | Option | Encapsulation | Isolation | Performance |
 |---|---|---|---|
@@ -474,7 +474,7 @@ Vladimir Khorikov calls this the [DDD trilemma](https://enterprisecraftsmanship.
 | Repository in the domain | yes | no | yes |
 | Load everything up front | yes | yes | no |
 
-The order of sacrifice Khorikov recommends: if you can afford to lose performance, sacrifice it. If not, sacrifice encapsulation. Always keep isolation, because an isolated model is testable. To be honest, one of us does not fully agree with this order: a repository in the domain sometimes seems a lesser evil to him than logic smeared across controllers. But the argument about locks and retries next to business rules wins.
+The order of sacrifice Khorikov recommends: if you can afford to lose performance, sacrifice it. If not, sacrifice encapsulation. Always keep isolation, because an isolated model is testable. This order is open to argument: a repository in the domain sometimes seems a lesser evil than logic smeared across controllers. But the argument about locks and retries next to business rules wins.
 
 ### CanExecute / Execute {#can-execute}
 
@@ -519,7 +519,7 @@ The compromise has a price. Checks that need I/O, such as email uniqueness, stil
 
 ### What if the requests arrive at the same time {#race}
 
-There was a question from the audience we did not really answer at the time: what happens if two people try to take the same address at once? The answer is unpleasant: none of the three options protects against it. Both requests check that the address is free, both get "yes", both save.
+The audience asked a question that the talk did not really answer: what happens if two people try to take the same address at once? The answer is unpleasant: none of the three options protects against it. Both requests check that the address is free, both get "yes", both save.
 
 The thing is, email uniqueness is a rule about the *set* of users. A `User` entity is responsible only for itself and cannot guarantee anything beyond its own boundary. Rules like this are guaranteed by the database:
 
@@ -527,11 +527,11 @@ The thing is, email uniqueness is a rule about the *set* of users. A `User` enti
 ALTER TABLE users ADD CONSTRAINT uq_users_email UNIQUE (email);
 ```
 
-The domain still states the rule and checks it in the normal case, so it can return a clear error to the user. Under concurrent requests the database constraint holds the rule, and the application layer translates a violation into the same domain error. Address normalization (case, whitespace) lives in the `Email` value object; otherwise `Ann@Example.com` and `ann@example.com` slip past the index. How to catch the constraint violation inside the transaction we show below, when we get to Unit of Work.
+The domain still states the rule and checks it in the normal case, so it can return a clear error to the user. Under concurrent requests the database constraint holds the rule, and the application layer translates a violation into the same domain error. Address normalization (case, whitespace) lives in the `Email` value object; otherwise `Ann@Example.com` and `ann@example.com` slip past the index. How to catch the constraint violation inside the transaction is shown below, in the Unit of Work section.
 
 ## Tactical patterns {#tactical}
 
-We have been going from the important to the secondary, and what follows is the part we consider least important. Knowing every term for its own sake is pointless. But these are exactly the words that come up in heated debates, so let us go through them.
+The article has been going from the important to the secondary, and what follows is the least important part. Knowing every term for its own sake is pointless. But these are exactly the words that come up in heated debates, so here is a short tour of them.
 
 ### Value Object {#value-object}
 
@@ -565,7 +565,7 @@ class Money:
 
 The talk had a good way of putting it: a value object is like a data type. There is the number 5 and another number 5, but they are the same number. A value object works the same way, only smarter: it has invariants, so it is not just a five but a positive five in rubles. Objects with equal values are interchangeable, safe to pass anywhere and easy to test. That is why as much logic as possible should live in value objects.
 
-Forbidding negative amounts is a decision of our model here, not a law of nature: in accounting, negative amounts are normal. The same goes for the choice "value object or entity" itself. Evans has an example with an address: an online shop needs an address only as a value telling it where to ship the parcel, while for a postal service that plans delivery routes the address becomes an entity with a life of its own. The answer depends on the context.
+Forbidding negative amounts is a decision of this model, not a law of nature: in accounting, negative amounts are normal. The same goes for the choice "value object or entity" itself. Evans has an example with an address: an online shop needs an address only as a value telling it where to ship the parcel, while for a postal service that plans delivery routes the address becomes an entity with a life of its own. The answer depends on the context.
 
 ### Entity {#entity}
 
@@ -628,7 +628,7 @@ The invariant "the order total does not exceed the limit" involves all lines at 
 
 Importantly, the aggregate exists in the model, not in the database. The database has no "root": there is a parent table `orders` and a child table `order_lines`, and `Money` is not a table at all but a pair of columns in a row.
 
-Aggregates come with a rule that Vaughn Vernon puts this way: the aggregate boundary is the transaction boundary, and one transaction changes one aggregate. We will break it in the examples below: changing an email changes both the user and the company. In a single PostgreSQL database that is a pragmatic choice, but it has a cost: the aggregates become coupled and compete for locks. If two aggregates constantly need to change together, the boundary may be drawn in the wrong place. If they do not, the second change can be made eventually consistent through a domain event.
+Aggregates come with a rule that Vaughn Vernon puts this way: the aggregate boundary is the transaction boundary, and one transaction changes one aggregate. The examples below break it: changing an email changes both the user and the company. In a single PostgreSQL database that is a pragmatic choice, but it has a cost: the aggregates become coupled and compete for locks. If two aggregates constantly need to change together, the boundary may be drawn in the wrong place. If they do not, the second change can be made eventually consistent through a domain event.
 
 ### Repositories and factories {#repository}
 
@@ -659,7 +659,7 @@ class OrderRepository:
 
 In Evans's book a factory creates an object atomically, valid from the start. But restoring from the database is not the same as creating. On creation, a broken invariant means bad input, and the factory simply refuses to create the object. On restoration, the object already exists, and a broken invariant means corrupted data: you need to react differently, but pretending everything is fine is not an option either.
 
-And one last rule from the same chapter of Evans: the client controls the transaction, not the repository. A repository does not commit. Why this matters and what breaks otherwise, we covered in detail in the [article on SQLAlchemy sessions and transactions](2026-10-08-sqlalchemy-sessions-and-transactions.md).
+And one last rule from the same chapter of Evans: the client controls the transaction, not the repository. A repository does not commit. Why this matters and what breaks otherwise, is covered in detail in the [article on SQLAlchemy sessions and transactions](2026-10-08-sqlalchemy-sessions-and-transactions.md).
 
 ### Does a repository need an interface {#abstract-repository}
 
@@ -667,7 +667,7 @@ Robert Martin's clean architecture says yes: the domain declares an interface, t
 
 Khorikov answers differently. There is one repository implementation, and the interface exists only for mocks. But your own database is a managed dependency: you do not mock it, you verify it with integration tests. No mocks means no need for the interface. Abstractions are discovered, not invented: when a second implementation appears, that is when you extract an interface. The authors of "Architecture Patterns with Python" take a third position: an abstract repository plus an in-memory `FakeRepository` on which the service layer is tested quickly.
 
-The synthesis closest to us is this. If the domain is pure, as in the section on the functional core, only the application layer calls repositories, and clean architecture's main argument, "the domain must not depend on the database", resolves itself: the domain does not depend on repositories anyway. An interface is justified when a second implementation has actually appeared. The talk brought up exactly such a case: a caching repository decorator on top of the regular one, with the same protocol. Besides, a `Protocol` in Python is cheap: implementations do not have to inherit from it, so an extra abstraction costs little.
+A reasonable synthesis looks like this. If the domain is pure, as in the section on the functional core, only the application layer calls repositories, and clean architecture's main argument, "the domain must not depend on the database", resolves itself: the domain does not depend on repositories anyway. An interface is justified when a second implementation has actually appeared. The talk brought up exactly such a case: a caching repository decorator on top of the regular one, with the same protocol. Besides, a `Protocol` in Python is cheap: implementations do not have to inherit from it, so an extra abstraction costs little.
 
 ### Reads that bypass aggregates {#reads}
 
@@ -675,7 +675,7 @@ Another question from the audience: if a repository returns only aggregates, wha
 
 So do not. Aggregates exist to *change* state while keeping invariants. A read changes nothing, so a query can bypass the model, go straight to SQL and return a flat structure shaped for the screen. This is a lightweight form of CQRS: commands go through aggregates, queries go separately.
 
-While we are at it, let us clear up a popular misconception. At the talk someone said that Fowler considers DTOs an anti-pattern. He does not: the Data Transfer Object is described in Fowler's own book as a pattern for passing data between processes. What he criticizes is the [LocalDTO](https://martinfowler.com/bliki/LocalDTO.html), a DTO inside a single process, where DTOs multiply code and push you toward an anemic model. Declaring all DTOs evil is Yegor Bugayenko's position. The compromise is simple: DTOs at the boundaries (the API, a queue, the result of a read query), behavior inside the model.
+While on the subject, a popular misconception. At the talk someone said that Fowler considers DTOs an anti-pattern. He does not: the Data Transfer Object is described in Fowler's own book as a pattern for passing data between processes. What he criticizes is the [LocalDTO](https://martinfowler.com/bliki/LocalDTO.html), a DTO inside a single process, where DTOs multiply code and push you toward an anemic model. Declaring all DTOs evil is Yegor Bugayenko's position. The compromise is simple: DTOs at the boundaries (the API, a queue, the result of a read query), behavior inside the model.
 
 ### Unit of Work {#unit-of-work}
 
@@ -704,11 +704,11 @@ class IdentityTransaction(AsyncSQLAlchemyUowTransaction):
 uow = AsyncSQLAlchemyUnitOfWork(session_factory, IdentityTransaction)
 ```
 
-For the race from the trilemma section, it matters where a violation of `uq_users_email` surfaces. If the repository runs its UPDATE immediately, the error comes straight out of `save()`. If changes wait in the session, they are sent by the `flush()` that `transaction()` runs before committing by default. Either way an `IntegrityError` leaves `transaction()`, and it can be translated into a domain error. We will put this together with domain events.
+For the race from the trilemma section, it matters where a violation of `uq_users_email` surfaces. If the repository runs its UPDATE immediately, the error comes straight out of `save()`. If changes wait in the session, they are sent by the `flush()` that `transaction()` runs before committing by default. Either way an `IntegrityError` leaves `transaction()`, and it can be translated into a domain error. Below, this is put together with domain events.
 
 ### Domain Events {#domain-events}
 
-The last tactical pattern removes one more out-of-process dependency from the domain. Suppose that after an email change the service has to send a message to a bus. You could send it right from `User.change_email`, but then the domain gets a bus, and with it I/O, retries and everything we were running away from in the trilemma.
+The last tactical pattern removes one more out-of-process dependency from the domain. Suppose that after an email change the service has to send a message to a bus. You could send it right from `User.change_email`, but then the domain gets a bus, and with it I/O, retries and everything the trilemma section was running away from.
 
 Instead, the entity records what happened and does nothing more:
 
@@ -731,9 +731,9 @@ class User:
 
 The decision is in the domain, the sending happens outside: the user does not even know there is a bus somewhere. Domain events, by the way, are not in Evans's original 2003 book. They were added later: by Vernon in the red book and by Evans himself in the DDD Reference.
 
-Sending events after the commit is unreliable, and at the talk we honestly asked the audience not to nitpick. If the process dies between the commit and the send, the event is lost. If you send before the commit and the transaction rolls back, the world learns about an email change that never happened. The reliable option is called the transactional outbox: the event is written as a row in the same transaction as the aggregate's changes, and a separate process publishes such rows to the broker. We covered the scheme in detail in the [article on Outbox and Inbox](2026-10-03-reliable-events-outbox-inbox-kafka.md). In [omni-box](https://bedrock-python.github.io/omni-box/) the outbox event fields are even named in DDD's language: `aggregate_type` and `aggregate_id`.
+Sending events after the commit is unreliable, and the talk said so openly. If the process dies between the commit and the send, the event is lost. If you send before the commit and the transaction rolls back, the world learns about an email change that never happened. The reliable option is called the transactional outbox: the event is written as a row in the same transaction as the aggregate's changes, and a separate process publishes such rows to the broker. The scheme is covered in detail in the [article on Outbox and Inbox](2026-10-03-reliable-events-outbox-inbox-kafka.md). In [omni-box](https://bedrock-python.github.io/omni-box/) the outbox event fields are even named in DDD's language: `aggregate_type` and `aggregate_id`.
 
-Let us add the outbox to the transaction object and put the whole operation together:
+What remains is to add the outbox to the transaction object and put the whole operation together:
 
 ```python
 from omni_box import OmniBoxDomainService, OutboxEvent
@@ -783,7 +783,7 @@ async def change_email(uow: AsyncSQLAlchemyUnitOfWork[IdentityTransaction], user
 
 ### Domain layer and application layer {#domain-vs-application}
 
-The main part of the talk ended with a question: how does the domain layer differ from the application layer? The domain layer answers "how": how to transfer money, how to change an email. The application layer answers "what we want to do": it is a simple, almost dumb script that loads complex objects, calls their methods and saves them. The `change_email` function above belongs to the application layer.
+The main part of the talk ended with a question: how does the domain layer differ from the application layer? The domain layer answers "how": how to transfer money, how to change an email. The application layer answers "what needs to be done": it is a simple, almost dumb script that loads complex objects, calls their methods and saves them. The `change_email` function above belongs to the application layer.
 
 ```python
 def transfer(source: Account, target: Account, amount: Money) -> None:
@@ -812,7 +812,7 @@ The same specification checks an object in memory and, translated into a query c
 
 ## DDD and tests {#testing}
 
-We promised testing at the start, and it is probably what shows best why all this fuss about isolation is worth it. Khorikov sorts code along two axes: how complex or important it is to the domain, and how many collaborators it has.
+Testing was promised at the start, and it is probably what shows best why all this fuss about isolation is worth it. Khorikov sorts code along two axes: how complex or important it is to the domain, and how many collaborators it has.
 
 | | Few collaborators | Many collaborators |
 |---|---|---|
@@ -821,17 +821,17 @@ We promised testing at the start, and it is probably what shows best why all thi
 
 The domain model is covered by unit tests entirely and without a single mock: there is nothing in it to mock. Controllers are checked by integration tests, and that is the only place mocks appear. Overcomplicated code, which decides and coordinates at the same time, has to be split into the other two quadrants. The `AuditManager` test above belongs to the top-left quadrant.
 
-At the talk someone asked a fair question: why test the domain separately if the controller scenarios go through it anyway? An integration test does cover more and shows more. But it is more expensive to write: it needs a lot of setup. It is hard to reach every branch with it: getting into each `if` takes contrived test data. It is slow, because it works with the database. And it is harder to maintain. Part of this argument weakens when an AI agent writes the tests: the setup costs it almost nothing. But that does not make integration tests any faster, and reaching every `if` with them is still hard. If integration tests ran instantly and cost nothing to write, you could write only those. Many teams, ours included, largely live like that, but the classic position is that fast unit tests on the domain give better feedback.
+At the talk someone asked a fair question: why test the domain separately if the controller scenarios go through it anyway? An integration test does cover more and shows more. But it is more expensive to write: it needs a lot of setup. It is hard to reach every branch with it: getting into each `if` takes contrived test data. It is slow, because it works with the database. And it is harder to maintain. Part of this argument weakens when an AI agent writes the tests: the setup costs it almost nothing. But that does not make integration tests any faster, and reaching every `if` with them is still hard. If integration tests ran instantly and cost nothing to write, you could write only those. Many teams largely live like that, but the classic position is that fast unit tests on the domain give better feedback.
 
 ### What to mock {#what-to-mock}
 
-| Dependency | Example | What we do |
+| Dependency | Example | What to do |
 |---|---|---|
 | In-process | domain, value objects, entities | real objects, no mocks |
 | Managed | your own database, visible only to your service | a real database in integration tests |
 | Unmanaged | message bus, SMTP, third-party API, visible to other systems | a mock: this is observable behavior |
 
-A database mock checks *how* we write, not *what* ends up stored, and it breaks with every refactoring. Unmanaged dependencies are mocked at the very edge of the system, on the last type before the network:
+A database mock checks *how* the code writes, not *what* ends up stored, and it breaks with every refactoring. Unmanaged dependencies are mocked at the very edge of the system, on the last type before the network:
 
 ```python
 class Bus(Protocol):  # the only interface: the last type before the network
@@ -846,11 +846,11 @@ class MessageBus:
         self._bus.send(f"Type: USER EMAIL CHANGED; Id: {user_id}; NewEmail: {email}")
 ```
 
-The test mocks `Bus`, not `MessageBus`, and checks exactly the string that goes over the network. With an outbox the picture is even simpler: the message first becomes a row in our own database, and the integration test checks that row. A broker mock is needed only in the publisher's tests.
+The test mocks `Bus`, not `MessageBus`, and checks exactly the string that goes over the network. With an outbox the picture is even simpler: the message first becomes a row in the service's own database, and the integration test checks that row. A broker mock is needed only in the publisher's tests.
 
 ### Public API {#public-api}
 
-We test observable behavior, not implementation details. Private methods are tested through public ones. If you want to test a private method or patch something inside a class, that is a design signal: most likely a separate object is hiding in there, one that lacks a name. And the higher the level of an object, the more its API should resemble the language of the domain: an aggregate's public API is its contract in the ubiquitous language.
+Test observable behavior, not implementation details. Private methods are tested through public ones. If you want to test a private method or patch something inside a class, that is a design signal: most likely a separate object is hiding in there, one that lacks a name. And the higher the level of an object, the more its API should resemble the language of the domain: an aggregate's public API is its contract in the ubiquitous language.
 
 ## When you do not need DDD {#when-not-to-use}
 
@@ -858,15 +858,15 @@ The last question from the audience was the most honest one: why all this, when 
 
 Often you do not need it. DDD pays off when the domain is complex and you do not fully understand it yourself. When you are not your own customer. When many people are involved and each knows their own piece. When mistakes are not an option: if you grant people loans, you need to know exactly which rule applies and where it is written down. The complexity here is in the logic, not the load: high RPS has nothing to do with DDD. If a service moves data from Kafka to PostgreSQL, it needs no model, and a transaction script will be more honest.
 
-Why patterns at all? Fowler has the [Design Stamina Hypothesis](https://martinfowler.com/bliki/DesignStaminaHypothesis.html): without design you are faster at first, but over time every feature costs more, and at some point you are overtaken by whoever invested in structure. Greedy in-place fixes give a fast start, and then every change breaks its neighbors, tests fail on refactoring, and before each release nobody is sure the system works. A good model gives you the opposite: new behavior is added next to existing code, not across it. When we needed to plug another provider into one of our services, it came down to a new implementation of an interface: the rest of the code did not change.
+Why patterns at all? Fowler has the [Design Stamina Hypothesis](https://martinfowler.com/bliki/DesignStaminaHypothesis.html): without design you are faster at first, but over time every feature costs more, and at some point you are overtaken by whoever invested in structure. Greedy in-place fixes give a fast start, and then every change breaks its neighbors, tests fail on refactoring, and before each release nobody is sure the system works. A good model gives you the opposite: new behavior is added next to existing code, not across it. Plugging another provider into such code comes down to a new implementation of an interface, and the rest of the code does not change.
 
-And one thought we took away from preparing the talk. With AI agents in development, the strategic ideas of DDD seem to be gaining weight, while the tactical ones are losing it. An agent, like a new person on the team, needs a vocabulary and boundaries: which concepts the system has, what they mean in this context, and which rules must not be broken. An agent will write pattern-shaped code on its own, but it will not invent the model for you. Even the testing debate shifts: an agent writes an integration test almost for free, so the main case left for unit tests on the domain is fast feedback, not the cost of writing. How we prepare that kind of context for agents is the subject of our [article on documentation for AI coding agents](2026-10-26-documentation-for-ai-coding-agents.md).
+And one last thought. With AI agents in development, the strategic ideas of DDD seem to be gaining weight, while the tactical ones are losing it. An agent, like a new person on the team, needs a vocabulary and boundaries: which concepts the system has, what they mean in this context, and which rules must not be broken. An agent will write pattern-shaped code on its own, but it will not invent the model for you. Even the testing debate shifts: an agent writes an integration test almost for free, so the main case left for unit tests on the domain is fast feedback, not the cost of writing. How to prepare that kind of context for agents is covered in the [article on documentation for AI coding agents](2026-10-26-documentation-for-ai-coding-agents.md).
 
 ## Further reading {#sources}
 
 - Eric Evans, *Domain-Driven Design: Tackling Complexity in the Heart of Software* (2003). The blue book, where it all started. An updated summary of the patterns: [*Domain-Driven Design Reference*](https://www.domainlanguage.com/ddd/reference/) (2015).
 - Vaughn Vernon, *Implementing Domain-Driven Design* (2013). The red book, more practical than the blue one.
 - Vladimir Khorikov, *Unit Testing Principles, Practices, and Patterns* (2020). Half of the book is really about how to structure a domain model. The quadrants, managed dependencies and CanExecute / Execute come from here.
-- Vlad Khononov, *Learning Domain-Driven Design* (2021). The best thing we know on subdomains and on how much DDD to spend on each.
+- Vlad Khononov, *Learning Domain-Driven Design* (2021). The best source on subdomains and on how much DDD to spend on each.
 - Harry Percival and Bob Gregory, [*Architecture Patterns with Python*](https://www.cosmicpython.com/) (2020). Repositories, Unit of Work, aggregates and events in Python with SQLAlchemy.
 - Martin Fowler, *Patterns of Enterprise Application Architecture* (2002): Unit of Work, Transaction Script, Data Transfer Object.
