@@ -35,7 +35,7 @@ Two caveats up front. We are not DDD experts and we are not retelling the blue b
 
 ## The model matters more than the code {#model}
 
-If you keep only one idea from DDD, keep this one: before you write a feature, fit it into the model.
+If you keep only one idea from DDD, keep this one: before you write a feature, fit it into the model. In the talk we called it 95% of DDD and 95% of success. The number is subjective, but this is where to start.
 
 The usual way to solve a task is direct: a requirement arrives, you find a place in the code, you add to it. DDD puts one more step between the requirement and the code. First you sit down and work out which entities the process has, what happens to them and how they interact. On paper, on a whiteboard, in your head, it does not matter where. The picture you end up with is the domain model: our idea of how this piece of the world works.
 
@@ -80,7 +80,7 @@ The worst thing you can do in this loop is break the model. And the most valuabl
 
 ## Ubiquitous language {#ubiquitous-language}
 
-Second in importance after the model is the ubiquitous language.
+Second in importance after the model, worth another 4% of success, is the ubiquitous language.
 
 One of us used to build a service for doctors. The doctors spoke in their terms, the developers in theirs, and at every meeting both sides nodded politely without understanding each other. The doctors asked for one thing, the developers built another, and a couple of months later it turned out that everyone had meant something different by the same word.
 

@@ -92,7 +92,7 @@ hide:
         <div class="bdr-entry__eyebrow">Архитектура и DDD <span>·</span> Архитектура</div>
         <h3 class="bdr-entry__title">Domain-Driven Design: сначала модель, потом паттерны</h3>
         <p class="bdr-entry__description">В каждом серьёзном сервисе есть правила, которые придумали не разработчики: когда клиенту положена скидка, кто считается сотрудником, сколько груза можно взять сверх нормы.</p>
-        <div class="bdr-entry__meta"><time datetime="2026-11-02">2 нояб. 2026</time><span>·</span><span>29 мин на чтение</span></div>
+        <div class="bdr-entry__meta"><time datetime="2026-11-02">2 нояб. 2026</time><span>·</span><span>30 мин на чтение</span></div>
       </div>
       <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
       <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
