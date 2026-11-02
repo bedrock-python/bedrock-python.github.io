@@ -474,7 +474,7 @@ Vladimir Khorikov calls this the [DDD trilemma](https://enterprisecraftsmanship.
 | Repository in the domain | yes | no | yes |
 | Load everything up front | yes | yes | no |
 
-The order of sacrifice Khorikov recommends: if you can afford to lose performance, sacrifice it. If not, sacrifice encapsulation. Always keep isolation, because an isolated model is testable. To be honest, Stanislav does not fully agree with this order: a repository in the domain sometimes seems a lesser evil to him than logic smeared across controllers. But the argument about locks and retries next to business rules wins.
+The order of sacrifice Khorikov recommends: if you can afford to lose performance, sacrifice it. If not, sacrifice encapsulation. Always keep isolation, because an isolated model is testable. To be honest, one of us does not fully agree with this order: a repository in the domain sometimes seems a lesser evil to him than logic smeared across controllers. But the argument about locks and retries next to business rules wins.
 
 ### CanExecute / Execute {#can-execute}
 
@@ -821,7 +821,7 @@ We promised testing at the start, and it is probably what shows best why all thi
 
 The domain model is covered by unit tests entirely and without a single mock: there is nothing in it to mock. Controllers are checked by integration tests, and that is the only place mocks appear. Overcomplicated code, which decides and coordinates at the same time, has to be split into the other two quadrants. The `AuditManager` test above belongs to the top-left quadrant.
 
-At the talk someone asked a fair question: why test the domain separately if the controller scenarios go through it anyway? An integration test does cover more and shows more. But it is more expensive to write: it needs a lot of setup. It is hard to reach every branch with it: getting into each `if` takes contrived test data. It is slow, because it works with the database. And it is harder to maintain. Stanislav added an aside right there: "these days it hardly matters, agents write them anyway". With an agent, writing an integration test really does cost almost nothing, but that does not make it any faster, and reaching every `if` is still hard. If integration tests ran instantly and cost nothing to write, you could write only those. Many teams, ours included, largely live like that, but the classic position is that fast unit tests on the domain give better feedback.
+At the talk someone asked a fair question: why test the domain separately if the controller scenarios go through it anyway? An integration test does cover more and shows more. But it is more expensive to write: it needs a lot of setup. It is hard to reach every branch with it: getting into each `if` takes contrived test data. It is slow, because it works with the database. And it is harder to maintain. Part of this argument weakens when an AI agent writes the tests: the setup costs it almost nothing. But that does not make integration tests any faster, and reaching every `if` with them is still hard. If integration tests ran instantly and cost nothing to write, you could write only those. Many teams, ours included, largely live like that, but the classic position is that fast unit tests on the domain give better feedback.
 
 ### What to mock {#what-to-mock}
 
