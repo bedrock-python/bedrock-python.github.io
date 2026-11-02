@@ -121,17 +121,31 @@ hide:
   </figure>
 </section>
 
+<section class="bdr-featured" markdown="0">
+  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-11-02-domain-driven-design/" aria-label="Читать статью Domain-Driven Design: сначала модель, потом паттерны"></a>
+  <div>
+    <div class="bdr-featured__eyebrow">Главное · Архитектура</div>
+    <h2 class="bdr-featured__title">
+      <a href="blog/posts/2026-11-02-domain-driven-design/">Domain-Driven Design: сначала модель, потом паттерны</a>
+    </h2>
+    <p class="bdr-featured__lede">
+      В каждом серьёзном сервисе есть правила, которые придумали не разработчики. Когда их
+      сотни и бизнес меняет их каждый квартал, код без общей картины начинает сопротивляться.
+      Обзор DDD от стратегии к тактике: модель и единый язык, границы контекстов, трилемма
+      чистого домена, агрегаты, доменные события и тесты, а код проверен на PostgreSQL.
+    </p>
+    <div class="bdr-featured__meta">
+      <span>2 ноября 2026</span>
+      <span>·</span>
+      <span>Архитектура</span>
+    </div>
+  </div>
+</section>
+
 <section markdown="0">
 <div class="bdr-section-head"><h2 class="bdr-section-head__title">Новое в блоге</h2><a class="bdr-section-head__link" href="blog/">Все статьи →</a></div>
 <div class="bdr-grid">
 <!-- catalog:home:start -->
-<a class="bdr-card" href="blog/posts/2026-11-02-domain-driven-design/">
-  <div class="bdr-card__visual" aria-hidden="true"></div>
-  <div class="bdr-card__eyebrow">Архитектура</div>
-  <h3 class="bdr-card__title">Domain-Driven Design: сначала модель, потом паттерны</h3>
-  <p class="bdr-card__lede">В каждом серьёзном сервисе есть правила, которые придумали не разработчики: когда клиенту положена скидка, кто считается сотрудником, сколько груза можно взять сверх нормы.</p>
-  <div class="bdr-card__meta">2026-11-02</div>
-</a>
 <a class="bdr-card" href="blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">Инструменты</div>
@@ -145,6 +159,13 @@ hide:
   <h3 class="bdr-card__title">Зачем выделять инфраструктуру Python-сервисов в библиотеки</h3>
   <p class="bdr-card__lede">Когда сервисов становится больше одного, у них появляется общая обвязка: пул соединений, ретраи, дедлайн запроса, порядок остановки.</p>
   <div class="bdr-card__meta">2026-10-27</div>
+</a>
+<a class="bdr-card" href="blog/posts/2026-10-26-documentation-for-ai-coding-agents/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Об экосистеме</div>
+  <h3 class="bdr-card__title">Документация, с которой ИИ-агент пишет проверяемый код</h3>
+  <p class="bdr-card__lede">Всё больше кода в сервисах пишут ИИ-агенты, и пишут его по той документации, которая есть у проекта. Чего в ней не хватает, агент додумывает сам, и не всегда верно.</p>
+  <div class="bdr-card__meta">2026-10-26</div>
 </a>
 <!-- catalog:home:end -->
 </div>

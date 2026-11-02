@@ -122,23 +122,23 @@ hide:
 </section>
 
 <section class="bdr-featured" markdown="0">
-  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-10-18-postgresql-partition-maintenance/" aria-label="Read Managing PostgreSQL partitions, one failure at a time"></a>
+  <a class="bdr-featured__visual bdr-home-featured-art" href="blog/posts/2026-11-02-domain-driven-design/" aria-label="Read Domain-Driven Design: the model first, the patterns later"></a>
   <div>
-    <div class="bdr-featured__eyebrow">Featured · Libraries</div>
+    <div class="bdr-featured__eyebrow">Featured · Design</div>
     <h2 class="bdr-featured__title">
-      <a href="blog/posts/2026-10-18-postgresql-partition-maintenance/">Managing PostgreSQL partitions, one failure at a time</a>
+      <a href="blog/posts/2026-11-02-domain-driven-design/">Domain-Driven Design: the model first, the patterns later</a>
     </h2>
     <p class="bdr-featured__lede">
-      Two ways a partitioned table gets you out of bed, and the library that grew out of
-      them: a plan you can read before it runs, ownership that never drops a table it did
-      not make, the same API async and sync, a command line and a container image for
-      teams with no Python, hooks from a YAML document, and one page for the AI assistant
-      doing the wiring.
+      Every serious service has rules that developers did not invent. Once there are
+      hundreds of them and the business changes them every quarter, code without a shared
+      picture starts to fight back. An overview of DDD from strategy to tactics: the model
+      and its ubiquitous language, bounded contexts, the trilemma of a pure domain,
+      aggregates, domain events and tests, with the code checked on PostgreSQL.
     </p>
     <div class="bdr-featured__meta">
-      <span>September 6, 2026</span>
+      <span>November 2, 2026</span>
       <span>·</span>
-      <span>Libraries · Tools</span>
+      <span>Design</span>
     </div>
   </div>
 </section>
@@ -150,66 +150,30 @@ hide:
   </div>
 
   <div class="bdr-grid">
-    <a class="bdr-card" href="blog/posts/2026-10-21-zero-dependency-cores/">
-      <div class="bdr-card__visual bdr-card__visual--design"></div>
-      <div class="bdr-card__eyebrow">Design</div>
-      <h3 class="bdr-card__title">Zero-dependency cores</h3>
-      <p class="bdr-card__lede">
-        An infrastructure library ends up in every service, and so does every dependency
-        it declares. Measured: three of eight install exactly one distribution, and the FastAPI
-        extra adds twenty-two.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-10-22-python-library-from-template-to-release/">
-      <div class="bdr-card__visual bdr-card__visual--meta"></div>
-      <div class="bdr-card__eyebrow">Meta</div>
-      <h3 class="bdr-card__title">How I start a production-grade Python library in 2026</h3>
-      <p class="bdr-card__lede">
-        One command, forty-one files, a green gate in three seconds. What each group of
-        files decides, and the line of configuration that selected a rule family and then
-        ignored it.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-    <a class="bdr-card" href="blog/posts/2026-10-18-postgresql-partition-maintenance/">
-      <div class="bdr-card__visual bdr-card__visual--tutorials"></div>
-      <div class="bdr-card__eyebrow">Tutorials</div>
-      <h3 class="bdr-card__title">Migrating from pg_partman to application-managed partitions</h3>
-      <p class="bdr-card__lede">
-        What happens to the partitions that already exist? Measured against pg_partman
-        5.5: nothing. Both maintainers run side by side, and ownership is decided by bounds
-        rather than names.
-      </p>
-      <div class="bdr-card__meta">September 7, 2026</div>
-    </a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
+<!-- catalog:home:start -->
+<a class="bdr-card" href="blog/posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Tools</div>
+  <h3 class="bdr-card__title">Why AI review findings need verification</h3>
+  <p class="bdr-card__lede">Many teams now run an AI reviewer on merge requests. It writes findings as confidently as a senior colleague, but confidence does not make a finding true.</p>
+  <div class="bdr-card__meta">2026-10-29</div>
+</a>
+<a class="bdr-card" href="blog/posts/2026-10-27-why-bedrock-python-libraries/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Meta</div>
+  <h3 class="bdr-card__title">Why extract Python service infrastructure into libraries</h3>
+  <p class="bdr-card__lede">Once there is more than one service, they start sharing plumbing: connection pools, retries, request deadlines, shutdown order.</p>
+  <div class="bdr-card__meta">2026-10-27</div>
+</a>
+<a class="bdr-card" href="blog/posts/2026-10-26-documentation-for-ai-coding-agents/">
+  <div class="bdr-card__visual" aria-hidden="true"></div>
+  <div class="bdr-card__eyebrow">Meta</div>
+  <h3 class="bdr-card__title">Documentation that lets an AI coding agent write checkable code</h3>
+  <p class="bdr-card__lede">More and more service code is written by AI coding agents, and they write it from whatever documentation the project has.</p>
+  <div class="bdr-card__meta">2026-10-26</div>
+</a>
+<!-- catalog:home:end -->
+</div>
 </section>
 
 <section class="bdr-home-pathways" aria-labelledby="home-pathways-title" markdown="0">
