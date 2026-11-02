@@ -274,8 +274,11 @@ def build_catalog(blog: Path, language: str = "en", check: bool = False) -> list
     home_source = home.read_text(encoding="utf-8")
     home_start, home_end = "<!-- catalog:home:start -->", "<!-- catalog:home:end -->"
     if home_start in home_source and home_end in home_source:
+        # The featured block above the list already shows its article.
+        featured = re.search(r'class="bdr-featured__title">\s*<a href="blog/([^"]+)"', home_source)
+        latest = [article for article in articles if not featured or article["url"] != featured[1]]
         cards = []
-        for article in articles[:3]:
+        for article in latest[:3]:
             cards.append(f'''<a class="bdr-card" href="blog/{html.escape(article['url'])}">
   <div class="bdr-card__visual" aria-hidden="true"></div>
   <div class="bdr-card__eyebrow">{html.escape(categories[article['categories'][0]])}</div>
