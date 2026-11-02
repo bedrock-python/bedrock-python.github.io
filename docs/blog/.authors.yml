@@ -3,3 +3,8 @@ authors:
     name: Alex Shalaev
     description: Author & Maintainer
     avatar: https://github.com/bedrock-python.png
+  stas:
+    name: Stanislav Shimovolos
+    description: Co-author
+    avatar: https://github.com/stanislaushimovolos.png
+    url: https://github.com/stanislaushimovolos

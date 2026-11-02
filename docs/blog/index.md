@@ -61,6 +61,7 @@ hide:
           <button data-blog-topic="messaging" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">⇢</span><span>Kafka & messaging</span><span data-topic-count></span></button>
           <button data-blog-topic="lifecycle" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">◷</span><span>Service lifecycle</span><span data-topic-count></span></button>
           <button data-blog-topic="redis" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">◇</span><span>Redis & idempotency</span><span data-topic-count></span></button>
+          <button data-blog-topic="architecture" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">▣</span><span>Architecture & DDD</span><span data-topic-count></span></button>
           <button data-blog-topic="engineering" type="button" aria-pressed="false"><span class="bdr-topic-symbol" aria-hidden="true">⌘</span><span>Python & tooling</span><span data-topic-count></span></button>
         </nav>
       </details>
@@ -85,6 +86,18 @@ hide:
       <div class="bdr-active-filters" data-blog-active hidden></div>
       <div class="bdr-results" id="blog-results" data-blog-results>
 <!-- catalog:articles:start -->
+  <article class="bdr-entry" data-article-id="2026-11-02-domain-driven-design">
+    <a class="bdr-entry__link bdr-card" href="posts/2026-11-02-domain-driven-design/">
+      <div class="bdr-entry__body">
+        <div class="bdr-entry__eyebrow">Architecture &amp; DDD <span>·</span> Design</div>
+        <h3 class="bdr-entry__title">Domain-Driven Design: the model first, the patterns later</h3>
+        <p class="bdr-entry__description">Every serious service has rules that developers did not invent: when a customer gets a discount, who counts as an employee, how much cargo a ship may take over its limit.</p>
+        <div class="bdr-entry__meta"><time datetime="2026-11-02">Nov 2, 2026</time><span>·</span><span>37 min read</span></div>
+      </div>
+      <div class="bdr-entry__visual bdr-card__visual" aria-hidden="true"></div>
+      <span class="bdr-entry__arrow" aria-hidden="true">↗</span>
+    </a>
+  </article>
   <article class="bdr-entry" data-article-id="2026-10-29-ai-code-review-should-not-be-fully-autonomous">
     <a class="bdr-entry__link bdr-card" href="posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous/">
       <div class="bdr-entry__body">

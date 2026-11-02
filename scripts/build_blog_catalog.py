@@ -30,6 +30,12 @@ TOPICS = {
     "lifecycle": "Service lifecycle",
     "redis": "Redis & idempotency",
     "engineering": "Python & tooling",
+    "architecture": "Architecture & DDD",
+}
+# Design-method pieces are about the method first; the libraries they show are examples.
+SUBJECT_TOPICS = {
+    "ddd": "architecture",
+    "domain-driven-design": "architecture",
 }
 LIBRARY_TOPICS = {
     "pg-partsmith": "postgres",
@@ -101,6 +107,7 @@ def summarize(body: str, limit: int = 180) -> str:
     intro = body.split("<!-- more -->", 1)[0]
     intro = re.sub(r"^#\s+.+$", "", intro, flags=re.MULTILINE)
     intro = re.sub(r"<div\b[^>]*class=[\"'][^\"']*bdr-post__hero[^\"']*[\"'][^>]*>.*?</div>", "", intro, flags=re.DOTALL)
+    intro = re.sub(r"<p\b[^>]*class=[\"'][^\"']*bdr-post__byline[^\"']*[\"'][^>]*>.*?</p>", "", intro, flags=re.DOTALL)
     paragraphs = [plain_text(part) for part in re.split(r"\n\s*\n", intro)]
     summary = next((part for part in paragraphs if part), "")
     if len(summary) <= limit:
@@ -116,7 +123,9 @@ def article_topics(title: str, tags: list[str]) -> list[str]:
     # Ecosystem and packaging pieces mention many dependencies as examples.
     if (normalized and normalized[0] in {"bedrock-python", "python-library-template", "mr-review"}) or "packaging" in normalized:
         return ["engineering"]
-    topics = list(dict.fromkeys(LIBRARY_TOPICS[tag] for tag in normalized if tag in LIBRARY_TOPICS))
+    topics = list(dict.fromkeys(SUBJECT_TOPICS[tag] for tag in normalized if tag in SUBJECT_TOPICS))
+    topics += [topic for topic in dict.fromkeys(LIBRARY_TOPICS[tag] for tag in normalized if tag in LIBRARY_TOPICS)
+               if topic not in topics]
     # Explicit title subjects are useful secondary topics; incidental body tags are not.
     title_words = set(re.findall(r"[\w-]+", title.casefold()))
     for tag, topic in TECHNOLOGY_TOPICS.items():
@@ -126,6 +135,8 @@ def article_topics(title: str, tags: list[str]) -> list[str]:
 
 
 def reading_minutes(body: str) -> int:
+    # Inline SVG diagrams are looked at, not read; their caption is counted as prose.
+    body = re.sub(r"<svg\b.*?</svg>", "", body, flags=re.DOTALL)
     code_blocks = re.findall(r"^(`{3,}|~{3,})([^\n]*)\n(.*?)^\1\s*$", body, flags=re.MULTILINE | re.DOTALL)
     prose = re.sub(r"^(`{3,}|~{3,})[^\n]*\n.*?^\1\s*$", "", body, flags=re.MULTILINE | re.DOTALL)
     prose_words = len(re.findall(r"\b[\w'-]+\b", plain_text(prose)))

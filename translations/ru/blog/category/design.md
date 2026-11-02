@@ -2,6 +2,7 @@
 
 Архитектура и инженерные решения экосистемы.
 
+- **2026-11-02** — [Domain-Driven Design: сначала модель, потом паттерны](../posts/2026-11-02-domain-driven-design.md)
 - **2026-10-21** — [Ядро без зависимостей: подключаем только нужные интеграции](../posts/2026-10-21-zero-dependency-cores.md)
 - **2026-10-18** — [Обслуживание партиций PostgreSQL: от плана до проверенного архива](../posts/2026-10-18-postgresql-partition-maintenance.md)
 - **2026-10-08** — [Сессии и транзакции в SQLAlchemy: кто отвечает за commit](../posts/2026-10-08-sqlalchemy-sessions-and-transactions.md)

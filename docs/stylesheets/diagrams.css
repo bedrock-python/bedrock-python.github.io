@@ -79,3 +79,27 @@ body:has(.bdr-diagram-dialog[open]) { overflow: hidden; }
   .bdr-diagram__viewport > .mermaid { min-width: 0; }
   .md-typeset figure.bdr-diagram { break-inside: avoid; }
 }
+/* Hand-drawn SVG diagrams: inline in the page, so they follow the same tokens in both themes. */
+.bdr-diagram__viewport > svg.bdr-svg { display: block; width: 100%; max-width: 480px; height: auto; margin: 0 auto; }
+.bdr-diagram-dialog svg.bdr-svg { max-width: min(100%, 760px); }
+.bdr-svg { font-family: var(--md-text-font-family); }
+.bdr-svg text { fill: var(--bdr-ink); }
+.bdr-svg .bdr-svg__title { font-size: 15px; font-weight: 600; }
+.bdr-svg .bdr-svg__name { font-size: 14px; font-weight: 600; }
+.bdr-svg .bdr-svg__sub { fill: var(--bdr-ink-2); font-size: 13px; }
+.bdr-svg .bdr-svg__note { fill: var(--bdr-ink-3); font-size: 12.5px; }
+.bdr-svg .bdr-svg__code { font-family: var(--md-code-font-family); font-size: 12.5px; }
+.bdr-svg .bdr-svg__title--accent, .bdr-svg .bdr-svg__name--accent, .bdr-svg .bdr-svg__note--accent { fill: var(--bdr-accent); }
+.bdr-svg__panel rect { fill: var(--bdr-surface-2); stroke: var(--bdr-border); }
+.bdr-svg__panel--accent rect { stroke: var(--bdr-accent); stroke-width: 1.5; }
+.bdr-svg__box rect { fill: var(--bdr-surface); stroke: var(--bdr-border-2); }
+.bdr-svg__box--strong rect { stroke: var(--bdr-ink-2); stroke-width: 1.5; }
+.bdr-svg__box--accent rect { stroke: var(--bdr-accent); stroke-width: 1.5; }
+.bdr-svg__box--dashed rect { stroke-dasharray: 5 4; }
+.bdr-svg__edge { fill: none; stroke: var(--bdr-ink-3); stroke-width: 1.5; }
+.bdr-svg__edge--dashed { stroke-dasharray: 5 4; }
+.bdr-svg__edge--accent { stroke: var(--bdr-accent); }
+.bdr-svg__head { fill: var(--bdr-ink-3); }
+.bdr-svg__head--accent { fill: var(--bdr-accent); }
+.bdr-svg__head--hollow { fill: var(--bdr-surface); stroke: var(--bdr-ink-3); stroke-width: 1.2; }
+.bdr-svg .bdr-svg__halo { paint-order: stroke fill; stroke: var(--bdr-surface-2); stroke-width: 6px; stroke-linejoin: round; }

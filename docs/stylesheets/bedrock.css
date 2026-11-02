@@ -106,6 +106,16 @@ body, .md-typeset {
   line-height: 1.15;
   letter-spacing: -0.025em;
 }
+
+/* Authors line for co-written articles, set right under the headline. */
+.md-typeset .bdr-post__byline {
+  margin-top: -.6em;
+  margin-bottom: 1.75rem;
+  color: var(--bdr-ink-3);
+  font-size: .8125rem;
+}
+.md-typeset .bdr-post__byline a { color: var(--bdr-ink-2); font-weight: 500; }
+.md-typeset .bdr-post__byline a:hover { color: var(--bdr-accent); }
 .md-typeset h2 {
   font-size: clamp(1.25rem, 1.6vw, 1.5rem);     /* 20 → 24px */
   margin-top: 2.25em;
@@ -885,6 +895,10 @@ body, .md-typeset {
 .bdr-post__hero[data-bdr-post="2026-10-21-zero-dependency-cores"] {
   background-image: url("../assets/blog/2026-10-21-zero-dependency-cores.webp");
 }
+.bdr-card[href*="2026-11-02-domain-driven-design"] .bdr-card__visual,
+.bdr-post__hero[data-bdr-post="2026-11-02-domain-driven-design"] {
+  background-image: url("../assets/blog/2026-11-02-domain-driven-design.webp");
+}
 
 [data-md-color-scheme="slate"] .bdr-card[href*="2026-10-18-postgresql-partition-maintenance"] .bdr-card__visual,
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-10-18-postgresql-partition-maintenance"] {
@@ -961,4 +975,8 @@ body, .md-typeset {
 [data-md-color-scheme="slate"] .bdr-card[href*="2026-10-21-zero-dependency-cores"] .bdr-card__visual,
 [data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-10-21-zero-dependency-cores"] {
   background-image: url("../assets/blog/2026-10-21-zero-dependency-cores-dark.webp");
+}
+[data-md-color-scheme="slate"] .bdr-card[href*="2026-11-02-domain-driven-design"] .bdr-card__visual,
+[data-md-color-scheme="slate"] .bdr-post__hero[data-bdr-post="2026-11-02-domain-driven-design"] {
+  background-image: url("../assets/blog/2026-11-02-domain-driven-design-dark.webp");
 }

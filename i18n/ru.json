@@ -64,6 +64,7 @@
   "Service lifecycle": "Жизненный цикл сервиса",
   "Redis & idempotency": "Redis и идемпотентность",
   "Python & tooling": "Python и инструменты",
+  "Architecture & DDD": "Архитектура и DDD",
   "Article": "Статья",
   "{minutes} min read": "{minutes} мин на чтение",
   "months": ["янв.", "февр.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."],

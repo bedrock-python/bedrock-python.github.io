@@ -17,6 +17,7 @@ import threading
 import time
 import tomllib
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from html.parser import HTMLParser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -174,13 +175,21 @@ class Links(HTMLParser):
             self.links.append(attributes[key])
 
 
+def page_links(path: Path) -> tuple[Path, list[str]]:
+    parser = Links()
+    parser.feed(path.read_text(encoding="utf-8"))
+    return path, parser.links
+
+
 def validate_links(public: Path, base_path: str = "/") -> None:
     errors = []
-    for path in public.rglob("*.html"):
-        parser = Links()
-        parser.feed(path.read_text(encoding="utf-8"))
+    # On Windows an antivirus scans every freshly written file on first open, so
+    # reading pages one by one dominates the build; overlap those waits.
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        pages = list(pool.map(page_links, public.rglob("*.html")))
+    for path, links in pages:
         current = base_path + path.relative_to(public).as_posix()
-        for value in parser.links:
+        for value in links:
             parts = urlsplit(value)
             if parts.scheme or parts.netloc or not parts.path:
                 continue
@@ -279,6 +288,7 @@ def build(output: Path) -> dict:
             shutil.copytree(built, public / prefix, dirs_exist_ok=True)
         combine_sitemaps(public, outputs, [page["canonical"] for editions in pairs.values() for page in editions.values()])
         base_path = urlsplit(config["site_url"]).path.rstrip("/") + "/"
+        print("Checking internal links...", flush=True)
         validate_links(public, base_path)
         # All paths are on the repository filesystem. Renaming avoids serving a
         # half-copied tree and retains the previous output if publication fails.
