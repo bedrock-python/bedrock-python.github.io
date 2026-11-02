@@ -73,6 +73,7 @@ features = [
     "search.highlight",
     "search.share",
     "search.suggest",
+    "toc.follow",
 ]
 
 [project.theme.font]

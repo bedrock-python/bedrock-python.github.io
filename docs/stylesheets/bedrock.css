@@ -768,6 +768,11 @@ body, .md-typeset {
   font-weight: 600;
 }
 
+/* A long table of contents follows the reading position (toc.follow) instead of
+   offering a second scrollbar next to the page's own. It still scrolls by wheel. */
+.md-sidebar--secondary .md-sidebar__scrollwrap { scrollbar-width: none; }
+.md-sidebar--secondary .md-sidebar__scrollwrap::-webkit-scrollbar { display: none; }
+
 /* -------- 13. Misc niceties -------- */
 
 .md-typeset hr {
