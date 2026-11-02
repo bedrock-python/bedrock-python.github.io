@@ -2,6 +2,7 @@
 
 Architecture and decisions behind the ecosystem.
 
+- **2026-11-02** — [Domain-Driven Design: the model first, the patterns later](../posts/2026-11-02-domain-driven-design.md)
 - **2026-10-21** — [A core without dependencies: install the integrations your service needs](../posts/2026-10-21-zero-dependency-cores.md)
 - **2026-10-18** — [PostgreSQL partition maintenance: from a plan to a verified archive](../posts/2026-10-18-postgresql-partition-maintenance.md)
 - **2026-10-08** — [SQLAlchemy sessions and transactions: who owns commit](../posts/2026-10-08-sqlalchemy-sessions-and-transactions.md)

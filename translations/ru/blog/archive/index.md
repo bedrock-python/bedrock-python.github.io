@@ -4,6 +4,7 @@
 
 ## 2026
 
+- **2026-11-02** — [Domain-Driven Design: сначала модель, потом паттерны](../posts/2026-11-02-domain-driven-design.md)
 - **2026-10-29** — [Почему замечания ИИ-ревью нужно проверять](../posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-10-27** — [Зачем выделять инфраструктуру Python-сервисов в библиотеки](../posts/2026-10-27-why-bedrock-python-libraries.md)
 - **2026-10-26** — [Документация, с которой ИИ-агент пишет проверяемый код](../posts/2026-10-26-documentation-for-ai-coding-agents.md)

@@ -64,6 +64,7 @@
   "Service lifecycle": "Service lifecycle",
   "Redis & idempotency": "Redis & idempotency",
   "Python & tooling": "Python & tooling",
+  "Architecture & DDD": "Architecture & DDD",
   "Article": "Article",
   "{minutes} min read": "{minutes} min read",
   "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],

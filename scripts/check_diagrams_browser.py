@@ -52,7 +52,12 @@ def main():
             for post in posts:
                 url = args.base_url.rstrip("/") + prefix + "/blog/posts/" + post.stem + "/"
                 page.goto(url)
-                figure = page.locator("figure.bdr-diagram").first
+                # Inline SVG diagrams are static markup; this check covers the Mermaid renderer.
+                figures = page.locator("figure.bdr-diagram:has(.mermaid)")
+                if not figures.count():
+                    print(f"{args.browser}: {lang}/{post.stem} has no Mermaid diagrams, skipped", flush=True)
+                    continue
+                figure = figures.first
                 button = figure.locator(".bdr-diagram__expand")
                 expect(button).to_be_visible(timeout=60000)
                 viewport = figure.locator(".bdr-diagram__viewport")

@@ -76,7 +76,7 @@
         figure.querySelector(".bdr-diagram__caption").append(hint);
       }
       const update = () => {
-        const rendered = !!viewport.querySelector("div.mermaid");
+        const rendered = !!viewport.querySelector("div.mermaid, svg.bdr-svg");
         button.hidden = !rendered;
         hint.hidden = !rendered || viewport.scrollWidth <= viewport.clientWidth + 1;
       };

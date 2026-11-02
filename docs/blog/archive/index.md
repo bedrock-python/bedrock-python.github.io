@@ -4,6 +4,7 @@ Every post in the Bedrock Python blog, grouped by year.
 
 ## 2026
 
+- **2026-11-02** — [Domain-Driven Design: the model first, the patterns later](../posts/2026-11-02-domain-driven-design.md)
 - **2026-10-29** — [Why AI review findings need verification](../posts/2026-10-29-ai-code-review-should-not-be-fully-autonomous.md)
 - **2026-10-27** — [Why extract Python service infrastructure into libraries](../posts/2026-10-27-why-bedrock-python-libraries.md)
 - **2026-10-26** — [Documentation that lets an AI coding agent write checkable code](../posts/2026-10-26-documentation-for-ai-coding-agents.md)

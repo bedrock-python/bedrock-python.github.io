@@ -1,6 +1,31 @@
 {
   "articles": [
     {
+      "id": "2026-11-02-domain-driven-design",
+      "title": "Domain-Driven Design: the model first, the patterns later",
+      "description": "Every serious service has rules that developers did not invent: when a customer gets a discount, who counts as an employee, how much cargo a ship may take over its limit.",
+      "url": "posts/2026-11-02-domain-driven-design/",
+      "date": "2026-11-02",
+      "categories": [
+        "design"
+      ],
+      "tags": [
+        "ddd",
+        "domain-driven-design",
+        "architecture",
+        "testing",
+        "sqlalchemy-foundation-kit",
+        "omni-box"
+      ],
+      "topics": [
+        "architecture",
+        "postgres",
+        "messaging"
+      ],
+      "minutes": 37,
+      "search": "Domain-Driven Design: the model first, the patterns later Every serious service has rules that developers did not invent: when a customer gets a discount, who counts as an employee, how much cargo a ship may take over its limit. ddd domain-driven-design architecture testing sqlalchemy-foundation-kit omni-box Design Architecture & DDD PostgreSQL & SQLAlchemy Kafka & messaging The model matters more than the code Ubiquitous language Bounded Context: where a model ends Core, supporting, generic: where to spend effort Dependencies point at the core Rich model and anemic model Step one: types instead of primitives Step two: behavior moves into the entity Make the implicit explicit Functional core, imperative shell The trilemma: where to check that an email is free Option 1: check in the controller Option 2: a repository in the domain Option 3: load everything up front Two out of three CanExecute / Execute What if the requests arrive at the same time Tactical patterns Value Object Entity Aggregate Repositories and factories Does a repository need an interface Reads that bypass aggregates Unit of Work Domain Events Domain layer and application layer Specification DDD and tests What to mock Public API When you do not need DDD Further reading"
+    },
+    {
       "id": "2026-10-29-ai-code-review-should-not-be-fully-autonomous",
       "title": "Why AI review findings need verification",
       "description": "Many teams now run an AI reviewer on merge requests. It writes findings as confidently as a senior colleague, but confidence does not make a finding true.",
@@ -436,6 +461,10 @@
     {
       "id": "engineering",
       "label": "Python & tooling"
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture & DDD"
     }
   ],
   "categories": [
