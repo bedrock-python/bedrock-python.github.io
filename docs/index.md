@@ -26,7 +26,7 @@ hide:
     </div>
     <div class="bdr-home-hero__proof">
       <a href="libraries/"><strong>12</strong> libraries</a><span aria-hidden="true">/</span>
-      <a href="tools/"><strong>2</strong> developer tools</a><span aria-hidden="true">/</span>
+      <a href="tools/"><strong>3</strong> developer tools</a><span aria-hidden="true">/</span>
       <span>Open source</span>
     </div>
   </div>
@@ -212,11 +212,12 @@ hide:
           </div>
           <span class="bdr-home-path__icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3"/><path d="M4 12h24m-17 5 3 3-3 3m7 0h5"/><path d="M8 9h.01M11 9h.01"/></svg></span>
         </div>
-        <p>Focused tools to review code, find answers and plan database changes.</p>
+        <p>Focused tools to review code, find answers, share files across repositories and plan database changes.</p>
       </div>
       <nav class="bdr-home-path__routes" aria-label="Find a developer tool by task">
         <a href="tools/#mr-review"><span>Review code</span><small>mr-review</small><span aria-hidden="true">↗</span></a>
         <a href="tools/#mattermind"><span>Search your workspace</span><small>mattermind</small><span aria-hidden="true">↗</span></a>
+        <a href="tools/#touchmark"><span>Share files across repositories</span><small>touchmark</small><span aria-hidden="true">↗</span></a>
         <a href="tools/#from-libraries"><span>Plan a database change</span><small>pg-partsmith CLI</small><span aria-hidden="true">↗</span></a>
       </nav>
       <a class="bdr-home-path__all" href="tools/">Explore all tools <span aria-hidden="true">→</span></a>

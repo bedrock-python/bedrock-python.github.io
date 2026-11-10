@@ -1,6 +1,6 @@
 ---
 title: Инструменты
-description: Инструменты разработчика для ревью кода, поиска в рабочем пространстве и работы с PostgreSQL. На Python, для ваших задач.
+description: Инструменты разработчика для ревью кода, поиска в рабочем пространстве, общих файлов во многих репозиториях и работы с PostgreSQL.
 hide:
   - navigation
   - toc
@@ -11,13 +11,14 @@ hide:
     <div class="bdr-tool-hero__copy">
       <div class="bdr-tool-eyebrow"><span></span> МАСТЕРСКАЯ / ИНСТРУМЕНТЫ РАЗРАБОТЧИКА</div>
       <h1>Меньше рутины.<br><em>Больше дела.</em></h1>
-      <p>Проверьте изменения, найдите контекст, спланируйте следующий шаг. Инструменты на Python для задач вокруг вашего кода.</p>
+      <p>Проверьте изменения, найдите контекст, держите общие файлы в одной версии, спланируйте следующий шаг. Инструменты для задач вокруг вашего кода.</p>
       <div class="bdr-tool-hero__principles"><span>На вашем сервере</span><span>Открытый код</span><span>Для реальных задач</span></div>
     </div>
     <nav class="bdr-tool-jumps" aria-label="Выбрать инструмент для вашей задачи">
       <div class="bdr-tool-jumps__label">НАД ЧЕМ ВЫ РАБОТАЕТЕ?</div>
       <a href="#mr-review"><span class="bdr-tool-jumps__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6v12m12-12v5a5 5 0 0 1-5 5H6"/><circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="4" r="2"/></svg></span><span><strong>Проверить изменения</strong><small>mr-review</small></span><span aria-hidden="true">↗</span></a>
       <a href="#mattermind"><span class="bdr-tool-jumps__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 14a3 3 0 0 1-3 3H9l-5 4V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8Z"/><path d="M8 8h8m-8 4h5"/></svg></span><span><strong>Найти ответ</strong><small>mattermind</small></span><span aria-hidden="true">↗</span></a>
+      <a href="#touchmark"><span class="bdr-tool-jumps__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="9" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 8v8M5 16v-4h14v4"/></svg></span><span><strong>Общие файлы во всех репозиториях</strong><small>touchmark</small></span><span aria-hidden="true">↗</span></a>
       <a href="#from-libraries"><span class="bdr-tool-jumps__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/></svg></span><span><strong>Спланировать изменения в БД</strong><small>pg-partsmith CLI</small></span><span aria-hidden="true">↗</span></a>
     </nav>
   </header>
@@ -69,7 +70,7 @@ hide:
           <div class="bdr-tool-art__caption"><span>Вопрос</span><span aria-hidden="true">→</span><span>Поиск в переписке</span><span aria-hidden="true">→</span><strong>Ответ и источники</strong></div>
         </div>
         <div class="bdr-tool-card__body">
-          <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/mattermind/">mattermind</a></h3><a class="bdr-tool-version" data-pypi="mattermind" href="https://pypi.org/project/mattermind/" title="mattermind на PyPI">v0.1.1</a></div>
+          <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/mattermind/">mattermind</a></h3><a class="bdr-tool-version" data-pypi="mattermind" href="https://pypi.org/project/mattermind/" title="mattermind на PyPI">v0.2.2</a></div>
           <h4>Ответ уже есть в вашей переписке.</h4>
           <p>Задавайте вопросы о своём рабочем пространстве Mattermost обычным языком. ИИ-агент ищет по обсуждениям и подкрепляет каждый вывод прямой ссылкой на источник.</p>
           <div class="bdr-tool-tags"><span>Полнотекстовый поиск</span><span>Чат в терминале</span><span>Вывод JSON</span></div>
@@ -80,15 +81,33 @@ hide:
     </div>
   </section>
 
+  <section class="bdr-tool-section" id="touchmark" aria-labelledby="touchmark-title">
+    <div class="bdr-tool-section__heading"><div><span>02 / ДЛЯ МНОГИХ РЕПОЗИТОРИЕВ</span><h2 id="touchmark-title">Один стандарт. Много репозиториев.</h2></div><p>Для файлов, которые должны быть в каждом репозитории.</p></div>
+    <article class="bdr-tool-cli">
+      <div class="bdr-tool-terminal" aria-label="Команды touchmark">
+        <div class="bdr-tool-terminal__bar"><span aria-hidden="true">● ● ●</span><span>touchmark / hub</span></div>
+        <div class="bdr-tool-terminal__body"><span class="bdr-tool-terminal__label">ОПЕРАЦИИ ХАБА</span><div class="bdr-tool-terminal__commands"><span>check</span><span>plan</span><span>distribute</span><span>status</span></div><p>Хаб с общими файлами.<br>Pull request в каждый репозиторий.</p></div>
+      </div>
+      <div class="bdr-tool-cli__body">
+        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/touchmark/">touchmark</a></h3><a class="bdr-tool-version" href="https://github.com/bedrock-python/touchmark/releases" title="Релизы touchmark">v0.6.0</a></div>
+        <p>Инструкции для ИИ-агентов, промпты для ревью и общие файлы CI в одной версии во многих репозиториях. Изменение в хабе приходит в каждый репозиторий как pull request, который сливает человек, а файл, который команда поменяла под себя, остаётся её.</p>
+        <div class="bdr-tool-tags"><span>GitHub · GitLab · Gitea · Forgejo</span><span>Без автослияния</span><span>Один бинарник на Go</span></div>
+        <div class="bdr-tool-cli__install"><span>УСТАНОВКА</span><code>go install github.com/bedrock-python/touchmark/cmd/touchmark@latest</code></div>
+        <div class="bdr-tool-card__links"><a class="bdr-tool-primary" href="https://bedrock-python.github.io/touchmark/">Документация <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/engineering-assets-template">Шаблон хаба <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/touchmark">GitHub <span aria-hidden="true">↗</span></a></div>
+        <div class="bdr-tool-cli__image">GitHub Action, бинарник или контейнер: <code>ghcr.io/bedrock-python/touchmark</code></div>
+      </div>
+    </article>
+  </section>
+
   <section class="bdr-tool-section" id="from-libraries" aria-labelledby="cli-title">
-    <div class="bdr-tool-section__heading"><div><span>02 / ИЗ БИБЛИОТЕК</span><h2 id="cli-title">Библиотека и самостоятельный инструмент.</h2></div><p>Для скриптов, CronJob и командной строки.</p></div>
+    <div class="bdr-tool-section__heading"><div><span>03 / ИЗ БИБЛИОТЕК</span><h2 id="cli-title">Библиотека и самостоятельный инструмент.</h2></div><p>Для скриптов, CronJob и командной строки.</p></div>
     <article class="bdr-tool-cli">
       <div class="bdr-tool-terminal" aria-label="Возможности CLI pg-partsmith">
         <div class="bdr-tool-terminal__bar"><span aria-hidden="true">● ● ●</span><span>pg-partsmith / CLI</span></div>
         <div class="bdr-tool-terminal__body"><span class="bdr-tool-terminal__label">ОПЕРАЦИИ С СЕКЦИЯМИ</span><div class="bdr-tool-terminal__commands"><span>plan</span><span>apply</span><span>validate</span><span>backfill</span></div><div class="bdr-tool-partitions" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><p>Документ YAML.<br>План, который можно проверить заранее.</p></div>
       </div>
       <div class="bdr-tool-cli__body">
-        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/pg-partsmith/guide/cli/">pg-partsmith CLI</a></h3><a class="bdr-tool-version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="pg-partsmith на PyPI">v1.5.0</a></div>
+        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/pg-partsmith/guide/cli/">pg-partsmith CLI</a></h3><a class="bdr-tool-version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="pg-partsmith на PyPI">v1.10.0</a></div>
         <p>Планируйте, создавайте, проверяйте и заполняйте секции PostgreSQL по документу YAML. Коды завершения для CronJob и контейнерный образ для стеков без Python.</p>
         <div class="bdr-tool-tags"><span>Python 3.11+</span><span>Библиотека + CLI + контейнер</span></div>
         <div class="bdr-tool-cli__install"><span>УСТАНОВКА</span><code>pip install "pg-partsmith[cli]"</code></div>
