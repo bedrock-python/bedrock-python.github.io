@@ -26,7 +26,7 @@ hide:
     </div>
     <div class="bdr-home-hero__proof">
       <a href="libraries/"><strong>12</strong> библиотек</a><span aria-hidden="true">/</span>
-      <a href="tools/"><strong>2</strong> инструмента</a><span aria-hidden="true">/</span>
+      <a href="tools/"><strong>3</strong> инструмента</a><span aria-hidden="true">/</span>
       <span>Открытый код</span>
     </div>
   </div>
@@ -207,11 +207,12 @@ hide:
           </div>
           <span class="bdr-home-path__icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3"/><path d="M4 12h24m-17 5 3 3-3 3m7 0h5"/><path d="M8 9h.01M11 9h.01"/></svg></span>
         </div>
-        <p>Инструменты для ревью кода, поиска ответов и планирования изменений в базе данных.</p>
+        <p>Инструменты для ревью кода, поиска ответов, общих файлов во многих репозиториях и планирования изменений в базе данных.</p>
       </div>
       <nav class="bdr-home-path__routes" aria-label="Выбрать инструмент по задаче">
         <a href="tools/#mr-review"><span>Проверить код</span><small>mr-review</small><span aria-hidden="true">↗</span></a>
         <a href="tools/#mattermind"><span>Найти ответ в переписке</span><small>mattermind</small><span aria-hidden="true">↗</span></a>
+        <a href="tools/#touchmark"><span>Общие файлы во всех репозиториях</span><small>touchmark</small><span aria-hidden="true">↗</span></a>
         <a href="tools/#from-libraries"><span>Спланировать изменения в БД</span><small>pg-partsmith CLI</small><span aria-hidden="true">↗</span></a>
       </nav>
       <a class="bdr-home-path__all" href="tools/">Все инструменты <span aria-hidden="true">→</span></a>

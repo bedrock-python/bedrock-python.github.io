@@ -48,7 +48,7 @@ hide:
       <div class="bdr-lib-grid">
         <article class="bdr-package" id="package-servicewright" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/><rect x="7" y="7" width="10" height="10" rx="2"/></svg></span>
-            <a class="bdr-package__version" data-pypi="servicewright" href="https://pypi.org/project/servicewright/" title="servicewright on PyPI">v0.9.0</a>
+            <a class="bdr-package__version" data-pypi="servicewright" href="https://pypi.org/project/servicewright/" title="servicewright on PyPI">v0.14.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/servicewright/">servicewright<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">One <code>Host</code>, many <code>Entrypoint</code>s: FastAPI, Litestar, gRPC, scheduler, daemon or one-shot batch under a single Kubernetes-correct lifecycle.</p>
@@ -60,7 +60,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-clientwright" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/><rect x="7" y="7" width="10" height="10" rx="2"/></svg></span>
-            <a class="bdr-package__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="clientwright on PyPI">v0.2.0</a>
+            <a class="bdr-package__version" data-pypi="clientwright" href="https://pypi.org/project/clientwright/" title="clientwright on PyPI">v0.5.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/clientwright/">clientwright<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">One resilience and observability core wired <em>under</em> the public API of httpx, aiohttp, requests and urllib3 — you get back the genuine native client.</p>
@@ -72,7 +72,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-grpc-server-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/><rect x="7" y="7" width="10" height="10" rx="2"/></svg></span>
-            <a class="bdr-package__version" data-pypi="grpc-server-kit" href="https://pypi.org/project/grpc-server-kit/" title="grpc-server-kit on PyPI">v0.1.0</a>
+            <a class="bdr-package__version" data-pypi="grpc-server-kit" href="https://pypi.org/project/grpc-server-kit/" title="grpc-server-kit on PyPI">v0.2.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/grpc-server-kit/">grpc-server-kit<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description"><code>grpc.aio</code> servers without the boilerplate: a <code>GrpcApp</code> facade, TLS/mTLS, graceful shutdown, health checking, streaming-aware interceptors.</p>
@@ -84,7 +84,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-grpc-client-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/><rect x="7" y="7" width="10" height="10" rx="2"/></svg></span>
-            <a class="bdr-package__version" data-pypi="grpc-client-kit" href="https://pypi.org/project/grpc-client-kit/" title="grpc-client-kit on PyPI">v0.1.0</a>
+            <a class="bdr-package__version" data-pypi="grpc-client-kit" href="https://pypi.org/project/grpc-client-kit/" title="grpc-client-kit on PyPI">v0.4.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/grpc-client-kit/">grpc-client-kit<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">The caller side: a channel pool keyed by full channel identity, load balancing, health monitoring, and retries under a deadline that spans the whole call.</p>
@@ -101,7 +101,7 @@ hide:
       <div class="bdr-lib-grid">
         <article class="bdr-package" id="package-sqlalchemy-foundation-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
-            <a class="bdr-package__version" data-pypi="sqlalchemy-foundation-kit" href="https://pypi.org/project/sqlalchemy-foundation-kit/" title="sqlalchemy-foundation-kit on PyPI">v0.2.0</a>
+            <a class="bdr-package__version" data-pypi="sqlalchemy-foundation-kit" href="https://pypi.org/project/sqlalchemy-foundation-kit/" title="sqlalchemy-foundation-kit on PyPI">v0.5.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/sqlalchemy-foundation-kit/">sqlalchemy-foundation-kit<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">Async session management that stays pgbouncer-safe, a Unit of Work, base ORM models, pool metrics and tracing, dishka and dependency-injector providers.</p>
@@ -113,7 +113,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-redis-client-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
-            <a class="bdr-package__version" data-pypi="redis-client-kit" href="https://pypi.org/project/redis-client-kit/" title="redis-client-kit on PyPI">v0.1.2</a>
+            <a class="bdr-package__version" data-pypi="redis-client-kit" href="https://pypi.org/project/redis-client-kit/" title="redis-client-kit on PyPI">v0.4.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/redis-client-kit/">redis-client-kit<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">Async and sync redis-py clients with cluster support, pooling, health checks and retries; Pydantic settings, Prometheus and Dishka as extras.</p>
@@ -125,7 +125,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-aiokafka-foundation-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
-            <a class="bdr-package__version" data-pypi="aiokafka-foundation-kit" href="https://pypi.org/project/aiokafka-foundation-kit/" title="aiokafka-foundation-kit on PyPI">v0.1.1</a>
+            <a class="bdr-package__version" data-pypi="aiokafka-foundation-kit" href="https://pypi.org/project/aiokafka-foundation-kit/" title="aiokafka-foundation-kit on PyPI">v0.2.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/aiokafka-foundation-kit/">aiokafka-foundation-kit<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">Producer and consumer factories over aiokafka with Pydantic settings, retry policies, health checks, Prometheus metrics and OpenTelemetry.</p>
@@ -142,7 +142,7 @@ hide:
       <div class="bdr-lib-grid">
         <article class="bdr-package" id="package-omni-box" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg></span>
-            <a class="bdr-package__version" data-pypi="omni-box" href="https://pypi.org/project/omni-box/" title="omni-box on PyPI">v0.1.1</a>
+            <a class="bdr-package__version" data-pypi="omni-box" href="https://pypi.org/project/omni-box/" title="omni-box on PyPI">v0.3.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/omni-box/">omni-box<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">Transactional Outbox and Inbox: the event goes in the same transaction as the business row, out to Kafka from a background publisher, in with deduplication.</p>
@@ -154,10 +154,10 @@ hide:
         </article>
         <article class="bdr-package" id="package-idempotency-kit" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg></span>
-            <a class="bdr-package__version" data-pypi="idempotency-kit" href="https://pypi.org/project/idempotency-kit/" title="idempotency-kit on PyPI">v0.1.1</a>
+            <a class="bdr-package__version" data-pypi="idempotency-kit" href="https://pypi.org/project/idempotency-kit/" title="idempotency-kit on PyPI">v0.5.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/idempotency-kit/">idempotency-kit<span aria-hidden="true">↗</span></a></h3>
-          <p class="bdr-package__description">Execute an operation once per idempotency key: a coordinator and a decorator over Redis, collision handling, graceful degradation, metrics.</p>
+          <p class="bdr-package__description">Execute an operation once per idempotency key over Redis: the key is held while the action runs, a key reused for a different request is refused, and you choose whether a Redis outage fails open or closed.</p>
           <div class="bdr-package__tags"><span>Python 3.11+</span></div>
           <div class="bdr-package__links"><a href="https://bedrock-python.github.io/idempotency-kit/">Documentation <span aria-hidden="true">↗</span></a>
             <a class="bdr-package__github" href="https://github.com/bedrock-python/idempotency-kit">GitHub <span aria-hidden="true">↗</span></a>
@@ -166,7 +166,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-deadline-budget" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg></span>
-            <a class="bdr-package__version" data-pypi="deadline-budget" href="https://pypi.org/project/deadline-budget/" title="deadline-budget on PyPI">v0.1.2</a>
+            <a class="bdr-package__version" data-pypi="deadline-budget" href="https://pypi.org/project/deadline-budget/" title="deadline-budget on PyPI">v0.1.3</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/deadline-budget/">deadline-budget<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">One request deadline budget with per-call caps and a safety margin — the budget that clientwright, grpc-client-kit and servicewright propagate across hops.</p>
@@ -183,7 +183,7 @@ hide:
       <div class="bdr-lib-grid">
         <article class="bdr-package" id="package-pg-partsmith" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16m-9 0v10"/></svg></span>
-            <a class="bdr-package__version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="pg-partsmith on PyPI">v1.5.0</a>
+            <a class="bdr-package__version" data-pypi="pg-partsmith" href="https://pypi.org/project/pg-partsmith/" title="pg-partsmith on PyPI">v1.10.0</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/pg-partsmith/">pg-partsmith<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">PostgreSQL partition lifecycle management with a plan you can read before it runs: RANGE, LIST and HASH nested to any depth — as a library, a CLI and a container image.</p>
@@ -195,7 +195,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-alembic-gauntlet" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16m-9 0v10"/></svg></span>
-            <a class="bdr-package__version" data-pypi="alembic-gauntlet" href="https://pypi.org/project/alembic-gauntlet/" title="alembic-gauntlet on PyPI">v0.2.1</a>
+            <a class="bdr-package__version" data-pypi="alembic-gauntlet" href="https://pypi.org/project/alembic-gauntlet/" title="alembic-gauntlet on PyPI">v0.3.1</a>
           </div>
           <h3><a href="https://bedrock-python.github.io/alembic-gauntlet/">alembic-gauntlet<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">A pytest plugin that runs Alembic migrations through the gauntlet: stairway up and down, models drift, single head, full downgrade, naming conventions.</p>
@@ -227,7 +227,7 @@ hide:
       <div class="bdr-lib-grid">
         <article class="bdr-package" id="package-aiofence" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 2.8 5.7L21 9.6l-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></span>
-            <a class="bdr-package__version" data-pypi="aiofence" href="https://pypi.org/project/aiofence/" title="aiofence on PyPI">v0.4.0</a>
+            <a class="bdr-package__version" data-pypi="aiofence" href="https://pypi.org/project/aiofence/" title="aiofence on PyPI">v0.5.0</a>
           </div>
           <h3><a href="https://github.com/stanislaushimovolos/aiofence">aiofence<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">Multi-reason cancellation for asyncio in the spirit of Go's <code>context.Context</code>: declare timeout, client disconnect and shutdown once at the boundary, carry them in a <code>ContextVar</code>, wrap only the work you want cancelled in a <code>Fence</code>, and ask afterwards which reason fired.</p>
@@ -239,7 +239,7 @@ hide:
         </article>
         <article class="bdr-package" id="package-d9d" data-library-package>
           <div class="bdr-package__top"><span class="bdr-package__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m12 3 2.8 5.7L21 9.6l-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></span>
-            <a class="bdr-package__version" data-pypi="d9d" href="https://pypi.org/project/d9d/" title="d9d on PyPI">v0.19.0</a>
+            <a class="bdr-package__version" data-pypi="d9d" href="https://pypi.org/project/d9d/" title="d9d on PyPI">v0.25.0</a>
           </div>
           <h3><a href="https://d9d-project.github.io/d9d/">d9d<span aria-hidden="true">↗</span></a></h3>
           <p class="bdr-package__description">A distributed training framework on PyTorch 2 that stays hackable: composable parallelism strategies instead of one god class, plain <code>nn.Module</code>s, <code>DTensor</code> for every distributed parameter, checkpoints as a graph — from single-GPU debugging to 6D-parallel clusters.</p>
