@@ -110,6 +110,38 @@ def coverage(pages: dict, default: str) -> dict:
     } for code, sources in pages.items()}
 
 
+def offers_markdown(text: str) -> bool:
+    """Whether a page asks for the "Copy page" control with `copy_page: true`."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return False
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return False
+        key, _, value = line.partition(":")
+        if key.strip() == "copy_page":
+            return value.strip().lower() == "true"
+    return False
+
+
+def emit_markdown(docs: Path, site: Path) -> None:
+    """Write the Markdown of every page with the control next to its HTML.
+
+    The control asks for the page's URL with `.md` in place of the trailing
+    slash, so `agents/` is served from `agents.md`, as on the library sites.
+    """
+    for source in sorted(docs.rglob("*.md")):
+        text = source.read_text(encoding="utf-8")
+        if not offers_markdown(text):
+            continue
+        url = page_url(source.relative_to(docs).as_posix())
+        if not url.endswith("/"):
+            raise ValueError(f"{source}: the copy control needs a page with its own URL")
+        target = site / (url.removesuffix("/") + ".md")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+
+
 def prepare(work: Path, language: str, data: dict, pages: dict, config: dict, pairs: dict) -> Path:
     settings = data["languages"][language]
     text = messages(language)
@@ -277,6 +309,7 @@ def build(output: Path) -> dict:
             subprocess.run([sys.executable, "-m", "zensical", "build", "--clean", "-f", str(config_path)],
                            cwd=config_path.parent, check=True)
             built = config_path.parent / "site"
+            emit_markdown(config_path.parent / "docs", built)
             # Instant navigation reads this edition's sitemap, not the combined
             # root sitemap. Include articles and labs before copying either one.
             combine_sitemaps(built, [built], [editions[code]["canonical"]
