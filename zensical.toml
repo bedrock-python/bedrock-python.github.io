@@ -19,6 +19,7 @@ extra_css = [
     "stylesheets/responsive.css",
     "stylesheets/i18n.css",
     "stylesheets/diagrams.css",
+    "assets/stylesheets/copy-page.css",
 ]
 
 extra_javascript = [
@@ -27,12 +28,14 @@ extra_javascript = [
     "javascripts/blog-explorer.js",
     "javascripts/libraries.js",
     "javascripts/diagrams.js",
+    "assets/javascripts/copy-page.js",
 ]
 
 nav = [
     { "Home" = "index.md" },
     { "Libraries" = "libraries/index.md" },
     { "Tools" = "tools/index.md" },
+    { "For AI agents" = "agents.md" },
     { "Blog" = [
         { "All articles" = "blog/index.md" },
         { "Archive" = "blog/archive/index.md" },
