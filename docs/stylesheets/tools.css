@@ -89,6 +89,13 @@
 .bdr-tool-cli__install { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--bdr-border); border-bottom: 1px solid var(--bdr-border); padding: 10px 0; margin-bottom: 16px; }
 .bdr-tool-cli__install > span { font: 400 8px var(--md-code-font); letter-spacing: 1px; color: var(--bdr-ink-3); }
 .md-typeset .bdr-tool-cli__install code { background: transparent; color: var(--bdr-ink-2); padding: 0; font-size: 11px; overflow-wrap: anywhere; }
+.md-typeset .bdr-tool-cli__hub { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; margin-bottom: 16px; padding: 12px 14px; border: 1px solid var(--bdr-border); border-radius: 8px; background: var(--bdr-surface-2); color: var(--bdr-ink); transition: border-color .2s; }
+.md-typeset .bdr-tool-cli__hub:hover { border-color: var(--bdr-accent); color: var(--bdr-ink); }
+.bdr-tool-cli__hub-label { font: 400 8px var(--md-code-font); letter-spacing: 1px; color: var(--bdr-ink-3); }
+.bdr-tool-cli__hub strong { display: block; font: 500 13px var(--md-code-font); }
+.bdr-tool-cli__hub small { display: block; margin-top: 3px; font-size: 11px; line-height: 1.55; color: var(--bdr-ink-3); }
+.bdr-tool-cli__hub > span:last-child { color: var(--bdr-ink-3); }
+.bdr-tool-cli__hub:hover > span:last-child { color: var(--bdr-accent); }
 .bdr-tool-cli__image { margin-top: 14px; color: var(--bdr-ink-3); font-size: 9px; overflow-wrap: anywhere; }
 .md-typeset .bdr-tool-cli__image code { font-size: 9px; background: transparent; padding: 0; }
 .md-typeset .bdr-tool-more { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px 0 32px; border-top: 1px solid var(--bdr-border); color: var(--bdr-ink); }
@@ -109,6 +116,8 @@
   .bdr-tool-terminal__commands { font-size: 15px; gap: 12px; }
 }
 @media (max-width: 740px) {
+  .md-typeset .bdr-tool-cli__hub { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; }
+  .bdr-tool-cli__hub-label { grid-column: 1 / -1; }
   .bdr-tool-hero { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-top: 20px; padding-bottom: 28px; }
   .bdr-tool-jumps { padding: 14px 18px 3px; }
   .md-typeset .bdr-tool-jumps a { min-height: 66px; }
