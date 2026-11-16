@@ -89,11 +89,12 @@ hide:
         <div class="bdr-tool-terminal__body"><span class="bdr-tool-terminal__label">ОПЕРАЦИИ ХАБА</span><div class="bdr-tool-terminal__commands"><span>check</span><span>plan</span><span>distribute</span><span>status</span></div><p>Хаб с общими файлами.<br>Pull request в каждый репозиторий.</p></div>
       </div>
       <div class="bdr-tool-cli__body">
-        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/touchmark/">touchmark</a></h3><a class="bdr-tool-version" href="https://github.com/bedrock-python/touchmark/releases" title="Релизы touchmark">v0.6.0</a></div>
+        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/touchmark/">touchmark</a></h3><a class="bdr-tool-version" href="https://github.com/bedrock-python/touchmark/releases" title="Релизы touchmark">v0.6.1</a></div>
         <p>Инструкции для ИИ-агентов, промпты для ревью и общие файлы CI в одной версии во многих репозиториях. Изменение в хабе приходит в каждый репозиторий как pull request, который сливает человек, а файл, который команда поменяла под себя, остаётся её.</p>
         <div class="bdr-tool-tags"><span>GitHub · GitLab · Gitea · Forgejo</span><span>Без автослияния</span><span>Один бинарник на Go</span></div>
         <div class="bdr-tool-cli__install"><span>УСТАНОВКА</span><code>go install github.com/bedrock-python/touchmark/cmd/touchmark@latest</code></div>
-        <div class="bdr-tool-card__links"><a class="bdr-tool-primary" href="https://bedrock-python.github.io/touchmark/">Документация <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/engineering-assets-template">Шаблон хаба <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/touchmark">GitHub <span aria-hidden="true">↗</span></a></div>
+        <a class="bdr-tool-cli__hub" href="https://github.com/bedrock-python/engineering-assets-template"><span class="bdr-tool-cli__hub-label">СВОЙ ХАБ</span><span><strong>engineering-assets-template</strong><small>Хаб, который можно скопировать: наборы инструкций для агентов, промпты для ревью и файлы CI, а также CI-задачи, которые их рассылают.</small></span><span aria-hidden="true">↗</span></a>
+        <div class="bdr-tool-card__links"><a class="bdr-tool-primary" href="https://bedrock-python.github.io/touchmark/">Документация <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/touchmark">GitHub <span aria-hidden="true">↗</span></a></div>
         <div class="bdr-tool-cli__image">GitHub Action, бинарник или контейнер: <code>ghcr.io/bedrock-python/touchmark</code></div>
       </div>
     </article>

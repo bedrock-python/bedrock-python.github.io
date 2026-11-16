@@ -89,11 +89,12 @@ hide:
         <div class="bdr-tool-terminal__body"><span class="bdr-tool-terminal__label">HUB OPERATIONS</span><div class="bdr-tool-terminal__commands"><span>check</span><span>plan</span><span>distribute</span><span>status</span></div><p>A hub of shared files.<br>A pull request in every repository.</p></div>
       </div>
       <div class="bdr-tool-cli__body">
-        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/touchmark/">touchmark</a></h3><a class="bdr-tool-version" href="https://github.com/bedrock-python/touchmark/releases" title="touchmark releases">v0.6.0</a></div>
+        <div class="bdr-tool-card__title"><h3><a href="https://bedrock-python.github.io/touchmark/">touchmark</a></h3><a class="bdr-tool-version" href="https://github.com/bedrock-python/touchmark/releases" title="touchmark releases">v0.6.1</a></div>
         <p>Agent instructions, review prompts and shared CI files, kept in step across many repositories. A change to the hub arrives everywhere as a pull request a person merges, and a file a team has edited stays theirs.</p>
         <div class="bdr-tool-tags"><span>GitHub · GitLab · Gitea · Forgejo</span><span>No auto-merge</span><span>One static Go binary</span></div>
         <div class="bdr-tool-cli__install"><span>INSTALL</span><code>go install github.com/bedrock-python/touchmark/cmd/touchmark@latest</code></div>
-        <div class="bdr-tool-card__links"><a class="bdr-tool-primary" href="https://bedrock-python.github.io/touchmark/">Read the docs <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/engineering-assets-template">Hub template <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/touchmark">GitHub <span aria-hidden="true">↗</span></a></div>
+        <a class="bdr-tool-cli__hub" href="https://github.com/bedrock-python/engineering-assets-template"><span class="bdr-tool-cli__hub-label">START A HUB</span><span><strong>engineering-assets-template</strong><small>A hub to copy: packs of agent instructions, review prompts and CI files, and the CI jobs that send them out.</small></span><span aria-hidden="true">↗</span></a>
+        <div class="bdr-tool-card__links"><a class="bdr-tool-primary" href="https://bedrock-python.github.io/touchmark/">Read the docs <span aria-hidden="true">↗</span></a><a class="bdr-tool-source" href="https://github.com/bedrock-python/touchmark">GitHub <span aria-hidden="true">↗</span></a></div>
         <div class="bdr-tool-cli__image">GitHub Action, binary, or container: <code>ghcr.io/bedrock-python/touchmark</code></div>
       </div>
     </article>
