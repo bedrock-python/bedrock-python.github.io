@@ -14,7 +14,7 @@
 uv run --no-project --python 3.13 --with-requirements requirements.txt python measure.py
 ```
 
-Зависимости закреплены в `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 и aiohttp 3.14.3.
+Зависимости закреплены в `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 и aiohttp 3.14.4.
 
 Фрагменты статьи взяты из `payment_flow.py`; `lab_support.py` содержит имитаторы и управление контейнером.
 

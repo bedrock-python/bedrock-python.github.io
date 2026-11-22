@@ -14,8 +14,8 @@
 uv run --no-project --python 3.13 --with-requirements requirements.txt python chain_lab.py
 ```
 
-Зависимости закреплены в `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 и aiohttp 3.14.3.
+Зависимости закреплены в `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 и aiohttp 3.14.4.
 
-Сохраните соседний каталог `2026-09-07-idempotency-keys`: отсюда загружаются общий код и зависимости.
+Сохраните соседний каталог `2026-09-07-idempotency-keys`: отсюда загружается общий код.
 
 [Исходный код практикума на GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-idempotency-across-a-chain).

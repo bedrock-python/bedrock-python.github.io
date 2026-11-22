@@ -14,8 +14,8 @@ Requires Docker and `uv`. Run from `docs/blog/lab/2026-09-07-idempotency-across-
 uv run --no-project --python 3.13 --with-requirements requirements.txt python chain_lab.py
 ```
 
-Dependencies are pinned in `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 and aiohttp 3.14.3.
+Dependencies are pinned in `requirements.txt`: idempotency-kit 0.4.1, redis-py 8.1.0, Pydantic 2.13.5, testcontainers 4.15.0, HTTPX 0.28.1 and aiohttp 3.14.4.
 
-Keep the sibling `2026-09-07-idempotency-keys` directory: this lab imports its shared code and requirements.
+Keep the sibling `2026-09-07-idempotency-keys` directory: this lab imports its shared code.
 
 [Lab source on GitHub](https://github.com/bedrock-python/bedrock-python.github.io/tree/master/docs/blog/lab/2026-09-07-idempotency-across-a-chain).
