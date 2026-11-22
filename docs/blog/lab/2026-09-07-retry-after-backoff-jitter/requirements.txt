@@ -1,1 +1,4 @@
--r ../2026-09-07-why-i-stopped-wrapping-http-clients/requirements.txt
+clientwright[httpx,aiohttp,requests]==0.5.0
+httpx==0.28.1
+aiohttp==3.14.4
+requests==2.34.2
